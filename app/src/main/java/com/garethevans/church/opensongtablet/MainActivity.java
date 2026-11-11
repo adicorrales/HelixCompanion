@@ -69,7 +69,6 @@ import androidx.navigation.ui.NavigationUI;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.garethevans.church.opensongtablet.abcnotation.ABCNotation;
-import com.garethevans.church.opensongtablet.aeros.Aeros;
 import com.garethevans.church.opensongtablet.animation.CustomAnimation;
 import com.garethevans.church.opensongtablet.animation.ShowCase;
 import com.garethevans.church.opensongtablet.appdata.AlertChecks;
@@ -78,15 +77,12 @@ import com.garethevans.church.opensongtablet.appdata.CheckInternet;
 import com.garethevans.church.opensongtablet.appdata.FixLocale;
 import com.garethevans.church.opensongtablet.appdata.InformationBottomSheet;
 import com.garethevans.church.opensongtablet.appdata.MyFonts;
+import com.garethevans.church.opensongtablet.appdata.TimeTools;
 import com.garethevans.church.opensongtablet.appdata.VersionNumber;
 import com.garethevans.church.opensongtablet.autoscroll.Autoscroll;
 import com.garethevans.church.opensongtablet.beatbuddy.BBOptionsFragment;
 import com.garethevans.church.opensongtablet.beatbuddy.BeatBuddy;
 import com.garethevans.church.opensongtablet.beatbuddy.BeatBuddyControlPopUp;
-import com.garethevans.church.opensongtablet.bible.Bible;
-import com.garethevans.church.opensongtablet.ccli.CCLILog;
-import com.garethevans.church.opensongtablet.ccli.SettingsCCLI;
-import com.garethevans.church.opensongtablet.chorddetector.ChordDetectionPopUp;
 import com.garethevans.church.opensongtablet.chords.ChordDirectory;
 import com.garethevans.church.opensongtablet.chords.ChordDisplayProcessing;
 import com.garethevans.church.opensongtablet.chords.CustomChordsFragment;
@@ -107,7 +103,7 @@ import com.garethevans.church.opensongtablet.customviews.MyExtendedFloatingActio
 import com.garethevans.church.opensongtablet.customviews.MyMaterialButton;
 import com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView;
 import com.garethevans.church.opensongtablet.customviews.MyToolbar;
-import com.garethevans.church.opensongtablet.customviews.StopRecordingPopUp;
+
 import com.garethevans.church.opensongtablet.databinding.ActivityBinding;
 import com.garethevans.church.opensongtablet.drummer.DrumCalculations;
 import com.garethevans.church.opensongtablet.drummer.DrumViewModel;
@@ -193,13 +189,6 @@ import com.garethevans.church.opensongtablet.sqlite.NonOpenSongSQLiteHelper;
 import com.garethevans.church.opensongtablet.sqlite.SQLiteHelper;
 import com.garethevans.church.opensongtablet.stickynotes.StickyNoteUtils;
 import com.garethevans.church.opensongtablet.tags.BulkTagAssignFragment;
-import com.garethevans.church.opensongtablet.utilities.AudioPlayerBottomSheet;
-import com.garethevans.church.opensongtablet.utilities.AudioPlayerPopUp;
-import com.garethevans.church.opensongtablet.utilities.AudioRecorderPopUp;
-import com.garethevans.church.opensongtablet.utilities.DatabaseUtilitiesFragment;
-import com.garethevans.church.opensongtablet.utilities.ForumFragment;
-import com.garethevans.church.opensongtablet.utilities.ScreenRecorderService;
-import com.garethevans.church.opensongtablet.utilities.TimeTools;
 import com.garethevans.church.opensongtablet.variations.Variations;
 import com.garethevans.church.opensongtablet.voicelive.VoiceLive;
 import com.garethevans.church.opensongtablet.webserver.LocalWiFiHost;
@@ -248,18 +237,14 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
     // The helpers sorted alphabetically
     private ABCNotation abcNotation;
-    private Aeros aeros;
     private AlertChecks alertChecks;
     private AnalyticsSQLiteHelper analyticsHelper;
     private AppPermissions appPermissions;
     private Autoscroll autoscroll;
     private volatile BeatBuddy beatBuddy;
     private final Object beatBuddyLock = new Object();
-    private Bible bible;
-    private CCLILog ccliLog;
     private CheckInternet checkInternet;
-    private ChordDetectionPopUp chordDetectionPopUp;
-    private StopRecordingPopUp stopRecordingPopup;
+
     private ChordDirectory chordDirectory;
     private ChordDisplayProcessing chordDisplayProcessing;
     private CommonControls commonControls;
@@ -325,10 +310,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private ActivityResultLauncher<String> audioPermissionLauncher;
     private ActivityResultLauncher<Intent> selectFileLauncher;
     private ActivityResultLauncher<Intent> selectFolderLauncher;
-    private boolean requireAudioRecorder = false;
-    private AudioRecorderPopUp audioRecorderPopUp;
     private MultiTrackPopUp multiTrackPopUp;
-    private AudioPlayerPopUp audioPlayerPopUp;
     private BeatBuddyControlPopUp beatBuddyControlPopup;
     private MediaProjectionManager projectionManager;
     private MediaProjection mediaProjection;
@@ -430,7 +412,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         // Set up the audioPermission launcher
         audioPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
             if (isGranted) {
-                requireAudioRecorder = true;
                 // Navigate home (performance/presenter) and then this fragment will attempt to show the popup
                 navHome();
             } else {
@@ -458,20 +439,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             if (result.getResultCode() == Activity.RESULT_OK) {
                 try {
                     Intent data = result.getData();
-                    if (data != null) {
-                        if (data.getData() != null) {
-                            setImportUri(data.getData());
-                            if (whattodo.equals("audioplayer")) {
-                                whattodo = "";
-                                AudioPlayerBottomSheet audioPlayerBottomSheet = new AudioPlayerBottomSheet();
-                                audioPlayerBottomSheet.show(getMyFragmentManager(), "audioPlayerBottomSheet");
-                            } else if (whattodo.equals("audioplayerpopup")) {
-                                whattodo = "";
-                                toggleAudioPlayerPopUp();
-                            }
-                        } else {
-                            getShowToast().error();
-                        }
+                    if (data != null && data.getData() != null) {
+                        setImportUri(data.getData());
+                    } else {
+                        getShowToast().error();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -496,24 +467,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                        if (isScreenRecordingMode) {
-                            // 1. User approved! Start the ScreenRecorderService with the code and data intent
-                            Intent serviceIntent = new Intent(this, ScreenRecorderService.class);
-                            serviceIntent.putExtra(ScreenRecorderService.EXTRA_MODE, ScreenRecorderService.MODE_SCREEN_RECORD);
-                            serviceIntent.putExtra("code", result.getResultCode());
-                            serviceIntent.putExtra("data", result.getData());
-
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                startForegroundService(serviceIntent);
-                            } else {
-                                startService(serviceIntent);
-                            }
-
-                            // 2. Now show the floating stop button on the screen
-                            showScreenRecorderStopButton();
-
-                        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            // Existing Chord Detection Audio Capture flow
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             MediaProjectionManager projectionManager = (MediaProjectionManager) getSystemService(MEDIA_PROJECTION_SERVICE);
                             MediaProjection projection = projectionManager.getMediaProjection(result.getResultCode(), result.getData());
                             if (onMediaProjectionReady != null) {
@@ -521,14 +475,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                             }
                         }
                     } else {
-                        // User denied the permission
-                        if (isScreenRecordingMode) {
-                            // Reset flag
-                            isScreenRecordingMode = false;
-                            if (getShowToast() != null) {
-                                getShowToast().doIt(getString(R.string.permissions_refused));
-                            }
-                        } else if (onMediaProjectionReady != null) {
+                        if (onMediaProjectionReady != null) {
                             onMediaProjectionReady.accept(null);
                         }
                     }
@@ -982,7 +929,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         performanceGestures = getPerformanceGestures();
         pageButtons = getPageButtons();
         midi = getMidi();
-        aeros = getAeros();
         beatBuddy = getBeatBuddy();
         voiceLive = getVoiceLive();
         drummer = getDrummer();
@@ -996,18 +942,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         displayPrevNext = getDisplayPrevNext();
         multiTrackPlayer = getMultiTrackPlayer();
 
-        // For the chord detection
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            projectionManager = (MediaProjectionManager) getSystemService(MEDIA_PROJECTION_SERVICE);
-        }
-
-
         // Other file actions
-        ccliLog = getCCLILog();
         exportActions = getExportActions();
-        bible = getBible();
         customSlide = getCustomSlide();
         presenterSettings = getPresenterSettings();
+        abcNotation = getAbcNotation();
 
         // Webserver (for displaying song over html server)
         webServer = getWebServer();
@@ -2084,68 +2023,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     }
 
     // For audio recording
-    public void setRequireAudioRecorder() {
-        if (audioRecorderPopUp != null) {
-            try {
-                audioRecorderPopUp.destroyPopup();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            removeAudioRecorderPopUp();
-        } else {
-            if (getAppPermissions().hasAudioPermissions() && !requireAudioRecorder) {
-                requireAudioRecorder = true;
-            } else {
-                requireAudioRecorder = false;
-                audioPermissionLauncher.launch(getAppPermissions().getAudioPermissions());
-            }
-        }
-    }
 
-    @Override
-    public void removeAudioRecorderPopUp() {
-        audioRecorderPopUp = null;
-        requireAudioRecorder = false;
-    }
-
-    @Override
-    public void displayAudioRecorder() {
-        if (requireAudioRecorder) {
-            requireAudioRecorder = false;
-            if (myView != null) {
-                if (audioRecorderPopUp != null) {
-                    try {
-                        audioRecorderPopUp.destroyPopup();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                audioRecorderPopUp = new AudioRecorderPopUp(this);
-                audioRecorderPopUp.floatRecorder(myView.fragmentView);
-            }
-        }
-    }
-
-    @Override
-    public void toggleAudioPlayerPopUp() {
-        if (myView != null) {
-            if (audioPlayerPopUp != null) {
-                try {
-                    audioPlayerPopUp.destroyPopup();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } else {
-                audioPlayerPopUp = new AudioPlayerPopUp(this);
-                audioPlayerPopUp.floatPlayer(myView.fragmentView);
-            }
-        }
-    }
-
-    @Override
-    public void removeAudioPlayerPopUp() {
-        audioPlayerPopUp = null;
-    }
 
     @Override
     public void displayDrummerPopup() {
@@ -3241,13 +3119,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         this.midiFragment = midiFragment;
     }
 
-    @Override
-    public Aeros getAeros() {
-        if (aeros == null) {
-            aeros = new Aeros(this);
-        }
-        return aeros;
-    }
+
 
     @Override
     public BeatBuddy getBeatBuddy() {
@@ -3282,10 +3154,20 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         if (drumViewModel==null) {
             drumViewModel = new ViewModelProvider(this).get(DrumViewModel.class);
             drumViewModel.initialiseDrums(this);
-            observeDrummer();
         }
         return drumViewModel;
     }
+
+    private void observeDrummer() {}
+
+    @Override
+    public void metronomeToggle() {}
+
+    @Override
+    public void setRequireAudioRecorder() {}
+
+    @Override
+    public void displayAudioRecorder() {}
 
     // Sticky notes
     @Override
@@ -3325,23 +3207,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         }
     }
 
-    // Metronome
-    @Override
-    public void metronomeToggle() {
-        getDrumViewModel();
-        if (DrumCalculations.isTempoTimeSigValid(song,getDrumViewModel().getMetronome().getMetronomeUseDefaults())) {
-            drumViewModel.toggleMetronome();
-        } else {
-            // Open up the metronome settings
-            drumViewModel.stopMetronome();
-            navigateToFragment(deeplink_metronome, 0);
-        }
-    }
-
     @Override
     public void drummerToggle() {
         getDrumViewModel();
-        if (DrumCalculations.isTempoTimeSigValid(song,getDrumViewModel().getMetronome().getMetronomeUseDefaults())) {
+        if (DrumCalculations.isTempoTimeSigValid(song, true)) {
             drumViewModel.toggleDrummer();
         } else {
             // Open up the drummer settings
@@ -3352,24 +3221,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 e.printStackTrace();
             }
         }
-    }
-
-    private void observeDrummer() {
-        // Also observe playing state to clear the lights when stopped
-        drumViewModel.getIsDrummerPlaying().observe(this, isPlaying -> {
-            if (!isPlaying) {
-                getToolbar().hideMetronomeBar();
-            }
-        });
-    }
-
-    // CCLI
-    @Override
-    public CCLILog getCCLILog() {
-        if (ccliLog == null) {
-            ccliLog = new CCLILog(this);
-        }
-        return ccliLog;
     }
 
     // Capo
@@ -3734,13 +3585,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         return getSupportFragmentManager();
     }
 
-    @Override
-    public Bible getBible() {
-        if (bible == null) {
-            bible = new Bible(this);
-        }
-        return bible;
-    }
+
 
     @Override
     public CustomSlide getCustomSlide() {
@@ -3984,32 +3829,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
     @Override
     public void confirmedAction(boolean agree, String what, ArrayList<String> arguments, String fragName, Fragment callingFragment, Song song) {
-        if (!agree && what!=null && what.equals("chordDetectionStream") && chordDetectionPopUp!=null) {
-            chordDetectionPopUp.allowStream(false);
-            isScreenRecordingMode = false;
-
-        } else if (agree) {
+        if (agree) {
             boolean result = false;
             boolean allowToast = true;
 
             switch (what) {
-                case "chordDetectionStream":
-                    // We have decided to record the audio stream for chord detection
-                    isScreenRecordingMode = false;
-                    if (chordDetectionPopUp!=null) {
-                            // This will display Android's permission screen
-                            chordDetectionPopUp.allowStream(true);
-                        }
-                    allowToast = false;
-                    break;
-                case "screenRecorder":
-                    // 🔑 Set the mode flag and launch the system screen capture permission prompt
-                    isScreenRecordingMode = true;
-                    if (projectionManager != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        mediaProjectionLauncher.launch(projectionManager.createScreenCaptureIntent());
-                    }
-                    allowToast = false;
-                    break;
                 case "syncNearbyZip":
                     // If we are about to import files from a zip file and overwrite our files
                     if (arguments != null && arguments.size() == 2) {
@@ -4045,10 +3869,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     song.setFolder(mainfoldername);
                     updateSongMenu(song);
                     navHome();
-                    break;
-
-                case "ccliDelete":
-                    result = ccliLog.createBlankXML();
                     break;
 
                 case "deleteItem":
@@ -4175,17 +3995,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     }
                     break;
 
-                case "restorePersistentDatabase":
-                    if (callingFragment != null) {
-                        try {
-                            ((DatabaseUtilitiesFragment) callingFragment).doImportDatabaseBackup();
-                            result = true;
-                            allowToast = false;
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    break;
+
 
                 case "NearbyAdvertise":
                     // We have accepted our Advertise settings, so continue
@@ -4292,94 +4102,13 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     }
 
     @Override
-    public void toggleChordDetection() {
-        ScreenRecorderService.setContext(this);
-        if (chordDetectionPopUp == null) {
-            if (!getAppPermissions().hasAudioPermissions()) {
-                audioPermissionLauncher.launch(getAppPermissions().getAudioPermissions());
-            } else {
-                chordDetectionPopUp = new ChordDetectionPopUp(this);
-                chordDetectionPopUp.floatChordDetection(myView.getRoot());
-            }
-        } else {
-            chordDetectionPopUp.closePopup();
-            chordDetectionPopUp = null;
-        }
-    }
+    public void toggleChordDetection() {}
 
-    public void showScreenRecorderStopButton() {
-        if (stopRecordingPopup == null) {
-            // Initialize it
-            stopRecordingPopup = new StopRecordingPopUp(this);
-
-            // Show it and start the recording
-            stopRecordingPopup.show(getWindow().getDecorView().getRootView());
-        }
-    }
-
-    @Override
-    public void startScreenRecorder() {
-        if (projectionManager != null) {
-            // 🔑 1. Set your mode flag so the result handler knows to start the ScreenRecorderService
-            isScreenRecordingMode = true;
-
-            // 🔑 2. Create the system permission intent and launch it using your existing launcher
-            Intent permissionIntent = null;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                permissionIntent = projectionManager.createScreenCaptureIntent();
-            }
-            ScreenRecorderService.setContext(this);
-            mediaProjectionLauncher.launch(permissionIntent);
-        } else {
-            getShowToast().doIt(getString(R.string.not_available));
-        }
-    }
-
-    @Override
-    public void stopScreenRecorder() {
-        if (stopRecordingPopup !=null) {
-            stopRecordingPopup.dismiss();
-            stopRecordingPopup = null;
-        }
-    }
-
-    @Override
     public void requestDeviceAudioCapture(Consumer<MediaProjection> callback) {
-        this.onMediaProjectionReady = callback;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && projectionManager != null) {
-
-            // 🔑 1. Start the Foreground Service BEFORE launching the projection dialog
-            Intent serviceIntent = new Intent(this, com.garethevans.church.opensongtablet.utilities.ScreenRecorderService.class);
-            serviceIntent.putExtra(ScreenRecorderService.EXTRA_MODE, ScreenRecorderService.MODE_AUDIO_CAPTURE);
-
-            startForegroundService(serviceIntent);
-
-            // 2. Now launch the system permission prompt
-            Intent permissionIntent = projectionManager.createScreenCaptureIntent();
-            mediaProjectionLauncher.launch(permissionIntent);
-
-        } else {
-            callback.accept(null);
-        }
+        if (callback != null) callback.accept(null);
     }
 
-    @Override
-    public void stopDeviceAudioCapture() {
-        // 1. Stop the ScreenRecorderService foreground service
-        Intent serviceIntent = new Intent(this, com.garethevans.church.opensongtablet.utilities.ScreenRecorderService.class);
-        stopService(serviceIntent);
-
-        // 2. Clean up MediaProjection if it's held in MainActivity
-        if (mediaProjection != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                mediaProjection.stop();
-            }
-            mediaProjection = null;
-        }
-
-        onMediaProjectionReady = null;
-    }
+    public void stopDeviceAudioCapture() {}
 
     @Override
     public Pad getPad() {
@@ -4869,8 +4598,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     ((ImportOnlineFragment) fragment).isConnected(isConnected);
                 } else if (fragId == R.id.importOSBFragment) {
                     ((ImportOptionsFragment) fragment).isConnected(isConnected);
-                } else if (fragId == R.id.forumFragment) {
-                    ((ForumFragment) fragment).isConnected(isConnected);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -5151,9 +4878,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         if (fragment != null) {
             try {
                 switch (fragname) {
-                    case "SettingsCCLI":
-                        ((SettingsCCLI) fragment).updateValue(which, value);
-                        break;
                     case "NearbyConnectionsFragment":
                         ((NearbyConnectionsFragment) fragment).updateValue(which, value);
                         break;
@@ -5426,21 +5150,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 t.printStackTrace();
             }
         }
-
-        // If the chord detection popup is showing, close it
-        if (chordDetectionPopUp!=null) {
-            chordDetectionPopUp.closePopup();
-            chordDetectionPopUp = null;
-        }
-
-        // Ensure the screen recorder service stops when the main activity is destroyed
-        Intent serviceIntent = new Intent(this, ScreenRecorderService.class);
-        stopService(serviceIntent);
-
-        // Also clear your static context reference to avoid memory leaks
-        ScreenRecorderService.clearContext();
-
-        // Keep a reference to connections if needed as bundle
 
         super.onDestroy();
     }

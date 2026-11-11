@@ -15,18 +15,16 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.garethevans.church.opensongtablet.abcnotation.ABCNotation;
-import com.garethevans.church.opensongtablet.aeros.Aeros;
 import com.garethevans.church.opensongtablet.animation.CustomAnimation;
 import com.garethevans.church.opensongtablet.animation.ShowCase;
 import com.garethevans.church.opensongtablet.appdata.AlertChecks;
 import com.garethevans.church.opensongtablet.appdata.CheckInternet;
 import com.garethevans.church.opensongtablet.appdata.FixLocale;
 import com.garethevans.church.opensongtablet.appdata.MyFonts;
+import com.garethevans.church.opensongtablet.appdata.TimeTools;
 import com.garethevans.church.opensongtablet.appdata.VersionNumber;
 import com.garethevans.church.opensongtablet.autoscroll.Autoscroll;
 import com.garethevans.church.opensongtablet.beatbuddy.BeatBuddy;
-import com.garethevans.church.opensongtablet.bible.Bible;
-import com.garethevans.church.opensongtablet.ccli.CCLILog;
 import com.garethevans.church.opensongtablet.chords.ChordDirectory;
 import com.garethevans.church.opensongtablet.chords.ChordDisplayProcessing;
 import com.garethevans.church.opensongtablet.chords.Transpose;
@@ -88,7 +86,6 @@ import com.garethevans.church.opensongtablet.sqlite.CommonSQL;
 import com.garethevans.church.opensongtablet.sqlite.NonOpenSongSQLiteHelper;
 import com.garethevans.church.opensongtablet.sqlite.SQLiteHelper;
 import com.garethevans.church.opensongtablet.stickynotes.StickyNoteUtils;
-import com.garethevans.church.opensongtablet.utilities.TimeTools;
 import com.garethevans.church.opensongtablet.variations.Variations;
 import com.garethevans.church.opensongtablet.voicelive.VoiceLive;
 import com.garethevans.church.opensongtablet.webserver.LocalWiFiHost;
@@ -214,6 +211,11 @@ public interface MainActivityInterface {
     // OpenChords stuff
     OpenChordsAPI getOpenChordsAPI();
 
+    void metronomeToggle();
+    void setRequireAudioRecorder();
+    void displayAudioRecorder();
+    void toggleChordDetection();
+
     // Action bar
     MyToolbar getToolbar();
     BatteryStatus getBatteryStatus();
@@ -288,7 +290,6 @@ public interface MainActivityInterface {
     DrumViewModel getDrumViewModel();
     void displayDrummerPopup();
     BeatBuddy getBeatBuddy();
-    Aeros getAeros();
     VoiceLive getVoiceLive();
     void toggleBeatBuddyControlPopUp();
     void removeBeatBuddyControlPopUp();
@@ -332,8 +333,8 @@ public interface MainActivityInterface {
     void tintBackgroundToTheme();
     Activity getMyActivity();
 
-    // CCLI
-    CCLILog getCCLILog();
+    // Custom slides
+    CustomSlide getCustomSlide();
 
     // ABC Notation
     ABCNotation getAbcNotation();
@@ -344,19 +345,6 @@ public interface MainActivityInterface {
     File getScreenshotFile();
     boolean validScreenShotFile();
     void setScreenshotFile(Bitmap bitmap);
-
-    // Chord detection popup
-    void toggleChordDetection();
-    void requestDeviceAudioCapture(Consumer<MediaProjection> callback);
-    void stopDeviceAudioCapture();
-
-    // Screen recorder
-    void startScreenRecorder();
-    void stopScreenRecorder();
-
-    // Custom slides
-    Bible getBible();
-    CustomSlide getCustomSlide();
 
     // PDF stuff
     void pdfScrollToPage(int pageNumber);
@@ -394,11 +382,6 @@ public interface MainActivityInterface {
     void updateOnScreenInfo(String what);
 
     // Record audio popup
-    void setRequireAudioRecorder();
-    void removeAudioRecorderPopUp();
-    void displayAudioRecorder();
     void displayMultiTrack();
     void nullMultitrackPopUp();
-    void toggleAudioPlayerPopUp();
-    void removeAudioPlayerPopUp();
 }

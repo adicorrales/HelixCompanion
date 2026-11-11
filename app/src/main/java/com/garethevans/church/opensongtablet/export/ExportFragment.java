@@ -625,10 +625,7 @@ public class ExportFragment extends Fragment {
                             useTransposed = true;
                         }
 
-                        // Sharing a song should initiate the CCLI Log of printed (value 6)
-                        if (mainActivityInterface.getPreferences().getMyPreferenceBoolean("ccliAutomaticLogging",false)) {
-                            mainActivityInterface.getCCLILog().addEntry(song,"6");
-                        }
+
 
                         // Deal with the currentFormat option first, or PDF or IMG songs
                         if (!id.equals("ignore") && ((currentFormat && !useTransposed) ||
@@ -902,10 +899,7 @@ public class ExportFragment extends Fragment {
     private void doExportSong() {
         // Do this in a new Thread
         mainActivityInterface.getThreadPoolExecutor().execute(() -> {
-            // Sharing a song should initiate the CCLI Log of printed (value 6)
-            if (mainActivityInterface.getPreferences().getMyPreferenceBoolean("ccliAutomaticLogging",false)) {
-                mainActivityInterface.getCCLILog().addEntry(mainActivityInterface.getSong(),"6");
-            }
+
 
             String filename = mainActivityInterface.getSong().getFilename();
             String folder = mainActivityInterface.getSong().getFolder();

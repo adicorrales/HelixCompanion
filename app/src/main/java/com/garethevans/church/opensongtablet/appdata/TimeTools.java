@@ -1,4 +1,4 @@
-package com.garethevans.church.opensongtablet.utilities;
+package com.garethevans.church.opensongtablet.appdata;
 
 import android.content.Context;
 import android.net.Uri;
@@ -135,7 +135,6 @@ public class TimeTools {
     }
 
     public String getNowIsoTime() {
-        // return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'",Locale.UK).format(new Date());
         return Instant.ofEpochMilli(System.currentTimeMillis()).toString();
     }
 

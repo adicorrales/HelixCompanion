@@ -30,8 +30,7 @@ import com.garethevans.church.opensongtablet.pdf.PDFPageBottomSheet;
 import com.garethevans.church.opensongtablet.presenter.SongSectionsAdapter;
 import com.garethevans.church.opensongtablet.songmenu.RandomSongBottomSheet;
 import com.garethevans.church.opensongtablet.stage.StageSectionAdapter;
-import com.garethevans.church.opensongtablet.utilities.SoundLevelBottomSheet;
-import com.garethevans.church.opensongtablet.utilities.TunerBottomSheet;
+
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -624,19 +623,7 @@ public class PerformanceGestures {
                 nearbyMessage(8);
                 break;
 
-            // Utilities
-            case "soundlevel":
-                soundLevel();
-                break;
-            case "tuner":
-                showTuner();
-                break;
-            case "chorddetection":
-                toggleChordDetection();
-                break;
-            case "bible":
-                bibleSettings();
-                break;
+
             case "audiorecorder":
                 audioRecorder();
                 break;
@@ -815,12 +802,10 @@ public class PerformanceGestures {
 
     // Start or stop the metronome
     public void toggleMetronome() {
-        actionInterface.metronomeToggle();
     }
 
     // Open the metronome settings
     public void metronomeSettings() {
-        mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_metronome), 0);
     }
 
     // Start or stop the drummer
@@ -1130,16 +1115,7 @@ public class PerformanceGestures {
         mainActivityInterface.navHome();
     }
 
-    // Show the tuner bottom sheet
-    public void showTuner() {
-        TunerBottomSheet tunerBottomSheet = new TunerBottomSheet();
-        tunerBottomSheet.show(mainActivityInterface.getMyFragmentManager(), "tunerBottomSheet");
-    }
 
-    // Chord detection
-    public void toggleChordDetection() {
-        mainActivityInterface.toggleChordDetection();
-    }
 
     // Show or hide the lyrics
     public void showLyrics() {
@@ -1395,16 +1371,7 @@ public class PerformanceGestures {
         }
     }
 
-    // Get the bible settings
-    public void bibleSettings() {
-        mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_bible),0);
-    }
 
-    // Sound level
-    public void soundLevel() {
-        SoundLevelBottomSheet soundLevelBottomSheet = new SoundLevelBottomSheet();
-        soundLevelBottomSheet.show(actionInterface.getMyFragmentManager(),"SoundLevelBottomSheet");
-    }
 
     // Back pressed
     public void onBackPressed() {

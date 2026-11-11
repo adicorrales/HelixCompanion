@@ -1,0 +1,7 @@
+- `[x]` Desacoplamiento y eliminación del módulo :wear
+- `[x]` Preservación y reubicación de TimeTools a appdata
+- `[x]` Eliminación de carpetas y archivos fuente (bible, ccli, aeros, metronome, utilities, chorddetector)
+- `[x]` Limpieza de MainActivityInterface y MainActivity
+- `[x]` Limpieza de referencias en componentes (DrumViewModel, EditSongFeatures, SearchSettingsAdapter, etc.)
+- `[x]` Limpieza de AndroidManifest.xml, navigation.xml y build.gradle
+- `[x]` Verificación de compilación del proyecto (Build successful)

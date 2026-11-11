@@ -10,15 +10,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.garethevans.church.opensongtablet.R;
-import com.garethevans.church.opensongtablet.bible.BibleGatewayBottomSheet;
-import com.garethevans.church.opensongtablet.bible.BibleOfflineBottomSheet;
 import com.garethevans.church.opensongtablet.chords.ChordFingeringBottomSheet;
 import com.garethevans.church.opensongtablet.chords.TransposeBottomSheet;
 import com.garethevans.church.opensongtablet.interfaces.MainActivityInterface;
 import com.garethevans.church.opensongtablet.midi.MidiSongBottomSheet;
 import com.garethevans.church.opensongtablet.songprocessing.CreateSongBottomSheet;
-import com.garethevans.church.opensongtablet.utilities.SoundLevelBottomSheet;
-import com.garethevans.church.opensongtablet.utilities.TunerBottomSheet;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1178,26 +1174,7 @@ public class SearchSettingsAdapter extends RecyclerView.Adapter<SearchSettingsVi
                     mainActivityInterface.setWhattodo("duplicateSong");
                     mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_song_actions),0);
                     break;
-                case "bottomSheet_browseBibleOffline":
-                    BibleOfflineBottomSheet bibleOfflineBottomSheet = new BibleOfflineBottomSheet();
-                    bibleOfflineBottomSheet.show(mainActivityInterface.getMyFragmentManager(),"bibleOffLineBottomSheet");
-                    mainActivityInterface.navHome();
-                    break;
-                case "bottomSheet_browseBibleOnline":
-                    BibleGatewayBottomSheet bibleGatewayBottomSheet = new BibleGatewayBottomSheet();
-                    bibleGatewayBottomSheet.show(mainActivityInterface.getMyFragmentManager(),"bibleGatewayBottomSheet");
-                    mainActivityInterface.navHome();
-                    break;
-                case "bottomSheet_soundLevelMeter":
-                    mainActivityInterface.navHome();
-                    SoundLevelBottomSheet soundLevelBottomSheet = new SoundLevelBottomSheet();
-                    soundLevelBottomSheet.show(mainActivityInterface.getMyFragmentManager(),"soundLevelBottomSheet");
-                    break;
-                case "bottomSheet_tuner":
-                    mainActivityInterface.navHome();
-                    TunerBottomSheet tunerBottomSheet = new TunerBottomSheet();
-                    tunerBottomSheet.show(mainActivityInterface.getMyFragmentManager(),"tunerBottomSheet");
-                    break;
+
                 case "bottomSheet_beatBuddyShowSongs":
                     mainActivityInterface.setWhattodo("beatbuddySongs");
                     mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_beatbuddy_commands),0);

@@ -95,9 +95,6 @@
                 android:id="@+id/action_preferencesFragment_to_nearbyConnectionsFragment"
                 app:destination="@id/nearbyConnectionsFragment" />
             <action
-                android:id="@+id/action_preferencesFragment_to_CCLIDialogFragment"
-                app:destination="@id/settingsCCLI" />
-            <action
                 android:id="@+id/action_preferencesFragment_to_storage_graph"
                 app:destination="@id/storage_graph" />
             <action
@@ -127,9 +124,6 @@
             <action
                 android:id="@+id/action_preferencesFragment_to_set_graph"
                 app:destination="@id/set_graph" />
-            <action
-                android:id="@+id/action_preferencesFragment_to_utilities_graph"
-                app:destination="@id/utilities_graph" />
             <action
                 android:id="@+id/action_preferencesFragment_to_webServerFragment"
                 app:destination="@id/webServerFragment" />
@@ -264,25 +258,6 @@
                 android:id="@+id/deepLinkNearby"
                 app:uri="@string/deeplink_nearby" />
         </fragment>
-
-        <!-- CCLI -->
-        <fragment
-            android:id="@+id/settingsCCLI"
-            android:name="com.garethevans.church.opensongtablet.ccli.SettingsCCLI"
-            android:label="settings_ccli"
-            tools:layout="@layout/settings_ccli" >
-            <deepLink
-                android:id="@+id/deepLinkCCLI"
-                app:uri="@string/deeplink_ccli"/>
-            <action
-                android:id="@+id/action_settingsCCLI_to_CCLILogFragment"
-                app:destination="@id/settingsCCLILog" />
-        </fragment>
-        <fragment
-            android:id="@+id/settingsCCLILog"
-            android:name="com.garethevans.church.opensongtablet.ccli.CCLILogFragment"
-            android:label="settingsCCLILog"
-            tools:layout="@layout/settings_ccli_log"/>
 
         <!-- Display graph -->
         <navigation
@@ -619,9 +594,6 @@
                     android:id="@+id/action_songActionsMenuFragment_to_exportFragment"
                     app:destination="@id/exportFragment" />
                 <action
-                    android:id="@+id/action_songActionsMenuFragment_to_metronomeFragment"
-                    app:destination="@id/metronomeFragment" />
-                <action
                     android:id="@+id/action_songActionsMenuFragment_to_linksFragment"
                     app:destination="@id/linksFragment" />
                 <action
@@ -684,15 +656,6 @@
                 <deepLink
                     android:id="@+id/deepLinkExport"
                     app:uri="@string/deeplink_export" />
-            </fragment>
-            <fragment
-                android:id="@+id/metronomeFragment"
-                android:name="com.garethevans.church.opensongtablet.metronome.MetronomeFragment"
-                android:label="MetronomeFragment"
-                tools:layout="@layout/settings_metronome">
-                <deepLink
-                    android:id="@+id/deepLinkMetronome"
-                    app:uri="@string/deeplink_metronome" />
             </fragment>
             <fragment
                 android:id="@+id/linksFragment"
@@ -903,9 +866,6 @@
                     android:id="@+id/action_setActionsFragment_to_setManageFragment"
                     app:destination="@id/setManageFragment" />
                 <action
-                    android:id="@+id/action_setActionsFragment_to_bible_graph"
-                    app:destination="@id/bible_graph" />
-                <action
                     android:id="@+id/action_setActionsFragment_to_customSlideFragment"
                     app:destination="@id/customSlideFragment" />
                 <action
@@ -936,30 +896,6 @@
                     app:uri="@string/deeplink_set_bundle" />
             </fragment>
 
-            <navigation android:id="@+id/bible_graph"
-                app:startDestination="@id/bibleSettingsFragment">
-                <fragment
-                    android:id="@+id/bibleSettingsFragment"
-                    android:name="com.garethevans.church.opensongtablet.bible.BibleSettingsFragment"
-                    android:label="BibleSettingsFragment"
-                    tools:layout="@layout/bible_settings">
-                    <deepLink
-                        android:id="@+id/deepLinkBible"
-                        app:uri="@string/deeplink_bible" />
-                    <action
-                        android:id="@+id/action_bibleSettingsFragment_to_bibleDownloadFragment"
-                        app:destination="@id/bibleDownloadFragment" />
-                </fragment>
-                <fragment
-                    android:id="@+id/bibleDownloadFragment"
-                    android:name="com.garethevans.church.opensongtablet.bible.BibleDownloadFragment"
-                    android:label="BibleDownloadFragment"
-                    tools:layout="@layout/bible_download">
-                    <deepLink
-                        android:id="@+id/deepLinkBibleDownload"
-                        app:uri="@string/deeplink_bible_download"/>
-                </fragment>
-            </navigation>
             <fragment
                 android:id="@+id/customSlideFragment"
                 android:name="com.garethevans.church.opensongtablet.customslides.CustomSlideFragment"
@@ -979,137 +915,72 @@
                     app:uri="@string/deeplink_sets_backup_restore"/>
             </fragment>
         </navigation>
-        <navigation android:id="@+id/utilities_graph"
-            app:startDestination="@id/utilitiesMenuFragment">
+        <fragment
+            android:id="@+id/VoiceLive"
+            android:name="com.garethevans.church.opensongtablet.voicelive.VoiceLiveFragment"
+            android:label="VoiceLiveFragment"
+            tools:layout="@layout/settings_voicelive_options">
+            <deepLink
+                android:id="@+id/deepLinkVoiceLive"
+                app:uri="@string/deeplink_voicelive" />
+        </fragment>
+        <navigation android:id="@+id/BeatBuddy"
+            app:startDestination="@id/BBOptionsFragment">
             <fragment
-                android:id="@+id/utilitiesMenuFragment"
-                android:name="com.garethevans.church.opensongtablet.utilities.UtilitiesMenuFragment"
-                android:label="UtilitiesMenuFragment"
-                tools:layout="@layout/settings_utilities">
+                android:id="@+id/BBOptionsFragment"
+                android:name="com.garethevans.church.opensongtablet.beatbuddy.BBOptionsFragment"
+                android:label="BBOptionsFragment"
+                tools:layout="@layout/settings_beatbuddy_options">
                 <deepLink
-                    android:id="@+id/deepLinkUtilities"
-                    app:uri="@string/deeplink_utilities" />
+                    android:id="@+id/deepLinkBBOptions"
+                    app:uri="@string/deeplink_beatbuddy_options"/>
                 <action
-                    android:id="@+id/action_utilitiesMenuFragment_to_soundLevelBottomSheet"
-                    app:destination="@id/soundLevelBottomSheet" />
+                    android:id="@+id/action_BBOptionsFragment_to_beatBuddyCommands"
+                    app:destination="@id/beatBuddyCommands" />
                 <action
-                    android:id="@+id/action_utilitiesMenuFragment_to_tunerBottomSheet"
-                    app:destination="@id/tunerBottomSheet" />
-                <action
-                    android:id="@+id/action_utilitiesMenuFragment_to_BBOptionsFragment"
-                    app:destination="@id/BeatBuddy" />
-                <action
-                    android:id="@+id/action_utilitiesMenuFragment_to_AerosFragment"
-                    app:destination="@id/aerosCommands" />
-                <action
-                    android:id="@+id/action_utilitiesMenuFragment_to_databaseOptions"
-                    app:destination="@id/databaseOptions" />
-                <action
-                    android:id="@+id/action_utilitiesMenuFragment_to_databaseOptions2"
-                    app:destination="@id/databaseOptions" />
-                <action
-                    android:id="@+id/action_utilitiesMenuFragment_to_VoiceLive"
-                    app:destination="@id/VoiceLive" />
-                <action
-                    android:id="@+id/action_utilitiesMenuFragment_to_drumSequencer"
-                    app:destination="@id/drumSequencer" />
+                    android:id="@+id/action_BBOptionsFragment_to_beatBuddyImport"
+                    app:destination="@id/beatBuddyImport" />
             </fragment>
             <fragment
-                android:id="@+id/aerosCommands"
-                android:name="com.garethevans.church.opensongtablet.aeros.AerosFragment"
-                android:label="AerosFragment"
-                tools:layout="@layout/settings_aeros_commands">
+                android:id="@+id/beatBuddyCommands"
+                android:name="com.garethevans.church.opensongtablet.beatbuddy.BBCommandsFragment"
+                android:label="BeatBuddyFragment"
+                tools:layout="@layout/settings_beatbuddy_commands">
                 <deepLink
-                    android:id="@+id/deepLinkAeros"
-                    app:uri="@string/deeplink_aeros" />
-            </fragment>
-            <dialog
-                android:id="@+id/tunerBottomSheet"
-                android:name="com.garethevans.church.opensongtablet.utilities.TunerBottomSheet"
-                android:label="TunerBottomSheet"
-                tools:layout="@layout/bottom_sheet_tuner"/>
-            <dialog
-                android:id="@+id/soundLevelBottomSheet"
-                android:name="com.garethevans.church.opensongtablet.utilities.SoundLevelBottomSheet"
-                android:label="SoundLevelBottomSheet"
-                tools:layout="@layout/bottom_sheet_sound_level_meter"/>
-
-            <fragment
-                android:id="@+id/VoiceLive"
-                android:name="com.garethevans.church.opensongtablet.voicelive.VoiceLiveFragment"
-                android:label="VoiceLiveFragment"
-                tools:layout="@layout/settings_voicelive_options">
-                <deepLink
-                    android:id="@+id/deepLinkVoiceLive"
-                    app:uri="@string/deeplink_voicelive" />
-            </fragment>
-            <navigation android:id="@+id/BeatBuddy"
-                app:startDestination="@id/BBOptionsFragment">
-                <fragment
-                    android:id="@+id/BBOptionsFragment"
-                    android:name="com.garethevans.church.opensongtablet.beatbuddy.BBOptionsFragment"
-                    android:label="BBOptionsFragment"
-                    tools:layout="@layout/settings_beatbuddy_options">
-                    <deepLink
-                        android:id="@+id/deepLinkBBOptions"
-                        app:uri="@string/deeplink_beatbuddy_options"/>
-                    <action
-                        android:id="@+id/action_BBOptionsFragment_to_beatBuddyCommands"
-                        app:destination="@id/beatBuddyCommands" />
-                    <action
-                        android:id="@+id/action_BBOptionsFragment_to_beatBuddyImport"
-                        app:destination="@id/beatBuddyImport" />
-                </fragment>
-                <fragment
-                    android:id="@+id/beatBuddyCommands"
-                    android:name="com.garethevans.church.opensongtablet.beatbuddy.BBCommandsFragment"
-                    android:label="BeatBuddyFragment"
-                    tools:layout="@layout/settings_beatbuddy_commands">
-                    <deepLink
-                        android:id="@+id/deepLinkBeatBuddy"
-                        app:uri="@string/deeplink_beatbuddy_commands" />
-                </fragment>
-                <fragment
-                    android:id="@+id/beatBuddyImport"
-                    android:name="com.garethevans.church.opensongtablet.beatbuddy.BBImportFragment"
-                    android:label="BeatBuddyImport"
-                    tools:layout="@layout/settings_beatbuddy_import">
-                    <deepLink
-                        android:id="@+id/deepLinkBeatBuddyImport"
-                        app:uri="@string/deeplink_beatbuddy_import" />
-                </fragment>
-            </navigation>
-            <fragment
-                android:id="@+id/databaseOptions"
-                android:name="com.garethevans.church.opensongtablet.utilities.DatabaseUtilitiesFragment"
-                android:label="DatabaseOptionsFragment"
-                tools:layout="@layout/settings_database_options">
-                <deepLink
-                    android:id="@+id/deepLinkDatabase"
-                    app:uri="@string/deeplink_database_utilities" />
+                    android:id="@+id/deepLinkBeatBuddy"
+                    app:uri="@string/deeplink_beatbuddy_commands" />
             </fragment>
             <fragment
-                android:id="@+id/drummerSettings"
-                android:name="com.garethevans.church.opensongtablet.drummer.DrumSequencerFragment"
-                android:label="DrumSequencerFragment"
-                tools:layout="@layout/settings_drum_sequencer">
+                android:id="@+id/beatBuddyImport"
+                android:name="com.garethevans.church.opensongtablet.beatbuddy.BBImportFragment"
+                android:label="BeatBuddyImport"
+                tools:layout="@layout/settings_beatbuddy_import">
+                <deepLink
+                    android:id="@+id/deepLinkBeatBuddyImport"
+                    app:uri="@string/deeplink_beatbuddy_import" />
+            </fragment>
+        </navigation>
+        <fragment
+            android:id="@+id/drummerSettings"
+            android:name="com.garethevans.church.opensongtablet.drummer.DrumSequencerFragment"
+            android:label="DrumSequencerFragment"
+            tools:layout="@layout/settings_drum_sequencer">
             <deepLink
                 android:id="@+id/deepLinkDrumSequencer"
                 app:uri="@string/deeplink_drummer_settings" />
-                <action
-                    android:id="@+id/action_drummerSettings_to_drummerStudio"
-                    app:destination="@id/drummerStudio" />
-            </fragment>
-            <fragment
-                android:id="@+id/drummerStudio"
-                android:name="com.garethevans.church.opensongtablet.drummer.DrumStudioFragment"
-                android:label="DrummerStudio"
-                tools:layout="@layout/settings_drum_studio">
-                <deepLink
-                    android:id="@+id/deepLinkDrumStudio"
-                    app:uri="@string/deeplink_drummer_studio" />
-            </fragment>
-        </navigation>
+            <action
+                android:id="@+id/action_drummerSettings_to_drummerStudio"
+                app:destination="@id/drummerStudio" />
+        </fragment>
+        <fragment
+            android:id="@+id/drummerStudio"
+            android:name="com.garethevans.church.opensongtablet.drummer.DrumStudioFragment"
+            android:label="DrummerStudio"
+            tools:layout="@layout/settings_drum_studio">
+            <deepLink
+                android:id="@+id/deepLinkDrumStudio"
+                app:uri="@string/deeplink_drummer_studio" />
+        </fragment>
         <fragment
             android:id="@+id/searchMenuFragment"
             android:name="com.garethevans.church.opensongtablet.appdata.SearchMenuFragment"

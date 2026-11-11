@@ -15,7 +15,6 @@ public interface ActionInterface {
     void showAbc(boolean forceShow, boolean hide);
     void toggleHighlighter();
     void onBackPressed();
-    void metronomeToggle();
     void drummerToggle();
     FragmentManager getMyFragmentManager();
     CurrentSet getCurrentSet();

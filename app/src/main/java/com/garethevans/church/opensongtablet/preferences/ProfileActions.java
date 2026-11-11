@@ -183,7 +183,6 @@ public class ProfileActions {
             mainActivityInterface.initialiseStartVariables();
 
             mainActivityInterface.getAbcNotation().getUpdatedPreferences();
-            mainActivityInterface.getAeros().getUpdatedPreferences();
             mainActivityInterface.getFixLocale().getUpdatedPreferences();
             mainActivityInterface.getAutoscroll().setupAutoscrollPreferences();
             mainActivityInterface.getBeatBuddy().setPrefs();

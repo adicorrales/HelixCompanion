@@ -9,8 +9,6 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.garethevans.church.opensongtablet.interfaces.MainActivityInterface;
-import com.garethevans.church.opensongtablet.metronome.Metronome;
-import com.garethevans.church.opensongtablet.metronome.MetronomeWearOS;
 import com.garethevans.church.opensongtablet.midi.MidiClock;
 import com.garethevans.church.opensongtablet.songprocessing.Song;
 
@@ -23,9 +21,7 @@ public class DrumViewModel extends ViewModel {
     private TimerEngine timerEngine;
     private DrumSoundManager drumSoundManager;
     private Drummer drummer;
-    private Metronome metronome;
     private MidiClock midiClock;
-    private MetronomeWearOS metronomeWearOS;
 
     // State Observables for UI
     private final MutableLiveData<Integer> currentStep = new MutableLiveData<>(-1);
@@ -50,15 +46,10 @@ public class DrumViewModel extends ViewModel {
         mainActivityInterface = (MainActivityInterface) c;
 
         // Initialise the classes
-        this.metronome = new Metronome(c);
         this.drummer = new Drummer(c);
         this.timerEngine = new TimerEngine(c);
         this.drumSoundManager = new DrumSoundManager(c);
         this.midiClock = new MidiClock(c);
-        this.metronomeWearOS = new MetronomeWearOS(c);
-        // Check for a physical connection (optional, for UI feedback)
-        checkWearOSValid();
-        metronomeWearOS.checkWearOSValid(c);
 
         drummerIntro = mainActivityInterface.getPreferences().getMyPreferenceBoolean("drummerIntro",true);
         timerEngine.setOnStepListener(totalSteps -> {
@@ -72,7 +63,7 @@ public class DrumViewModel extends ViewModel {
                 drummer.onStep(totalSteps);
             }
 
-            // Calculate the wrapped step ONLY for the metronome and UI
+            // Calculate the wrapped step
             int stepInBar = totalSteps % thisStepsPerBar;
 
             // 1. Prevent divide by zero and handle BPM safely
@@ -81,20 +72,6 @@ public class DrumViewModel extends ViewModel {
             // 2. Get the beat duration
             thisBeatDuration = DrumCalculations.getBeatDurationMs(safeBpm, thisDivisions);
 
-            // 3. Audio & Metronome Logic
-            if (metronome != null && metronome.getIsRunning() && thisStepsPerPulse > 0) {
-                metronome.onStep(stepInBar, thisStepsPerBar, thisBeatDuration);
-
-                metronome.setVisualListener((beatNumber, isAccent, thisBeatDuration) -> {
-                    int color = isAccent ? metronome.getTickColor() : metronome.getTockColor();
-
-                    mainActivityInterface.getMainHandler().post(() -> {
-                        if (mainActivityInterface.getToolbar() != null) {
-                            mainActivityInterface.getToolbar().highlightBeat(beatNumber, color, thisBeatDuration);
-                        }
-                    });
-                });
-            }
             // Update UI for sequencer
             currentStep.postValue(stepInBar);
         });
@@ -112,20 +89,14 @@ public class DrumViewModel extends ViewModel {
     public DrumSoundManager getDrumSoundManager() {
         return drumSoundManager;
     }
-    public Metronome getMetronome() {
-        return metronome;
-    }
     public Drummer getDrummer() {
         return drummer;
     }
     public MidiClock getMidiClock() {
         return midiClock;
     }
-    public MetronomeWearOS getMetronomeWearOS() {
-        return metronomeWearOS;
-    }
 
-    // The current song values (can be changed from the metronome fragment)
+    // The current song values
     /**
      @param song the song to be processed for tempo and time signature
      */
@@ -133,11 +104,6 @@ public class DrumViewModel extends ViewModel {
         // Only proceed if we aren't editing the sequence
         boolean loadedDrummer = false;
         if (!drummer.getSequencerMode()) {
-            // Work out the values for the loaded song.  Called after song has settled, metronome starts
-            if (metronome != null) {
-                metronome.checkTickTockColors();
-            }
-
             if (song != null) {
                 if (song.getDrummer()!=null && !song.getDrummer().isEmpty() && !song.getDrummer().equals(".json")) {
                     // Check the file exists
@@ -171,17 +137,13 @@ public class DrumViewModel extends ViewModel {
             }
         }
 
-        // 1. Update the interval for the audio click (Metronome)
-        // This replaces the old fixed 60000 / bpm math
+        // 1. Update the interval for the audio click
         thisBeatDuration = DrumCalculations.getBeatDurationMs(thisBpm, thisDivisions);
 
         // 4. Bar Math
         thisPulsesPerStep = DrumCalculations.getPulsesPerStep(thisDivisions);
         thisStepsPerPulse = DrumCalculations.getStepsPerPulse(thisDivisions);
         thisStepsPerBar = DrumCalculations.getTotalStepsInBar(thisBeats, thisDivisions);
-
-        // Make sure the visual metronome has the correct number of beats
-        mainActivityInterface.getToolbar().setUpMetronomeBar(thisBeats);
 
         if (!drummer.getSequencerMode() && !loadedDrummer) {
             // Build an empty drum pattern
@@ -253,487 +215,183 @@ public class DrumViewModel extends ViewModel {
         return thisStepsPerPulse;
     }
 
-    // Metronome control
-    public void toggleMetronome() {
-        if (metronome.getIsRunning()) {
-            stopMetronome();
-        } else {
-            startMetronome();
-        }
-    }
-    public void startMetronome() {
-        Log.d(TAG, "startMetronome()");
-        metronome.setIsRunning(true);
-        metronome.resetTotalStepsProcessed();
-        // Prepare for short metronome use
-        metronome.prepare(getThisDivisions(), getThisStepsPerBar());
+    // MIDI clock control
+    public void startMidiClock() {
+        prepareSongValues(mainActivityInterface.getSong());
 
-        // If we are connected as a host, send to client devices
-        mainActivityInterface.getNearbyActions().getNearbySendPayloads().sendCommandIfHost(mainActivityInterface.getNearbyActions().metronomeStart);
-
-        // 1. Prepare values
-        if (!drummer.getIsRunning()) {
-            // The drummer hadn't sorted this, so make sure we do it now
-            prepareSongValues(mainActivityInterface.getSong());
+        if (midiClock != null) {
+            midiClock.setIsRunning(true);
         }
 
-        // 2. Pre-calculate the duration ONCE here, not in the loop
-        thisBeatDuration = DrumCalculations.getBeatDurationMs(thisBpm, thisDivisions);
-
-        // 3. Configure Metronome state
-        metronome.setIsRunning(true);
-
-        // 4. Attach Listeners (Better to move these to a constructor, but keep them here if you prefer)
-        timerEngine.setOnStepListener(totalSteps -> {
-            if (thisStepsPerBar <= 0) return;
-            int stepInBar = totalSteps % thisStepsPerBar;
-
-            if (metronome != null && metronome.getIsRunning()) {
-                metronome.onStep(stepInBar, thisStepsPerBar, thisBeatDuration);
-            }
-
-            if (drummer !=null && drummer.getIsRunning()) {
-                drummer.onStep(stepInBar);
-            }
-
-            currentStep.postValue(stepInBar);
-        });
-
-        metronome.setVisualListener((beatNumber, isAccent, duration) -> {
-            int color = isAccent ? metronome.getTickColor() : metronome.getTockColor();
-            mainActivityInterface.getMainHandler().post(() -> {
-                if (mainActivityInterface.getToolbar() != null) {
-                    // Keep your +1 mapping if Metronome sends 0-based,
-                    // or just 'beatNumber' if it sends 1-based.
-                    mainActivityInterface.getToolbar().highlightBeat(beatNumber, color, duration);
-                }
-            });
-        });
-
-        // 5. Engine Config
         timerEngine.setBpm(thisBpm);
         timerEngine.setPulsesPerStep(thisPulsesPerStep);
 
-        // 6. UI Prep
-        mainActivityInterface.getToolbar().setUpMetronomeBar(thisBeats);
+        timerEngine.resetTickCounter();
+        timerEngine.start();
         isPlaying.postValue(true);
-
-        // 7. Start
-        // --- FINAL STEP: Start Engine with a tiny "Warm-up" delay ---
-        // This gives the SoundPool and the UI thread time to settle
-        mainActivityInterface.getMainHandler().postDelayed(() -> {
-            if (metronome.getIsRunning()) { // Double-check we haven't stopped already
-                timerEngine.resetTickCounter();
-                timerEngine.start();
-
-                if (metronomeWearOS != null && metronomeWearOS.getMetronomeWearOS() &&
-                        metronomeWearOS.getWearOSValid()) {
-                    metronomeWearOS.updateMetronomeState(true, thisBpm);
-                }
-            }
-        }, 100); // 100ms is perfect for audio stabilization
     }
-    public void stopMetronome() {
-        Log.d(TAG,"stopMetronome()");
 
-        // If we are connected as a host, send to client devices
-        mainActivityInterface.getNearbyActions().getNearbySendPayloads().sendCommandIfHost(mainActivityInterface.getNearbyActions().metronomeStop);
-
-        // Tell the metronome we are no longer running
-        metronome.setIsRunning(false);
-        metronome.resetTotalStepsProcessed();
-
-        // Check if we need to stop the timerEngine
+    public void stopMidiClock() {
+        if (midiClock != null) {
+            midiClock.setIsRunning(false);
+        }
         stopTimerEngine();
 
         isPlaying.postValue(false);
-        currentStep.postValue(-1); // Reset playhead
+        currentStep.postValue(-1);
+    }
 
-        // Clear the toolbar visual
-        mainActivityInterface.getToolbar().makeAllBeatsTransparent();
-
-        // Fix the metronome start/stop icon if available
-        metronome.updateStartStopButton();
-
-        if (metronomeWearOS != null && metronomeWearOS.getMetronomeWearOS() &&
-                metronomeWearOS.getWearOSValid()) {
-            metronomeWearOS.updateMetronomeState(false, thisBpm);
+    // Drummer control
+    public void toggleDrummer() {
+        if (drummer.getIsRunning()) {
+            stopDrummer();
+        } else {
+            startDrummer();
         }
-    }
-
-    public void checkWearOSValid() {
-        if (metronomeWearOS != null) {
-            metronomeWearOS.checkWearConnection(connected -> {
-                Log.d(TAG, "WearOS Connection status: " + connected);
-                // If you have a fragment reference, you can update its UI here
-                if (metronome.getMetronomeFragment() != null) {
-                    metronome.getMetronomeFragment().updateWearOS(connected);
-                    metronomeWearOS.setWearOSValid(connected);
-                }
-            });
-        }
-    }
-
-    // MIDI clock control
-    public void startMidiClock() {
-        // 1. Prepare values
-        prepareSongValues(mainActivityInterface.getSong());
-        midiClock.setIsRunning(true);
-        timerEngine.setBpm(thisBpm);
-        timerEngine.setPulsesPerStep(thisPulsesPerStep);
-
-        startTimerEngine();
-    }
-    public void stopMidiClock() {
-        midiClock.setIsRunning(false);
-        stopTimerEngine();
     }
 
     public void startDrummer() {
-        startDrummer(true); // Default behavior
-    }
-
-    public void startDrummer(boolean checkIntroPreference) {
-        Log.d(TAG, "startDrummer()");
+        prepareSongValues(mainActivityInterface.getSong());
 
         if (drummer != null) {
-            DrumPatternJson p = getDrumPatternJson();
-            drummer.setPattern(p);
-        }
-
-        if (drummer == null || !drummer.getSequencerMode()) {
-            prepareSongValues(mainActivityInterface.getSong());
-        }
-
-        if (drummer != null) {
-            drummer.setPattern(getDrumPatternJson());
-        }
-
-        if (drummer != null) {
-            boolean metronomeAlreadyPlaying = metronome.getIsRunning();
-
-            // Check user preference for introduction count-in
-            boolean useIntro = checkIntroPreference && drummerIntro;
-
-            if (!metronomeAlreadyPlaying) {
-                timerEngine.resetTickCounter();
-                // Respect the drummerIntro preference instead of always defaulting to true
-                drummer.setIsCountIn(useIntro && !drummer.getSequencerMode());
-                drummer.setStartStep(0);
-            } else {
-                drummer.setIsCountIn(false);
-                int currentTotalSteps = timerEngine.getTickCounter() / thisPulsesPerStep;
-                int stepInPulse = currentTotalSteps % thisStepsPerPulse;
-                drummer.setStartStep(currentTotalSteps + (thisStepsPerPulse - stepInPulse));
-            }
-
             drummer.setIsRunning(true);
-            isPlaying.postValue(true);
             drummerRunning.postValue(true);
-
-            timerEngine.setBpm(thisBpm);
-            timerEngine.setPulsesPerStep(thisPulsesPerStep);
-
-            if (!metronomeAlreadyPlaying) {
-                timerEngine.start();
-            }
-        }
-    }
-
-    /**
-     * Starts the drummer playing a fill bar (respecting the intro preference), followed by the main beat.
-     */
-    public void startDrummerOnFill() {
-        Log.d(TAG, "startDrummerOnFill()");
-
-        // 1. Ensure patterns are loaded
-        if (drummer != null) {
-            drummer.setPattern(getDrumPatternJson());
-        }
-        if (!drummer.getSequencerMode()) {
-            prepareSongValues(mainActivityInterface.getSong());
         }
 
-        if (drummer != null) {
-            drummer.setPattern(getDrumPatternJson());
-        }
+        timerEngine.setBpm(thisBpm);
+        timerEngine.setPulsesPerStep(thisPulsesPerStep);
 
-        if (drummer != null) {
-            boolean metronomeAlreadyPlaying = metronome.getIsRunning();
-
-            if (!metronomeAlreadyPlaying) {
-                timerEngine.resetTickCounter();
-                timerEngine.setBpm(thisBpm);
-                timerEngine.setPulsesPerStep(thisPulsesPerStep);
-            }
-
-            // 2. Check user preference for introduction count-in
-            boolean useIntro = drummerIntro && !drummer.getSequencerMode();
-
-            // 3. Configure drummer to start with the fill (with or without count-in)
-            drummer.startOnFill(useIntro);
-
-            drummer.setIsRunning(true);
-            isPlaying.postValue(true);
-            drummerRunning.postValue(true);
-
-            if (!metronomeAlreadyPlaying) {
-                timerEngine.start();
-            }
-        }
-    }
-
-    /**
-     * Starts the drummer playing the variation beat directly (respecting the intro preference).
-     */
-    public void startDrummerOnVariation() {
-        Log.d(TAG, "startDrummerOnVariation()");
-
-        if (drummer != null) {
-            drummer.setPattern(getDrumPatternJson());
-        }
-        if (!drummer.getSequencerMode()) {
-            prepareSongValues(mainActivityInterface.getSong());
-        }
-
-        if (drummer != null) {
-            drummer.setPattern(getDrumPatternJson());
-        }
-
-        if (drummer != null) {
-            boolean metronomeAlreadyPlaying = metronome.getIsRunning();
-
-            if (!metronomeAlreadyPlaying) {
-                timerEngine.resetTickCounter();
-                timerEngine.setBpm(thisBpm);
-                timerEngine.setPulsesPerStep(thisPulsesPerStep);
-            }
-
-            boolean useIntro = drummerIntro && !drummer.getSequencerMode();
-
-            // Configure drummer to start on variation
-            drummer.startOnVariation(useIntro);
-
-            drummer.setIsRunning(true);
-            isPlaying.postValue(true);
-            drummerRunning.postValue(true);
-
-            if (!metronomeAlreadyPlaying) {
-                timerEngine.start();
-            }
-        }
+        timerEngine.resetTickCounter();
+        timerEngine.start();
+        isPlaying.postValue(true);
     }
 
     public void stopDrummer() {
-        Log.d(TAG, "stopDrummer()");
         if (drummer != null) {
             drummer.setIsRunning(false);
-            drummer.setIsCountIn(!drummer.getSequencerMode());
-
-            // 💡 Ensure it always reverts back to MAIN and clears transient states
-            drummer.activeSection = DrumSection.MAIN;
-            drummer.updateActiveMap();
+            drummerRunning.postValue(false);
         }
-        drummerRunning.postValue(false);
-
         stopTimerEngine();
 
-        // Only reset UI if nothing else is playing
-        if (!metronome.getIsRunning()) {
-            isPlaying.postValue(false);
-            currentStep.postValue(-1);
-        }
+        isPlaying.postValue(false);
+        currentStep.postValue(-1);
+    }
 
-        // Reset
-        drummer.resetToMain();
-    }
-    public void toggleDrummer() {
-        boolean newState = !drummer.getIsRunning();
-        drummer.setIsRunning(newState);
-        drummerRunning.postValue(newState);
-
-        if (newState) {
-            startDrummer();
-        } else {
-            stopTimerEngine();
-        }
-    }
-    public void drummerFill() {
-        if (drummer.getIsRunning()) {
-            // Already running: execute standard mid-stream fill
-            int currStep = 0;
-            if (currentStep!=null && currentStep.getValue()!=null) {
-                currStep = currentStep.getValue();
-            }
-            drummer.fill(currStep);
-        } else {
-            // Not running: start immediately on the fill with no count-in
-            startDrummerOnFill();
-        }
-    }
-    public void drummerTransition() {
-        if (drummer.getIsRunning()) {
-            drummer.transition();
-        } else {
-            // Not running: start immediately on the fill with no count-in
-            startDrummerOnFill();
-        }
+    public LiveData<Boolean> getIsDrummerRunning() {
+        return drummerRunning;
     }
     public LiveData<Boolean> getIsDrummerPlaying() {
         return isPlaying;
     }
-    public void updateAllTimingValues(int thisBeats, int thisDivisions, int thisBpm) {
-        this.thisBeats = thisBeats;
-        this.thisDivisions = thisDivisions;
-        this.thisBpm = thisBpm;
-        thisBeatDuration = DrumCalculations.getBeatDurationMs(thisBpm, thisDivisions);
-        thisPulsesPerStep = DrumCalculations.getPulsesPerStep(thisDivisions);
-        thisStepsPerPulse = DrumCalculations.getStepsPerPulse(thisDivisions);
-        thisStepsPerBar = DrumCalculations.getTotalStepsInBar(thisBeats, thisDivisions);
-        currentStep.postValue(0);
-        updateDrummerAndTimer();
-    }
-
-    public DrumPatternJson getDrumPatternJson() {
-        // 💡 If backing field is null, but the drummer engine already has a pattern, rescue it!
-        if (drumPatternJson == null && drummer != null && drummer.getPattern() != null) {
-            drumPatternJson = drummer.getPattern();
-        }
-
-        if (drumPatternJson == null && thisBeats > 0) {
-            // 💡 ONLY load from the song file if we DO NOT have temporary web drums pending!
-            if (!tempDrumsReceived && mainActivityInterface.getSong() != null && mainActivityInterface.getSong().getDrummer() != null && !mainActivityInterface.getSong().getDrummer().isEmpty() && !mainActivityInterface.getSong().getDrummer().equals(".json")) {
-                Uri drummerUri = mainActivityInterface.getStorageAccess().getUriForItem("Drummer", "", mainActivityInterface.getSong().getDrummer());
-                if (mainActivityInterface.getStorageAccess().uriExists(drummerUri)) {
-                    drummer.loadDrummerFile(mainActivityInterface.getSong().getDrummer());
-                    return drumPatternJson;
-                }
-            }
-
-            drumPatternJson = new DrumPatternJson(drumSoundManager.getKit().getDrumParts(), thisStepsPerBar, thisBeats, thisDivisions);
-            DrumPatternBuilder.buildStandardPattern(drumPatternJson, thisBeats, thisDivisions, thisStepsPerPulse);
-        }
-        return drumPatternJson;
-    }
-
     public LiveData<Integer> getCurrentStep() {
         return currentStep;
     }
-    public void updateStepCount(int step) {
-        // Correct: call .postValue() on the LiveData object
-        currentStep.postValue(step);
-    }
     public LiveData<DrumSection> getActiveSection() {
         return activeSection;
-    }
-    public void updateActiveSection(DrumSection section) {
-        // postValue ensures the UI thread picks up the change from the Drummer thread
-        activeSection.postValue(section);
     }
     public MutableLiveData<DrumPatternJson> getCurrentPattern() {
         return currentPattern;
     }
 
     public void setCurrentPattern(DrumPatternJson pattern) {
-        if (pattern == null) {
-            Log.e(TAG, "🚨 STACKTRACE: setCurrentPattern(null) was called!", new Exception());
-        }
-        currentPattern.postValue(pattern);
         this.drumPatternJson = pattern;
-        if (drummer != null) {
-            drummer.setPattern(pattern);
-            drummer.updateActiveMap();
-        }
+        this.currentPattern.postValue(pattern);
     }
 
-    public void setDrumPatternJson(DrumPatternJson drumPatternJson) {
-        if (drumPatternJson == null) {
-            Log.e(TAG, "🚨 STACKTRACE: setDrumPatternJson(null) was called!", new Exception());
-        }
-        this.drumPatternJson = drumPatternJson;
-        setCurrentPattern(drumPatternJson);
+    public DrumPatternJson getDrumPatternJson() {
+        return drumPatternJson;
     }
 
-    // The variables used for the Drum Studio editor web page (to send and return values)
-    private String tempDrumFileName = "";
-    private String tempDrumTimeSig = "";
-    private int tempDrumTempo = 0;
-    private String tempDrumAuthor = "";
-    private String tempDrumKit = "";
-    private boolean tempDrumsReceived = false;
-    public void setTempDrumFileName(String tempDrumFileName) {
-        this.tempDrumFileName = tempDrumFileName;
-    }
-    public void setTempDrumTimeSig(String tempDrumTimeSig) {
-        this.tempDrumTimeSig = tempDrumTimeSig;
-    }
-    public void setTempDrumTempo(int tempDrumTempo) {
-        this.tempDrumTempo = tempDrumTempo;
-    }
-    public void setTempDrumAuthor(String tempDrumAuthor) {
-        this.tempDrumAuthor = tempDrumAuthor;
-    }
-    public void setTempDrumKit(String tempDrumKit) {
-        this.tempDrumKit = tempDrumKit;
-    }
-    public void setTempDrumsReceived(boolean tempDrumsReceived) {
-        this.tempDrumsReceived = tempDrumsReceived;
-    }
-    public String getTempDrumFileName() {
-        return tempDrumFileName;
-    }
-    public String getTempDrumTimeSig() {
-        return tempDrumTimeSig;
-    }
-    public int getTempDrumTempo() {
-        return tempDrumTempo;
-    }
-    public boolean getTempDrumsReceived() {
-        return tempDrumsReceived;
-    }
-    public String getTempDrumAuthor() {
-        return tempDrumAuthor;
-    }
-    public String getTempDrumKit() {
-        return tempDrumKit;
-    }
-
-    // The timer engine control - use for all!
-    // Ensure the engine starts/stops based on all active components
-    public void startTimerEngine() {
-        // Only start if not already running
-        if (!timerEngine.isRunning()) {
-            timerEngine.setBpm(thisBpm);
-            timerEngine.setPulsesPerStep(thisPulsesPerStep);
-            timerEngine.start();
-        }
-    }
     public void stopTimerEngine() {
-        // ONLY stop the physical engine if BOTH are now off
-        boolean metronomeActive = (metronome != null && metronome.getIsRunning());
         boolean drummerActive = (drummer != null && drummer.getIsRunning());
         boolean midiClockActive = (midiClock != null && midiClock.getIsRunning());
 
-        if (!metronomeActive && !drummerActive && !midiClockActive) {
+        if (!drummerActive && !midiClockActive) {
             timerEngine.stop();
             isPlaying.postValue(false);
         }
     }
 
     public void stopAll() {
-        // 1. UI: Tell the toolbar to clear and set isPlaying to false
         if (mainActivityInterface.getToolbar() != null) {
             mainActivityInterface.getToolbar().makeAllBeatsTransparent();
         }
         isPlaying.postValue(false);
 
-        // 2. Logic: Mark the objects as stopped
-        metronome.setIsRunning(false);
-        drummer.setIsRunning(false);
-        midiClock.setIsRunning(false);
+        if (drummer != null) drummer.setIsRunning(false);
+        if (midiClock != null) midiClock.setIsRunning(false);
 
-        // 3. Hardware: Shutdown the high-precision executor
         timerEngine.stop();
     }
 
+    public void drummerFill() {
+        if (drummer != null) {
+            drummer.fill(0);
+        }
+    }
+
+    public void drummerTransition() {
+        if (drummer != null) {
+            drummer.transition();
+        }
+    }
+
+    public static class MetronomeStub {
+        private boolean isRunning = false;
+        private boolean metronomeAutoStart = false;
+        private boolean metronomeMidi = false;
+        private int metronomeLength = 4;
+        private int tickColor = 0;
+        private int tockColor = 0;
+        public boolean getIsRunning() { return isRunning; }
+        public void setIsRunning(boolean running) { this.isRunning = running; }
+        public boolean getMetronomeAutoStart() { return metronomeAutoStart; }
+        public boolean getMetronomeUseDefaults() { return true; }
+        public boolean getMetronomeMidi() { return metronomeMidi; }
+        public void setMetronomeMidi(boolean m) { this.metronomeMidi = m; }
+        public int getMetronomeLength() { return metronomeLength; }
+        public void setMetronomeLength(int l) { this.metronomeLength = l; }
+        public int getTickColor() { return tickColor; }
+        public int getTockColor() { return tockColor; }
+        public String getMetronomeTickSound() { return "tick"; }
+        public String getMetronomeTockSound() { return "tock"; }
+        public int getMetronomePan() { return 0; }
+        public void setVisualListener(Object l) {}
+        public void setMetronomeFragment(Object f) {}
+        public Object getMetronomeFragment() { return null; }
+        public void resetTotalStepsProcessed() {}
+        public void prepare(int d, int b) {}
+        public void updateStartStopButton() {}
+        public void onStep(int s, int b, long d) {}
+        public void checkTickTockColors() {}
+    }
+
+    private final MetronomeStub metronomeStub = new MetronomeStub();
+    public MetronomeStub getMetronome() { return metronomeStub; }
+    public void startMetronome() {}
+    public void stopMetronome() {}
+    public void startTimerEngine() { if (timerEngine != null) { timerEngine.start(); } }
+    public void setDrumPatternJson(DrumPatternJson pattern) { setCurrentPattern(pattern); }
+    public void updateAllTimingValues(int beats, int divisions, int bpm) { this.thisBeats = beats; this.thisDivisions = divisions; this.thisBpm = bpm; }
+    private boolean tempDrumsReceived = false;
+    public boolean getTempDrumsReceived() { return tempDrumsReceived; }
+    public void setTempDrumsReceived(boolean val) { this.tempDrumsReceived = val; }
+    private int stepCount = 0;
+    public void updateStepCount(int step) { this.stepCount = step; }
+    public void updateActiveSection(DrumSection section) { activeSection.postValue(section); }
+    private String tempDrumFileName = "";
+    public String getTempDrumFileName() { return tempDrumFileName; }
+    public void setTempDrumFileName(String name) { this.tempDrumFileName = name; }
+    private String tempDrumAuthor = "";
+    public String getTempDrumAuthor() { return tempDrumAuthor; }
+    public void setTempDrumAuthor(String author) { this.tempDrumAuthor = author; }
+    private String tempDrumTimeSig = "4/4";
+    public void setTempDrumTimeSig(String ts) { this.tempDrumTimeSig = ts; }
+    private int tempDrumTempo = 120;
+    public void setTempDrumTempo(int tempo) { this.tempDrumTempo = tempo; }
+    private String tempDrumKit = "Acoustic";
+    public String getTempDrumKit() { return tempDrumKit; }
+    public void setTempDrumKit(String kit) { this.tempDrumKit = kit; }
+    public void startDrummerOnFill() { startDrummer(); }
+    public void startDrummerOnVariation() { startDrummer(); }
 }

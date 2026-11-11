@@ -1164,11 +1164,7 @@ public class ImportOnlineFragment extends Fragment {
             mainActivityInterface.getNonOpenSongSQLiteHelper().createSong(folder, filename);
             mainActivityInterface.getNonOpenSongSQLiteHelper().updateSong(newSong);
 
-            // Add a record to the CCLI log if we are automatically logging activity
-            if (mainActivityInterface.getPreferences().getMyPreferenceBoolean(
-                    "ccliAutomaticLogging",false)) {
-                mainActivityInterface.getCCLILog().addEntry(newSong,"1");
-            }
+
 
         } catch (Exception e) {
             e.printStackTrace();

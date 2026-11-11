@@ -12,11 +12,9 @@ plugins {
 }
 
 // 2. Configure toolchain management
-rootProject.name = "OpenSongTablet"
+rootProject.name = "HelixSongView"
 
 include ':app'
-include ':wear'
 
 // This ensures Gradle looks in the correct folders
 project(':app').projectDir = new File(settingsDir, 'app')
-project(':wear').projectDir = new File(settingsDir, 'wear')

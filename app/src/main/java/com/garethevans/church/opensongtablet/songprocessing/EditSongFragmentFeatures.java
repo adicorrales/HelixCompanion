@@ -24,7 +24,6 @@ import com.garethevans.church.opensongtablet.databinding.EditSongFeaturesBinding
 import com.garethevans.church.opensongtablet.drummer.DrumCalculations;
 import com.garethevans.church.opensongtablet.interfaces.EditSongFragmentInterface;
 import com.garethevans.church.opensongtablet.interfaces.MainActivityInterface;
-import com.garethevans.church.opensongtablet.metronome.MetronomeTapTempo;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -53,8 +52,6 @@ public class EditSongFragmentFeatures extends Fragment {
     private final String TAG = "EditSongFeatures";
     private String[] key_choice_string={};
     private ArrayList<String> instruments = new ArrayList<>();
-
-    private MetronomeTapTempo metronomeTapTempo;
 
     private ActivityResultLauncher<String[]> filePickerLauncher;
     private ScoreToAbcExtractor scoreExtractor;
@@ -242,13 +239,6 @@ public class EditSongFragmentFeatures extends Fragment {
                     myView.tempo.setAdapter(tempoArrayAdapter);
                     myView.tempo.setHint(tempo_string + " (" + bpm_string + ")");
                     myView.tempo.setText(mainActivityInterface.getTempSong().getTempo());
-                    // Initialise the tap tempo helper class
-                    if (metronomeTapTempo == null) {
-                        metronomeTapTempo = new MetronomeTapTempo(getContext(), null);
-                    }
-                    metronomeTapTempo.initialiseTapTempo(mainActivityInterface.getTempSong(),
-                            myView.tapTempo, myView.timesig, null, null, myView.tempo, null,
-                            false);
                 }
             });
         }

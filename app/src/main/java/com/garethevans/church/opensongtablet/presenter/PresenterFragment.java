@@ -365,8 +365,7 @@ public class PresenterFragment extends Fragment {
         mainActivityInterface.notifySetFragment("scrollTo",mainActivityInterface.getCurrentSet().getIndexSongInSet());
         mainActivityInterface.getDisplayPrevNext().setPrevNext();
 
-        // Show the audio recorder if we requested it from the settings menu
-        mainActivityInterface.displayAudioRecorder();
+
 
     }
 
