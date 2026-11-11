@@ -65,7 +65,7 @@ public class PerformanceFragment extends Fragment {
     private int widthBeforeScale;
     private int heightBeforeScale;
     private long doSongLoadStartTime;
-    private final long doSongLoadQOSTime = 200;
+    private final long doSongLoadQOSTime = 0;
     private int widthAfterScale;
     private int heightAfterScale;
     private boolean processingTestView;

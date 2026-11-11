@@ -527,7 +527,7 @@ public class SongMenuFragment extends Fragment implements SongListAdapter.Adapte
         if (mainActivityInterface != null) {
             if (!adapterReady) {
                 //Try again soon
-                mainActivityInterface.getMainHandler().postDelayed(this::prepareSearch, 1000);
+                mainActivityInterface.getMainHandler().postDelayed(this::prepareSearch, 100);
             } else {
                 adapterReady = false;
                 songMenuSortTitles = mainActivityInterface.getPreferences().getMyPreferenceBoolean("songMenuSortTitles", true);
@@ -840,7 +840,7 @@ public class SongMenuFragment extends Fragment implements SongListAdapter.Adapte
                     break;
             }
             waitBeforeSearchHandler.removeCallbacks(waitBeforeSearchRunnable);
-            waitBeforeSearchHandler.postDelayed(waitBeforeSearchRunnable,500);
+            waitBeforeSearchHandler.postDelayed(waitBeforeSearchRunnable,150);
         }
     }
 
