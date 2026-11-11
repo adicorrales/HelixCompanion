@@ -159,29 +159,13 @@ public class EditSongFragmentLyrics extends Fragment {
             mainActivityInterface.getSong().setFiletype(mainActivityInterface.getStorageAccess().tryToFixFileTypeFromNull(mainActivityInterface.getSong().getFilename()));
         }
 
-        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP &&
-                mainActivityInterface.getSong() != null &&
-                mainActivityInterface.getSong().getFiletype() != null &&
-                (mainActivityInterface.getSong().getFiletype().equals("PDF") ||
-                mainActivityInterface.getSong().getFiletype().equals("IMG"))) {
-            // Show the OCR button
-            mainActivityInterface.getMainHandler().post(() -> {
-               if (myView!=null) {
-                   myView.ocr.setVisibility(View.VISIBLE);
-                   myView.imageEdit.setVisibility(View.VISIBLE);
-                   myView.findAndReplace.setVisibility(View.GONE);
-               }
-
-            });
-        } else {
-            mainActivityInterface.getMainHandler().post(() -> {
-                if (myView != null) {
-                    myView.ocr.setVisibility(View.GONE);
-                    myView.imageEdit.setVisibility(View.GONE);
-                    myView.findAndReplace.setVisibility(View.VISIBLE);
-                }
-            });
-        }
+        mainActivityInterface.getMainHandler().post(() -> {
+            if (myView != null) {
+                myView.ocr.setVisibility(View.GONE);
+                myView.imageEdit.setVisibility(View.GONE);
+                myView.findAndReplace.setVisibility(View.VISIBLE);
+            }
+        });
 
         mainActivityInterface.getProcessSong().editBoxToMultiline(myView.lyrics);
         editTextSize = mainActivityInterface.getPreferences().getMyPreferenceFloat("editTextSize",14);
@@ -330,22 +314,7 @@ public class EditSongFragmentLyrics extends Fragment {
             findAndReplaceBottomSheet.show(mainActivityInterface.getMyFragmentManager(),"FindAndReplaceBottomSheet");
         });
 
-        myView.ocr.setOnClickListener(v -> {
-            if (mainActivityInterface.getSong().getFiletype()==null) {
-                mainActivityInterface.getSong().setFiletype(mainActivityInterface.getStorageAccess().tryToFixFileTypeFromNull(mainActivityInterface.getSong().getFilename()));
-            }
 
-            if (mainActivityInterface.getSong().getFiletype().equals("PDF") &&
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                mainActivityInterface.getOCR().getTextFromPDF(
-                        mainActivityInterface.getSong().getFolder(), mainActivityInterface.getSong().getFilename(),false);
-            } else if (mainActivityInterface.getSong().getFiletype().equals("IMG")) {
-                mainActivityInterface.getOCR().getTextFromImageFile(
-                        mainActivityInterface.getSong().getFolder(),
-                        mainActivityInterface.getSong().getFilename());
-            }
-            mainActivityInterface.navHome();
-        });
         myView.imageEdit.setOnClickListener(v -> {
             ImageAdjustBottomSheet imageAdjustBottomSheet = new ImageAdjustBottomSheet(this,mainActivityInterface.getTempSong());
             imageAdjustBottomSheet.show(mainActivityInterface.getMyFragmentManager(),"ImageAdjustBottomSheet");

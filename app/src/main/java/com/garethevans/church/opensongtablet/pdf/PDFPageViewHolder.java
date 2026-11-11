@@ -2,27 +2,22 @@ package com.garethevans.church.opensongtablet.pdf;
 
 import android.view.View;
 import android.widget.ImageView;
-
+import android.widget.TextView;
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.garethevans.church.opensongtablet.R;
-import com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView;
-import com.garethevans.church.opensongtablet.interfaces.MainActivityInterface;
-
 public class PDFPageViewHolder extends RecyclerView.ViewHolder {
-
-    MainActivityInterface mainActivityInterface;
     public View v;
+    public TextView pdfPageNumText;
     public ImageView pdfPageImage;
     public ImageView pdfPageHighlight;
-    public MyMaterialSimpleTextView pdfPageNumText;
 
-    public PDFPageViewHolder(MainActivityInterface mainActivityInterface, View v) {
-        super(v);
-        this.v = v;
-        pdfPageImage = v.findViewById(R.id.pdfPageImage);
-        pdfPageHighlight = v.findViewById(R.id.pdfPageHighlight);
-        pdfPageNumText = v.findViewById(R.id.pdfPageNumText);
-        this.mainActivityInterface = mainActivityInterface;
+    public PDFPageViewHolder(@NonNull View itemView) {
+        super(itemView);
+        this.v = itemView;
+    }
+    public PDFPageViewHolder(Object o, @NonNull View itemView) {
+        super(itemView);
+        this.v = itemView;
     }
 }

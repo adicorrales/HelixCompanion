@@ -144,6 +144,7 @@ import com.garethevans.church.opensongtablet.openchords.OpenChordsFragment;
 import com.garethevans.church.opensongtablet.pads.Pad;
 import com.garethevans.church.opensongtablet.pdf.MakePDF;
 import com.garethevans.church.opensongtablet.pdf.OCR;
+
 import com.garethevans.church.opensongtablet.performance.DisplayPrevNext;
 import com.garethevans.church.opensongtablet.performance.PerformanceFragment;
 import com.garethevans.church.opensongtablet.performance.PerformanceGestures;
@@ -268,11 +269,13 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private LoadSong loadSong;
     private LocalWiFiHost localWiFiHost;
     private MakePDF makePDF;
+
     private Midi midi;
     private MultiTrackPlayer multiTrackPlayer;
     private NearbyActions nearbyActions;
     private NonOpenSongSQLiteHelper nonOpenSongSQLiteHelper;
     private OCR ocr;
+
     private OpenChordsAPI openChordsAPI;
     private OpenSongSetBundle openSongSetBundle;
     private Pad pad;
@@ -905,9 +908,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         processSong = getProcessSong();
         prepareFormats = getPrepareFormats();
         songSheetHeaders = getSongSheetHeaders();
-        ocr = getOCR();
         openChordsAPI = getOpenChordsAPI();
-        makePDF = getMakePDF();
         transpose = getTranspose();
         abcNotation = getAbcNotation();
 
@@ -4447,10 +4448,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         return customAnimation;
     }
 
-    @Override
-    public void pdfScrollToPage(int pageNumber) {
-        performanceShowSection(pageNumber);
-    }
+
 
     @Override
     public ShowCase getShowCase() {
@@ -4475,6 +4473,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         }
         return makePDF;
     }
+
+
 
     @Override
     public VersionNumber getVersionNumber() {
