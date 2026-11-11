@@ -95,15 +95,10 @@ public class EditSongFragmentTags extends Fragment {
                     myView.midiIndex.setText(mainActivityInterface.getTempSong().getMidiindex());
                     myView.presorder.setFocusable(false);
                     myView.presorder.setText(mainActivityInterface.getTempSong().getPresentationorder());
-                    myView.useImported.setChecked(mainActivityInterface.getBeatBuddy().getBeatBuddyUseImported());
-                    myView.beatBuddySong.setText(mainActivityInterface.getTempSong().getBeatbuddysong());
-                    myView.beatBuddyKit.setText(mainActivityInterface.getTempSong().getBeatbuddykit());
                     // Resize the bottom padding to the soft keyboard height or half the screen height for the soft keyboard (workaround)
                     mainActivityInterface.getWindowFlags().adjustViewPadding(mainActivityInterface, myView.resizeForKeyboardLayout);
                 }
             });
-
-            checkBeatBuddyValues();
         }
     }
 
@@ -140,59 +135,11 @@ public class EditSongFragmentTags extends Fragment {
         myView.hymnnum.addTextChangedListener(new MyTextWatcher("hymnnum"));
         myView.midiIndex.addTextChangedListener(new MyTextWatcher("midiindex"));
 
-        myView.useImported.setOnCheckedChangeListener((compoundButton, b) -> {
-            mainActivityInterface.getBeatBuddy().setBeatBuddyUseImported(b);
-            checkBeatBuddyValues();
-        });
-
-        myView.beatBuddySong.addTextChangedListener(new MyTextWatcher("beatbuddysong"));
-        myView.beatBuddyKit.addTextChangedListener(new MyTextWatcher("beatbuddykit"));
-
         // Scroll listener
         myView.tagsScrollView.setExtendedFabToAnimate(editSongFragmentInterface.getSaveButton());
     }
 
-    private void checkBeatBuddyValues() {
-        mainActivityInterface.getThreadPoolExecutor().execute(() -> {
-            // Decide which songs and kits to use
-            if (getContext()!=null && mainActivityInterface.getBeatBuddy().getBbsqLite()!=null) {
-                try {
-                    String tableSongs = mainActivityInterface.getBeatBuddy().getBbsqLite().TABLE_NAME_DEFAULT_SONGS;
-                    String tableKits = mainActivityInterface.getBeatBuddy().getBbsqLite().TABLE_NAME_DEFAULT_DRUMS;
-                    if (mainActivityInterface.getBeatBuddy().getBeatBuddyUseImported()) {
-                        tableSongs = mainActivityInterface.getBeatBuddy().getBbsqLite().TABLE_NAME_MY_SONGS;
-                        tableKits = mainActivityInterface.getBeatBuddy().getBbsqLite().TABLE_NAME_MY_DRUMS;
-                    }
-                    ArrayList<String> songs = mainActivityInterface.getBeatBuddy().getBbsqLite().getUnique(mainActivityInterface.getBeatBuddy().getBbsqLite().COLUMN_SONG_NAME, tableSongs);
-                    ArrayList<String> kits = mainActivityInterface.getBeatBuddy().getBbsqLite().getUnique(mainActivityInterface.getBeatBuddy().getBbsqLite().COLUMN_KIT_NAME, tableKits);
-                    mainActivityInterface.getMainHandler().post(() -> {
-                        if (myView != null) {
-                            ExposedDropDownArrayAdapter songsAdapter = new ExposedDropDownArrayAdapter(getContext(), myView.beatBuddySong, R.layout.view_exposed_dropdown_item, songs);
-                            ExposedDropDownArrayAdapter kitsAdapter = new ExposedDropDownArrayAdapter(getContext(), myView.beatBuddyKit, R.layout.view_exposed_dropdown_item, kits);
-                            myView.beatBuddySong.setAdapter(songsAdapter);
-                            myView.beatBuddyKit.setAdapter(kitsAdapter);
-                            // If we don't have a value, look for one and auto add it
-                            if (mainActivityInterface.getTempSong().getFilename() != null && songs.contains(mainActivityInterface.getTempSong().getFilename().replace(",", ""))) {
-                                mainActivityInterface.getTempSong().setBeatbuddysong(mainActivityInterface.getTempSong().getFilename().replace(",", ""));
-                            } else if (mainActivityInterface.getTempSong().getTitle() != null && songs.contains(mainActivityInterface.getTempSong().getTitle().replace(",", ""))) {
-                                mainActivityInterface.getTempSong().setBeatbuddysong(mainActivityInterface.getTempSong().getTitle().replace(",", ""));
-                            }
-                            if (mainActivityInterface.getTempSong().getBeatbuddysong() == null) {
-                                mainActivityInterface.getTempSong().setBeatbuddysong("");
-                            }
-                            if (mainActivityInterface.getTempSong().getBeatbuddykit() == null) {
-                                mainActivityInterface.getTempSong().setBeatbuddykit("");
-                            }
-                            myView.beatBuddySong.setText(mainActivityInterface.getTempSong().getBeatbuddysong());
-                            myView.beatBuddyKit.setText(mainActivityInterface.getTempSong().getBeatbuddykit());
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
+
     private class MyTextWatcher implements TextWatcher {
 
         String what;
@@ -232,12 +179,7 @@ public class EditSongFragmentTags extends Fragment {
                 case "presorder":
                     mainActivityInterface.getTempSong().setPresentationorder(editable.toString());
                     break;
-                case "beatbuddysong":
-                    mainActivityInterface.getTempSong().setBeatbuddysong(editable.toString());
-                    break;
-                case "beatbuddykit":
-                    mainActivityInterface.getTempSong().setBeatbuddykit(editable.toString());
-                    break;
+
                 case "midiindex":
                     String originalMidiIndexString = editable.toString();
                     String newMidiIndexString = originalMidiIndexString.replaceAll("\\D","");

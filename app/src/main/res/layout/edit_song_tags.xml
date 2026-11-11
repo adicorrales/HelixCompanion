@@ -167,47 +167,6 @@
                     android:layout_weight="0.5"
                     android:hint="@string/presentation_order" />
             </LinearLayout>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
-                style="@style/MyDividerLine"/>
-
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/beat_buddy" />
-
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
-                android:id="@+id/useImported"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/beat_buddy_import_project_info"
-                android:text="@string/imported_values" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
-                    android:id="@+id/beatBuddySong"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="4dp"
-                    android:layout_marginBottom="8dp"
-                    android:layout_weight="0.5"
-                    android:hint="@string/song" />
-
-                <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
-                    android:id="@+id/beatBuddyKit"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:layout_weight="0.5"
-                    android:hint="@string/drum_kit" />
-            </LinearLayout>
         </LinearLayout>
     </com.garethevans.church.opensongtablet.customviews.ScrollViewWithFAB>
 </LinearLayout>

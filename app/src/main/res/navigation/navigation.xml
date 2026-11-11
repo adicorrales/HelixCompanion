@@ -924,42 +924,7 @@
                 android:id="@+id/deepLinkVoiceLive"
                 app:uri="@string/deeplink_voicelive" />
         </fragment>
-        <navigation android:id="@+id/BeatBuddy"
-            app:startDestination="@id/BBOptionsFragment">
-            <fragment
-                android:id="@+id/BBOptionsFragment"
-                android:name="com.garethevans.church.opensongtablet.beatbuddy.BBOptionsFragment"
-                android:label="BBOptionsFragment"
-                tools:layout="@layout/settings_beatbuddy_options">
-                <deepLink
-                    android:id="@+id/deepLinkBBOptions"
-                    app:uri="@string/deeplink_beatbuddy_options"/>
-                <action
-                    android:id="@+id/action_BBOptionsFragment_to_beatBuddyCommands"
-                    app:destination="@id/beatBuddyCommands" />
-                <action
-                    android:id="@+id/action_BBOptionsFragment_to_beatBuddyImport"
-                    app:destination="@id/beatBuddyImport" />
-            </fragment>
-            <fragment
-                android:id="@+id/beatBuddyCommands"
-                android:name="com.garethevans.church.opensongtablet.beatbuddy.BBCommandsFragment"
-                android:label="BeatBuddyFragment"
-                tools:layout="@layout/settings_beatbuddy_commands">
-                <deepLink
-                    android:id="@+id/deepLinkBeatBuddy"
-                    app:uri="@string/deeplink_beatbuddy_commands" />
-            </fragment>
-            <fragment
-                android:id="@+id/beatBuddyImport"
-                android:name="com.garethevans.church.opensongtablet.beatbuddy.BBImportFragment"
-                android:label="BeatBuddyImport"
-                tools:layout="@layout/settings_beatbuddy_import">
-                <deepLink
-                    android:id="@+id/deepLinkBeatBuddyImport"
-                    app:uri="@string/deeplink_beatbuddy_import" />
-            </fragment>
-        </navigation>
+
         <fragment
             android:id="@+id/drummerSettings"
             android:name="com.garethevans.church.opensongtablet.drummer.DrumSequencerFragment"

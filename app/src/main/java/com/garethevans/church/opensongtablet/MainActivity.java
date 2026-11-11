@@ -80,9 +80,9 @@ import com.garethevans.church.opensongtablet.appdata.MyFonts;
 import com.garethevans.church.opensongtablet.appdata.TimeTools;
 import com.garethevans.church.opensongtablet.appdata.VersionNumber;
 import com.garethevans.church.opensongtablet.autoscroll.Autoscroll;
-import com.garethevans.church.opensongtablet.beatbuddy.BBOptionsFragment;
 import com.garethevans.church.opensongtablet.beatbuddy.BeatBuddy;
-import com.garethevans.church.opensongtablet.beatbuddy.BeatBuddyControlPopUp;
+import com.garethevans.church.opensongtablet.beatbuddy.BBOptionsFragment;
+
 import com.garethevans.church.opensongtablet.chords.ChordDirectory;
 import com.garethevans.church.opensongtablet.chords.ChordDisplayProcessing;
 import com.garethevans.church.opensongtablet.chords.CustomChordsFragment;
@@ -244,6 +244,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private Autoscroll autoscroll;
     private volatile BeatBuddy beatBuddy;
     private final Object beatBuddyLock = new Object();
+
     private CheckInternet checkInternet;
 
     private ChordDirectory chordDirectory;
@@ -314,7 +315,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private ActivityResultLauncher<Intent> selectFileLauncher;
     private ActivityResultLauncher<Intent> selectFolderLauncher;
     private MultiTrackPopUp multiTrackPopUp;
-    private BeatBuddyControlPopUp beatBuddyControlPopup;
     private MediaProjectionManager projectionManager;
     private MediaProjection mediaProjection;
     private ActivityResultLauncher<Intent> mediaProjectionLauncher;
@@ -930,7 +930,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         performanceGestures = getPerformanceGestures();
         pageButtons = getPageButtons();
         midi = getMidi();
-        beatBuddy = getBeatBuddy();
         voiceLive = getVoiceLive();
         drummer = getDrummer();
         drumViewModel = getDrumViewModel();
@@ -3119,6 +3118,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     public void setMidiFragment(MidiFragment midiFragment) {
         this.midiFragment = midiFragment;
     }
+
+
 
 
 
@@ -5428,44 +5429,14 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     }
 
     @Override
-    public void toggleBeatBuddyControlPopUp() {
-        if (beatBuddyControlPopup!=null) {
-            beatBuddyControlPopup.destroyPopup();
-        } else {
-            // Only allow if Marshmallow or later
-            if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M) {
-                beatBuddyControlPopup = new BeatBuddyControlPopUp(this);
-                beatBuddyControlPopup.floatPlayer(myView.getRoot());
-            }
-        }
-    }
-    @Override
-    public void removeBeatBuddyControlPopUp() {
-        // Check it still isn't showing
-        beatBuddyControlPopup = null;
-    }
+    public void toggleBeatBuddyControlPopUp() {}
 
     @Override
-    public void forceCloseBeatBuddyControlPopUp() {
-        if (beatBuddyControlPopup!=null) {
-            try {
-                beatBuddyControlPopup.destroyPopup();
-                beatBuddyControlPopup = null;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
+    public void forceCloseBeatBuddyControlPopUp() {}
 
     @Override
-    public void updateBeatBuddyControlPopUp() {
-        if (beatBuddyControlPopup!=null) {
-            try {
-                beatBuddyControlPopup.updateCurrentSong();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
+    public void updateBeatBuddyControlPopUp() {}
+
+
 
 }

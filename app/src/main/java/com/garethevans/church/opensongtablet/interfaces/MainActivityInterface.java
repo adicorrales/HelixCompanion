@@ -25,6 +25,7 @@ import com.garethevans.church.opensongtablet.appdata.TimeTools;
 import com.garethevans.church.opensongtablet.appdata.VersionNumber;
 import com.garethevans.church.opensongtablet.autoscroll.Autoscroll;
 import com.garethevans.church.opensongtablet.beatbuddy.BeatBuddy;
+
 import com.garethevans.church.opensongtablet.chords.ChordDirectory;
 import com.garethevans.church.opensongtablet.chords.ChordDisplayProcessing;
 import com.garethevans.church.opensongtablet.chords.Transpose;
@@ -290,10 +291,9 @@ public interface MainActivityInterface {
     Drummer getDrummer();
     DrumViewModel getDrumViewModel();
     void displayDrummerPopup();
-    BeatBuddy getBeatBuddy();
     VoiceLive getVoiceLive();
+    BeatBuddy getBeatBuddy();
     void toggleBeatBuddyControlPopUp();
-    void removeBeatBuddyControlPopUp();
     void forceCloseBeatBuddyControlPopUp();
     void updateBeatBuddyControlPopUp();
 

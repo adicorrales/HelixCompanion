@@ -55,15 +55,7 @@
             <com.garethevans.church.opensongtablet.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
-                android:id="@+id/beatBuddy"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/beat_buddy"
-                android:hint="@string/beat_buddy_info"
-                app:size="large"/>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
-                style="@style/MyDividerLine"/>
+
 
             <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
                 android:id="@+id/voiceLive"
