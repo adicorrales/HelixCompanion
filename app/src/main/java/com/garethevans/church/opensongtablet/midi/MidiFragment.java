@@ -219,8 +219,7 @@ public class MidiFragment extends Fragment {
         myView.midiInputChannelSong.setVisibility(mainActivityInterface.getMidi().getMidiInput() ? View.VISIBLE : View.GONE);
         myView.midiInputAutoscroll.setChecked(mainActivityInterface.getMidi().getMidiInputAutoscroll());
         myView.midiInputAutoscroll.setVisibility(mainActivityInterface.getMidi().getMidiInput() ? View.VISIBLE : View.GONE);
-        myView.midiInputMetronome.setChecked(mainActivityInterface.getMidi().getMidiInputMetronome());
-        myView.midiInputMetronome.setVisibility(mainActivityInterface.getMidi().getMidiInput() ? View.VISIBLE : View.GONE);
+
         myView.midiInputPad.setChecked(mainActivityInterface.getMidi().getMidiInputPad());
         myView.midiInputPad.setVisibility(mainActivityInterface.getMidi().getMidiInput() ? View.VISIBLE : View.GONE);
     }
@@ -272,7 +271,7 @@ public class MidiFragment extends Fragment {
             myView.midiInputChannelPedal.setVisibility(isChecked ? View.VISIBLE : View.GONE);
             myView.midiInputChannelSong.setVisibility(isChecked ? View.VISIBLE : View.GONE);
             myView.midiInputAutoscroll.setVisibility(isChecked ? View.VISIBLE : View.GONE);
-            myView.midiInputMetronome.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+
             myView.midiInputPad.setVisibility(isChecked ? View.VISIBLE : View.GONE);
         }));
         myView.midiInputChannelPedal.addOnChangeListener((slider, value, fromUser) -> {
@@ -284,7 +283,7 @@ public class MidiFragment extends Fragment {
             myView.midiInputChannelSong.setHint(String.valueOf((int)value));
         });
         myView.midiInputAutoscroll.setOnCheckedChangeListener(((buttonView, isChecked) -> mainActivityInterface.getMidi().setMidiInputAutoscroll(isChecked)));
-        myView.midiInputMetronome.setOnCheckedChangeListener(((buttonView, isChecked) -> mainActivityInterface.getMidi().setMidiInputMetronome(isChecked)));
+
         myView.midiInputPad.setOnCheckedChangeListener(((buttonView, isChecked) -> mainActivityInterface.getMidi().setMidiInputPad(isChecked)));
     }
 

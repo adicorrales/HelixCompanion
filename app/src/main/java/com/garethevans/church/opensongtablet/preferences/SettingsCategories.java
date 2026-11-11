@@ -110,19 +110,7 @@ public class SettingsCategories extends Fragment {
     }
 
     private void setModeText() {
-        String mode;
-        String getMode = mainActivityInterface.getMode();
-
-        if (getMode.equals(mode_presenter_string)) {
-            mode = presenter_mode_string;
-        } else if (getMode.equals(mode_stage_string)) {
-            mode = stage_mode_string;
-        } else if (getMode.equals(mode_hybrid_string)) {
-            mode = hybrid_mode_string;
-        } else {
-            mode = performance_mode_string;
-        }
-        myView.modeButton.setHint(mode);
+        myView.modeButton.setHint(performance_mode_string);
     }
 
     private void setPlayEnabled(boolean enabled) {

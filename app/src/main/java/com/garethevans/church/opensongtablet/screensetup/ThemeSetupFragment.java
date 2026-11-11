@@ -208,7 +208,7 @@ public class ThemeSetupFragment extends Fragment {
         myView.presoMultilingualButton.setColor(mainActivityInterface.getMyThemeColors().getPresoMultilingualColor());
         myView.presoShadowButton.setColor(mainActivityInterface.getMyThemeColors().getPresoShadowColor());
 
-        myView.metronomeButton.setColor(mainActivityInterface.getMyThemeColors().getMetronomeColor());
+
         myView.stickytextButton.setColor(mainActivityInterface.getMyThemeColors().getStickyTextColor());
         myView.stickybackground1Button.setText(background_string + " 1");
         myView.stickybackground2Button.setText(background_string + " 2");
@@ -239,7 +239,7 @@ public class ThemeSetupFragment extends Fragment {
         myView.customButton.setOnClickListener(v-> chooseColor("lyricsCustomColor"));
         myView.chordHighlighting.setOnClickListener(v -> chooseColor("highlightChordColor"));
         myView.titleHighlighting.setOnClickListener(v -> chooseColor("highlightHeadingColor"));
-        myView.metronomeButton.setOnClickListener(v-> chooseColor("metronomeColor"));
+
         myView.stickytextButton.setOnClickListener(v-> chooseColor("stickyTextColor"));
         myView.stickybackground1Button.setOnClickListener(v-> chooseColor("stickyBackgroundColor"));
         myView.stickybackground2Button.setOnClickListener(v-> chooseColor("stickyBackgroundColor2"));
@@ -319,7 +319,7 @@ public class ThemeSetupFragment extends Fragment {
             myView.presoInfoButton.setPalette(mainActivityInterface.getPalette());
             myView.presoAlertButton.setPalette(mainActivityInterface.getPalette());
             myView.presoShadowButton.setPalette(mainActivityInterface.getPalette());
-            myView.metronomeButton.setPalette(mainActivityInterface.getPalette());
+    
             myView.hotZoneButton.setPalette(mainActivityInterface.getPalette());
             myView.stickytextButton.setPalette(mainActivityInterface.getPalette());
             myView.stickybackground1Button.setPalette(mainActivityInterface.getPalette());

@@ -243,11 +243,7 @@
                     android:paddingEnd="16dp"
                     android:text="@string/song_features" />
 
-                <com.garethevans.church.opensongtablet.customviews.ThemeItemColor
-                    android:id="@+id/metronomeButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/metronome"/>
+
 
                 <com.garethevans.church.opensongtablet.customviews.ThemeItemColor
                     android:id="@+id/hotZoneButton"

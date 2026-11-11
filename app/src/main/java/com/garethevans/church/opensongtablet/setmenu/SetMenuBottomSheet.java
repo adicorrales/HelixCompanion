@@ -79,10 +79,7 @@ public class SetMenuBottomSheet extends BottomSheetCommon {
             mainActivityInterface.navigateToFragment(deeplink_sets_string,-1);
             dismiss();
         });
-        myView.addScripture.setOnClickListener(v -> {
-            mainActivityInterface.navigateToFragment(deeplink_bible_string,0);
-            dismiss();
-        });
+
         myView.addCustom.setOnClickListener(v -> {
             mainActivityInterface.navigateToFragment(deeplink_custom_slide_string,0);
             dismiss();

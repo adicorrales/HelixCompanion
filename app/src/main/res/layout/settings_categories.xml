@@ -117,25 +117,7 @@
             <com.garethevans.church.opensongtablet.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
-                android:id="@+id/ccliButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/ccli"
-                android:hint="@string/ccli_description"
-                app:size="large"/>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
-                style="@style/MyDividerLine"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
-                android:id="@+id/utilitiesButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/utilities"
-                android:hint="@string/utilities_info"
-                app:size="large"/>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
-                style="@style/MyDividerLine"/>
 
             <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
                 android:id="@+id/aboutButton"

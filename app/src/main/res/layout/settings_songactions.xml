@@ -96,15 +96,7 @@
             <com.garethevans.church.opensongtablet.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
-                android:id="@+id/metronome"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/metronome"
-                android:hint="@string/metronome_info"
-                app:size="large"/>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
-                style="@style/MyDividerLine"/>
+
 
             <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
                 android:id="@+id/drummer"

@@ -68,23 +68,11 @@ public class ModeFragment extends Fragment {
         }
     }
     private void highlightMode() {
-        // Compare our mode with the strings in the MainActivity (avoids typos)
-        if (mainActivityInterface.getMode().equals(mainActivityInterface.modePresenterString())) {
-            myView.presenterMode.showCheckmark(true);
-        } else if (mainActivityInterface.getMode().equals(mainActivityInterface.modeStageString())) {
-            myView.stageMode.showCheckmark(true);
-        } else if (mainActivityInterface.getMode().equals(mainActivityInterface.modeHybridString())) {
-            myView.hybridMode.showCheckmark(true);
-        } else {
-            myView.performanceMode.showCheckmark(true);
-        }
+        myView.performanceMode.showCheckmark(true);
     }
 
     private void setListeners() {
         myView.performanceMode.setOnClickListener(v -> updatePreference(mainActivityInterface.modePerformanceString()));
-        myView.stageMode.setOnClickListener(v -> updatePreference(mainActivityInterface.modeStageString()));
-        myView.presenterMode.setOnClickListener(v -> updatePreference(mainActivityInterface.modePresenterString()));
-        myView.hybridMode.setOnClickListener(v -> updatePreference(mainActivityInterface.modeHybridString()));
     }
 
     private void updatePreference(String which) {

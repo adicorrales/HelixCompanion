@@ -4317,16 +4317,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
     @Override
     public String getMode() {
-        if (whichMode == null) {
-            whichMode = getPreferences().getMyPreferenceString("whichMode", mode_performance);
-        }
-        return whichMode;
+        return mode_performance;
     }
     @Override
     public void setMode(String whichMode) {
-        if (whichMode!=null) {
-            this.whichMode = whichMode;
-        }
+        this.whichMode = mode_performance;
     }
     @Override
     public String modePerformanceString() {
@@ -4334,15 +4329,15 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     }
     @Override
     public String modePresenterString() {
-        return mode_presenter;
+        return mode_performance;
     }
     @Override
     public String modeStageString() {
-        return mode_stage;
+        return mode_performance;
     }
     @Override
     public String modeHybridString() {
-        return mode_hybrid;
+        return mode_performance;
     }
 
     @Override
