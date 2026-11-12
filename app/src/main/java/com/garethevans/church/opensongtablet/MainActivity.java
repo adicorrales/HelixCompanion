@@ -164,6 +164,7 @@ import com.garethevans.church.opensongtablet.screensetup.ThemeSetupFragment;
 import com.garethevans.church.opensongtablet.screensetup.WindowFlags;
 import com.garethevans.church.opensongtablet.secondarydisplay.SecondaryDisplay;
 import com.garethevans.church.opensongtablet.secondarydisplay.SecondaryDisplaySettingsFragment;
+import com.garethevans.church.opensongtablet.setmenu.SelectSetFragment;
 import com.garethevans.church.opensongtablet.setmenu.SetItemInfo;
 import com.garethevans.church.opensongtablet.setmenu.SetMenuFragment;
 import com.garethevans.church.opensongtablet.setprocessing.CurrentSet;
@@ -334,6 +335,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private ViewPagerAdapter viewPagerAdapter;
     private SongMenuFragment songMenuFragment;
     private SetMenuFragment setMenuFragment;
+    private SelectSetFragment selectSetFragment;
     private PerformanceFragment performanceFragment;
     private PresenterFragment presenterFragment;
     private MidiFragment midiFragment;
@@ -2575,6 +2577,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             if (setMenuFragment == null) {
                 setMenuFragment = (SetMenuFragment) viewPagerAdapter.createFragment(1);
             }
+            if (selectSetFragment == null) {
+                selectSetFragment = (SelectSetFragment) viewPagerAdapter.createFragment(2);
+            }
             viewPager = myView.viewpager;
             viewPager.setAdapter(viewPagerAdapter);
             viewPager.setOffscreenPageLimit(1);
@@ -2597,6 +2602,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     case 1:
                         tab.setText(set_string);
                         tab.setIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.list_number, null));
+                        break;
+                    case 2:
+                        tab.setText("SELECT SET");
+                        tab.setIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.inline_set, null));
                         break;
                 }
                 // "removing" tooltip

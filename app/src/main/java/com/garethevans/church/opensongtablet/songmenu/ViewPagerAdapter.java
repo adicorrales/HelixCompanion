@@ -6,11 +6,12 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import com.garethevans.church.opensongtablet.setmenu.SelectSetFragment;
 import com.garethevans.church.opensongtablet.setmenu.SetMenuFragment;
 
 public class ViewPagerAdapter extends FragmentStateAdapter {
 
-    public final Fragment[] menuFragments = {new SongMenuFragment(), new SetMenuFragment()};
+    public final Fragment[] menuFragments = {new SongMenuFragment(), new SetMenuFragment(), new SelectSetFragment()};
     private int openMenu = 1;
 
     public ViewPagerAdapter(@NonNull FragmentManager fragmentManager,Lifecycle lifecycle) {
@@ -26,7 +27,7 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
 
     @Override
     public int getItemCount() {
-        return 2;
+        return 3;
     }
 
     public boolean isSongMenu() {
