@@ -3692,12 +3692,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 }
 
                 if (getCurrentSet().getCurrentSetSize() > position) {
-                    // Send Helix MIDI for Playlist (CC 63) and Song (CC 10 base 0)
+                    // Send Helix MIDI for Playlist (CC 63) and Song (CC 10 base 0) -> placed in cue
                     int setIdx = getPreferences().getMyPreferenceInt("selectedSelectSetPosition", 0);
                     sendHelixMidiSetAndSong(setIdx, position);
 
-                    // Mark song as loaded so next press on Play button triggers 2nd click (start playback)
-                    isLoadedFirstClick = true;
+                    // Song is now in cue. 1st click on Play will load it, 2nd click will play.
+                    transportClickCount = 0;
                     isPlaying = false;
                     getMainHandler().post(() -> {
                         if (myView != null && myView.myToolbar != null) {
@@ -3830,7 +3830,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     }
 
     private boolean isPlaying = false;
-    private boolean isLoadedFirstClick = false;
+    private int transportClickCount = 0; // 0 = Cued (needs 1st pulse to load), 1 = Loaded (needs 2nd pulse to play), 2 = Playing
 
     @Override
     public void onTransportPrev() {
@@ -3859,6 +3859,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         if (channel < 1) channel = 1;
 
         if (playMode.equals("Play")) {
+            // Modo Play: Carga y TOCA en un solo pulso
             isPlaying = !isPlaying;
             if (myView != null && myView.myToolbar != null) {
                 myView.myToolbar.updatePlayButton(isPlaying);
@@ -3866,25 +3867,37 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             int val = isPlaying ? 127 : 0;
             String msg = "MIDI" + channel + ":CC51:" + val;
             getMidi().sendMidiHexSequence(msg);
+            transportClickCount = isPlaying ? 2 : 0;
         } else {
-            if (!isLoadedFirstClick) {
-                isLoadedFirstClick = true;
-                int setIdx = getPreferences().getMyPreferenceInt("selectedSelectSetPosition", 0);
-                int songPos = Math.max(currentSet.getIndexSongInSet(), 0);
-                sendHelixMidiSetAndSong(setIdx, songPos);
-
+            // Modo Load / Load + Preset:
+            // 1er pulso: CARGA la canción en CUE y NO REPRODUCE (botón permanece en Play)
+            // 2do pulso: INICIA la reproducción (botón cambia a Pausa)
+            if (transportClickCount == 0) {
+                transportClickCount = 1;
                 isPlaying = false;
                 if (myView != null && myView.myToolbar != null) {
                     myView.myToolbar.updatePlayButton(false);
                 }
-            } else {
-                isLoadedFirstClick = false;
+                String msg = "MIDI" + channel + ":CC51:127";
+                getMidi().sendMidiHexSequence(msg);
+            } else if (transportClickCount == 1) {
+                transportClickCount = 2;
                 isPlaying = true;
                 if (myView != null && myView.myToolbar != null) {
                     myView.myToolbar.updatePlayButton(true);
                 }
                 String msg = "MIDI" + channel + ":CC51:127";
                 getMidi().sendMidiHexSequence(msg);
+            } else {
+                // Ya reproduciendo: toggle play/pause
+                isPlaying = !isPlaying;
+                if (myView != null && myView.myToolbar != null) {
+                    myView.myToolbar.updatePlayButton(isPlaying);
+                }
+                int val = isPlaying ? 127 : 0;
+                String msg = "MIDI" + channel + ":CC51:" + val;
+                getMidi().sendMidiHexSequence(msg);
+                transportClickCount = isPlaying ? 2 : 0;
             }
         }
     }
