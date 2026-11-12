@@ -12,15 +12,12 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.garethevans.church.opensongtablet.R;
 import com.garethevans.church.opensongtablet.databinding.MenuSetsBinding;
 import com.garethevans.church.opensongtablet.interfaces.MainActivityInterface;
 
 public class SelectSetFragment extends Fragment {
 
-    private final String TAG = "SelectSetFragment";
     private MenuSetsBinding myView;
-    private LinearLayoutManager llm;
     private MainActivityInterface mainActivityInterface;
     private SelectSetAdapter selectSetAdapter;
 
@@ -63,7 +60,7 @@ public class SelectSetFragment extends Fragment {
         if (getContext() != null && myView != null) {
             selectSetAdapter = new SelectSetAdapter(getContext(), myView.myRecyclerView, this);
             myView.myRecyclerView.post(() -> {
-                llm = new LinearLayoutManager(getContext());
+                LinearLayoutManager llm = new LinearLayoutManager(getContext());
                 llm.setOrientation(RecyclerView.VERTICAL);
                 myView.myRecyclerView.setLayoutManager(llm);
                 enableDragAndDrop();
@@ -87,11 +84,5 @@ public class SelectSetFragment extends Fragment {
                 setMenuBottomSheet.show(getActivity().getSupportFragmentManager(), "setMenuBottomSheet");
             }
         }));
-    }
-
-    public void notifySetsChanged() {
-        if (selectSetAdapter != null) {
-            mainActivityInterface.getMainHandler().post(() -> selectSetAdapter.prepareSets());
-        }
     }
 }

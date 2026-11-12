@@ -20,12 +20,14 @@ import java.util.ArrayList;
 public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> implements SetItemTouchInterface {
 
     private final MainActivityInterface mainActivityInterface;
+    private final SelectSetFragment selectSetFragment;
     private final ArrayList<String> setFilenames = new ArrayList<>();
     private ItemTouchHelper touchHelper;
     private final Object lock = new Object();
 
     public SelectSetAdapter(Context context, RecyclerView recyclerView, SelectSetFragment selectSetFragment) {
         this.mainActivityInterface = (MainActivityInterface) context;
+        this.selectSetFragment = selectSetFragment;
         prepareSets();
     }
 
@@ -102,7 +104,6 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
             actualPosition = position;
         }
 
-        // Fixed set number in separate column
         holder.numberView.setText(actualPosition + ":");
         int textColor = mainActivityInterface.getPalette().textColor;
         holder.numberView.setTextColor(textColor);
@@ -156,6 +157,10 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
         }
 
         notifyItemMoved(fromPosition, toPosition);
+        int min = Math.min(fromPosition, toPosition);
+        int max = Math.max(fromPosition, toPosition);
+        notifyItemRangeChanged(min, max - min + 1);
+
         saveOrder();
     }
 

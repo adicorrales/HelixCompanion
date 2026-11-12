@@ -12,7 +12,7 @@ plugins {
 }
 
 // 2. Configure toolchain management
-rootProject.name = "HelixSongView"
+rootProject.name = "Helix Song View"
 
 include ':app'
 

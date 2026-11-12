@@ -1,7 +1,6 @@
 package com.garethevans.church.opensongtablet.setmenu;
 
 import android.content.Context;
-import android.graphics.Canvas;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -49,26 +48,5 @@ public class SelectSetItemCallback extends ItemTouchHelper.Callback {
 
     @Override
     public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-    }
-
-    @Override
-    public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
-        if (viewHolder instanceof SelectSetViewHolder) {
-            SelectSetViewHolder holder = (SelectSetViewHolder) viewHolder;
-            holder.cardView.setTranslationY(dY);
-            super.onChildDraw(c, recyclerView, viewHolder, dX, 0f, actionState, isCurrentlyActive);
-            return;
-        }
-        super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-    }
-
-    @Override
-    public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
-        super.clearView(recyclerView, viewHolder);
-        if (viewHolder instanceof SelectSetViewHolder) {
-            SelectSetViewHolder holder = (SelectSetViewHolder) viewHolder;
-            holder.cardView.setTranslationY(0f);
-            holder.numberView.setTranslationY(0f);
-        }
     }
 }

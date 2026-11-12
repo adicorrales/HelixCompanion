@@ -9,7 +9,7 @@
     android:paddingTop="2dp"
     android:paddingBottom="2dp">
 
-    <!-- Fixed set number column -->
+    <!-- Set number column (perfect vertical alignment with card) -->
     <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
         android:id="@+id/select_set_number"
         android:layout_width="48dp"
@@ -19,7 +19,7 @@
         android:textStyle="bold"
         android:text="0:" />
 
-    <!-- Draggable card containing set name -->
+    <!-- Card containing set name -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/select_set_card"
         style="@style/setItem"
@@ -32,7 +32,7 @@
             android:id="@+id/select_set_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="4dp">
+            android:padding="6dp">
 
             <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
                 android:id="@+id/select_set_title"

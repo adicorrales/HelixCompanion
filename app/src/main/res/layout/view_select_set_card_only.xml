@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/select_set_card"
+    style="@style/setItem"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="4dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginTop="2dp"
+    android:layout_marginBottom="2dp">
+
+    <RelativeLayout
+        android:id="@+id/select_set_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="6dp">
+
+        <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+            android:id="@+id/select_set_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:paddingStart="4dp"
+            android:paddingTop="2dp"
+            android:paddingEnd="4dp"
+            android:paddingBottom="0dp"
+            android:text="Title"
+            android:textSize="14sp"
+            android:visibility="visible"/>
+
+        <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+            android:id="@+id/select_set_folder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/select_set_title"
+            android:gravity="center_vertical"
+            android:paddingStart="4dp"
+            android:paddingTop="0dp"
+            android:paddingEnd="4dp"
+            android:paddingBottom="2dp"
+            android:text="Folder"
+            android:textSize="11sp" />
+
+    </RelativeLayout>
+</com.google.android.material.card.MaterialCardView>
