@@ -24,10 +24,12 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
     private final ArrayList<String> setFilenames = new ArrayList<>();
     private ItemTouchHelper touchHelper;
     private final Object lock = new Object();
+    private int selectedPosition = 0;
 
     public SelectSetAdapter(Context context, RecyclerView recyclerView, SelectSetFragment selectSetFragment) {
         this.mainActivityInterface = (MainActivityInterface) context;
         this.selectSetFragment = selectSetFragment;
+        this.selectedPosition = mainActivityInterface.getPreferences().getMyPreferenceInt("selectedSelectSetPosition", 0);
         prepareSets();
     }
 
@@ -120,6 +122,16 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
             holder.cardView.setBackgroundColor(inactiveColor);
         }
 
+        holder.checkBox.setChecked(actualPosition == selectedPosition);
+
+        int finalActualPosition = actualPosition;
+        holder.checkBox.setOnClickListener(v -> {
+            selectedPosition = finalActualPosition;
+            mainActivityInterface.getPreferences().setMyPreferenceInt("selectedSelectSetPosition", selectedPosition);
+            notifyDataSetChanged();
+            loadSelectedSet(selectedPosition);
+        });
+
         if (actualPosition == 0) {
             holder.titleView.setText("Song Library");
             holder.folderView.setText("");
@@ -140,6 +152,39 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
         }
     }
 
+    private void loadSelectedSet(int position) {
+        mainActivityInterface.getThreadPoolExecutor().execute(() -> {
+            // First, ALWAYS initialize/clear the current set to prevent duplicates!
+            mainActivityInterface.getCurrentSet().initialiseTheSet();
+            mainActivityInterface.getCurrentSet().setSetCurrent("");
+            mainActivityInterface.getCurrentSet().setSetCurrentBeforeEdits("");
+
+            if (position == 0) {
+                mainActivityInterface.getCurrentSet().setSetCurrentLastName("Song Library");
+                mainActivityInterface.getMainHandler().post(() -> {
+                    mainActivityInterface.updateSetList();
+                    mainActivityInterface.chooseMenu(true);
+                });
+            } else {
+                int setIndex = position - 1;
+                String filename;
+                synchronized (lock) {
+                    if (setIndex < setFilenames.size()) {
+                        filename = setFilenames.get(setIndex);
+                    } else {
+                        return;
+                    }
+                }
+
+                android.net.Uri uri = mainActivityInterface.getStorageAccess().getUriForItem("Sets", "", filename);
+                ArrayList<android.net.Uri> setUris = new ArrayList<>();
+                setUris.add(uri);
+                mainActivityInterface.getSetActions().loadSets(setUris, mainActivityInterface.getCurrentSet(), filename);
+                mainActivityInterface.getMainHandler().post(() -> mainActivityInterface.chooseMenu(true));
+            }
+        });
+    }
+
     @Override
     public void onItemMoved(int fromPosition, int toPosition) {
         if (fromPosition == 0 || toPosition == 0) {
@@ -156,6 +201,16 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
             }
         }
 
+        // Update selectedPosition if it was moved
+        if (selectedPosition == fromPosition) {
+            selectedPosition = toPosition;
+        } else if (fromPosition < selectedPosition && toPosition >= selectedPosition) {
+            selectedPosition--;
+        } else if (fromPosition > selectedPosition && toPosition <= selectedPosition) {
+            selectedPosition++;
+        }
+        mainActivityInterface.getPreferences().setMyPreferenceInt("selectedSelectSetPosition", selectedPosition);
+
         notifyItemMoved(fromPosition, toPosition);
         int min = Math.min(fromPosition, toPosition);
         int max = Math.max(fromPosition, toPosition);
@@ -166,40 +221,10 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
 
     @Override
     public void onItemClicked(MainActivityInterface mainActivityInterface, int position) {
-        if (position == 0) {
-            mainActivityInterface.getThreadPoolExecutor().execute(() -> {
-                mainActivityInterface.getCurrentSet().initialiseTheSet();
-                mainActivityInterface.getCurrentSet().setSetCurrent("");
-                mainActivityInterface.getCurrentSet().setSetCurrentBeforeEdits("");
-                mainActivityInterface.getCurrentSet().setSetCurrentLastName("Song Library");
-                mainActivityInterface.getMainHandler().post(() -> {
-                    mainActivityInterface.updateSetList();
-                    mainActivityInterface.chooseMenu(true);
-                });
-            });
-        } else {
-            int setIndex = position - 1;
-            String filename;
-            synchronized (lock) {
-                if (setIndex < setFilenames.size()) {
-                    filename = setFilenames.get(setIndex);
-                } else {
-                    return;
-                }
-            }
-
-            mainActivityInterface.getThreadPoolExecutor().execute(() -> {
-                android.net.Uri uri = mainActivityInterface.getStorageAccess().getUriForItem("Sets", "", filename);
-                ArrayList<android.net.Uri> setUris = new ArrayList<>();
-                setUris.add(uri);
-                mainActivityInterface.getSetActions().loadSets(setUris, mainActivityInterface.getCurrentSet(), filename);
-                mainActivityInterface.getMainHandler().post(() -> mainActivityInterface.chooseMenu(true));
-            });
-        }
+        // Tapping card does nothing for loading; selection is exclusively via checkbox.
     }
 
     @Override
     public void onRowSelected(SetListItemViewHolder myViewHolder) {
-        // Not used with SelectSetViewHolder
     }
 }

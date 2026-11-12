@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.garethevans.church.opensongtablet.R;
+import com.garethevans.church.opensongtablet.customviews.MyMaterialCheckbox;
 import com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView;
 import com.garethevans.church.opensongtablet.interfaces.MainActivityInterface;
 import com.garethevans.church.opensongtablet.interfaces.SetItemTouchInterface;
@@ -21,6 +22,7 @@ public class SelectSetViewHolder extends RecyclerView.ViewHolder implements View
 
     final MaterialCardView cardView;
     final MyMaterialSimpleTextView numberView, titleView, folderView;
+    final MyMaterialCheckbox checkBox;
     private final ItemTouchHelper itemTouchHelper;
     private final SetItemTouchInterface setItemTouchInterface;
     private final MainActivityInterface mainActivityInterface;
@@ -33,6 +35,7 @@ public class SelectSetViewHolder extends RecyclerView.ViewHolder implements View
         numberView = itemView.findViewById(R.id.select_set_number);
         titleView = itemView.findViewById(R.id.select_set_title);
         folderView = itemView.findViewById(R.id.select_set_folder);
+        checkBox = itemView.findViewById(R.id.select_set_checkbox);
 
         cardView.setOnTouchListener(this);
         gestureDetector = new GestureDetector(itemView.getContext(), this);
@@ -63,7 +66,7 @@ public class SelectSetViewHolder extends RecyclerView.ViewHolder implements View
 
     @Override
     public boolean onSingleTapUp(@NonNull MotionEvent motionEvent) {
-        setItemTouchInterface.onItemClicked(mainActivityInterface, getAbsoluteAdapterPosition());
+        // Tapping card does NOT select set (selection is done exclusively via checkbox)
         motionEvent.setAction(MotionEvent.ACTION_CANCEL);
         gestureDetector.onTouchEvent(motionEvent);
         return true;
