@@ -656,19 +656,7 @@ public class Midi {
     }
 
     public void sendSongMessages() {
-        if (songMidiMessages!=null && !songMidiMessages.isEmpty()) {
-            for (int position = 0; position < songMidiMessages.size(); position++) {
-                int finalPosition = position;
-                mainActivityInterface.getMainHandler().postDelayed(() -> {
-                    if (songMidiMessages.get(finalPosition)!=null &&
-                            !songMidiMessages.get(finalPosition).isEmpty()) {
-                        sendMidi(returnBytesFromHexText(songMidiMessages.get(finalPosition)));
-                    }
-                }, (long) midiDelay *position);
-            }
-            // If we have additional splitMidiMessages (two parts from shorthand), send now:
-            mainActivityInterface.getMainHandler().postDelayed(this::sendSplitSongMIDIMessages,(long)midiDelay*songMidiMessages.size());
-        }
+        // Disabled: only Helix MIDI commands are sent.
     }
     public void sendSplitSongMIDIMessages() {
         if (splitSongMidiMessages!=null && !splitSongMidiMessages.isEmpty()) {
@@ -1018,14 +1006,8 @@ public class Midi {
         } else {
             songMidiMessages.clear();
         }
-        splitSongMidiMessages.clear();
-
-        String messages = mainActivityInterface.getSong().getMidi();
-
-        if (messages != null) {
-            messages = messages.trim();
-            String[] bits = messages.split("\n");
-            Collections.addAll(songMidiMessages, bits);
+        if (splitSongMidiMessages != null) {
+            splitSongMidiMessages.clear();
         }
     }
 
