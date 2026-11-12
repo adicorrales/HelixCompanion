@@ -171,6 +171,10 @@ public class MidiFragment extends Fragment {
     private void setValues() {
         displayCurrentDevice();
         myView.enableBluetooth.setChecked(allowBluetoothSearch(mainActivityInterface.getMidi().getIncludeBluetoothMidi()));
+        myView.midiAutoConnectLast.setChecked(mainActivityInterface.getPreferences().getMyPreferenceBoolean("midiAutoConnectLast", true));
+        myView.midiAutoConnectLast.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            mainActivityInterface.getPreferences().setMyPreferenceBoolean("midiAutoConnectLast", isChecked);
+        });
         myView.autoSendMidi.setChecked(mainActivityInterface.getPreferences().getMyPreferenceBoolean("midiSendAuto",false));
         myView.midiDelay.setAdjustableButtons(true);
         myView.midiDelay.setHint(mainActivityInterface.getMidi().getMidiDelay() + "ms");

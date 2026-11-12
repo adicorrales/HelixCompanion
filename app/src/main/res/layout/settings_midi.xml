@@ -34,6 +34,12 @@
                     android:layout_height="wrap_content"
                     android:text="@string/midi_bluetooth" />
 
+                <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                    android:id="@+id/midiAutoConnectLast"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Auto-connect last used MIDI device on startup" />
+
                 <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
                     android:id="@+id/searchDevices"
                     android:layout_width="wrap_content"

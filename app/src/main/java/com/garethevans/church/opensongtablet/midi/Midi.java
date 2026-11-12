@@ -40,6 +40,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 @TargetApi(Build.VERSION_CODES.M)
 public class Midi {
@@ -218,6 +219,14 @@ public class Midi {
     public void setBluetoothDevice(BluetoothDevice device) {
         this.bluetoothDevice = device;
         if (device == null) return;
+        try {
+            if (mainActivityInterface != null && mainActivityInterface.getPreferences() != null) {
+                mainActivityInterface.getPreferences().setMyPreferenceString("lastUsedMidiDeviceAddress", device.getAddress());
+                mainActivityInterface.getPreferences().setMyPreferenceString("lastUsedMidiDeviceName", device.getName());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         int bondState = device.getBondState();
 
@@ -1357,35 +1366,65 @@ public class Midi {
             }
         }
 
-        List<BluetoothDevice> connectedDevices;
+        boolean autoConnectLast = mainActivityInterface != null && mainActivityInterface.getPreferences() != null &&
+                mainActivityInterface.getPreferences().getMyPreferenceBoolean("midiAutoConnectLast", true);
+        String lastAddress = (autoConnectLast && mainActivityInterface != null && mainActivityInterface.getPreferences() != null) ?
+                mainActivityInterface.getPreferences().getMyPreferenceString("lastUsedMidiDeviceAddress", "") : "";
+
+        List<BluetoothDevice> candidateDevices = new ArrayList<>();
         if (bluetoothDevice == null && bluetoothManager != null) {
             BluetoothAdapter adapter = bluetoothManager.getAdapter();
 
             if (adapter != null && adapter.isEnabled()) {
                 try {
-                    connectedDevices = bluetoothManager.getConnectedDevices(BluetoothProfile.GATT);
+                    List<BluetoothDevice> connected = bluetoothManager.getConnectedDevices(BluetoothProfile.GATT);
+                    if (connected != null) candidateDevices.addAll(connected);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    connectedDevices = null;
                 }
-            } else {
-                Log.w(TAG, "Bluetooth Adapter is null or disabled. Skipping device search.");
-                connectedDevices = null;
-            }
 
-            if (midiManager == null) {
-                setMidiManager((MidiManager) c.getSystemService(Context.MIDI_SERVICE));
-            }
-            if (connectedDevices != null && midiManager!=null) {
-                for (BluetoothDevice device : connectedDevices) {
-                    ParcelUuid[] uuids = device.getUuids();
-                    if (uuids != null) {
-                        for (ParcelUuid uuid : uuids) {
-                            if (uuid.toString().equalsIgnoreCase(uuidBle) && !isAirTurn(device)) {
-                                if (midiDevice == null &&
-                                        device.getBondState() == BluetoothDevice.BOND_BONDED) {
-                                    bluetoothDevice = device;
-                                    tryDisconnectBluetoothLE();
+                if (autoConnectLast && !lastAddress.isEmpty()) {
+                    try {
+                        Set<BluetoothDevice> bonded = adapter.getBondedDevices();
+                        if (bonded != null) {
+                            for (BluetoothDevice dev : bonded) {
+                                if (dev.getAddress().equalsIgnoreCase(lastAddress)) {
+                                    if (!candidateDevices.contains(dev)) {
+                                        candidateDevices.add(0, dev);
+                                    }
+                                } else if (!candidateDevices.contains(dev)) {
+                                    candidateDevices.add(dev);
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                if (midiManager == null) {
+                    setMidiManager((MidiManager) c.getSystemService(Context.MIDI_SERVICE));
+                }
+
+                if (!candidateDevices.isEmpty() && midiManager != null) {
+                    for (BluetoothDevice device : candidateDevices) {
+                        if (autoConnectLast && !lastAddress.isEmpty() && device.getAddress().equalsIgnoreCase(lastAddress)) {
+                            if (midiDevice == null && device.getBondState() == BluetoothDevice.BOND_BONDED) {
+                                bluetoothDevice = device;
+                                tryDisconnectBluetoothLE();
+                                break;
+                            }
+                        } else {
+                            ParcelUuid[] uuids = device.getUuids();
+                            if (uuids != null) {
+                                for (ParcelUuid uuid : uuids) {
+                                    if (uuid.toString().equalsIgnoreCase(uuidBle) && !isAirTurn(device)) {
+                                        if (midiDevice == null && device.getBondState() == BluetoothDevice.BOND_BONDED) {
+                                            bluetoothDevice = device;
+                                            tryDisconnectBluetoothLE();
+                                            break;
+                                        }
+                                    }
                                 }
                             }
                         }
