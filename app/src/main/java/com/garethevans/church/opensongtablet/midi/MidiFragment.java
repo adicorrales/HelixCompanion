@@ -34,12 +34,14 @@ import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import com.garethevans.church.opensongtablet.R;
+import com.garethevans.church.opensongtablet.customviews.ExposedDropDownArrayAdapter;
 import com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView;
 import com.garethevans.church.opensongtablet.databinding.SettingsMidiBinding;
 import com.garethevans.church.opensongtablet.interfaces.MainActivityInterface;
 import com.google.android.material.slider.Slider;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @RequiresApi(api = Build.VERSION_CODES.M)
@@ -187,6 +189,32 @@ public class MidiFragment extends Fragment {
         myView.midiDelay.addOnChangeListener((slider, value, fromUser) -> {
             mainActivityInterface.getMidi().setMidiDelay((int)myView.midiDelay.getValue());
             myView.midiDelay.setHint((int)myView.midiDelay.getValue()+"ms");
+        });
+
+        myView.helixGlobalMidiChannel.setAdjustableButtons(true);
+        int globalChan = mainActivityInterface.getPreferences().getMyPreferenceInt("helixGlobalMidiChannel", 1);
+        myView.helixGlobalMidiChannel.setValue(globalChan);
+        myView.helixGlobalMidiChannel.setHint("Ch " + globalChan);
+        myView.helixGlobalMidiChannel.addOnChangeListener((slider, value, fromUser) -> {
+            mainActivityInterface.getPreferences().setMyPreferenceInt("helixGlobalMidiChannel", (int) value);
+            myView.helixGlobalMidiChannel.setHint("Ch " + (int) value);
+        });
+
+        ExposedDropDownArrayAdapter playModeAdapter = new ExposedDropDownArrayAdapter(
+                getContext(), myView.helixPlayMode, R.layout.view_exposed_dropdown_item, new String[]{"Play", "Load", "Load + Preset"}
+        );
+        myView.helixPlayMode.setAdapter(playModeAdapter);
+        myView.helixPlayMode.setHint("Helix Play Mode");
+        myView.helixPlayMode.setText(mainActivityInterface.getPreferences().getMyPreferenceString("helixPlayMode", "Play"));
+        myView.helixPlayMode.addTextChangedListener(new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(android.text.Editable s) {
+                mainActivityInterface.getPreferences().setMyPreferenceString("helixPlayMode", s.toString());
+            }
         });
     }
 

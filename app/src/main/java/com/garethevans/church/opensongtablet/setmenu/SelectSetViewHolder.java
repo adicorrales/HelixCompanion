@@ -66,7 +66,7 @@ public class SelectSetViewHolder extends RecyclerView.ViewHolder implements View
 
     @Override
     public boolean onSingleTapUp(@NonNull MotionEvent motionEvent) {
-        // Tapping card does NOT select set (selection is done exclusively via checkbox)
+        setItemTouchInterface.onItemClicked(mainActivityInterface, getAbsoluteAdapterPosition());
         motionEvent.setAction(MotionEvent.ACTION_CANCEL);
         gestureDetector.onTouchEvent(motionEvent);
         return true;

@@ -153,15 +153,12 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
     }
 
     private void loadSelectedSet(int position) {
-        mainActivityInterface.getThreadPoolExecutor().execute(() -> {
-            // Send MIDI CC 63 with selected set index
-            int channel = mainActivityInterface.getMidi().getMidiOutputChannel() - 1;
-            if (channel < 0) {
-                channel = 0;
-            }
-            String midiMsg = mainActivityInterface.getMidi().buildMidiString("CC", channel, 63, position);
-            mainActivityInterface.getMidi().sendMidiHexSequence(midiMsg);
+        // Send MIDI CC 63 immediately on main thread for set change
+        mainActivityInterface.getMainHandler().post(() -> {
+            mainActivityInterface.sendHelixSetMidi(position);
+        });
 
+        mainActivityInterface.getThreadPoolExecutor().execute(() -> {
             // First, ALWAYS initialize/clear the current set to prevent duplicates!
             mainActivityInterface.getCurrentSet().initialiseTheSet();
             mainActivityInterface.getCurrentSet().setSetCurrent("");
@@ -229,10 +226,16 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
 
     @Override
     public void onItemClicked(MainActivityInterface mainActivityInterface, int position) {
-        // Tapping card does nothing for loading; selection is exclusively via checkbox.
+        if (position != RecyclerView.NO_POSITION) {
+            selectedPosition = position;
+            mainActivityInterface.getPreferences().setMyPreferenceInt("selectedSelectSetPosition", selectedPosition);
+            notifyDataSetChanged();
+            loadSelectedSet(position);
+        }
     }
 
     @Override
     public void onRowSelected(SetListItemViewHolder myViewHolder) {
+        // Not used with SelectSetViewHolder
     }
 }

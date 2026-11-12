@@ -44,8 +44,9 @@ public class MyToolbar extends Toolbar {
     private final TextClock clock;
     private final MyMaterialSimpleTextView tempo;
     private final ImageView setIcon, batteryimage;
+    private final ImageView btnTransportPrev, btnTransportRt0, btnTransportPlay, btnTransportNext;
     private final ConstraintLayout songandauthor;
-    private final LinearLayout metronomeLayout;
+    private final LinearLayout metronomeLayout, transportBarLayout;
     private final ArrayList<View> beatView;
     private final MyMaterialSimpleTextView batterycharge;
     private Handler delayActionBarHide;
@@ -136,10 +137,45 @@ public class MyToolbar extends Toolbar {
 
         metronomeLayout.setVisibility(View.GONE);
 
+        transportBarLayout = v.findViewById(R.id.transportBarLayout);
+        if (transportBarLayout != null) {
+            transportBarLayout.setVisibility(View.VISIBLE);
+        }
+
+        btnTransportPrev = v.findViewById(R.id.btnTransportPrev);
+        btnTransportRt0 = v.findViewById(R.id.btnTransportRt0);
+        btnTransportPlay = v.findViewById(R.id.btnTransportPlay);
+        btnTransportNext = v.findViewById(R.id.btnTransportNext);
+
+        if (btnTransportPrev != null) {
+            btnTransportPrev.setOnClickListener(v1 -> mainActivityInterface.onTransportPrev());
+        }
+        if (btnTransportRt0 != null) {
+            btnTransportRt0.setOnClickListener(v1 -> mainActivityInterface.onTransportRt0());
+        }
+        if (btnTransportPlay != null) {
+            btnTransportPlay.setOnClickListener(v1 -> mainActivityInterface.onTransportPlay());
+        }
+        if (btnTransportNext != null) {
+            btnTransportNext.setOnClickListener(v1 -> mainActivityInterface.onTransportNext());
+        }
+
         batteryholder.setOnClickListener(v1 -> {
             mainActivityInterface.showActionBar();
             mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_actionbar), 0);
         });
+    }
+
+    public void updatePlayButton(boolean isPlaying) {
+        if (btnTransportPlay != null && c != null) {
+            if (isPlaying) {
+                btnTransportPlay.setImageResource(R.drawable.pause);
+                btnTransportPlay.setColorFilter(android.graphics.Color.parseColor("#4CAF50"));
+            } else {
+                btnTransportPlay.setImageResource(R.drawable.play);
+                btnTransportPlay.clearColorFilter();
+            }
+        }
     }
 
     // Deal with the preferences used for the actionbar

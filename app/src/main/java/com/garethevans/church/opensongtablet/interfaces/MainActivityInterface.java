@@ -288,6 +288,12 @@ public interface MainActivityInterface {
     MidiFragment getMidiFragment();
     void setMidiFragment(MidiFragment midiFragment);
     void registerMidiPedalAction(boolean actionDown, boolean actionUp, boolean actionLong, String note);
+    void onTransportPrev();
+    void onTransportRt0();
+    void onTransportPlay();
+    void onTransportNext();
+    void sendHelixSetMidi(int setIdx);
+    void sendHelixMidiSetAndSong(int setIdx, int songPosition);
     Drummer getDrummer();
     DrumViewModel getDrumViewModel();
     void displayDrummerPopup();

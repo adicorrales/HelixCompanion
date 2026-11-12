@@ -3643,6 +3643,42 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         }, delay);
     }
 
+    private int lastSentMidiSetIdx = -1;
+
+    @Override
+    public void sendHelixSetMidi(int setIdx) {
+        int channel = getPreferences().getMyPreferenceInt("helixGlobalMidiChannel", 1);
+        if (channel < 1) {
+            channel = 1;
+        }
+        lastSentMidiSetIdx = setIdx;
+        String msgSet = "MIDI" + channel + ":CC63:" + setIdx;
+        getMidi().sendMidiHexSequence(msgSet);
+    }
+
+    @Override
+    public void sendHelixMidiSetAndSong(int setIdx, int songPosition) {
+        int channel = getPreferences().getMyPreferenceInt("helixGlobalMidiChannel", 1);
+        if (channel < 1) {
+            channel = 1;
+        }
+
+        String msgSet = "MIDI" + channel + ":CC63:" + setIdx;
+        String msgSong = "MIDI" + channel + ":CC10:" + songPosition;
+
+        if (lastSentMidiSetIdx != setIdx) {
+            // Playlist changed: send CC 63 first, wait 300ms for Helix to switch playlist, then send CC 10
+            lastSentMidiSetIdx = setIdx;
+            getMidi().sendMidiHexSequence(msgSet);
+            getMainHandler().postDelayed(() -> {
+                getMidi().sendMidiHexSequence(msgSong);
+            }, 300);
+        } else {
+            // Helix is already on this playlist: send CC 10 directly
+            getMidi().sendMidiHexSequence(msgSong);
+        }
+    }
+
     private boolean currentlyLoadingSongFromSet = false;
     @Override
     public void loadSongFromSet(int position) {
@@ -3656,15 +3692,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 }
 
                 if (getCurrentSet().getCurrentSetSize() > position) {
-                    // Send MIDI CC 63 for current set index and CC 10 for song index (base 0)
+                    // Send Helix MIDI for Playlist (CC 63) and Song (CC 10 base 0)
                     int setIdx = getPreferences().getMyPreferenceInt("selectedSelectSetPosition", 0);
-                    int channel = getMidi().getMidiOutputChannel() - 1;
-                    if (channel < 0) {
-                        channel = 0;
-                    }
-                    String msgSet = getMidi().buildMidiString("CC", channel, 63, setIdx);
-                    String msgSong = getMidi().buildMidiString("CC", channel, 10, position);
-                    getMidi().sendMidiHexSequence(msgSet + "\n" + msgSong);
+                    sendHelixMidiSetAndSong(setIdx, position);
 
                     // Update the index in the set
                     // Remove highlighting from the old position
@@ -3788,6 +3818,53 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 }
             });
         }
+    }
+
+    private boolean isPlaying = false;
+
+    @Override
+    public void onTransportPrev() {
+        int currentPos = currentSet.getIndexSongInSet();
+        if (currentPos > 0) {
+            loadSongFromSet(currentPos - 1);
+        }
+        int channel = getPreferences().getMyPreferenceInt("helixGlobalMidiChannel", 1) - 1;
+        if (channel < 0) channel = 0;
+        String msg = getMidi().buildMidiString("CC", channel, 49, 0); // Previous Song (0-63)
+        getMidi().sendMidiHexSequence(msg);
+    }
+
+    @Override
+    public void onTransportRt0() {
+        int channel = getPreferences().getMyPreferenceInt("helixGlobalMidiChannel", 1) - 1;
+        if (channel < 0) channel = 0;
+        String msg = getMidi().buildMidiString("CC", channel, 47, 0); // Return to Zero
+        getMidi().sendMidiHexSequence(msg);
+    }
+
+    @Override
+    public void onTransportPlay() {
+        isPlaying = !isPlaying;
+        if (myView != null && myView.myToolbar != null) {
+            myView.myToolbar.updatePlayButton(isPlaying);
+        }
+        int channel = getPreferences().getMyPreferenceInt("helixGlobalMidiChannel", 1) - 1;
+        if (channel < 0) channel = 0;
+        int val = isPlaying ? 127 : 0;
+        String msg = getMidi().buildMidiString("CC", channel, 51, val); // Play/Pause toggle
+        getMidi().sendMidiHexSequence(msg);
+    }
+
+    @Override
+    public void onTransportNext() {
+        int currentPos = currentSet.getIndexSongInSet();
+        if (currentPos < currentSet.getCurrentSetSize() - 1) {
+            loadSongFromSet(currentPos + 1);
+        }
+        int channel = getPreferences().getMyPreferenceInt("helixGlobalMidiChannel", 1) - 1;
+        if (channel < 0) channel = 0;
+        String msg = getMidi().buildMidiString("CC", channel, 49, 127); // Next Song (64-127)
+        getMidi().sendMidiHexSequence(msg);
     }
 
     @Override
