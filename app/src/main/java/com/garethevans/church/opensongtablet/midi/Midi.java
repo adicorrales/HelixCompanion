@@ -100,6 +100,7 @@ public class Midi {
         midiClickTrackTock = mainActivityInterface.getPreferences().getMyPreferenceInt("midiClickTrackTock",77);
         midiClickTrackTickVolume = mainActivityInterface.getPreferences().getMyPreferenceInt("midiClickTrackTickVolume",110);
         midiClickTrackTockVolume = mainActivityInterface.getPreferences().getMyPreferenceInt("midiClickTrackTockVolume",110);
+        includeBluetoothMidi = mainActivityInterface.getPreferences().getMyPreferenceBoolean("includeBluetoothMidi", true);
         setUpMidiTickTock();
     }
 
@@ -440,6 +441,7 @@ public class Midi {
 
     public void setIncludeBluetoothMidi(boolean includeBluetoothMidi) {
         this.includeBluetoothMidi = includeBluetoothMidi;
+        mainActivityInterface.getPreferences().setMyPreferenceBoolean("includeBluetoothMidi", includeBluetoothMidi);
     }
 
     public void setMidiDelay(int midiDelay) {
