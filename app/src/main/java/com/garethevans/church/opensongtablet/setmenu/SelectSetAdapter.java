@@ -154,6 +154,14 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
 
     private void loadSelectedSet(int position) {
         mainActivityInterface.getThreadPoolExecutor().execute(() -> {
+            // Send MIDI CC 63 with selected set index
+            int channel = mainActivityInterface.getMidi().getMidiOutputChannel() - 1;
+            if (channel < 0) {
+                channel = 0;
+            }
+            String midiMsg = mainActivityInterface.getMidi().buildMidiString("CC", channel, 63, position);
+            mainActivityInterface.getMidi().sendMidiHexSequence(midiMsg);
+
             // First, ALWAYS initialize/clear the current set to prevent duplicates!
             mainActivityInterface.getCurrentSet().initialiseTheSet();
             mainActivityInterface.getCurrentSet().setSetCurrent("");

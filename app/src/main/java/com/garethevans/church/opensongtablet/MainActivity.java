@@ -3656,6 +3656,16 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 }
 
                 if (getCurrentSet().getCurrentSetSize() > position) {
+                    // Send MIDI CC 63 for current set index and CC 10 for song index (base 0)
+                    int setIdx = getPreferences().getMyPreferenceInt("selectedSelectSetPosition", 0);
+                    int channel = getMidi().getMidiOutputChannel() - 1;
+                    if (channel < 0) {
+                        channel = 0;
+                    }
+                    String msgSet = getMidi().buildMidiString("CC", channel, 63, setIdx);
+                    String msgSong = getMidi().buildMidiString("CC", channel, 10, position);
+                    getMidi().sendMidiHexSequence(msgSet + "\n" + msgSong);
+
                     // Update the index in the set
                     // Remove highlighting from the old position
                     currentSet.setIndexSongInSet(position);
