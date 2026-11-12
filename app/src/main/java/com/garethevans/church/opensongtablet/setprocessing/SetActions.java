@@ -811,6 +811,9 @@ public class SetActions {
     }
 
     public void loadSets(ArrayList<Uri> setsToLoad, CurrentSet currentSet, String setName) {
+        // Clear set at the start to prevent duplicate song accumulation!
+        currentSet.initialiseTheSet();
+
         // This is called via a new thread in the manage sets fragment
         // We can append multiple sets together
         // If the set loaded has a song has a key specified with it, we compare with our key

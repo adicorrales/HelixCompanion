@@ -39,9 +39,18 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
 
     public void prepareSets() {
         mainActivityInterface.getThreadPoolExecutor().execute(() -> {
-            ArrayList<String> allSets = mainActivityInterface.getSetActions().getAllSets();
-            if (allSets == null) {
-                allSets = new ArrayList<>();
+            ArrayList<String> rawSets = mainActivityInterface.getSetActions().getAllSets();
+            if (rawSets == null) {
+                rawSets = new ArrayList<>();
+            }
+
+            // Filter out "Song Library" file so it is only displayed at slot 0
+            ArrayList<String> allSets = new ArrayList<>();
+            for (String setFile : rawSets) {
+                String niceName = mainActivityInterface.getSetActions().getNiceSetNameFromFile(setFile);
+                if (!niceName.equalsIgnoreCase("Song Library") && !setFile.equalsIgnoreCase("Song Library") && !setFile.equalsIgnoreCase("Song Library.ost")) {
+                    allSets.add(setFile);
+                }
             }
 
             // Retrieve saved order from preferences
@@ -165,11 +174,15 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
             mainActivityInterface.getCurrentSet().setSetCurrentBeforeEdits("");
 
             if (position == 0) {
-                mainActivityInterface.getCurrentSet().setSetCurrentLastName("Song Library");
-                mainActivityInterface.getMainHandler().post(() -> {
-                    mainActivityInterface.updateSetList();
-                    mainActivityInterface.chooseMenu(true);
-                });
+                String songLibFilename = "Song Library";
+                android.net.Uri uri = mainActivityInterface.getStorageAccess().getUriForItem("Sets", "", songLibFilename);
+                if (mainActivityInterface.getStorageAccess().uriExists(uri)) {
+                    ArrayList<android.net.Uri> setUris = new ArrayList<>();
+                    setUris.add(uri);
+                    mainActivityInterface.getSetActions().loadSets(setUris, mainActivityInterface.getCurrentSet(), songLibFilename);
+                } else {
+                    mainActivityInterface.getCurrentSet().setSetCurrentLastName(songLibFilename);
+                }
             } else {
                 int setIndex = position - 1;
                 String filename;
@@ -185,8 +198,17 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
                 ArrayList<android.net.Uri> setUris = new ArrayList<>();
                 setUris.add(uri);
                 mainActivityInterface.getSetActions().loadSets(setUris, mainActivityInterface.getCurrentSet(), filename);
-                mainActivityInterface.getMainHandler().post(() -> mainActivityInterface.chooseMenu(true));
             }
+
+            mainActivityInterface.getMainHandler().post(() -> {
+                mainActivityInterface.updateSetList();
+                if (mainActivityInterface.getCurrentSet().getCurrentSetSize() > 0) {
+                    mainActivityInterface.loadSongFromSet(0);
+                    mainActivityInterface.navigateToFragment(null, R.id.performanceFragment);
+                } else {
+                    mainActivityInterface.chooseMenu(true);
+                }
+            });
         });
     }
 
