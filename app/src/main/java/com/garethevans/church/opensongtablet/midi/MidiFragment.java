@@ -330,7 +330,12 @@ public class MidiFragment extends Fragment {
 
     // Scan for devices (USB or Bluetooth)
     private void startScan() {
-        if (getActivity()!=null) {
+        if (getActivity() != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && mainActivityInterface.getMidi().checkAndConnectActiveGattMidi()) {
+                mainActivityInterface.getShowToast().doIt("Already connected to active MIDI device");
+                displayCurrentDevice();
+                return;
+            }
             // Try to initialise the midi manager
             mainActivityInterface.getMidi().setMidiManager((MidiManager) getActivity().getSystemService(Context.MIDI_SERVICE));
             myView.searchProgressLayout.setVisibility(View.VISIBLE);

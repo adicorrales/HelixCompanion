@@ -1337,9 +1337,65 @@ public class Midi {
         return isAirTurn;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public boolean checkAndConnectActiveGattMidi() {
+        if (activity != null) {
+            Object obj = activity.getSystemService(Context.BLUETOOTH_SERVICE);
+            if (obj != null) {
+                bluetoothManager = (BluetoothManager) obj;
+            }
+        }
+        if (bluetoothManager != null) {
+            try {
+                List<BluetoothDevice> connectedDevices = bluetoothManager.getConnectedDevices(BluetoothProfile.GATT);
+                if (connectedDevices != null && !connectedDevices.isEmpty()) {
+                    for (BluetoothDevice device : connectedDevices) {
+                        if (isBleMidiDevice(device)) {
+                            Log.d(TAG, "checkAndConnectActiveGattMidi: Found active connected GATT device: " + device.getName() + " (" + device.getAddress() + ")");
+                            if (bluetoothDevice == null || !bluetoothDevice.getAddress().equals(device.getAddress())) {
+                                bluetoothDevice = device;
+                                setBluetoothDevice(device);
+                                executeOpenDeviceWorkflow();
+                            }
+                            return true;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    public boolean isBleMidiDevice(BluetoothDevice device) {
+        if (device == null) return false;
+        String name = device.getName();
+        if (name != null && (name.toLowerCase(Locale.ROOT).contains("widi") || name.toLowerCase(Locale.ROOT).contains("midi"))) {
+            return true;
+        }
+        ParcelUuid[] uuids = device.getUuids();
+        if (uuids != null) {
+            for (ParcelUuid uuid : uuids) {
+                if (uuid.toString().equalsIgnoreCase(uuidBle)) {
+                    return true;
+                }
+            }
+        }
+        String lastAddress = mainActivityInterface != null && mainActivityInterface.getPreferences() != null ?
+                mainActivityInterface.getPreferences().getMyPreferenceString("lastUsedMidiDeviceAddress", "") : "";
+        if (!lastAddress.isEmpty() && device.getAddress().equalsIgnoreCase(lastAddress)) {
+            return true;
+        }
+        return false;
+    }
+
     // Scan for already connected Bluetooth MIDI devices
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void setupBluetoothManager() {
+        if (checkAndConnectActiveGattMidi()) {
+            return;
+        }
         Log.d(TAG,"disconnecting MIDI devices");
         if (activity != null) {
             Object obj = activity.getSystemService(Context.BLUETOOTH_SERVICE);
