@@ -114,8 +114,10 @@
                 android:layout_height="wrap_content"
                 android:text="@string/song_notes"
                 android:hint="@string/song_notes_edit"
+                android:visibility="gone"
                 app:size="large"/>
             <com.garethevans.church.opensongtablet.customviews.MyDivider
+                android:visibility="gone"
                 style="@style/MyDividerLine"/>
 
             <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
@@ -124,8 +126,10 @@
                 android:layout_height="wrap_content"
                 android:text="@string/highlight"
                 android:hint="@string/highlight_info"
+                android:visibility="gone"
                 app:size="large"/>
             <com.garethevans.church.opensongtablet.customviews.MyDivider
+                android:visibility="gone"
                 style="@style/MyDividerLine"/>
 
             <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
