@@ -162,10 +162,6 @@ public class NearbyReceivePayloads {
                                         autoscrollIncrease();
                                     } else if (what.equals(nearbyActions.autoscrollDecrease)) {
                                         autoscrollDecrease();
-                                    } else if (what.equals(nearbyActions.metronomeStart)) {
-                                        metronomeStart();
-                                    } else if (what.equals(nearbyActions.metronomeStop)) {
-                                        metronomeStop();
                                     } else if (what.startsWith(nearbyActions.scrollByTag)) {
                                         scrollByProportion(nearbyJson);
                                     } else if (what.startsWith(nearbyActions.scrollToTag)) {

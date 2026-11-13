@@ -1542,14 +1542,7 @@ public class PerformanceFragment extends Fragment {
                 mainActivityInterface.getAutoscroll().startAutoscroll();
             }
 
-            // Prepare the new values for the metronome/drummer in case we need them
-            mainActivityInterface.getDrumViewModel().prepareSongValues(mainActivityInterface.getSong());
 
-
-            // If we have switched on the midiClock, start that again
-            if (mainActivityInterface.getDrumViewModel().getMidiClock().getMidiClock()) {
-                mainActivityInterface.getDrumViewModel().startMidiClock();
-            }
             // Deal with capo information (if required)
             mainActivityInterface.updateOnScreenInfo("capoShow");
             mainActivityInterface.dealWithCapo();

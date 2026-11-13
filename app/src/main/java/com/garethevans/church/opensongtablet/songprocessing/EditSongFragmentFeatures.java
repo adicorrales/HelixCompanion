@@ -251,39 +251,39 @@ public class EditSongFragmentFeatures extends Fragment {
                 }
             }
         }
-        if (getContext()!=null) {
-            mainActivityInterface.getMainHandler().post(() -> {
-                if (getContext() != null) {
-                    ExposedDropDownArrayAdapter timesigArrayAdapter = new ExposedDropDownArrayAdapter(getContext(),
-                            myView.timesig, R.layout.view_exposed_dropdown_item, timesigs);
-                    myView.timesig.setAdapter(timesigArrayAdapter);
-                    //mainActivityInterface.getDrumViewModel().prepareSongValues(mainActivityInterface.getTempSong());
-                    myView.timesig.setText(DrumCalculations.getFixedTimeSignatureString(mainActivityInterface.getTempSong().getTimesig(), false));
-                }
-            });
-        }
+//        if (getContext()!=null) {
+//            mainActivityInterface.getMainHandler().post(() -> {
+//                if (getContext() != null) {
+//                    ExposedDropDownArrayAdapter timesigArrayAdapter = new ExposedDropDownArrayAdapter(getContext(),
+//                            myView.timesig, R.layout.view_exposed_dropdown_item, timesigs);
+//                    myView.timesig.setAdapter(timesigArrayAdapter);
+//                    //mainActivityInterface.getDrumViewModel().prepareSongValues(mainActivityInterface.getTempSong());
+//                    myView.timesig.setText(DrumCalculations.getFixedTimeSignatureString(mainActivityInterface.getTempSong().getTimesig(), false));
+//                }
+//            });
+//        }
 
         // The drummer kit
         // The links
-        ArrayList<String> drumKits = new ArrayList<>();
-        drumKits.add("");
-        drumKits.add(drum_kit_acoustic);
-        drumKits.add(drum_kit_percussion);
-
-        if (getContext()!=null) {
-            mainActivityInterface.getMainHandler().post(() -> {
-                if (myView!=null && getContext()!=null) {
-                    ExposedDropDownArrayAdapter drumKitArrayAdapter = new ExposedDropDownArrayAdapter(getContext(),
-                            myView.drummerKit, R.layout.view_exposed_dropdown_item, drumKits);
-                    myView.drummerKit.setAdapter(drumKitArrayAdapter);
-                    myView.drummerKit.setText(mainActivityInterface.getDrumViewModel().getDrummer().getDrummerStyleFromXML(
-                            mainActivityInterface.getTempSong().getDrummerKit()));
-                }
-            });
-        }
+//        ArrayList<String> drumKits = new ArrayList<>();
+//        drumKits.add("");
+//        drumKits.add(drum_kit_acoustic);
+//        drumKits.add(drum_kit_percussion);
+//
+//        if (getContext()!=null) {
+//            mainActivityInterface.getMainHandler().post(() -> {
+//                if (myView!=null && getContext()!=null) {
+//                    ExposedDropDownArrayAdapter drumKitArrayAdapter = new ExposedDropDownArrayAdapter(getContext(),
+//                            myView.drummerKit, R.layout.view_exposed_dropdown_item, drumKits);
+//                    myView.drummerKit.setAdapter(drumKitArrayAdapter);
+//                    myView.drummerKit.setText(mainActivityInterface.getDrumViewModel().getDrummer().getDrummerStyleFromXML(
+//                            mainActivityInterface.getTempSong().getDrummerKit()));
+//                }
+//            });
+//        }
 
         // The drummer
-        updateDrummerAdapter();
+//        updateDrummerAdapter();
 
         // The preferred instrument for the song
         if (getContext()!=null) {
@@ -561,48 +561,6 @@ public class EditSongFragmentFeatures extends Fragment {
         });
     }
 
-    private void updateDrummerAdapter() {
-        Uri drumFolder = mainActivityInterface.getStorageAccess().getUriForItem("Drummer","","");
-        ArrayList<String> drumFiles = mainActivityInterface.getStorageAccess().listFilesAtUri(drumFolder);
-        ArrayList<String> drummerFileNames = new ArrayList<>();
-        String timeSig = mainActivityInterface.getTempSong().getTimesig();
-        String timeSigInFilename;
-        if (timeSig!=null && !timeSig.isEmpty()) {
-            timeSigInFilename = timeSig.replace("/","_");
-            for (String drumFile : drumFiles) {
-                if (drumFile!=null && drumFile.contains(timeSigInFilename+".json")) {
-                    String name = mainActivityInterface.getDrumViewModel().getDrummer().getNiceNameFromFilename(drumFile);
-                    drummerFileNames.add(name);
-                }
-            }
-
-            drummerFileNames.add(0,"");
-            
-            if (getContext()!=null) {
-                myView.drummer.post(() -> {
-                    if (getContext()!=null) {
-                        ExposedDropDownArrayAdapter drumArrayAdapter = new ExposedDropDownArrayAdapter(getContext(),
-                                myView.drummer, R.layout.view_exposed_dropdown_item, drummerFileNames);
-                        myView.drummer.setAdapter(drumArrayAdapter);
-                        String drummerFilename = mainActivityInterface.getTempSong().getDrummer();
-                        if (drummerFilename == null) {
-                            drummerFilename = "";
-                        }
-                        String niceName = mainActivityInterface.getDrumViewModel().getDrummer().getNiceNameFromFilename(drummerFilename);
-                        if (drummerFileNames.contains(niceName)) {
-                            myView.drummer.setText(niceName);
-                        } else {
-                            myView.drummer.setText("");
-                            mainActivityInterface.getTempSong().setDrummer("");
-                        }
-                    }
-                });
-            }
-
-        }
-
-    }
-
     private String niceTextFromPref(String prefText) {
         switch (prefText) {
             case "auto":
@@ -653,21 +611,6 @@ public class EditSongFragmentFeatures extends Fragment {
                     break;
                 case "timesig":
                     mainActivityInterface.getTempSong().setTimesig(editable.toString());
-                    // We need to reset the drummer and the adapter values
-                    updateDrummerAdapter();
-                    break;
-                case "drummer":
-                    if (editable!=null) {
-                        String niceName = editable.toString();
-                        String fileName = mainActivityInterface.getDrumViewModel().getDrummer().getFilenameFromNiceName(niceName);
-                        mainActivityInterface.getTempSong().setDrummer(fileName);
-                    }
-                    break;
-                case "drummerKit":
-                    if (editable!=null) {
-                        String xmlValue = mainActivityInterface.getDrumViewModel().getDrummer().getDrummerStyleForSongXML(editable.toString());
-                        mainActivityInterface.getTempSong().setDrummerKit(xmlValue);
-                    }
                     break;
                 case "durationMins":
                 case "durationSecs":

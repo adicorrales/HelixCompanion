@@ -132,39 +132,6 @@ public class PerformanceGestures {
             case "padsettings":
                 padSettings();
                 break;
-            case "metronome":
-                if (isLongPress) {
-                    metronomeSettings();
-                } else {
-                    toggleMetronome();
-                }
-                break;
-            case "metronomesettings":
-                metronomeSettings();
-                break;
-            case "drummer":
-                if (isLongPress) {
-                    drummerPlayer();
-                } else {
-                    toggleDrummer();
-                }
-                break;
-            case "drummer_player":
-                if (isLongPress) {
-                    toggleDrummer();
-                } else {
-                    drummerPlayer();
-                }
-                break;
-            case "drummer_settings":
-                drummerSettings();
-                break;
-            case "drummer_fill":
-                drummerFill();
-                break;
-            case "drummer_transition":
-                drummerTransition();
-                break;
             case "autoscroll":
                 if (isLongPress) {
                     autoscrollSettings();
@@ -190,15 +157,12 @@ public class PerformanceGestures {
                 break;
             case "pad_metronome":
                 togglePad();
-                toggleMetronome();
                 break;
             case "autoscroll_metronome":
-                toggleMetronome();
                 toggleAutoscroll();
                 break;
             case "pad_autoscroll_metronome":
                 togglePad();
-                toggleMetronome();
                 toggleAutoscroll();
                 break;
             case "editsong":
@@ -658,40 +622,8 @@ public class PerformanceGestures {
         padsBottomSheet.show(actionInterface.getMyFragmentManager(), "padsBottomSheet");
     }
 
-    // Start or stop the metronome
-    public void toggleMetronome() {
-    }
 
-    // Open the metronome settings
-    public void metronomeSettings() {
-    }
 
-    // Start or stop the drummer
-    public void toggleDrummer() {
-        actionInterface.drummerToggle();
-    }
-
-    // Open the drummer settings / sequencer
-    public void drummerSettings() {
-        mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_drummer_settings), 0);
-    }
-
-    // Make the drummer play a fill
-    public void drummerFill() {
-        mainActivityInterface.getDrumViewModel().drummerFill();
-    }
-
-    // Make the drummer transition
-    public void drummerTransition() {
-        mainActivityInterface.getDrumViewModel().drummerTransition();
-    }
-
-    // Show the drummer popup window for control
-    public void drummerPlayer() {
-        mainActivityInterface.displayDrummerPopup();
-    }
-
-    // Open the drummer settings
     // Next song
     public void nextSong() {
         if (mainActivityInterface.getPedalActions().getPedalScrollBeforeMove() && canScroll(true)) {

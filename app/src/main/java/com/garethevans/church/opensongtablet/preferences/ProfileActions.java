@@ -185,14 +185,12 @@ public class ProfileActions {
             mainActivityInterface.getAbcNotation().getUpdatedPreferences();
             mainActivityInterface.getFixLocale().getUpdatedPreferences();
             mainActivityInterface.getAutoscroll().setupAutoscrollPreferences();
-            //mainActivityInterface.getBeatBuddy().setPrefs();
             mainActivityInterface.getGestures().getPreferences();
             mainActivityInterface.getHotZones().getPreferences();
             mainActivityInterface.getPageButtons().setPreferences();
             mainActivityInterface.getPedalActions().setPrefs();
             mainActivityInterface.getSwipes().loadPreferences();
             mainActivityInterface.getStorageAccess().updatePreferences();
-            mainActivityInterface.getMainHandler().post(() -> mainActivityInterface.getDrumViewModel().getDrumSoundManager().initialiseDrumSounds(c));
             mainActivityInterface.getMidi().getUpdatedPreferences();
             mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().getUpdatedPreferences();
             mainActivityInterface.getNearbyActions().getNearbyReceivePayloads().getUpdatedPreferences();
