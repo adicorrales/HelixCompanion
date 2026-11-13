@@ -3398,6 +3398,13 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             delay = 100;
         }
 
+        if (folder != null && filename != null) {
+            getPreferences().setMyPreferenceString("songFolder", folder);
+            getPreferences().setMyPreferenceString("songFilename", filename);
+            getSong().setFolder(folder);
+            getSong().setFilename(filename);
+        }
+
         mainLooper.postDelayed(() -> {
             getToolbar().setPerformanceMode(true);
             if (performanceValid()) {
@@ -3492,6 +3499,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     String setFolder = setItemInfo.songfolder;
                     String setFilename = setItemInfo.songfilename;
                     String setKey = setItemInfo.songkey;
+                    getPreferences().setMyPreferenceString("songFolder", setFolder);
+                    getPreferences().setMyPreferenceString("songFilename", setFilename);
+                    getSong().setFolder(setFolder);
+                    getSong().setFilename(setFilename);
                     Uri setUri = getStorageAccess().getUriForItem("Songs", setFolder, setFilename);
 
                     if (setItemInfo.songfilename.equals(getSetActions().getDividerIdentifier())) {
