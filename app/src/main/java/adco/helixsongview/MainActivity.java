@@ -3411,22 +3411,31 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         }, delay);
     }
 
-    private int lastSentMidiSetIdx = -1;
+    private final java.util.concurrent.ExecutorService helixMidiExecutor = java.util.concurrent.Executors.newSingleThreadExecutor();
+    private volatile int lastSentMidiSetIdx = -1;
+    private volatile int lastSentMidiSongPos = -1;
 
     @Override
     public void resetLastSentMidiSetIdx() {
         lastSentMidiSetIdx = -1;
+        lastSentMidiSongPos = -1;
     }
 
     @Override
     public void sendHelixSetMidi(int setIdx) {
-        int channel = getPreferences().getMyPreferenceInt("helixGlobalMidiChannel", 1);
-        if (channel < 1) {
-            channel = 1;
+        int ch = getPreferences().getMyPreferenceInt("helixGlobalMidiChannel", 1);
+        if (ch < 1) {
+            ch = 1;
         }
-        lastSentMidiSetIdx = setIdx;
-        String msgSet = "MIDI" + channel + ":CC63:" + setIdx;
-        getMidi().sendMidiHexSequence(msgSet);
+        final int channel = ch;
+        final int targetSet = Math.max(0, Math.min(setIdx, 127));
+
+        helixMidiExecutor.execute(() -> {
+            lastSentMidiSetIdx = targetSet;
+            lastSentMidiSongPos = -1;
+            String msgSet = "MIDI" + channel + ":CC63:" + targetSet;
+            getMidi().sendMidiHexSequence(msgSet);
+        });
     }
 
     @Override
@@ -3440,19 +3449,42 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         final int targetSet = Math.max(0, Math.min(setIdx, 127));
         final int targetSong = Math.max(0, Math.min(songPosition, 127));
 
-        getThreadPoolExecutor().execute(() -> {
-            String msgSet = "MIDI" + channel + ":CC63:" + targetSet;
-            String msgSong = "MIDI" + channel + ":CC10:" + targetSong;
+        helixMidiExecutor.execute(() -> {
+            // Check if we already sent this exact set and song command
+            if (lastSentMidiSetIdx == targetSet && lastSentMidiSongPos == targetSong) {
+                return;
+            }
 
-            if (lastSentMidiSetIdx != targetSet || targetSet == 0) {
+            String msgSet = "MIDI" + channel + ":CC63:" + targetSet;
+            String msgSong0 = "MIDI" + channel + ":CC10:0";
+            String msgTargetSong = "MIDI" + channel + ":CC10:" + targetSong;
+            String msgPlay = "MIDI" + channel + ":CC51:127";
+
+            if (lastSentMidiSetIdx != targetSet) {
+                // Playlist changed! Send CC63, wait 300ms, send CC10:0 and CC51:127 to LOAD/ACTIVATE new playlist on Helix
                 lastSentMidiSetIdx = targetSet;
+                lastSentMidiSongPos = 0;
+
                 getMidi().sendMidiHexSequence(msgSet);
                 try {
                     Thread.sleep(300);
                 } catch (InterruptedException ignored) {}
-                getMidi().sendMidiHexSequence(msgSong);
+
+                getMidi().sendMidiHexSequence(msgSong0);
+                getMidi().sendMidiHexSequence(msgPlay);
+
+                // If target song is > 0, wait 300ms for Helix to finish loading playlist, then cue target song
+                if (targetSong > 0) {
+                    try {
+                        Thread.sleep(300);
+                    } catch (InterruptedException ignored) {}
+                    lastSentMidiSongPos = targetSong;
+                    getMidi().sendMidiHexSequence(msgTargetSong);
+                }
             } else {
-                getMidi().sendMidiHexSequence(msgSet + "\n" + msgSong);
+                // Same playlist: send CC10 for target song directly
+                lastSentMidiSongPos = targetSong;
+                getMidi().sendMidiHexSequence(msgTargetSong);
             }
         });
     }
