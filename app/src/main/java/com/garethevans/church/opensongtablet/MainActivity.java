@@ -80,8 +80,8 @@ import com.garethevans.church.opensongtablet.appdata.MyFonts;
 import com.garethevans.church.opensongtablet.appdata.TimeTools;
 import com.garethevans.church.opensongtablet.appdata.VersionNumber;
 import com.garethevans.church.opensongtablet.autoscroll.Autoscroll;
-import com.garethevans.church.opensongtablet.beatbuddy.BeatBuddy;
-import com.garethevans.church.opensongtablet.beatbuddy.BBOptionsFragment;
+//import com.garethevans.church.opensongtablet.beatbuddy.BeatBuddy;
+//import com.garethevans.church.opensongtablet.beatbuddy.BBOptionsFragment;
 
 import com.garethevans.church.opensongtablet.chords.ChordDirectory;
 import com.garethevans.church.opensongtablet.chords.ChordDisplayProcessing;
@@ -235,7 +235,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private AnalyticsSQLiteHelper analyticsHelper;
     private AppPermissions appPermissions;
     private Autoscroll autoscroll;
-    private volatile BeatBuddy beatBuddy;
+    //private volatile BeatBuddy beatBuddy;
     private final Object beatBuddyLock = new Object();
 
     private CheckInternet checkInternet;
@@ -3038,17 +3038,17 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
 
 
-    @Override
-    public BeatBuddy getBeatBuddy() {
-        if (beatBuddy == null) {
-            synchronized (beatBuddyLock) {
-                if (beatBuddy == null) {
-                    beatBuddy = new BeatBuddy(this);
-                }
-            }
-        }
-        return beatBuddy;
-    }
+//    @Override
+//    public BeatBuddy getBeatBuddy() {
+//        if (beatBuddy == null) {
+//            synchronized (beatBuddyLock) {
+//                if (beatBuddy == null) {
+//                    beatBuddy = new BeatBuddy(this);
+//                }
+//            }
+//        }
+//        return beatBuddy;
+//    }
 
     @Override
     public VoiceLive getVoiceLive() {
@@ -3946,14 +3946,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     allowToast = false;
                     break;
 
-                case "resetBeatBuddyDatabase":
-                    // Reset the BeatBuddy database
-                    if (callingFragment != null && callingFragment.isAdded()) {
-                        ((BBOptionsFragment) callingFragment).resetDatabase();
-                        allowToast = false;
-                        break;
-                    }
-                    break;
+
                 case "cropImage":
                     Uri tempUri = getStorageAccess().getUriForItem("Export", "", song.getFilename());
                     Uri songUri = getStorageAccess().getUriForItem("Songs", song.getFolder(), song.getFilename());

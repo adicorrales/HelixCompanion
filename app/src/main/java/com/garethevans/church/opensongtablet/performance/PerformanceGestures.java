@@ -410,147 +410,147 @@ public class PerformanceGestures {
             case "midisettings":
                 editMidi();
                 break;
-            case "beatbuddy":
-                beatBuddy();
-                break;
-            case "beatbuddycontroller":
-                beatBuddyController();
-                break;
-            case "beatbuddystart":
-                if (isLongPress) {
-                    beatBuddyStop();
-                } else {
-                    beatBuddyStart();
-                }
-                break;
-            case "beatbuddystop":
-                beatBuddyStop();
-                break;
-            case "beatbuddypause":
-                beatBuddyPause();
-                break;
-            case "beatbuddyaccent":
-                if (isLongPress) {
-                    beatBuddyFill();
-                } else {
-                    beatBuddyAccent();
-                }
-                break;
-            case "beatbuddyfill":
-                if (isLongPress) {
-                    beatBuddyAccent();
-                } else {
-                    beatBuddyFill();
-                }
-                break;
-            case "beatbuddytrans1":
-                if (isLongPress) {
-                    beatBuddyTransitionExit();
-                } else {
-                    beatBuddyTransition1();
-                }
-                break;
-            case "beatbuddytrans2":
-                if (isLongPress) {
-                    beatBuddyTransitionExit();
-                } else {
-                    beatBuddyTransition2();
-                }
-                break;
-            case "beatbuddytrans3":
-                if (isLongPress) {
-                    beatBuddyTransitionExit();
-                } else {
-                    beatBuddyTransition3();
-                }
-                break;
-            case "beatbuddytransnext":
-                if (isLongPress) {
-                    beatBuddyTransitionExit();
-                } else {
-                    beatBuddyTransitionNext();
-                }
-                break;
-            case "beatbuddytransprev":
-                if (isLongPress) {
-                    beatBuddyTransitionExit();
-                } else {
-                    beatBuddyTransitionPrev();
-                }
-                break;
-            case "beatbuddytransexit":
-                beatBuddyTransitionExit();
-                break;
-            case "beatbuddyxtrans1":
-                if (isLongPress) {
-                    beatBuddyExclusiveTransitionExit();
-                } else {
-                    beatBuddyExclusiveTransition1();
-                }
-                break;
-            case "beatbuddyxtrans2":
-                if (isLongPress) {
-                    beatBuddyExclusiveTransitionExit();
-                } else {
-                    beatBuddyExclusiveTransition2();
-                }
-                break;
-            case "beatbuddyxtrans3":
-                if (isLongPress) {
-                    beatBuddyExclusiveTransitionExit();
-                } else {
-                    beatBuddyExclusiveTransition3();
-                }
-                break;
-            case "beatbuddyxtransnext":
-                if (isLongPress) {
-                    beatBuddyExclusiveTransitionExit();
-                } else {
-                    beatBuddyExclusiveTransitionNext();
-                }
-                break;
-            case "beatbuddyxtransprev":
-                if (isLongPress) {
-                    beatBuddyExclusiveTransitionExit();
-                } else {
-                    beatBuddyExclusiveTransitionPrev();
-                }
-                break;
-            case "beatbuddyxtransexit":
-                beatBuddyExclusiveTransitionExit();
-                break;
-            case "beatbuddyhalf":
-                if (isLongPress) {
-                    beatBuddyHalfTimeExit();
-                } else {
-                    beatBuddyHalfTime();
-                }
-                break;
-            case "beatbuddyhalfexit":
-                beatBuddyHalfTimeExit();
-                break;
-            case "beatbuddydouble":
-                if (isLongPress) {
-                    beatBuddyDoubleTimeExit();
-                } else {
-                    beatBuddyDoubleTime();
-                }
-                break;
-            case "beatbuddydoubleexit":
-                beatBuddyDoubleTimeExit();
-                break;
-            case "beatbuddyvolup":
-                beatBuddyVolUp();
-                break;
-            case "beatbuddyvoldown":
-                beatBuddyVolDown();
-                break;
-            case "beatbuddyvolhpup":
-                beatBuddyVolHPUp();
-                break;
-            case "beatbuddyvolhpdown":
-                beatBuddyVolHPDown();
-                break;
+//            case "beatbuddy":
+//                beatBuddy();
+//                break;
+//            case "beatbuddycontroller":
+//                beatBuddyController();
+//                break;
+//            case "beatbuddystart":
+//                if (isLongPress) {
+//                    beatBuddyStop();
+//                } else {
+//                    beatBuddyStart();
+//                }
+//                break;
+//            case "beatbuddystop":
+//                beatBuddyStop();
+//                break;
+//            case "beatbuddypause":
+//                beatBuddyPause();
+//                break;
+//            case "beatbuddyaccent":
+//                if (isLongPress) {
+//                    beatBuddyFill();
+//                } else {
+//                    beatBuddyAccent();
+//                }
+//                break;
+//            case "beatbuddyfill":
+//                if (isLongPress) {
+//                    beatBuddyAccent();
+//                } else {
+//                    beatBuddyFill();
+//                }
+//                break;
+//            case "beatbuddytrans1":
+//                if (isLongPress) {
+//                    beatBuddyTransitionExit();
+//                } else {
+//                    beatBuddyTransition1();
+//                }
+//                break;
+//            case "beatbuddytrans2":
+//                if (isLongPress) {
+//                    beatBuddyTransitionExit();
+//                } else {
+//                    beatBuddyTransition2();
+//                }
+//                break;
+//            case "beatbuddytrans3":
+//                if (isLongPress) {
+//                    beatBuddyTransitionExit();
+//                } else {
+//                    beatBuddyTransition3();
+//                }
+//                break;
+//            case "beatbuddytransnext":
+//                if (isLongPress) {
+//                    beatBuddyTransitionExit();
+//                } else {
+//                    beatBuddyTransitionNext();
+//                }
+//                break;
+//            case "beatbuddytransprev":
+//                if (isLongPress) {
+//                    beatBuddyTransitionExit();
+//                } else {
+//                    beatBuddyTransitionPrev();
+//                }
+//                break;
+//            case "beatbuddytransexit":
+//                beatBuddyTransitionExit();
+//                break;
+//            case "beatbuddyxtrans1":
+//                if (isLongPress) {
+//                    beatBuddyExclusiveTransitionExit();
+//                } else {
+//                    beatBuddyExclusiveTransition1();
+//                }
+//                break;
+//            case "beatbuddyxtrans2":
+//                if (isLongPress) {
+//                    beatBuddyExclusiveTransitionExit();
+//                } else {
+//                    beatBuddyExclusiveTransition2();
+//                }
+//                break;
+//            case "beatbuddyxtrans3":
+//                if (isLongPress) {
+//                    beatBuddyExclusiveTransitionExit();
+//                } else {
+//                    beatBuddyExclusiveTransition3();
+//                }
+//                break;
+//            case "beatbuddyxtransnext":
+//                if (isLongPress) {
+//                    beatBuddyExclusiveTransitionExit();
+//                } else {
+//                    beatBuddyExclusiveTransitionNext();
+//                }
+//                break;
+//            case "beatbuddyxtransprev":
+//                if (isLongPress) {
+//                    beatBuddyExclusiveTransitionExit();
+//                } else {
+//                    beatBuddyExclusiveTransitionPrev();
+//                }
+//                break;
+//            case "beatbuddyxtransexit":
+//                beatBuddyExclusiveTransitionExit();
+//                break;
+//            case "beatbuddyhalf":
+//                if (isLongPress) {
+//                    beatBuddyHalfTimeExit();
+//                } else {
+//                    beatBuddyHalfTime();
+//                }
+//                break;
+//            case "beatbuddyhalfexit":
+//                beatBuddyHalfTimeExit();
+//                break;
+//            case "beatbuddydouble":
+//                if (isLongPress) {
+//                    beatBuddyDoubleTimeExit();
+//                } else {
+//                    beatBuddyDoubleTime();
+//                }
+//                break;
+//            case "beatbuddydoubleexit":
+//                beatBuddyDoubleTimeExit();
+//                break;
+//            case "beatbuddyvolup":
+//                beatBuddyVolUp();
+//                break;
+//            case "beatbuddyvoldown":
+//                beatBuddyVolDown();
+//                break;
+//            case "beatbuddyvolhpup":
+//                beatBuddyVolHPUp();
+//                break;
+//            case "beatbuddyvolhpdown":
+//                beatBuddyVolHPDown();
+//                break;
             case "midiaction1":
                 midiAction(1);
                 break;
@@ -1379,141 +1379,141 @@ public class PerformanceGestures {
 
 
     // The BeatBuddy stuff
-    public void beatBuddy() {
-        if (isMidiAllowed()) {
-            mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_beatbuddy_commands),0);
-        }
-    }
-    public void beatBuddyController() {
-        if (isMidiAllowed()) {
-            mainActivityInterface.toggleBeatBuddyControlPopUp();
-        }
-    }
-    public void beatBuddyStart() {
-        if (isMidiAllowed()) {
-            mainActivityInterface.getBeatBuddy().beatBuddyStart();
-        }
-    }
-    public void beatBuddyStop() {
-        if (isMidiAllowed()) {
-            mainActivityInterface.getBeatBuddy().beatBuddyStop();
-        }
-    }
-    public void beatBuddyPause() {
-        if (isMidiAllowed()) {
-            mainActivityInterface.getBeatBuddy().beatBuddyPause();
-        }
-    }
-    public void beatBuddyAccent() {
-        if (isMidiAllowed()) {
-            mainActivityInterface.getBeatBuddy().beatBuddyAccent();
-        }
-    }
-    public void beatBuddyFill() {
-        if (isMidiAllowed()) {
-            mainActivityInterface.getBeatBuddy().beatBuddyFill();
-        }
-    }
-    public void beatBuddyTransition1() {
-        if (isMidiAllowed()) {
-            mainActivityInterface.getBeatBuddy().beatBuddyTransition1();
-        }
-    }
-    public void beatBuddyTransition2() {
-        if (isMidiAllowed()) {
-            mainActivityInterface.getBeatBuddy().beatBuddyTransition2();
-        }
-    }
-    public void beatBuddyTransition3() {
-        if (isMidiAllowed()) {
-            mainActivityInterface.getBeatBuddy().beatBuddyTransition3();
-        }
-    }
-    public void beatBuddyTransitionNext() {
-        if (isMidiAllowed()) {
-            mainActivityInterface.getBeatBuddy().beatBuddyTransitionNext();
-        }
-    }
-    public void beatBuddyTransitionPrev() {
-        if (isMidiAllowed()) {
-            mainActivityInterface.getBeatBuddy().beatBuddyTransitionPrev();
-        }
-    }
-    public void beatBuddyTransitionExit() {
-        if (isMidiAllowed()) {
-            mainActivityInterface.getBeatBuddy().beatBuddyTransitionExit();
-        }
-    }
-    public void beatBuddyExclusiveTransition1() {
-        if (isMidiAllowed()) {
-            mainActivityInterface.getBeatBuddy().beatBuddyExclusiveTransition1();
-        }
-    }
-    public void beatBuddyExclusiveTransition2() {
-        if (isMidiAllowed()) {
-            mainActivityInterface.getBeatBuddy().beatBuddyExclusiveTransition2();
-        }
-    }
-    public void beatBuddyExclusiveTransition3() {
-        if (isMidiAllowed()) {
-            mainActivityInterface.getBeatBuddy().beatBuddyExclusiveTransition3();
-        }
-    }
-    public void beatBuddyExclusiveTransitionNext() {
-        if (isMidiAllowed()) {
-            mainActivityInterface.getBeatBuddy().beatBuddyExclusiveTransitionNext();
-        }
-    }
-    public void beatBuddyExclusiveTransitionPrev() {
-        if (isMidiAllowed()) {
-            mainActivityInterface.getBeatBuddy().beatBuddyExclusiveTransitionPrev();
-        }
-    }
-    public void beatBuddyExclusiveTransitionExit() {
-        if (isMidiAllowed()) {
-            mainActivityInterface.getBeatBuddy().beatBuddyExclusiveTransitionExit();
-        }
-    }
-    public void beatBuddyHalfTime() {
-        if (isMidiAllowed()) {
-            mainActivityInterface.getBeatBuddy().beatBuddyHalfTime();
-        }
-    }
-    public void beatBuddyHalfTimeExit() {
-        if (isMidiAllowed()) {
-            mainActivityInterface.getBeatBuddy().beatBuddyHalfTimeExit();
-        }
-    }
-    public void beatBuddyDoubleTime() {
-        if (isMidiAllowed()) {
-            mainActivityInterface.getBeatBuddy().beatBuddyDoubleTime();
-        }
-    }
-    public void beatBuddyDoubleTimeExit() {
-        if (isMidiAllowed()) {
-            mainActivityInterface.getBeatBuddy().beatBuddyDoubleTimeExit();
-        }
-    }
-    public void beatBuddyVolUp() {
-        if (isMidiAllowed()) {
-            mainActivityInterface.getBeatBuddy().beatBuddyVolUp();
-        }
-    }
-    public void beatBuddyVolDown() {
-        if (isMidiAllowed()) {
-            mainActivityInterface.getBeatBuddy().beatBuddyVolDown();
-        }
-    }
-    public void beatBuddyVolHPUp() {
-        if (isMidiAllowed()) {
-            mainActivityInterface.getBeatBuddy().beatBuddyVolHPUp();
-        }
-    }
-    public void beatBuddyVolHPDown() {
-        if (isMidiAllowed()) {
-            mainActivityInterface.getBeatBuddy().beatBuddyVolHPDown();
-        }
-    }
+//    public void beatBuddy() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_beatbuddy_commands),0);
+//        }
+//    }
+//    public void beatBuddyController() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.toggleBeatBuddyControlPopUp();
+//        }
+//    }
+//    public void beatBuddyStart() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyStart();
+//        }
+//    }
+//    public void beatBuddyStop() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyStop();
+//        }
+//    }
+//    public void beatBuddyPause() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyPause();
+//        }
+//    }
+//    public void beatBuddyAccent() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyAccent();
+//        }
+//    }
+//    public void beatBuddyFill() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyFill();
+//        }
+//    }
+//    public void beatBuddyTransition1() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyTransition1();
+//        }
+//    }
+//    public void beatBuddyTransition2() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyTransition2();
+//        }
+//    }
+//    public void beatBuddyTransition3() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyTransition3();
+//        }
+//    }
+//    public void beatBuddyTransitionNext() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyTransitionNext();
+//        }
+//    }
+//    public void beatBuddyTransitionPrev() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyTransitionPrev();
+//        }
+//    }
+//    public void beatBuddyTransitionExit() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyTransitionExit();
+//        }
+//    }
+//    public void beatBuddyExclusiveTransition1() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyExclusiveTransition1();
+//        }
+//    }
+//    public void beatBuddyExclusiveTransition2() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyExclusiveTransition2();
+//        }
+//    }
+//    public void beatBuddyExclusiveTransition3() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyExclusiveTransition3();
+//        }
+//    }
+//    public void beatBuddyExclusiveTransitionNext() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyExclusiveTransitionNext();
+//        }
+//    }
+//    public void beatBuddyExclusiveTransitionPrev() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyExclusiveTransitionPrev();
+//        }
+//    }
+//    public void beatBuddyExclusiveTransitionExit() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyExclusiveTransitionExit();
+//        }
+//    }
+//    public void beatBuddyHalfTime() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyHalfTime();
+//        }
+//    }
+//    public void beatBuddyHalfTimeExit() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyHalfTimeExit();
+//        }
+//    }
+//    public void beatBuddyDoubleTime() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyDoubleTime();
+//        }
+//    }
+//    public void beatBuddyDoubleTimeExit() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyDoubleTimeExit();
+//        }
+//    }
+//    public void beatBuddyVolUp() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyVolUp();
+//        }
+//    }
+//    public void beatBuddyVolDown() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyVolDown();
+//        }
+//    }
+//    public void beatBuddyVolHPUp() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyVolHPUp();
+//        }
+//    }
+//    public void beatBuddyVolHPDown() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyVolHPDown();
+//        }
+//    }
     public void midiAction(int which) {
         if (isMidiAllowed()) {
             mainActivityInterface.getMidi().sendMidiHexSequence(mainActivityInterface.getMidi().getMidiAction(which));

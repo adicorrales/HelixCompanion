@@ -3,8 +3,8 @@ package com.garethevans.church.opensongtablet.beatbuddy;
 import android.content.Context;
 import com.garethevans.church.opensongtablet.songprocessing.Song;
 
-public class BeatBuddy {
-    public BeatBuddy(Context c) {}
+public class _BeatBuddy {
+    public _BeatBuddy(Context c) {}
     public boolean getBeatBuddyUseImported() { return false; }
     public void setBeatBuddyUseImported(boolean b) {}
     public boolean getBeatBuddyAerosMode() { return false; }

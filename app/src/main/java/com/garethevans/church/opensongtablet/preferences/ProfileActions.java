@@ -185,7 +185,7 @@ public class ProfileActions {
             mainActivityInterface.getAbcNotation().getUpdatedPreferences();
             mainActivityInterface.getFixLocale().getUpdatedPreferences();
             mainActivityInterface.getAutoscroll().setupAutoscrollPreferences();
-            mainActivityInterface.getBeatBuddy().setPrefs();
+            //mainActivityInterface.getBeatBuddy().setPrefs();
             mainActivityInterface.getGestures().getPreferences();
             mainActivityInterface.getHotZones().getPreferences();
             mainActivityInterface.getPageButtons().setPreferences();
