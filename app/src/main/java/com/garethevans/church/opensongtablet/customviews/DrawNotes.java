@@ -17,7 +17,6 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.garethevans.church.opensongtablet.highlighter.HighlighterEditFragment;
 import com.garethevans.church.opensongtablet.interfaces.MainActivityInterface;
 import com.garethevans.church.opensongtablet.interfaces.SwipeDrawingInterface;
 
@@ -75,7 +74,6 @@ public class DrawNotes extends View {
 
     // For the image background (when annotating)
     private int canvasWidth, canvasHeight;
-    private HighlighterEditFragment highlighterEditFragment;
 
     public DrawNotes(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -90,9 +88,6 @@ public class DrawNotes extends View {
         initialiseCurrentObjs();
     }
 
-    public void setHighlighterEditFrag(HighlighterEditFragment highlighterEditFragment) {
-        this.highlighterEditFragment = highlighterEditFragment;
-    }
     private void initialiseArrays() {
         allPaths = new ArrayList<>();
         allPaints = new ArrayList<>();
@@ -392,9 +387,5 @@ public class DrawNotes extends View {
     }
 
     private void updateUndoRedo() {
-        if (highlighterEditFragment!=null) {
-            highlighterEditFragment.checkUndos();
-            highlighterEditFragment.checkRedos();
-        }
     }
 }

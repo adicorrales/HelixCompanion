@@ -27,7 +27,6 @@ import com.garethevans.church.opensongtablet.midi.MidiSongBottomSheet;
 import com.garethevans.church.opensongtablet.pads.PadsBottomSheet;
 import com.garethevans.church.opensongtablet.pdf.PDFPageAdapter;
 import com.garethevans.church.opensongtablet.pdf.PDFPageBottomSheet;
-import com.garethevans.church.opensongtablet.presenter.SongSectionsAdapter;
 import com.garethevans.church.opensongtablet.songmenu.RandomSongBottomSheet;
 import com.garethevans.church.opensongtablet.stage.StageSectionAdapter;
 
@@ -939,27 +938,7 @@ public class PerformanceGestures {
 
     // Scroll up/down
     public void scroll(boolean scrollDown) {
-        if (mainActivityInterface.getMode().equals(c.getString(R.string.mode_presenter)) &&
-                presenterRecyclerView != null) {
-            int newPosition = getPosition(scrollDown);
-            if (mainActivityInterface.getSong().getFiletype()==null) {
-                mainActivityInterface.getSong().setFiletype(mainActivityInterface.getStorageAccess().tryToFixFileTypeFromNull(mainActivityInterface.getSong().getFilename()));
-            }
-            if (mainActivityInterface.getSong().getFiletype().equals("PDF")) {
-                mainActivityInterface.getSong().setPdfPageCurrent(newPosition);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
-                        presenterRecyclerView.getAdapter() != null &&
-                        recyclerView.getAdapter() != null) {
-                    ((PDFPageAdapter) recyclerView.getAdapter()).clickOnSection(newPosition);
-                }
-            } else {
-                mainActivityInterface.getSong().setCurrentSection(newPosition);
-                if (presenterRecyclerView.getAdapter() != null) {
-                    ((SongSectionsAdapter) presenterRecyclerView.getAdapter()).itemSelected(newPosition);
-                }
-            }
-
-        } else if (mainActivityInterface.getMode().equals(c.getString(R.string.mode_stage)) &&
+        if (mainActivityInterface.getMode().equals(c.getString(R.string.mode_stage)) &&
                 recyclerView != null && recyclerView.getVisibility() == View.VISIBLE) {
             int newPosition = getPosition(scrollDown);
 
@@ -1597,78 +1576,10 @@ public class PerformanceGestures {
 
     // The second screen
     // Toggle the show logo on the secondary screen
-    public void showLogo() {
-        updatePresenterSettings(!mainActivityInterface.getPresenterSettings().getLogoOn(),false,false);
-    }
-    public void blackScreen() {
-        updatePresenterSettings(false,!mainActivityInterface.getPresenterSettings().getBlackscreenOn(),false);
-    }
-    public void blankScreen() {
-        updatePresenterSettings(false,false,!mainActivityInterface.getPresenterSettings().getBlankscreenOn());
-    }
-    private void updatePresenterSettings(boolean setLogoOn, boolean setBlackscreenOn, boolean setBlankscreenOn) {
-        boolean getLogoOn = mainActivityInterface.getPresenterSettings().getLogoOn();
-        boolean getBlackscreenOn = mainActivityInterface.getPresenterSettings().getBlackscreenOn();
-        boolean getBlankscreenOn = mainActivityInterface.getPresenterSettings().getBlankscreenOn();
-
-        boolean changeLogo = getLogoOn!=setLogoOn;
-        boolean changeBlackscreen = getBlackscreenOn!=setBlackscreenOn;
-        boolean changeBlankscreen = getBlankscreenOn!=setBlankscreenOn;
-
-        // We don't want black and blank screen set to on when the logo is showing
-        // We don't want the logo to show when the black or blank screen is on
-        if (getLogoOn && (setBlackscreenOn || setBlankscreenOn)) {
-            // If the logo is currently on and we want to turn on black or blank screen, we turn off the logo first
-            mainActivityInterface.getPresenterSettings().setLogoOn(false);
-            displayInterface.updateDisplay("showLogo");
-            mainActivityInterface.getPresenterSettings().setBlackscreenOn(setBlackscreenOn);
-            mainActivityInterface.getPresenterSettings().setBlankscreenOn(setBlankscreenOn);
-            if (setBlackscreenOn) {
-                displayInterface.updateDisplay("showBlackscreen");
-            } else {
-                displayInterface.updateDisplay("showBlankscreen");
-            }
-
-        } else if ((getBlackscreenOn || getBlankscreenOn) && changeLogo) {
-            // If the black or blank screen is on and we want the logo, we remove the black or blank screen
-            mainActivityInterface.getPresenterSettings().setBlackscreenOn(false);
-            mainActivityInterface.getPresenterSettings().setBlankscreenOn(false);
-            if (changeBlackscreen) {
-                displayInterface.updateDisplay("showBlackscreen");
-            } else if (changeBlankscreen) {
-                displayInterface.updateDisplay("showBlankscreen");
-            }
-            mainActivityInterface.getPresenterSettings().setLogoOn(true);
-            displayInterface.updateDisplay("showLogo");
-
-        } else if (getBlackscreenOn && setBlankscreenOn) {
-            // We currently have a black screen, but want to change to a blank screen
-            mainActivityInterface.getPresenterSettings().setBlackscreenOn(false);
-            displayInterface.updateDisplay("showBlackscreen");
-            mainActivityInterface.getPresenterSettings().setBlankscreenOn(true);
-            displayInterface.updateDisplay("showBlankscreen");
-
-        } else if (getBlankscreenOn && setBlackscreenOn) {
-            // We currently have a blank screen, but want to change to a blanck screen
-            mainActivityInterface.getPresenterSettings().setBlankscreenOn(false);
-            displayInterface.updateDisplay("showBlankscreen");
-            mainActivityInterface.getPresenterSettings().setBlackscreenOn(true);
-            displayInterface.updateDisplay("showBlackscreen");
-
-        } else {
-            // Just a straightforward change
-            mainActivityInterface.getPresenterSettings().setLogoOn(setLogoOn);
-            mainActivityInterface.getPresenterSettings().setBlackscreenOn(setBlackscreenOn);
-            mainActivityInterface.getPresenterSettings().setBlankscreenOn(setBlankscreenOn);
-            if (changeLogo) {
-                displayInterface.updateDisplay("showLogo");
-            } else if (changeBlackscreen) {
-                displayInterface.updateDisplay("showBlackscreen");
-            } else if (changeBlankscreen) {
-                displayInterface.updateDisplay("showBlankscreen");
-            }
-        }
-    }
+    public void showLogo() {}
+    public void blackScreen() {}
+    public void blankScreen() {}
+    private void updatePresenterSettings(boolean setLogoOn, boolean setBlackscreenOn, boolean setBlankscreenOn) {}
 
     // The checks
     private boolean ifPDFAndAllowed() {

@@ -7,7 +7,6 @@ import android.widget.LinearLayout;
 
 import com.garethevans.church.opensongtablet.R;
 import com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView;
-import com.garethevans.church.opensongtablet.drummer.DrumCalculations;
 import com.garethevans.church.opensongtablet.interfaces.MainActivityInterface;
 
 public class SongSheetHeaders {

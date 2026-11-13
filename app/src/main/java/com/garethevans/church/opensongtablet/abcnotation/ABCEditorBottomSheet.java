@@ -22,8 +22,8 @@ import androidx.fragment.app.Fragment;
 
 import com.garethevans.church.opensongtablet.databinding.BottomSheetAbcEditorBinding;
 import com.garethevans.church.opensongtablet.customviews.BottomSheetCommon;
-import com.garethevans.church.opensongtablet.drummer.DrumCalculations;
 import com.garethevans.church.opensongtablet.interfaces.MainActivityInterface;
+import com.garethevans.church.opensongtablet.songprocessing.DrumCalculations;
 import com.garethevans.church.opensongtablet.songprocessing.EditSongFragmentFeatures;
 import com.garethevans.church.opensongtablet.songprocessing.EditSongFragmentLyrics;
 import com.garethevans.church.opensongtablet.songprocessing.Song;

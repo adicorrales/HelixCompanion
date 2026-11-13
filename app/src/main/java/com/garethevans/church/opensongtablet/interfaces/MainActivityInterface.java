@@ -38,8 +38,6 @@ import com.garethevans.church.opensongtablet.controls.Swipes;
 import com.garethevans.church.opensongtablet.customslides.CustomSlide;
 import com.garethevans.church.opensongtablet.customviews.DrawNotes;
 import com.garethevans.church.opensongtablet.customviews.MyToolbar;
-import com.garethevans.church.opensongtablet.drummer.DrumViewModel;
-import com.garethevans.church.opensongtablet.drummer.Drummer;
 import com.garethevans.church.opensongtablet.export.ExportActions;
 import com.garethevans.church.opensongtablet.export.OpenSongSetBundle;
 import com.garethevans.church.opensongtablet.export.PrepareFormats;
@@ -70,7 +68,6 @@ import com.garethevans.church.opensongtablet.screensetup.Palette;
 import com.garethevans.church.opensongtablet.screensetup.ShowToast;
 import com.garethevans.church.opensongtablet.screensetup.ThemeColors;
 import com.garethevans.church.opensongtablet.screensetup.WindowFlags;
-import com.garethevans.church.opensongtablet.secondarydisplay.SecondaryDisplay;
 import com.garethevans.church.opensongtablet.setmenu.SetMenuFragment;
 import com.garethevans.church.opensongtablet.setprocessing.CurrentSet;
 import com.garethevans.church.opensongtablet.setprocessing.SetActions;
@@ -88,6 +85,7 @@ import com.garethevans.church.opensongtablet.sqlite.CommonSQL;
 import com.garethevans.church.opensongtablet.sqlite.NonOpenSongSQLiteHelper;
 import com.garethevans.church.opensongtablet.sqlite.SQLiteHelper;
 import com.garethevans.church.opensongtablet.stickynotes.StickyNoteUtils;
+import com.garethevans.church.opensongtablet.drummer.DrumViewModel;
 import com.garethevans.church.opensongtablet.variations.Variations;
 import com.garethevans.church.opensongtablet.voicelive.VoiceLive;
 import com.garethevans.church.opensongtablet.webserver.LocalWiFiHost;
@@ -294,7 +292,6 @@ public interface MainActivityInterface {
     void onTransportNext();
     void sendHelixSetMidi(int setIdx);
     void sendHelixMidiSetAndSong(int setIdx, int songPosition);
-    Drummer getDrummer();
     DrumViewModel getDrumViewModel();
     void displayDrummerPopup();
     VoiceLive getVoiceLive();
@@ -370,7 +367,6 @@ public interface MainActivityInterface {
     void updateMargins();
     int[] getViewMargins();
     boolean getIsSecondaryDisplaying();
-    SecondaryDisplay[] getSecondaryDisplays();
 
     // Song sheet titles
     void setSongSheetTitleLayout(LinearLayout linearLayout);

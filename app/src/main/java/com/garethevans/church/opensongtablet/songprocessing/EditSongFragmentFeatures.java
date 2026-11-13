@@ -21,7 +21,6 @@ import com.garethevans.church.opensongtablet.abcnotation.ABCEditorBottomSheet;
 import com.garethevans.church.opensongtablet.abcnotation.ScoreToAbcExtractor;
 import com.garethevans.church.opensongtablet.customviews.ExposedDropDownArrayAdapter;
 import com.garethevans.church.opensongtablet.databinding.EditSongFeaturesBinding;
-import com.garethevans.church.opensongtablet.drummer.DrumCalculations;
 import com.garethevans.church.opensongtablet.interfaces.EditSongFragmentInterface;
 import com.garethevans.church.opensongtablet.interfaces.MainActivityInterface;
 

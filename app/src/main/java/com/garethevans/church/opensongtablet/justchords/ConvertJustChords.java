@@ -4,8 +4,8 @@ import android.content.Context;
 import android.net.Uri;
 
 import com.garethevans.church.opensongtablet.R;
-import com.garethevans.church.opensongtablet.drummer.DrumCalculations;
 import com.garethevans.church.opensongtablet.interfaces.MainActivityInterface;
+import com.garethevans.church.opensongtablet.songprocessing.DrumCalculations;
 import com.garethevans.church.opensongtablet.songprocessing.Song;
 import com.google.gson.Gson;
 

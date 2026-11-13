@@ -11,11 +11,11 @@ import com.garethevans.church.opensongtablet.songprocessing.Song;
 public interface ActionInterface {
     Preferences getPreferences();
     void navigateToFragment(String deepLink, int id);
-    void showSticky(boolean forceShow, boolean hide);
+    default void showSticky(boolean forceShow, boolean hide) {}
     void showAbc(boolean forceShow, boolean hide);
-    void toggleHighlighter();
+    default void toggleHighlighter() {}
     void onBackPressed();
-    void drummerToggle();
+    default void drummerToggle() {}
     FragmentManager getMyFragmentManager();
     CurrentSet getCurrentSet();
     Song getSong();

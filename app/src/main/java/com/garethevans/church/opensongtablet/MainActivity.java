@@ -105,10 +105,6 @@ import com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextVie
 import com.garethevans.church.opensongtablet.customviews.MyToolbar;
 
 import com.garethevans.church.opensongtablet.databinding.ActivityBinding;
-import com.garethevans.church.opensongtablet.drummer.DrumCalculations;
-import com.garethevans.church.opensongtablet.drummer.DrumViewModel;
-import com.garethevans.church.opensongtablet.drummer.Drummer;
-import com.garethevans.church.opensongtablet.drummer.DrummerPopUp;
 import com.garethevans.church.opensongtablet.export.ExportActions;
 import com.garethevans.church.opensongtablet.export.OpenSongSetBundle;
 import com.garethevans.church.opensongtablet.export.PrepareFormats;
@@ -116,7 +112,6 @@ import com.garethevans.church.opensongtablet.filemanagement.LoadSong;
 import com.garethevans.church.opensongtablet.filemanagement.SaveSong;
 import com.garethevans.church.opensongtablet.filemanagement.StorageAccess;
 import com.garethevans.church.opensongtablet.filemanagement.StorageManagementFragment;
-import com.garethevans.church.opensongtablet.highlighter.HighlighterEditFragment;
 import com.garethevans.church.opensongtablet.importsongs.ImportFileFragment;
 import com.garethevans.church.opensongtablet.importsongs.ImportOnlineFragment;
 import com.garethevans.church.opensongtablet.importsongs.ImportOptionsFragment;
@@ -152,9 +147,7 @@ import com.garethevans.church.opensongtablet.preferences.AppPermissions;
 import com.garethevans.church.opensongtablet.preferences.AreYouSureBottomSheet;
 import com.garethevans.church.opensongtablet.preferences.Preferences;
 import com.garethevans.church.opensongtablet.preferences.ProfileActions;
-import com.garethevans.church.opensongtablet.presenter.PresenterFragment;
 import com.garethevans.church.opensongtablet.presenter.PresenterSettings;
-import com.garethevans.church.opensongtablet.presenter.SongSectionsFragment;
 import com.garethevans.church.opensongtablet.screensetup.BatteryStatus;
 import com.garethevans.church.opensongtablet.screensetup.FontSetupFragment;
 import com.garethevans.church.opensongtablet.screensetup.Palette;
@@ -162,8 +155,6 @@ import com.garethevans.church.opensongtablet.screensetup.ShowToast;
 import com.garethevans.church.opensongtablet.screensetup.ThemeColors;
 import com.garethevans.church.opensongtablet.screensetup.ThemeSetupFragment;
 import com.garethevans.church.opensongtablet.screensetup.WindowFlags;
-import com.garethevans.church.opensongtablet.secondarydisplay.SecondaryDisplay;
-import com.garethevans.church.opensongtablet.secondarydisplay.SecondaryDisplaySettingsFragment;
 import com.garethevans.church.opensongtablet.setmenu.SelectSetFragment;
 import com.garethevans.church.opensongtablet.setmenu.SetItemInfo;
 import com.garethevans.church.opensongtablet.setmenu.SetMenuFragment;
@@ -189,8 +180,9 @@ import com.garethevans.church.opensongtablet.sqlite.AnalyticsSQLiteHelper;
 import com.garethevans.church.opensongtablet.sqlite.CommonSQL;
 import com.garethevans.church.opensongtablet.sqlite.NonOpenSongSQLiteHelper;
 import com.garethevans.church.opensongtablet.sqlite.SQLiteHelper;
-import com.garethevans.church.opensongtablet.stickynotes.StickyNoteUtils;
 import com.garethevans.church.opensongtablet.tags.BulkTagAssignFragment;
+import com.garethevans.church.opensongtablet.stickynotes.StickyNoteUtils;
+import com.garethevans.church.opensongtablet.drummer.DrumViewModel;
 import com.garethevans.church.opensongtablet.variations.Variations;
 import com.garethevans.church.opensongtablet.voicelive.VoiceLive;
 import com.garethevans.church.opensongtablet.webserver.LocalWiFiHost;
@@ -262,8 +254,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private CustomSlide customSlide;
     private DisplayPrevNext displayPrevNext;
     private DrawNotes drawNotes;
-    private Drummer drummer;
-    private DrumViewModel drumViewModel;
     private ExportActions exportActions;
     private FixLocale fixLocale;
     private Gestures gestures;
@@ -299,7 +289,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private SongListBuildIndex songListBuildIndex;
     private SongSheetHeaders songSheetHeaders;
     private SQLiteHelper sqLiteHelper;
-    private StickyNoteUtils stickyNoteUtils;
     private StorageAccess storageAccess;
     private Swipes swipes;
     private ThemeColors themeColors;
@@ -322,9 +311,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private Consumer<MediaProjection> onMediaProjectionReady;
     private boolean isScreenRecordingMode = false;
 
-    // The drummer
-    private DrummerPopUp drummerPopUp;
-
     // The navigation controls
     private NavHostFragment navHostFragment;
     private NavController navController;
@@ -337,16 +323,15 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private SetMenuFragment setMenuFragment;
     private SelectSetFragment selectSetFragment;
     private PerformanceFragment performanceFragment;
-    private PresenterFragment presenterFragment;
     private MidiFragment midiFragment;
     private EditSongFragment editSongFragment;
     private NearbyConnectionsFragment nearbyConnectionsFragment;
     private PedalsFragment pedalsFragment;
     private BootUpFragment bootUpFragment;
+    private Object presenterFragment = null;
     private boolean waitingOnBootUpFragment = false;
     private ViewPager2 viewPager;
     private AppBarConfiguration appBarConfiguration;
-    private SecondaryDisplay[] secondaryDisplays;
     private Display[] connectedDisplays;
     private int prevNumConnectedDisplays = 0;
     private final Handler mainLooper = new Handler(Looper.getMainLooper());
@@ -387,7 +372,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             no_suitable_application = "", indexing_string = "", deeplink_edit = "", cast_info_string = "",
             menu_showcase_info = "";
 
-    private String mode_performance, mode_presenter, mode_stage, mode_hybrid;
+    private String mode_presenter, mode_performance, mode_stage, mode_hybrid;
     private MenuItem menuScreenMirror, menuScreenHelp, menuSearch, menuSettings;
     private String webHelpAddress = null;
 
@@ -796,13 +781,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         fileOpenIntent = intent;
         // Send the action to be called from the opening fragment to fix backstack!
         if (settingsOpen) {
-            if (whichMode.equals(mode_presenter)) {
-                dealWithIntent(R.id.presenterFragment);
-            } else if (whichMode.equals(mode_performance)) {
-                dealWithIntent(R.id.performanceFragment);
-            }
-        } else if (presenterValid()) {
-            presenterFragment.tryToImportIntent();
+            dealWithIntent(R.id.performanceFragment);
         } else if (performanceValid()) {
             performanceFragment.tryToImportIntent();
         }
@@ -915,7 +894,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         abcNotation = getAbcNotation();
 
         song = getSong();
-        stickyNoteUtils = getStickyNoteUtils();
         variations = getVariations();
 
         // Loading up songs and the indexing
@@ -933,8 +911,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         pageButtons = getPageButtons();
         midi = getMidi();
         voiceLive = getVoiceLive();
-        drummer = getDrummer();
-        drumViewModel = getDrumViewModel();
         pedalActions = getPedalActions();
         pad = getPad();
         autoscroll = getAutoscroll();
@@ -947,7 +923,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         // Other file actions
         exportActions = getExportActions();
         customSlide = getCustomSlide();
-        presenterSettings = getPresenterSettings();
         abcNotation = getAbcNotation();
 
         // Webserver (for displaying song over html server)
@@ -1790,30 +1765,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     ((EditSongFragmentTags) callingFragment).removeTags(arguments);
                     break;
 
-                case "presenterFragment_showCase":
-                    if (presenterValid()) {
-                        presenterFragment.showTutorial();
-                    }
-                    break;
-
-                case "presenterFragment_loadSong":
-                    ((PresenterFragment) callingFragment).doSongLoad(getSong().getFolder(), getSong().getFilename());
-                    break;
-
-                case "presenterFragmentSettings":
-                    ((SecondaryDisplaySettingsFragment) callingFragment).updateBackground();
-                    ((SecondaryDisplaySettingsFragment) callingFragment).updateInfoBackground();
-                    ((SecondaryDisplaySettingsFragment) callingFragment).updateLogo();
-                    break;
-
-                case "presenterFragmentSongSections":
-                    if (presenterValid()) {
-                        processSong.processSongIntoSections(song, true);
-                        presenterFragment.getSongViews();
-                        presenterFragment.updateButtons();
-                    }
-                    break;
-
                 case "themeSetupFragment":
                     ((ThemeSetupFragment) callingFragment).updateColors();
                     ((ThemeSetupFragment) callingFragment).updateButtons();
@@ -1843,8 +1794,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     }
                     if (performanceValid()) {
                         performanceFragment.updateInlineSetSortTitles();
-                    } else if (presenterValid()) {
-                        presenterFragment.updateInlineSetSortTitles();
                     }
                     break;
 
@@ -2029,18 +1978,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
     @Override
     public void displayDrummerPopup() {
-        if (myView != null) {
-            if (drummerPopUp != null && drummerPopUp.getIsShowing()) {
-                try {
-                    drummerPopUp.destroyPopup();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } else {
-                drummerPopUp = new DrummerPopUp(this);
-                drummerPopUp.floatWindow(myView.fragmentView);
-            }
-        }
     }
 
     @SuppressLint("NewApi")
@@ -2737,8 +2674,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         getSetActions().indexSongInSet(song);
         if (performanceValid()) {
             performanceFragment.doSongLoad(song.getFolder(), song.getFilename());
-        } else if (presenterValid()) {
-            presenterFragment.doSongLoad(song.getFolder(), song.getFilename());
         }
     }
 
@@ -2770,8 +2705,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             }
             if (performanceValid()) {
                 performanceFragment.updateInlineSetSortTitles();
-            } else if (presenterValid()) {
-                presenterFragment.updateInlineSetSortTitles();
             }
 
         } else if (songListBuildIndex != null && songMenuFragment != null) {
@@ -2864,8 +2797,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     }
 
     private boolean presenterValid() {
-        // Will be true for Presenter mode only
-        return presenterFragment != null && whichMode.equals(mode_presenter) && !settingsOpen;
+        return false;
     }
 
     @Override
@@ -2903,8 +2835,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     public void toggleInlineSet() {
         if (performanceValid()) {
             performanceFragment.toggleInlineSet();
-        } else if (presenterValid()) {
-            presenterFragment.toggleInlineSet();
         }
         loadSong(false);
     }
@@ -2913,8 +2843,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     public void updateInlineSetVisibility() {
         if (performanceValid()) {
             performanceFragment.updateInlineSetVisibility();
-        } else if (presenterValid()) {
-            presenterFragment.updateInlineSetVisibility();
         }
     }
 
@@ -2922,8 +2850,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     public void notifyInlineSetInserted() {
         if (performanceValid()) {
             performanceFragment.notifyInlineSetInserted();
-        } else if (presenterValid()) {
-            presenterFragment.notifyInlineSetInserted();
         }
     }
 
@@ -2931,16 +2857,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     public void notifyInlineSetInserted(int position) {
         if (performanceValid()) {
             performanceFragment.notifyInlineSetInserted(position);
-        } else if (presenterValid()) {
-            presenterFragment.notifyInlineSetInserted(position);
         }
     }
     @Override
     public void notifyInlineSetCueItem() {
         if (performanceValid()) {
             performanceFragment.notifyInlineSetCueItem();
-        } else if (presenterValid()) {
-            presenterFragment.notifyInlineSetCueItem();
         }
     }
 
@@ -2948,8 +2870,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     public void notifyInlineSetRemoved(int position) {
         if (performanceValid()) {
             performanceFragment.notifyInlineSetRemoved(position);
-        } else if (presenterValid()) {
-            presenterFragment.notifyInlineSetRemoved(position);
         }
     }
 
@@ -2957,8 +2877,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     public void notifyToClearInlineSet(int from, int count) {
         if (performanceValid()) {
             performanceFragment.notifyToClearInlineSet(from, count);
-        } else if (presenterValid()) {
-            presenterFragment.notifyToClearInlineSet(from, count);
         }
     }
 
@@ -2966,8 +2884,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     public void notifyToInsertAllInlineSet() {
         if (performanceValid()) {
             performanceFragment.notifyToInsertAllInlineSet();
-        } else if (presenterValid()) {
-            presenterFragment.notifyToInsertAllInlineSet();
         }
     }
 
@@ -2975,8 +2891,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     public void notifyInlineSetMove(int from, int to) {
         if (performanceValid()) {
             performanceFragment.notifyInlineSetMove(from, to);
-        } else if (presenterValid()) {
-            presenterFragment.notifyInlineSetMove(from, to);
         }
     }
 
@@ -2984,8 +2898,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     public void notifyInlineSetChanged(int position) {
         if (performanceValid()) {
             performanceFragment.notifyInlineSetChanged(position);
-        } else if (presenterValid()) {
-            presenterFragment.notifyInlineSetChanged(position);
         }
     }
 
@@ -2993,8 +2905,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     public void notifyInlineSetRangeChanged(int from, int count) {
         if (performanceValid()) {
             performanceFragment.notifyInlineSetRangeChanged(from, count);
-        } else if (presenterValid()) {
-            presenterFragment.notifyInlineSetRangeChanged(from, count);
         }
     }
 
@@ -3002,8 +2912,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     public void notifyInlineSetHighlight() {
         if (performanceValid()) {
             performanceFragment.notifyInlineSetHighlight();
-        } else if (presenterValid()) {
-            presenterFragment.notifyInlineSetHighlight();
         }
     }
 
@@ -3011,8 +2919,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     public void notifyInlineSetScrollToItem() {
         if (performanceValid()) {
             performanceFragment.notifyInlineSetScrollToItem();
-        } else if (presenterValid()) {
-            presenterFragment.notifyInlineSetScrollToItem();
         }
     }
 
@@ -3152,23 +3058,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         return voiceLive;
     }
 
-    @Override
-    public Drummer getDrummer() {
-        if (drummer == null) {
-            drummer = new Drummer(this);
-        }
-        return drummer;
-    }
-
-    @Override
-    public DrumViewModel getDrumViewModel() {
-        if (drumViewModel==null) {
-            drumViewModel = new ViewModelProvider(this).get(DrumViewModel.class);
-            drumViewModel.initialiseDrums(this);
-        }
-        return drumViewModel;
-    }
-
     private void observeDrummer() {}
 
     @Override
@@ -3179,20 +3068,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
     @Override
     public void displayAudioRecorder() {}
-
-    // Sticky notes
-    @Override
-    public void showSticky(boolean forceshow, boolean hide) {
-        // Try to show the sticky note
-        if (performanceValid()) {
-            try {
-                performanceFragment.toggleStickyPopUps(forceshow,hide);
-                //performanceFragment.dealWithStickyNotes(forceshow, hide);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     public void showAbc(boolean forceShow, boolean hide) {
         // Try to show the abc score
@@ -3205,33 +3080,23 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         }
     }
 
-    // Highlighter
     @Override
-    public void toggleHighlighter() {
-        // Try to show the highlighter
-        if (performanceValid()) {
-            try {
-                performanceFragment.toggleHighlighter();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+    public void showSticky(boolean forceShow, boolean hide) {}
+
+    @Override
+    public void toggleHighlighter() {}
+
+    @Override
+    public void drummerToggle() {}
+
+    @Override
+    public StickyNoteUtils getStickyNoteUtils() {
+        return new StickyNoteUtils(this);
     }
 
     @Override
-    public void drummerToggle() {
-        getDrumViewModel();
-        if (DrumCalculations.isTempoTimeSigValid(song, true)) {
-            drumViewModel.toggleDrummer();
-        } else {
-            // Open up the drummer settings
-            drumViewModel.stopDrummer();
-            try {
-                getShowToast().doIt(getString(R.string.drummer_not_valid));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+    public DrumViewModel getDrumViewModel() {
+        return new DrumViewModel();
     }
 
     // Capo
@@ -3269,9 +3134,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 myView.onScreenInfo.showCapo(false);
                 break;
             case "setblankScreenUnChecked":
-                if (presenterFragment != null) {
-                    presenterFragment.setBlankScreenUnChecked();
-                }
                 getPresenterSettings().setBlankscreenOn(false);
                 break;
         }
@@ -3548,14 +3410,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     }
 
     @Override
-    public StickyNoteUtils getStickyNoteUtils() {
-        if (stickyNoteUtils==null) {
-            stickyNoteUtils = new StickyNoteUtils(this);
-        }
-        return stickyNoteUtils;
-    }
-
-    @Override
     public Song getIndexingSong() {
         return indexingSong;
     }
@@ -3607,14 +3461,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     }
 
     @Override
-    public PresenterSettings getPresenterSettings() {
-        if (presenterSettings == null) {
-            presenterSettings = new PresenterSettings(this);
-        }
-        return presenterSettings;
-    }
-
-    @Override
     public void doSongLoad(String folder, String filename, boolean closeDrawer) {
         // IV - Close an open drawer and start song load after animate out
         int delay = 0;
@@ -3623,27 +3469,25 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             delay = 100;
         }
 
-        // Check if the song is in the set
         mainLooper.postDelayed(() -> {
-            if (whichMode.equals(mode_presenter)) {
-                getToolbar().setPerformanceMode(false);
-                if (presenterValid()) {
-                    presenterFragment.doSongLoad(folder, filename);
-                } else {
-                    navigateToFragment(null, R.id.presenterFragment);
-                }
+            getToolbar().setPerformanceMode(true);
+            if (performanceValid()) {
+                performanceFragment.doSongLoad(folder, filename);
             } else {
-                getToolbar().setPerformanceMode(true);
-                if (performanceValid()) {
-                    performanceFragment.doSongLoad(folder, filename);
-                } else {
-                    navigateToFragment(null, R.id.performanceFragment);
-                }
+                navigateToFragment(null, R.id.performanceFragment);
             }
         }, delay);
     }
 
     private int lastSentMidiSetIdx = -1;
+
+    @Override
+    public PresenterSettings getPresenterSettings() {
+        if (presenterSettings == null) {
+            presenterSettings = new PresenterSettings(this);
+        }
+        return presenterSettings;
+    }
 
     @Override
     public void sendHelixSetMidi(int setIdx) {
@@ -3933,11 +3777,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             switch (whatFragName) {
                 case "PerformanceFragment":
                     performanceFragment = (PerformanceFragment) frag;
-                    presenterFragment = null;
-                    break;
-                case "PresenterFragment":
-                    presenterFragment = (PresenterFragment) frag;
-                    performanceFragment = null;
                     break;
                 case "EditSongFragment":
                     editSongFragment = (EditSongFragment) frag;
@@ -4027,16 +3866,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     }
                     //Rebuild the song index
                     updateSongMenu(fragName, callingFragment, arguments); // Passing the fragment allows an update to be sent to the calling fragment
-                    break;
-
-                case "deleteHighlighter":
-                    // Try to send the info back to the highlighter edit fragment
-                    try {
-                        ((HighlighterEditFragment) callingFragment).doDelete(true);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    allowToast = false;
                     break;
 
                 case "exit":
@@ -4982,9 +4811,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     public void selectSection(int i) {
         // Only do this if we are not in a settings fragment
         if (!settingsOpen) {
-            if (presenterValid()) {
-                presenterFragment.selectSection(i);
-            } else if (performanceValid()) {
+            if (performanceValid()) {
                 performanceFragment.selectSection(i);
                 performanceShowSection(i);
             }
@@ -5028,9 +4855,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                         break;
                     case "CustomChordsFragment":
                         ((CustomChordsFragment) fragment).updateValue(value);
-                        break;
-                    case "SongSectionsFragment":
-                        ((SongSectionsFragment) fragment).updateValue(value);
                         break;
                     case "songActionsMenuFragment":
                         ((SongActionsMenuFragment) fragment).doDuplicate(value);
@@ -5104,8 +4928,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 if (!settingsOpen) {
                     if (performanceValid()) {
                         performanceFragment.orientationInlineSet(newConfig.orientation);
-                    } else if (presenterValid()) {
-                        presenterFragment.orientationInlineSet(newConfig.orientation);
                     }
                 }
                 windowFlags.setCurrentRotation(this.getWindow().getDecorView().getDisplay().getRotation());
@@ -5209,9 +5031,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             pad.stopPad();
         }
         // Stop metronome, drummer and timers
-        if (drumViewModel != null) {
-            drumViewModel.stopAll();
-        }
         // Stop autoscroll timers
         if (autoscroll != null) {
             autoscroll.stopTimers();
@@ -5271,13 +5090,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         // Clear out the export and received folders
         getStorageAccess().wipeFolder("Export", "");
         getStorageAccess().wipeFolder("Received", "");
-
-        // If we were using the drummer, release the mediaPlayers
-        if (getDrumViewModel()!=null) {
-            getDrumViewModel().stopAll();
-            getDrumViewModel().getDrumSoundManager().release();
-        }
-
 
         // Stop any thread pools
         // Stop any active thread pool tasks instantly
@@ -5348,7 +5160,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             }
         } else {
             connectedDisplays = null;
-            secondaryDisplays = null;
         }
 
         updateCastIcon();
@@ -5364,7 +5175,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     if (settingsOpen || !getAlertChecks().getHasPlayServices()) {
                         menuScreenMirror.setVisible(false);
                     } else {
-                        menuScreenMirror.setIcon(secondaryDisplays != null && connectedDisplays.length > 0 ? castIconOn : castIconOff);
+                        menuScreenMirror.setIcon(castIconOff);
                         menuScreenMirror.setVisible(true);
                     }
                 }
@@ -5384,183 +5195,18 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         doCastUpdateHandler.postDelayed(allowCastUpdateRunnable, 1000);
     }
 
-    private void setupDisplays() {
-        // Go through each connected display and create the secondaryDisplay Presentation class
-        // Check there aren't any already connected, if there are, dismiss them
-        if (secondaryDisplays != null) {
-            for (SecondaryDisplay secondaryDisplay : secondaryDisplays) {
-                if (secondaryDisplay != null && secondaryDisplay.isShowing()) {
-                    try {
-                        getMainHandler().post(secondaryDisplay::dismiss);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-        // Now reset the secondaryDisplays
-        secondaryDisplays = null;
-        if (connectedDisplays.length > 0) {
-            secondaryDisplays = new SecondaryDisplay[connectedDisplays.length];
-            getMainHandler().post(() -> {
-                for (int c = 0; c < connectedDisplays.length; c++) {
-                    secondaryDisplays[c] = new SecondaryDisplay(this, connectedDisplays[c]);
-                    secondaryDisplays[c].show();
-
-                }
-            });
-        }
-
-        // Update cast icon
-        updateCastIcon();
-    }
+    private void setupDisplays() {}
 
     @Override
     public boolean getIsSecondaryDisplaying() {
-        return secondaryDisplays != null && secondaryDisplays.length > 0;
+        return false;
     }
 
     @Override
-    public SecondaryDisplay[] getSecondaryDisplays() {
-        return secondaryDisplays;
-    }
+    public void updateDisplay(String what) {}
 
     @Override
-    public void updateDisplay(String what) {
-
-        // Make sure everything here happens on the main UI thread
-        getMainHandler().post(() -> {
-            // Update cast icon
-            updateCastIcon();
-            if (secondaryDisplays != null) {
-                for (SecondaryDisplay secondaryDisplay : secondaryDisplays) {
-                    if (secondaryDisplay != null && secondaryDisplay.isShowing()) {
-                        try {
-                            switch (what) {
-                                // The song info bar
-                                case "initialiseInfoBarRequired":
-                                    secondaryDisplay.initialiseInfoBarRequired();
-                                    break;
-                                case "setSongInfo":
-                                    secondaryDisplay.setSongInfo();
-                                    break;
-                                case "setInfoStyles":
-                                    secondaryDisplay.setInfoStyles();
-                                    break;
-                                case "changeInfoAlignment":
-                                    secondaryDisplay.changeInfoAlignment();
-                                    break;
-                                case "checkSongInfoShowHide":
-                                    secondaryDisplay.checkSongInfoShowHide();
-                                    break;
-
-                                // Song content
-                                case "setSongContent":
-                                    secondaryDisplay.setSongContent();
-                                    break;
-
-                                case "contentAlignment":
-                                case "showSection":
-                                    if (song.getFiletype() != null && song.getFiletype().equals("PDF")) {
-                                        secondaryDisplay.showSection(song.getPdfPageCurrent());
-                                    } else {
-                                        secondaryDisplay.showSection(song.getCurrentSection());
-                                    }
-                                    break;
-                                case "editView":
-                                    secondaryDisplay.editView();
-                                    break;
-                                case "newSongLoaded":
-                                    secondaryDisplay.setIsNewSong();
-                                    // Log this as well
-                                    if (getSong()!=null) {
-                                        getAnalyticsHelper().lastCastDate(getSong().getUuid());
-                                    }
-                                    break;
-
-                                // The alert bar
-                                case "showAlert":
-                                    secondaryDisplay.showAlert();
-                                    break;
-                                case "updateAlert":
-                                    secondaryDisplay.updateAlert();
-                                    break;
-
-                                // The screen setup
-                                case "measureAvailableSizes":
-                                    secondaryDisplay.measureAvailableSizes();
-                                    break;
-                                case "setScreenSizes":
-                                    secondaryDisplay.setScreenSizes();
-                                    break;
-                                case "changeBackground":
-                                    secondaryDisplay.changeBackground();
-                                    break;
-                                case "changeRotation":
-                                    secondaryDisplay.changeRotation();
-                                    break;
-                                case "setSongContentPrefs":
-                                    secondaryDisplay.setSongContentPrefs();
-                                    break;
-
-                                // The logo
-                                case "changeLogo":
-                                    secondaryDisplay.changeLogo();
-                                    break;
-                                case "showLogo":
-                                    secondaryDisplay.showLogo(presenterSettings.getLogoOn(), false);
-                                    break;
-
-                                // Black and blank screen
-                                case "showBlackscreen":
-                                    secondaryDisplay.showBlackScreen();
-                                    break;
-                                case "showBlankscreen":
-                                    secondaryDisplay.showBlankScreen();
-                                    break;
-
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-    @Override
-    public void presenterShowSection(int position) {
-        int sections;
-        if ((song.getFiletype()!=null && song.getFiletype().equals("PDF")) || song.getFolder().contains("**Image")) {
-            sections = song.getPdfPageCount();
-            if (position < sections) {
-                song.setPdfPageCurrent(position);
-            }
-        } else if (song.getFiletype()!=null && song.getFiletype().equals("IMG")) {
-            sections = 1;
-            song.setPdfPageCount(0);
-            song.setCurrentSection(0);
-        } else {
-            sections = song.getPresoOrderSongSections().size();
-            if (position < sections) {
-                song.setCurrentSection(position);
-            }
-        }
-
-        if (secondaryDisplays != null) {
-            for (SecondaryDisplay secondaryDisplay : secondaryDisplays) {
-                if (secondaryDisplay != null && secondaryDisplay.isShowing() &&
-                        position < sections) {
-                    try {
-                        getMainHandler().post(() -> secondaryDisplay.showSection(position));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-    }
+    public void presenterShowSection(int position) {}
 
     @Override
     public void performanceShowSection(int position) {
