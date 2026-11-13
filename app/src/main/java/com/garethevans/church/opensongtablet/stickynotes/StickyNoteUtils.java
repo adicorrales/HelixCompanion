@@ -13,7 +13,6 @@ public class StickyNoteUtils {
     public void prepareStickyPopUps(View v) {}
     public void toggleStickyPopUps(View v) {}
     public void updateStickyAlphas(float alpha) {}
-    public void updateStickyAlphas(int alpha) {}
     public void parseAndMigrate(Song s) {}
     public void populateStickyNoteEditorViews(Context c, LinearLayout layout) {}
     public boolean hasStickyOnOverride() { return false; }

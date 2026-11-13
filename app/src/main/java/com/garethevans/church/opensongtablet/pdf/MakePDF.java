@@ -21,11 +21,8 @@ public class MakePDF {
     public void setSong(Song s) {}
     public void setHeaderHeight(int h) {}
     public void setExportingSongList(boolean e) {}
-    public void setForceSinglePagePDF(boolean f) {}
-    public void getColumns(ArrayList<View> v1, ArrayList<Integer> i1, ArrayList<Integer> i2, LinearLayout l, int w, int h) {}
-    public void getColumns(ArrayList<View> v1, ArrayList<Integer> i1, ArrayList<Integer> i2) {}
-    public Uri createTextPDF(ArrayList<View> v1, ArrayList<Integer> i1, ArrayList<Integer> i2, LinearLayout l, String name, Object o) { return Uri.EMPTY; }
-    public Uri createTextPDF(ArrayList<View> v1, ArrayList<Integer> i1, ArrayList<Integer> i2, LinearLayout l, int w, int h, String name, Object o) { return Uri.EMPTY; }
+public void getColumns(ArrayList<View> v1, ArrayList<Integer> i1, ArrayList<Integer> i2) {}
+  public Uri createTextPDF(ArrayList<View> v1, ArrayList<Integer> i1, ArrayList<Integer> i2, LinearLayout l, int w, int h, String name, Object o) { return Uri.EMPTY; }
     public void createBlankPDFDoc(String name, PrintAttributes a) {}
     public void addCurrentItemToPDF(ArrayList<View> v, ArrayList<Integer> i1, ArrayList<Integer> i2, LinearLayout l) {}
     public void addCurrentItemToPDF(ArrayList<View> v, ArrayList<Integer> i1, ArrayList<Integer> i2, LinearLayout l, int w, int h) {}
