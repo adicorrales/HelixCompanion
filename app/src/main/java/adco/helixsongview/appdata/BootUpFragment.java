@@ -81,7 +81,9 @@ public class BootUpFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (mainActivityInterface.getWaitingOnBootUpFragment()) {
+        if (mainActivityInterface != null &&
+            mainActivityInterface.getWaitingOnBootUpFragment() &&
+            !mainActivityInterface.getSongListBuildIndex().getIndexComplete()) {
             startOrSetUp();
         }
     }
@@ -113,14 +115,12 @@ public class BootUpFragment extends Fragment {
             Log.d(TAG,"now runningStartOrSetup()");
 
             if (storageIsCorrectlySet()) {
-                if (!mainActivityInterface.getAlertChecks().showUpdateInfo() &&
-                        mainActivityInterface.getPreferences().getMyPreferenceBoolean("indexSkipAllowed", false)) {
-                    try {
-                        BootUpIndexBottomSheet bootUpIndexBottomSheet = new BootUpIndexBottomSheet(this);
-                        bootUpIndexBottomSheet.show(mainActivityInterface.getMyFragmentManager(), "BootUpIndexing");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                boolean hasSongsInDb = mainActivityInterface.getSQLiteHelper().getSongCount() > 0;
+                boolean skipAllowed = mainActivityInterface.getPreferences().getMyPreferenceBoolean("indexSkipAllowed", false);
+
+                if (hasSongsInDb || skipAllowed) {
+                    // Database is already populated. Do a quick boot without wiping the DB or forcing full index
+                    startBootProcess(true, false);
                 } else {
                     startBootProcess(true, true);
                 }
@@ -214,7 +214,6 @@ public class BootUpFragment extends Fragment {
                     if (needIndex) {
                         // We want to rebuild the index, either fully or quickly
                         mainActivityInterface.getSongListBuildIndex().setIndexComplete(false);
-                        mainActivityInterface.getPreferences().setMyPreferenceBoolean("indexSkipAllowed", false);
                         // Check we have an active (and clean database)
                         mainActivityInterface.getSQLiteHelper();
                         // Now run the insertFast to prepare the database with the basics
@@ -224,6 +223,7 @@ public class BootUpFragment extends Fragment {
                     } else {
                         mainActivityInterface.getSongListBuildIndex().setIndexComplete(true);
                     }
+                    mainActivityInterface.getPreferences().setMyPreferenceBoolean("indexSkipAllowed", true);
 
                     message = success;
                     updateMessage();

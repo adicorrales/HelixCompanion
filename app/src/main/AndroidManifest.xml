@@ -166,7 +166,6 @@
             android:launchMode="singleTask"
             android:theme="@style/AppTheme"
             android:hardwareAccelerated="false"
-            android:stateNotNeeded="true"
             tools:ignore="DiscouragedApi">
 
             <nav-graph android:value="@navigation/navigation" />

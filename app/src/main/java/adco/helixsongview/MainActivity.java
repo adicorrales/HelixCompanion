@@ -561,14 +561,22 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 setupViews();
 
                 // Now if we are showing the bootup fragment, proceed with that
-                waitingOnBootUpFragment = true;
+                if (bootUpCompleted) {
+                    waitingOnBootUpFragment = false;
+                    initialiseActivity();
+                    navHome();
+                    showActionBar();
+                    updateMargins();
+                } else {
+                    waitingOnBootUpFragment = true;
 
-                if (bootUpFragment != null) {
-                    try {
-                        hideActionBar();
-                        bootUpFragment.startOrSetUp();
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    if (bootUpFragment != null) {
+                        try {
+                            hideActionBar();
+                            bootUpFragment.startOrSetUp();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             });
@@ -1125,6 +1133,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
         // Tell the second screen we are ready
         bootUpCompleted = true;
+        waitingOnBootUpFragment = false;
 
         mainLooper.post(() -> myView.myAppBarLayout.setVisibility(View.VISIBLE));
     }

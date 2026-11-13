@@ -103,6 +103,13 @@ public class SQLiteHelper {
             return new ArrayList<>();
         }
     }
+    public int getSongCount() {
+        try {
+            return mainActivityInterface.getCommonSQL().getSongCount(getReadableDatabase());
+        } catch (OutOfMemoryError | Exception e) {
+            return 0;
+        }
+    }
     public boolean songExists(String folder, String filename) {
         try {
             return mainActivityInterface.getCommonSQL().songExists(getReadableDatabase(), folder, filename);

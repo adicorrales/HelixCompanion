@@ -1461,6 +1461,22 @@ public class CommonSQL {
     }
 
 
+    public int getSongCount(SQLiteDatabase db) {
+        int count = 0;
+        Cursor cursor = null;
+        try {
+            cursor = db.rawQuery("SELECT COUNT(*) FROM " + SQLite.TABLE_NAME, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                count = cursor.getInt(0);
+            }
+        } catch (OutOfMemoryError | Exception e) {
+            Log.e(TAG, "Error getting song count", e);
+        } finally {
+            closeCursor(cursor);
+        }
+        return count;
+    }
+
     // General helpers
     public void closeCursor(Cursor cursor) {
         if (cursor != null) {
