@@ -80,8 +80,7 @@ import com.garethevans.church.opensongtablet.appdata.MyFonts;
 import com.garethevans.church.opensongtablet.appdata.TimeTools;
 import com.garethevans.church.opensongtablet.appdata.VersionNumber;
 import com.garethevans.church.opensongtablet.autoscroll.Autoscroll;
-//import com.garethevans.church.opensongtablet.beatbuddy.BeatBuddy;
-//import com.garethevans.church.opensongtablet.beatbuddy.BBOptionsFragment;
+
 
 import com.garethevans.church.opensongtablet.chords.ChordDirectory;
 import com.garethevans.church.opensongtablet.chords.ChordDisplayProcessing;
@@ -179,10 +178,7 @@ import com.garethevans.church.opensongtablet.sqlite.CommonSQL;
 import com.garethevans.church.opensongtablet.sqlite.NonOpenSongSQLiteHelper;
 import com.garethevans.church.opensongtablet.sqlite.SQLiteHelper;
 import com.garethevans.church.opensongtablet.tags.BulkTagAssignFragment;
-import com.garethevans.church.opensongtablet.stickynotes.StickyNoteUtils;
-import com.garethevans.church.opensongtablet.drummer.DrumViewModel;
 import com.garethevans.church.opensongtablet.variations.Variations;
-//import com.garethevans.church.opensongtablet.voicelive.VoiceLive;
 import com.garethevans.church.opensongtablet.webserver.LocalWiFiHost;
 import com.garethevans.church.opensongtablet.webserver.WebServer;
 import com.garethevans.church.opensongtablet.webserver.WebServerMessagesBottomSheet;
@@ -3087,15 +3083,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     @Override
     public void drummerToggle() {}
 
-    @Override
-    public StickyNoteUtils getStickyNoteUtils() {
-        return new StickyNoteUtils(this);
-    }
+//    @Override
+//    public StickyNoteUtils getStickyNoteUtils() {
+//        return new StickyNoteUtils(this);
+//    }
 
-    @Override
-    public DrumViewModel getDrumViewModel() {
-        return new DrumViewModel();
-    }
 
     // Capo
     @Override

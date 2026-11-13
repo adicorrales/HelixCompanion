@@ -148,7 +148,6 @@ public class PerformanceFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         if (mainActivityInterface!=null) {
-            mainActivityInterface.getStickyNoteUtils().destroyStickyPopUps();
             if (mainActivityInterface.getToolbar() != null) {
                 mainActivityInterface.getToolbar().setPerformanceMode(false);
             }
@@ -158,7 +157,6 @@ public class PerformanceFragment extends Fragment {
     @Override
     public void onDestroyView() {
         if (mainActivityInterface!=null) {
-            mainActivityInterface.getStickyNoteUtils().destroyStickyPopUps();
         }
 
         try {
@@ -619,7 +617,6 @@ public class PerformanceFragment extends Fragment {
                         setupSlideOut();
                         setupSlideIn();
 
-                        mainActivityInterface.getStickyNoteUtils().destroyStickyPopUps();
 
                         // Now reset the song object (doesn't change what's already drawn on the screen)
                         Song songToUse;
@@ -1470,8 +1467,6 @@ public class PerformanceFragment extends Fragment {
             }
         }
 
-        // Prepare the sticky popups (and show if required)
-        mainActivityInterface.getStickyNoteUtils().prepareStickyPopUps(myView.songView);
 
         // Show the audio recorder if we requested it from the settings menu
         mainActivityInterface.displayAudioRecorder();
@@ -1769,11 +1764,6 @@ public class PerformanceFragment extends Fragment {
                 }
             }
         }
-    }
-
-    public void toggleStickyPopUps(boolean forceShow, boolean hide) {
-        Log.d(TAG,"forceShow:"+forceShow+"  hide:"+hide);
-        mainActivityInterface.getStickyNoteUtils().toggleStickyPopUps(myView.songView);
     }
 
     public void showNearbyAlertPopUp(String message) {

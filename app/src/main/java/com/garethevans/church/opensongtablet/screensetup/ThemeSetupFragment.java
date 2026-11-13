@@ -214,7 +214,6 @@ public class ThemeSetupFragment extends Fragment {
         myView.stickybackground2Button.setText(background_string + " 2");
         myView.stickybackground3Button.setText(background_string + " 3");
         myView.stickybackground4Button.setText(background_string + " 4");
-        updateStickyBackgroundColors();
         myView.hotZoneButton.setColor(mainActivityInterface.getMyThemeColors().getHotZoneColor());
         myView.abctextButton.setColor(mainActivityInterface.getMyThemeColors().getAbcPopupTextColor());
         myView.abcbackgroundButton.setColor(mainActivityInterface.getMyThemeColors().getAbcPopupColor());
@@ -331,14 +330,6 @@ public class ThemeSetupFragment extends Fragment {
         });
     }
 
-    public void updateStickyBackgroundColors() {
-        // We use the alpha value of the default button
-        float val = mainActivityInterface.getMyThemeColors().getAlphaFloatFromColor(mainActivityInterface.getMyThemeColors().getStickyBackgroundColor());
-        mainActivityInterface.getStickyNoteUtils().updateStickyAlphas(val);
-        myView.stickybackground1Button.setColor(mainActivityInterface.getMyThemeColors().getStickyBackgroundColor());
-        myView.stickybackground2Button.setColor(mainActivityInterface.getMyThemeColors().getStickyBackgroundColor2());
-        myView.stickybackground3Button.setColor(mainActivityInterface.getMyThemeColors().getStickyBackgroundColor3());
-        myView.stickybackground4Button.setColor(mainActivityInterface.getMyThemeColors().getStickyBackgroundColor4());
-    }
+
 
 }

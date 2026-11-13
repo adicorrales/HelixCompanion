@@ -321,12 +321,7 @@ public class ChooseColorBottomSheet extends BottomSheetCommon {
             mainActivityInterface.getPreferences().setMyPreferenceInt(themePrefix + "_" + whichColor, newColorInt);
         }
 
-        if (whichColor.contains("stickyBackgroundColor")) {
-            // We need to update all of the alphas to match this one
-            // We do this by setting the default sticky note alpha
-            float alpha = mainActivityInterface.getMyThemeColors().getAlphaFloatFromColor(newColorInt);
-            mainActivityInterface.getStickyNoteUtils().updateStickyAlphas(alpha);
-        }
+
         // These changes should call an update to any secondary displays as well
         if (whichColor.equals("presoShadowColor")) {
             mainActivityInterface.getMyThemeColors().setPresoShadowColor(newColorInt);

@@ -24,7 +24,6 @@ import com.garethevans.church.opensongtablet.appdata.MyFonts;
 import com.garethevans.church.opensongtablet.appdata.TimeTools;
 import com.garethevans.church.opensongtablet.appdata.VersionNumber;
 import com.garethevans.church.opensongtablet.autoscroll.Autoscroll;
-//import com.garethevans.church.opensongtablet.beatbuddy.BeatBuddy;
 
 import com.garethevans.church.opensongtablet.chords.ChordDirectory;
 import com.garethevans.church.opensongtablet.chords.ChordDisplayProcessing;
@@ -83,10 +82,7 @@ import com.garethevans.church.opensongtablet.sqlite.AnalyticsSQLiteHelper;
 import com.garethevans.church.opensongtablet.sqlite.CommonSQL;
 import com.garethevans.church.opensongtablet.sqlite.NonOpenSongSQLiteHelper;
 import com.garethevans.church.opensongtablet.sqlite.SQLiteHelper;
-import com.garethevans.church.opensongtablet.stickynotes.StickyNoteUtils;
-import com.garethevans.church.opensongtablet.drummer.DrumViewModel;
 import com.garethevans.church.opensongtablet.variations.Variations;
-//import com.garethevans.church.opensongtablet.voicelive.VoiceLive;
 import com.garethevans.church.opensongtablet.webserver.LocalWiFiHost;
 import com.garethevans.church.opensongtablet.webserver.WebServer;
 
@@ -142,7 +138,7 @@ public interface MainActivityInterface {
     void setSong(Song song);
     void setTempSong(Song tempSong);
     String getMainfoldername();
-    StickyNoteUtils getStickyNoteUtils();
+
     MultiTrackPlayer getMultiTrackPlayer();
 
     // Capo
@@ -291,7 +287,6 @@ public interface MainActivityInterface {
     void onTransportNext();
     void sendHelixSetMidi(int setIdx);
     void sendHelixMidiSetAndSong(int setIdx, int songPosition);
-    DrumViewModel getDrumViewModel();
     void displayDrummerPopup();
 //    VoiceLive getVoiceLive();
     //BeatBuddy getBeatBuddy();
