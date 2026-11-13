@@ -3435,30 +3435,30 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
     @Override
     public void sendHelixMidiSetAndSong(int setIdx, int songPosition) {
-        int channel = getPreferences().getMyPreferenceInt("helixGlobalMidiChannel", 1);
-        if (channel < 1) {
-            channel = 1;
+        int ch = getPreferences().getMyPreferenceInt("helixGlobalMidiChannel", 1);
+        if (ch < 1) {
+            ch = 1;
         }
 
-        if (setIdx < 0) setIdx = 0;
-        if (setIdx > 127) setIdx = 127;
-        if (songPosition < 0) songPosition = 0;
-        if (songPosition > 127) songPosition = 127;
+        final int channel = ch;
+        final int targetSet = Math.max(0, Math.min(setIdx, 127));
+        final int targetSong = Math.max(0, Math.min(songPosition, 127));
 
-        String msgSet = "MIDI" + channel + ":CC63:" + setIdx;
-        String msgSong = "MIDI" + channel + ":CC10:" + songPosition;
+        getThreadPoolExecutor().execute(() -> {
+            String msgSet = "MIDI" + channel + ":CC63:" + targetSet;
+            String msgSong = "MIDI" + channel + ":CC10:" + targetSong;
 
-        // Always send CC 63 (Playlist) with 300ms delay before CC 10 for Set 0 (Song Library) or when playlist changes,
-        // so Helix stays locked onto the target playlist!
-        if (lastSentMidiSetIdx != setIdx || setIdx == 0) {
-            lastSentMidiSetIdx = setIdx;
-            getMidi().sendMidiHexSequence(msgSet);
-            getMainHandler().postDelayed(() -> {
+            if (lastSentMidiSetIdx != targetSet || targetSet == 0) {
+                lastSentMidiSetIdx = targetSet;
+                getMidi().sendMidiHexSequence(msgSet);
+                try {
+                    Thread.sleep(300);
+                } catch (InterruptedException ignored) {}
                 getMidi().sendMidiHexSequence(msgSong);
-            }, 300);
-        } else {
-            getMidi().sendMidiHexSequence(msgSet + "\n" + msgSong);
-        }
+            } else {
+                getMidi().sendMidiHexSequence(msgSet + "\n" + msgSong);
+            }
+        });
     }
 
     private boolean currentlyLoadingSongFromSet = false;
