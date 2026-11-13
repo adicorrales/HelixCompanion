@@ -198,7 +198,6 @@ public class ProfileActions {
             mainActivityInterface.getDisplayPrevNext().updateColors();
             mainActivityInterface.getBatteryStatus().updateBatteryPrefs();
             mainActivityInterface.getWindowFlags().getUpdatedPreferences();
-            mainActivityInterface.getPresenterSettings().getAllPreferences();
             if (mainActivityInterface.getSetMenuFragment()!=null) {
                 mainActivityInterface.getSetMenuFragment().updateAdapterPrefs();
             }

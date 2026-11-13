@@ -189,11 +189,9 @@ public class ChooseColorBottomSheet extends BottomSheetCommon {
         mainActivityInterface.getMyThemeColors().getDefaultColors();
         int oldColorInt;
         try {
-            if (whichColor.equals("backgroundColor")) {
-                oldColorInt = mainActivityInterface.getPresenterSettings().getBackgroundColor();
-            } else {
+
                 oldColorInt = mainActivityInterface.getMyThemeColors().getValue(whichColor);
-            }
+
         } catch (Exception e) {
             e.printStackTrace();
             oldColorInt = -1;
@@ -316,7 +314,7 @@ public class ChooseColorBottomSheet extends BottomSheetCommon {
         if (whichColor.equals("backgroundColor")) {
             // Presenter settings
             mainActivityInterface.getPreferences().setMyPreferenceInt(whichColor,newColorInt);
-            mainActivityInterface.getPresenterSettings().setBackgroundColor(newColorInt);
+
         } else {
             mainActivityInterface.getPreferences().setMyPreferenceInt(themePrefix + "_" + whichColor, newColorInt);
         }

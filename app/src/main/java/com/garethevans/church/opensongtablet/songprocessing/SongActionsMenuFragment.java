@@ -180,8 +180,7 @@ public class SongActionsMenuFragment extends Fragment {
         myView.youTube.setOnClickListener(v -> searchSong("YouTube"));
         myView.youTubeMusic.setOnClickListener(v -> searchSong("YouTubeMusic"));
         myView.spotify.setOnClickListener(v -> searchSong("Spotify"));
-        myView.mutitrackPlayer.setOnClickListener(v -> mainActivityInterface.displayMultiTrack());
-        // GE - hidden this option, but reserving the right to reinstate even just for me
+           // GE - hidden this option, but reserving the right to reinstate even just for me
         // myView.graceTime.setOnCheckedChangeListener((compoundButton, b) -> mainActivityInterface.getPreferences().setMyPreferenceBoolean("graceTime",b));
     }
 

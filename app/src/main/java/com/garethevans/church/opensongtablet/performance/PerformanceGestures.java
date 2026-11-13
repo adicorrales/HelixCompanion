@@ -451,9 +451,6 @@ public class PerformanceGestures {
             case "audioplayerpopup":
                 audioPlayerPopup();
                 break;
-            case "multitrack":
-                multiTrack();
-                break;
             case "webservermessages":
                 webServerMessages();
                 break;
@@ -949,9 +946,6 @@ public class PerformanceGestures {
     }
 
     // Show the multitrack player
-    public void multiTrack() {
-        mainActivityInterface.displayMultiTrack();
-    }
 
     // Show the webServerMessages
     public void webServerMessages() {

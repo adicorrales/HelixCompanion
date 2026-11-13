@@ -1133,7 +1133,6 @@ public class SearchSettingsAdapter extends RecyclerView.Adapter<SearchSettingsVi
 
                 case "action_drummer":
                     mainActivityInterface.navHome();
-                    mainActivityInterface.displayDrummerPopup();
                     break;
 
                 case "action_chordDetectionPopUp":

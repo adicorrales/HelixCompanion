@@ -157,11 +157,6 @@ public class SongProjectionInfo extends LinearLayoutCompat {
             songCCLI.setTextColor(color);
             textClock.setTextColor(color);
 
-            songTitle.setTextSize(mainActivityInterface.getPresenterSettings().getPresoTitleTextSize());
-            songAuthor.setTextSize(mainActivityInterface.getPresenterSettings().getPresoAuthorTextSize());
-            songCopyright.setTextSize(mainActivityInterface.getPresenterSettings().getPresoCopyrightTextSize());
-            songCCLI.setTextSize(mainActivityInterface.getPresenterSettings().getPresoCopyrightTextSize());
-            textClock.setTextSize(mainActivityInterface.getPresenterSettings().getPresoClockSize());
 
             // IV - Ensure Standard line wrap for extra details
             songAuthor.setMaxLines(Integer.MAX_VALUE);
@@ -270,12 +265,6 @@ public class SongProjectionInfo extends LinearLayoutCompat {
             songCopyright.setTextSize(12f);
             songCCLI.setTextSize(12f);
             clockTextSize = 12f;
-        } else {
-            songTitle.setTextSize(mainActivityInterface.getPresenterSettings().getPresoTitleTextSize());
-            songAuthor.setTextSize(mainActivityInterface.getPresenterSettings().getPresoAuthorTextSize());
-            songCopyright.setTextSize(mainActivityInterface.getPresenterSettings().getPresoCopyrightTextSize());
-            songCCLI.setTextSize(mainActivityInterface.getPresenterSettings().getPresoCopyrightTextSize());
-            clockTextSize = mainActivityInterface.getPresenterSettings().getPresoClockSize();
         }
 
         // Now update the clock settings
@@ -283,32 +272,13 @@ public class SongProjectionInfo extends LinearLayoutCompat {
     }
 
     public void updateClockSettings(MainActivityInterface mainActivityInterface) {
-        if (!presenterPrimaryScreen) {
-            mainActivityInterface.getTimeTools().setFormat(textClock,
-                    false, clockTextSize,
-                    mainActivityInterface.getPresenterSettings().getPresoShowClock(),
-                    mainActivityInterface.getPresenterSettings().getPresoClock24h(),
-                    mainActivityInterface.getPresenterSettings().getPresoClockSeconds());
-            // Change the visibility based on the preference (settings open is used for the toolbar clock)
-            Log.d(TAG, "updateClockSettings() wanted:" + mainActivityInterface.getPresenterSettings().getPresoShowClock());
-            textClock.postDelayed(() ->
-                    textClock.setVisibility(mainActivityInterface.getPresenterSettings().getPresoShowClock() ? View.VISIBLE : View.GONE), 500);
-        } else {
+
             textClock.postDelayed(() ->
                     textClock.setVisibility(View.GONE), 500);
-        }
+
     }
 
-    public boolean isNewInfo(String compareString) {
-        String currentString = getTextViewString(songTitle) + getTextViewString(songAuthor) +
-                getTextViewString(songCopyright) + getTextViewString(songCCLI);
 
-        if (compareString!=null) {
-            return !compareString.equals(currentString);
-        } else {
-            return true;
-        }
-    }
 
     @Override
     public void setPadding(int left, int top, int right, int bottom) {

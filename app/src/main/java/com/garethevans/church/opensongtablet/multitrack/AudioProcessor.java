@@ -165,8 +165,6 @@ public class AudioProcessor {
                         // This wav file should be accepted
                         audioFiles.add(filename);
                     }
-                } else if (filename.equals(mainActivityInterface.getMultiTrackPlayer().trackInfoFilename)) {
-                    trackInfoExists = true;
                 }
             }
         } catch (Exception e) {

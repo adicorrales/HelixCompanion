@@ -1199,14 +1199,14 @@ public class ProcessSong {
 
         boolean performancePresentation = presentation &&
                 (mainActivityInterface.getMode().equals(c.getString(R.string.mode_performance)) || mainActivityInterface.getMode().equals(c.getString(R.string.mode_hybrid)));
-        boolean showChords = (presentation && mainActivityInterface.getPresenterSettings().getPresoShowChords()) ||
+        boolean showChords = (presentation) ||
                 (!presentation && displayChords);
 
         // If we have a capo and want to show capo chords, duplicate and transpose the chord line
         String capoText = thisSong.getCapo();
         boolean hasCapo = capoText!=null && !capoText.isEmpty() && !capoText.equals("0");
 
-        if (hasCapo && (displayCapoChords || displayCapoAndNativeChords) && !(performancePresentation && !mainActivityInterface.getPresenterSettings().getPresoShowChords())) {
+        if (hasCapo && (displayCapoChords || displayCapoAndNativeChords) ) {
             int capo = Integer.parseInt(capoText);
             String chordbit = string.substring(0,string.indexOf(groupline_string));
             chordbit = mainActivityInterface.getTranspose().transposeChordForCapo(capo,chordbit).replaceFirst(".","˄");
@@ -1249,7 +1249,7 @@ public class ProcessSong {
         ArrayList<Integer> pos = new ArrayList<>();
 
         // IV - If we are not displaying chords, handle the line as a whole
-        if (!showChords || (performancePresentation && !mainActivityInterface.getPresenterSettings().getPresoShowChords())) {
+        if (!showChords || (performancePresentation )) {
             pos.add(0);
         } else {
             if (lines.length > 1) {
@@ -1286,7 +1286,7 @@ public class ProcessSong {
                 htmlLyrics.append("<tr>");
             }
             if (presentation && !performancePresentation) {
-                tableRow.setGravity(mainActivityInterface.getPresenterSettings().getPresoLyricsAlign());
+
             }
             ArrayList<View> rowViews = new ArrayList<>();
 
@@ -1333,7 +1333,7 @@ public class ProcessSong {
                             textView.setTextDirection(textDirectionForRtl);
                             textView.setGravity(gravityToUseForRtl);
                             // Only show this if we want chords and if there is a capo, we want both capo and native
-                            if (showChords && (!hasCapo || displayCapoAndNativeChords || !displayCapoChords) && !(performancePresentation && !mainActivityInterface.getPresenterSettings().getPresoShowChords())) {
+                            if (showChords && (!hasCapo || displayCapoAndNativeChords || !displayCapoChords) && !(performancePresentation )) {
                                 if (highlightChordColor != 0x00000000) {
                                     // Use highlighted chords
                                     textView.setText(getChordDisplaySpannable(str,chordDisplay,highlightChordColor));
@@ -1377,7 +1377,7 @@ public class ProcessSong {
                         case "capoline":
                             // Only show this if we want chords and if there is a capo and showcapo
                             textView.setTextDirection(textDirectionForRtl);
-                            if (showChords && hasCapo && (displayCapoChords || displayCapoAndNativeChords)  && !(performancePresentation && !mainActivityInterface.getPresenterSettings().getPresoShowChords())) {
+                            if (showChords && hasCapo && (displayCapoChords || displayCapoAndNativeChords)  && !(performancePresentation )) {
                                 if (highlightChordColor != 0x00000000) {
                                     // Use highlighted chords
                                     textView.setText(getChordDisplaySpannable(str, chordDisplay, highlightChordColor));
@@ -1946,7 +1946,7 @@ public class ProcessSong {
         ArrayList<String> newSections = new ArrayList<>();
         ArrayList<String> newHeaders = new ArrayList<>();
 
-        if ((mainActivityInterface.getPresenterSettings().getUsePresentationOrder() &&
+        if ((
                 song.getPresentationorder() != null && !song.getPresentationorder().isEmpty() &&
             !(multiLineVerseKeepCompact && isMultiLineFormatSong(song.getLyrics())))) {
             try {
@@ -2229,18 +2229,7 @@ public class ProcessSong {
                         !mainActivityInterface.getMode().equals(c.getString(R.string.mode_hybrid))) &&
                 (!multiLineVerseKeepCompact && !multilineSong));
 
-        if (presentation &&
-                (!mainActivityInterface.getMode().equals(c.getString(R.string.mode_performance)) &&
-                !mainActivityInterface.getMode().equals(c.getString(R.string.mode_hybrid)))) {
-            textView.setGravity(mainActivityInterface.getPresenterSettings().getPresoLyricsAlign());
-            // IV - Pad the string with space to ensure good block shadow
-            // IV - Start with a non breaking space which will not be removed
-            if (string.startsWith(" ")) {
-                string = string.replaceFirst(" ","\u00A0") + " ";
-            } else {
-                string = '\u00A0' + string + " ";
-            }
-        }
+
         string = string.replace(";D:",";"+c.getString(R.string.autoscroll_inline_pause)+":  ");
         String str = trimOutLineIdentifiers(thisSong, linetype, string);
         if (linetype.equals("heading") && highlightHeadingColor != 0x00000000) {
@@ -2446,9 +2435,7 @@ public class ProcessSong {
 
         // 4. Prepare for line splits: | are relevant to Presenter mode only without chord display
         String lineSplit = " ";
-        if (presentation && !mainActivityInterface.getPresenterSettings().getPresoShowChords()) {
-            lineSplit = "\n";
-        }
+
 
         // 5. Prepare for section splits: || are relevant to presentation and Stage mode.
         // If sectionSplit, ║ is used in further processing later.
@@ -2603,11 +2590,8 @@ public class ProcessSong {
 
         // 13. Go through the lyrics, filter lines needed for this mode/display chords combination.
         // Returns wanted line types and group lines that should be in a table for alignment purposes
-        if (presentation) {
-            lyrics = filterAndGroupLines(lyrics, mainActivityInterface.getPresenterSettings().getPresoShowChords());
-        } else {
+
             lyrics = filterAndGroupLines(lyrics, displayChords);
-        }
 
         // 14. Build the songSections for later recall
         // The song sections are not the views (which can have sections repeated using presentationOrder)
@@ -2715,7 +2699,7 @@ public class ProcessSong {
         // First we process the song (could be the loaded song, or a temp song - that's why we take a reference)
         processSongIntoSections(song, presentation && !performancePresentation);
 
-        boolean showChords = (presentation && mainActivityInterface.getPresenterSettings().getPresoShowChords()) ||
+        boolean showChords = (presentation ) ||
                 (!presentation && displayChords);
 
         // IV - Initialise transpose capo key  - might be needed
@@ -2785,9 +2769,7 @@ public class ProcessSong {
                 }
                 LinearLayout linearLayout = newLinearLayout(); // transparent color
 
-                if (presentation && !performancePresentation) {
-                    linearLayout.setGravity(mainActivityInterface.getPresenterSettings().getPresoLyricsAlign());
-                }
+
 
                 // Add this section to the array (so it can be called later for presentation)
                 if (!section.trim().isEmpty()) {
@@ -3188,8 +3170,7 @@ public class ProcessSong {
                 textView.setPaintFlags(textView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             }
         }
-        if (((linetype.equals("chord") || linetype.equals("capoline")) && displayBoldChordsHeadings) ||
-                (presentation && mainActivityInterface.getPresenterSettings().getPresoLyricsBold())) {
+        if (((linetype.equals("chord") || linetype.equals("capoline")) && displayBoldChordsHeadings) ) {
             // IV - Fake bold will be applied if the font does not support bold
             textView.setPaintFlags(textView.getPaintFlags() | Paint.FAKE_BOLD_TEXT_FLAG);
             textView.setTypeface(textView.getTypeface(), Typeface.BOLD);
@@ -3321,11 +3302,9 @@ public class ProcessSong {
 
         // Work out the maximum scale allowed by preferred max scale font size
         float maxFontScale;
-        if (presentation) {
-            maxFontScale = mainActivityInterface.getPresenterSettings().getFontSizePresoMax() / defFontSize;
-        } else {
+
             maxFontScale = fontSizeMax / defFontSize;
-        }
+
 
         // Work out the minimum scale allowed by preferred min scale font size
         // Not used for presentations

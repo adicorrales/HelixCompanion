@@ -229,9 +229,7 @@ public class PerformanceFragment extends Fragment {
         // Check for connected displays now we have loaded preferences, etc
         if (mainActivityInterface.getFirstRun()) {
             // IV - Make sure second screen overlays are off
-            mainActivityInterface.getPresenterSettings().setBlankscreenOn(false);
             displayInterface.updateDisplay("showBlankscreen");
-            mainActivityInterface.getPresenterSettings().setBlackscreenOn(false);
             displayInterface.updateDisplay("showBlackscreen");
             displayInterface.checkDisplays();
             mainActivityInterface.setFirstRun(false);
@@ -328,7 +326,6 @@ public class PerformanceFragment extends Fragment {
         boolean allowPinchToZoom = mainActivityInterface.getPreferences().getMyPreferenceBoolean("allowPinchToZoom",true);
         myView.zoomLayout.setAllowPinchToZoom(allowPinchToZoom);
         myView.recyclerView.setAllowPinchToZoom(allowPinchToZoom);
-        mainActivityInterface.getPresenterSettings().setLogoOn(false);
         displayInterface.updateDisplay("showLogo");
     }
 
@@ -658,7 +655,6 @@ public class PerformanceFragment extends Fragment {
 
                         mainActivityInterface.getSong().setCurrentSection(0);
                         mainActivityInterface.getSong().setPdfPageCurrent(0);
-                        mainActivityInterface.getPresenterSettings().setCurrentSection(0);
 
                         if (mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().sendAsHost()) {
                             // Only the first (with no delay) and last (with delay) of a long sequence of song changes is actually sent
@@ -1440,7 +1436,7 @@ public class PerformanceFragment extends Fragment {
             displayInterface.updateDisplay("setSongContent");
         } else if (!mainActivityInterface.getSong().getFiletype().equals("XML") ||
                 mainActivityInterface.getSong().getFolder().contains("**Image")) {
-            mainActivityInterface.getPresenterSettings().setCurrentSection(0);
+
             displayInterface.updateDisplay("showSection");
         } else {
             displayInterface.updateDisplay("setSongContent");
@@ -1868,8 +1864,7 @@ public class PerformanceFragment extends Fragment {
                         myView.recyclerView.doSmoothScrollTo(recyclerLayoutManager, position);
                     }
                 }
-                mainActivityInterface.getPresenterSettings().setCurrentSection(position);
-                try {
+                 try {
                     displayInterface.updateDisplay("showSection");
                 } catch (Exception e) {
                     e.printStackTrace();

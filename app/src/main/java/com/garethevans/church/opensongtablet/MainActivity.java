@@ -128,8 +128,6 @@ import com.garethevans.church.opensongtablet.links.LinksFragment;
 import com.garethevans.church.opensongtablet.midi.Midi;
 import com.garethevans.church.opensongtablet.midi.MidiActionBottomSheet;
 import com.garethevans.church.opensongtablet.midi.MidiFragment;
-import com.garethevans.church.opensongtablet.multitrack.MultiTrackPlayer;
-import com.garethevans.church.opensongtablet.multitrack.MultiTrackPopUp;
 import com.garethevans.church.opensongtablet.nearby.NearbyActions;
 import com.garethevans.church.opensongtablet.nearby.NearbyConnectionsFragment;
 import com.garethevans.church.opensongtablet.nearby.SyncNearbyFragment;
@@ -255,7 +253,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private MakePDF makePDF;
 
     private Midi midi;
-    private MultiTrackPlayer multiTrackPlayer;
+
     private NearbyActions nearbyActions;
     private NonOpenSongSQLiteHelper nonOpenSongSQLiteHelper;
 
@@ -296,7 +294,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private ActivityResultLauncher<String> audioPermissionLauncher;
     private ActivityResultLauncher<Intent> selectFileLauncher;
     private ActivityResultLauncher<Intent> selectFolderLauncher;
-    private MultiTrackPopUp multiTrackPopUp;
+
     private MediaProjectionManager projectionManager;
     private MediaProjection mediaProjection;
     private ActivityResultLauncher<Intent> mediaProjectionLauncher;
@@ -320,7 +318,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private NearbyConnectionsFragment nearbyConnectionsFragment;
     private PedalsFragment pedalsFragment;
     private BootUpFragment bootUpFragment;
-    private Object presenterFragment = null;
     private boolean waitingOnBootUpFragment = false;
     private ViewPager2 viewPager;
     private AppBarConfiguration appBarConfiguration;
@@ -435,13 +432,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         selectFolderLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
-                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                        if (multiTrackPopUp != null) {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                multiTrackPopUp.processAlternativeFolderUri(result.getData());
-                            }
-                        }
-                    }
+
                 });
 
         // The MediaProjection launcher
@@ -910,7 +901,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         swipes = getSwipes();
         timeTools = getTimeTools();
         displayPrevNext = getDisplayPrevNext();
-        multiTrackPlayer = getMultiTrackPlayer();
 
         // Other file actions
         exportActions = getExportActions();
@@ -1965,49 +1955,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     // For audio recording
 
 
-    @Override
-    public void displayDrummerPopup() {
-    }
 
-    @SuppressLint("NewApi")
-    @Override
-    public void displayMultiTrack() {
-        // Only allow for API 21 and above
-        getMainHandler().post(() -> {
-            // Note that we need to decide on the audio encoding
-            getMultiTrackPlayer().setAudioInfoSetForSong(false);
 
-            if (myView != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                if (multiTrackPopUp != null) {
-                    // Close the popup
-                    try {
-                        multiTrackPopUp.destroyPopup();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    multiTrackPopUp = null;
-
-                } else {
-                    // Create and open the popup
-                    multiTrackPopUp = new MultiTrackPopUp(this);
-                    multiTrackPopUp.floatMultiTrack(myView.fragmentView);
-                }
-            }
-        });
-    }
-
-    @Override
-    public void nullMultitrackPopUp() {
-        multiTrackPopUp = null;
-    }
-
-    @Override
-    public MultiTrackPlayer getMultiTrackPlayer() {
-        if (multiTrackPlayer == null) {
-            multiTrackPlayer = new MultiTrackPlayer(this);
-        }
-        return multiTrackPlayer;
-    }
 
     // Instructions sent from fragments for MainActivity to deal with
     @Override
@@ -3049,8 +2998,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
     private void observeDrummer() {}
 
-    @Override
-    public void metronomeToggle() {}
 
     @Override
     public void setRequireAudioRecorder() {}
@@ -3117,9 +3064,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 break;
             case "capoHide":
                 myView.onScreenInfo.showCapo(false);
-                break;
-            case "setblankScreenUnChecked":
-                getPresenterSettings().setBlankscreenOn(false);
                 break;
         }
     }
@@ -3465,14 +3409,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     }
 
     private int lastSentMidiSetIdx = -1;
-
-    @Override
-    public PresenterSettings getPresenterSettings() {
-        if (presenterSettings == null) {
-            presenterSettings = new PresenterSettings(this);
-        }
-        return presenterSettings;
-    }
 
     @Override
     public void sendHelixSetMidi(int setIdx) {
@@ -4279,10 +4215,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     public String modePerformanceString() {
         return mode_performance;
     }
-    @Override
-    public String modePresenterString() {
-        return mode_performance;
-    }
+
     @Override
     public String modeStageString() {
         return mode_performance;
@@ -5054,9 +4987,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             }
         }
 
-        if (getMultiTrackPlayer()!=null) {
-            getMultiTrackPlayer().closeMultitrack();
-        }
+
 
         // Clear out the export and received folders
         getStorageAccess().wipeFolder("Export", "");

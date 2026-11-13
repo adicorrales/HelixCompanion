@@ -3,7 +3,7 @@ package com.garethevans.church.opensongtablet.interfaces;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.media.projection.MediaProjection;
+
 import android.net.Uri;
 import android.os.Handler;
 import android.view.KeyEvent;
@@ -48,7 +48,7 @@ import com.garethevans.church.opensongtablet.importsongs.WebDownload;
 import com.garethevans.church.opensongtablet.justchords.ConvertJustChords;
 import com.garethevans.church.opensongtablet.midi.Midi;
 import com.garethevans.church.opensongtablet.midi.MidiFragment;
-import com.garethevans.church.opensongtablet.multitrack.MultiTrackPlayer;
+//import com.garethevans.church.opensongtablet.multitrack.MultiTrackPlayer;
 import com.garethevans.church.opensongtablet.nearby.NearbyActions;
 import com.garethevans.church.opensongtablet.openchords.OpenChordsAPI;
 import com.garethevans.church.opensongtablet.pads.Pad;
@@ -60,7 +60,7 @@ import com.garethevans.church.opensongtablet.performance.PerformanceGestures;
 import com.garethevans.church.opensongtablet.preferences.AppPermissions;
 import com.garethevans.church.opensongtablet.preferences.Preferences;
 import com.garethevans.church.opensongtablet.preferences.ProfileActions;
-import com.garethevans.church.opensongtablet.presenter.PresenterSettings;
+//import com.garethevans.church.opensongtablet.presenter.PresenterSettings;
 import com.garethevans.church.opensongtablet.screensetup.BatteryStatus;
 import com.garethevans.church.opensongtablet.screensetup.Palette;
 import com.garethevans.church.opensongtablet.screensetup.ShowToast;
@@ -90,7 +90,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.function.Consumer;
+
 
 public interface MainActivityInterface {
 
@@ -109,7 +109,6 @@ public interface MainActivityInterface {
     String getMode();
     void setMode(String whichMode);
     String modePerformanceString();
-    String modePresenterString();
     String modeStageString();
     String modeHybridString();
     void setFirstRun(boolean firstRun);
@@ -122,7 +121,7 @@ public interface MainActivityInterface {
 
     // Preferences and settings
     Preferences getPreferences();
-    PresenterSettings getPresenterSettings();
+
     ProfileActions getProfileActions();
     MyFonts getMyFonts();
     ThemeColors getMyThemeColors();
@@ -138,8 +137,6 @@ public interface MainActivityInterface {
     void setSong(Song song);
     void setTempSong(Song tempSong);
     String getMainfoldername();
-
-    MultiTrackPlayer getMultiTrackPlayer();
 
     // Capo
     void dealWithCapo();
@@ -206,7 +203,7 @@ public interface MainActivityInterface {
     // OpenChords stuff
     OpenChordsAPI getOpenChordsAPI();
 
-    void metronomeToggle();
+
     void setRequireAudioRecorder();
     void displayAudioRecorder();
     void toggleChordDetection();
@@ -287,9 +284,6 @@ public interface MainActivityInterface {
     void onTransportNext();
     void sendHelixSetMidi(int setIdx);
     void sendHelixMidiSetAndSong(int setIdx, int songPosition);
-    void displayDrummerPopup();
-//    VoiceLive getVoiceLive();
-    //BeatBuddy getBeatBuddy();
     void toggleBeatBuddyControlPopUp();
     void forceCloseBeatBuddyControlPopUp();
     void updateBeatBuddyControlPopUp();
@@ -360,7 +354,7 @@ public interface MainActivityInterface {
     void toggleScale();
     void updateMargins();
     int[] getViewMargins();
-    boolean getIsSecondaryDisplaying();
+
 
     // Song sheet titles
     void setSongSheetTitleLayout(LinearLayout linearLayout);
@@ -378,7 +372,4 @@ public interface MainActivityInterface {
     ChordDirectory getChordDirectory();
     void updateOnScreenInfo(String what);
 
-    // Record audio popup
-    void displayMultiTrack();
-    void nullMultitrackPopUp();
 }

@@ -11,7 +11,7 @@ if (localPropsFile.exists()) {
 }
 
 android {
-    namespace = "com.garethevans.church.opensongtablet"
+    namespace = "adco.helixsongview"
     compileSdk = 36
 
     // --- Signing configuration ---

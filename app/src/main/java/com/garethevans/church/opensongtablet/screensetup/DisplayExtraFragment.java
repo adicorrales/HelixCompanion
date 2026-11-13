@@ -228,10 +228,7 @@ public class DisplayExtraFragment extends Fragment {
             updateBooleanPreference("hideInlineMidi",isChecked,null);
             mainActivityInterface.getProcessSong().updateProcessingPreferences();
         });
-        myView.presoOrder.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            updateBooleanPreference("usePresentationOrder",isChecked,null);
-            mainActivityInterface.getPresenterSettings().setUsePresentationOrder(isChecked);
-        });
+
         myView.keepMultiline.setOnCheckedChangeListener(((buttonView, isChecked) -> {
             updateBooleanPreference("multiLineVerseKeepCompact",isChecked,null);
             mainActivityInterface.getProcessSong().updateProcessingPreferences();

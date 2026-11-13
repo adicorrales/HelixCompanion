@@ -166,8 +166,6 @@ public class NearbyReceivePayloads {
                                         scrollByProportion(nearbyJson);
                                     } else if (what.startsWith(nearbyActions.scrollToTag)) {
                                         scrollToProportion(nearbyJson);
-                                    } else if (what.startsWith(nearbyActions.messageTag)) {
-                                        messageDisplay(nearbyJson);
                                     } else if (what.equals(nearbyActions.sectionTag)) {
                                         selectSection(nearbyJson);
                                     } else if (what.equals(nearbyActions.songTag)) {
@@ -308,16 +306,7 @@ public class NearbyReceivePayloads {
     }
 
     // A nearby message has been received
-    private void messageDisplay(NearbyJson nearbyJson) {
-        // Show an alert to the client
-        if (!mainActivityInterface.getMode().equals(mainActivityInterface.modePresenterString()) && nearbyMessageSticky) {
-            // Show a sticky note alert
-            mainActivityInterface.showNearbyAlertPopUp(nearbyJson.getMessage());
-        } else {
-            // Show a toast message
-            mainActivityInterface.getShowToast().doIt(nearbyJson.getMessage());
-        }
-    }
+
 
     // Change sections
     public void selectSection(NearbyJson nearbyJson) {
