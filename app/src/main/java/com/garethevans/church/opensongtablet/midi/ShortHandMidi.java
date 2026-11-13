@@ -152,15 +152,15 @@ public class ShortHandMidi {
                             commandPart2 = "0x20";
                             commandPart3 = valueToHex(valueFromString(bit, "LSB"));
 
-                        } else if (bit.startsWith("VL")) {
-                            // We do this differently.  Set commandPart2 = "VoiceLive" so we know
-                            int channel = 1;
-                            if (!midiChannel.replaceAll("\\D","").isEmpty()) {
-                                channel = Integer.parseInt(midiChannel.replaceAll("\\D",""));
-                            }
-                            commandPart1 = mainActivityInterface.getVoiceLive().getMessageFromShortHand(channel,bit);
-                            commandPart2 = "VoiceLive";
-                            commandPart3 = "";
+//                        } else if (bit.startsWith("VL")) {
+//                            // We do this differently.  Set commandPart2 = "VoiceLive" so we know
+//                            int channel = 1;
+//                            if (!midiChannel.replaceAll("\\D","").isEmpty()) {
+//                                channel = Integer.parseInt(midiChannel.replaceAll("\\D",""));
+//                            }
+//                            commandPart1 = mainActivityInterface.getVoiceLive().getMessageFromShortHand(channel,bit);
+//                            commandPart2 = "VoiceLive";
+//                            commandPart3 = "";
 
 //                        } else if (bit.contains("BBTX")) {
 //                            commandPart1 = "0xB";

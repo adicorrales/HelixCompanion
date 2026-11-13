@@ -1580,7 +1580,7 @@ public class PerformanceFragment extends Fragment {
             // Update any midi commands (if any)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (//mainActivityInterface.getBeatBuddy().getBeatBuddyAutoLookup() ||
-                        mainActivityInterface.getVoiceLive().getVoiceLiveSendKey() ||
+                        //mainActivityInterface.getVoiceLive().getVoiceLiveSendKey() ||
                         mainActivityInterface.getMidi().getMidiSendAuto()) {
 
                     int delay = 0;
@@ -1590,9 +1590,9 @@ public class PerformanceFragment extends Fragment {
 //                    }
 
                     // Send the VoiceLive key if required
-                    if (mainActivityInterface.getVoiceLive().getVoiceLiveSendKey()) {
-                        delay += mainActivityInterface.getVoiceLive().tryAutoSend(mainActivityInterface.getSong());
-                    }
+//                    if (mainActivityInterface.getVoiceLive().getVoiceLiveSendKey()) {
+//                        delay += mainActivityInterface.getVoiceLive().tryAutoSend(mainActivityInterface.getSong());
+//                    }
 
                     if (mainActivityInterface.getMidi().getMidiSendAuto()) {
                         mainActivityInterface.getMainHandler().postDelayed(() -> {

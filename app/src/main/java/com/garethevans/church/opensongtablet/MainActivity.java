@@ -184,7 +184,7 @@ import com.garethevans.church.opensongtablet.tags.BulkTagAssignFragment;
 import com.garethevans.church.opensongtablet.stickynotes.StickyNoteUtils;
 import com.garethevans.church.opensongtablet.drummer.DrumViewModel;
 import com.garethevans.church.opensongtablet.variations.Variations;
-import com.garethevans.church.opensongtablet.voicelive.VoiceLive;
+//import com.garethevans.church.opensongtablet.voicelive.VoiceLive;
 import com.garethevans.church.opensongtablet.webserver.LocalWiFiHost;
 import com.garethevans.church.opensongtablet.webserver.WebServer;
 import com.garethevans.church.opensongtablet.webserver.WebServerMessagesBottomSheet;
@@ -296,7 +296,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private Transpose transpose;
     private Variations variations;
     private VersionNumber versionNumber;
-    private VoiceLive voiceLive;
+//    private VoiceLive voiceLive;
     private WebDownload webDownload;
     private WebServer webServer;
 
@@ -910,7 +910,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         performanceGestures = getPerformanceGestures();
         pageButtons = getPageButtons();
         midi = getMidi();
-        voiceLive = getVoiceLive();
+//        voiceLive = getVoiceLive();
         pedalActions = getPedalActions();
         pad = getPad();
         autoscroll = getAutoscroll();
@@ -3050,13 +3050,13 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 //        return beatBuddy;
 //    }
 
-    @Override
-    public VoiceLive getVoiceLive() {
-        if (voiceLive == null) {
-            voiceLive = new VoiceLive(this);
-        }
-        return voiceLive;
-    }
+//    @Override
+//    public VoiceLive getVoiceLive() {
+//        if (voiceLive == null) {
+//            voiceLive = new VoiceLive(this);
+//        }
+//        return voiceLive;
+//    }
 
     private void observeDrummer() {}
 

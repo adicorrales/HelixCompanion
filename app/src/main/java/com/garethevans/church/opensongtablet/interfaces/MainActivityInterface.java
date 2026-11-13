@@ -87,7 +87,7 @@ import com.garethevans.church.opensongtablet.sqlite.SQLiteHelper;
 import com.garethevans.church.opensongtablet.stickynotes.StickyNoteUtils;
 import com.garethevans.church.opensongtablet.drummer.DrumViewModel;
 import com.garethevans.church.opensongtablet.variations.Variations;
-import com.garethevans.church.opensongtablet.voicelive.VoiceLive;
+//import com.garethevans.church.opensongtablet.voicelive.VoiceLive;
 import com.garethevans.church.opensongtablet.webserver.LocalWiFiHost;
 import com.garethevans.church.opensongtablet.webserver.WebServer;
 
@@ -294,7 +294,7 @@ public interface MainActivityInterface {
     void sendHelixMidiSetAndSong(int setIdx, int songPosition);
     DrumViewModel getDrumViewModel();
     void displayDrummerPopup();
-    VoiceLive getVoiceLive();
+//    VoiceLive getVoiceLive();
     //BeatBuddy getBeatBuddy();
     void toggleBeatBuddyControlPopUp();
     void forceCloseBeatBuddyControlPopUp();

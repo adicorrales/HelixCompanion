@@ -509,8 +509,8 @@ public class MidiShortHandBottomSheet extends BottomSheetCommon {
                 if (!tempChannel.replaceAll("\\D","").isEmpty()) {
                     int newChannel = Integer.parseInt(tempChannel.replaceAll("\\D",""));
                     mainActivityInterface.getShowToast().doItBottomSheet(string_voicelive_midi_channel+": " + newChannel,myView.getRoot());
-                    mainActivityInterface.getVoiceLive().setVoiceLiveChannel(newChannel);
-                    isVoiceLive = true;
+//                    mainActivityInterface.getVoiceLive().setVoiceLiveChannel(newChannel);
+//                    isVoiceLive = true;
                 }
             }
             String hexCode = mainActivityInterface.getMidi().checkForShortHandMIDI(midiCode);
@@ -520,11 +520,11 @@ public class MidiShortHandBottomSheet extends BottomSheetCommon {
             midiInfo.readableCommand = readable;
             midiInfos.add(midiInfo);
             midiMessagesAdapter.addToEnd(midiInfo);
-            if (isVoiceLive) {
-                // Refresh the list of items fixing the override MIDI channels
-                midiCurrent = midiCurrent + "\n" + midiCode;
-                buildList();
-            }
+//            if (isVoiceLive) {
+//                // Refresh the list of items fixing the override MIDI channels
+//                midiCurrent = midiCurrent + "\n" + midiCode;
+//                buildList();
+//            }
         });
     }
 
