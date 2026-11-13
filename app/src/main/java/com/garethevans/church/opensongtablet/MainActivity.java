@@ -58,7 +58,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.ViewModelProvider;
+
 import androidx.navigation.NavController;
 import androidx.navigation.NavGraph;
 import androidx.navigation.NavOptions;
@@ -229,8 +229,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private AnalyticsSQLiteHelper analyticsHelper;
     private AppPermissions appPermissions;
     private Autoscroll autoscroll;
-    //private volatile BeatBuddy beatBuddy;
-    private final Object beatBuddyLock = new Object();
 
     private CheckInternet checkInternet;
 
@@ -1357,7 +1355,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
         // 1. If we are on a root fragment, show the exit confirmation immediately.
         // By NOT calling navController.navigateUp() or super, we kill the "scrolling" effect.
-        if (currentId == R.id.performanceFragment || currentId == R.id.presenterFragment || currentId == R.id.setStorageLocationFragment) {
+        if (currentId == R.id.performanceFragment || currentId == R.id.setStorageLocationFragment) {
             displayAreYouSure("exit", exit_confirm, null,
                     navController.getCurrentDestination().getNavigatorName(),
                     navHostFragment, null);
@@ -1454,7 +1452,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             // Passing each menu ID as a set of Ids because each
             // menu should be considered as top level destinations.
             appBarConfiguration = new AppBarConfiguration.Builder(R.id.bootUpFragment,
-                    R.id.performanceFragment, R.id.presenterFragment)
+                    R.id.performanceFragment)
                     .setOpenableLayout(myView.drawerLayout)
                     .build();
 
@@ -1497,8 +1495,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     }
 
                     // IV - We set settingsOpen based on the new navDestination
-                    settingsOpen = !((navDestination.getId() == R.id.performanceFragment ||
-                            navDestination.getId() == R.id.presenterFragment));
+                    settingsOpen = !((navDestination.getId() == R.id.performanceFragment ));
 
                     // IV - To smooth build, we add elements right to left
 
@@ -1541,17 +1538,15 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                             aboutToGoTo = navController.getPreviousBackStackEntry().getDestination().getId();
                         }
                         if (navController.getCurrentDestination() != null &&
-                                (navController.getCurrentDestination().getId() == R.id.performanceFragment ||
-                                        navController.getCurrentDestination().getId() == R.id.presenterFragment)) {
+                                (navController.getCurrentDestination().getId() == R.id.performanceFragment)) {
                             closeDrawer(myView.drawerLayout.isDrawerOpen(GravityCompat.START));
 
-                        } else if (aboutToGoTo == R.id.presenterFragment || aboutToGoTo == R.id.performanceFragment ||
+                        } else if (aboutToGoTo == R.id.performanceFragment ||
                                 (settingsOpen && navController.getCurrentDestination() != null &&
                                         navController.getCurrentDestination().getId() == R.id.preferencesFragment) ||
                                 (navHostFragment.getChildFragmentManager().getBackStackEntryCount() == 1 &&
                                         navController.getCurrentDestination() != null &&
-                                        navController.getCurrentDestination().getId() != R.id.performanceFragment &&
-                                        navController.getCurrentDestination().getId() == R.id.presenterFragment)) {
+                                        navController.getCurrentDestination().getId() != R.id.performanceFragment )) {
                             navHome();
                         } else {
                             navController.navigateUp();
@@ -1595,8 +1590,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         if (navController != null && navController.getPreviousBackStackEntry() != null) {
             aboutToGoTo = navController.getPreviousBackStackEntry().getDestination().getId();
         }
-        if ((id == R.id.performanceFragment || id == R.id.presenterFragment) &&
-                (aboutToGoTo == R.id.presenterFragment || aboutToGoTo == R.id.performanceFragment)) {
+        if ((id == R.id.performanceFragment ) &&
+                (aboutToGoTo == R.id.performanceFragment)) {
             navHome();
         } else {
             // Set the force reload flag as we want the song to reload when needed
@@ -1817,7 +1812,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             }
 
             // 1. Identify your target root destination
-            int targetId = whichMode.equals(mode_presenter) ? R.id.presenterFragment : R.id.performanceFragment;
+            int targetId = whichMode.equals(mode_presenter) ? R.id.performanceFragment : R.id.performanceFragment;
 
             // 2. Clear the NavHostFragment's internal child fragment manager backstack directly
             Fragment navHostFragment = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);

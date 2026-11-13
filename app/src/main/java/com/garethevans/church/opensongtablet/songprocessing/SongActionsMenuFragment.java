@@ -146,15 +146,11 @@ public class SongActionsMenuFragment extends Fragment {
         myView.pad.setOnClickListener(v -> actionAllowed(R.id.pads_graph));
         myView.autoscroll.setOnClickListener(v -> actionAllowed(R.id.autoscrollSettingsFragment));
 
-        myView.drummer.setOnClickListener(v -> {
-            mainActivityInterface.navHome();
-            mainActivityInterface.displayDrummerPopup();
-        });
-        myView.stickyNotes.setOnClickListener(v -> actionAllowed(R.id.stickyNotesFragment));
-        myView.highlighter.setOnClickListener(v -> actionAllowed(R.id.highlighterFragment));
+
+
         myView.links.setOnClickListener(v -> actionAllowed(R.id.linksFragment));
         myView.chords.setOnClickListener(v -> actionAllowed(R.id.chords_graph));
-        myView.notation.setOnClickListener(v -> actionAllowed(R.id.musicScoreFragment));
+
         myView.tags.setOnClickListener(v -> {
             if (mainActivityInterface.getSongListBuildIndex().getCurrentlyIndexing()) {
                 String progressText = "";
