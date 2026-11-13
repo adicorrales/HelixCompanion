@@ -3433,19 +3433,24 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             channel = 1;
         }
 
+        if (setIdx < 0) setIdx = 0;
+        if (setIdx > 127) setIdx = 127;
+        if (songPosition < 0) songPosition = 0;
+        if (songPosition > 127) songPosition = 127;
+
         String msgSet = "MIDI" + channel + ":CC63:" + setIdx;
         String msgSong = "MIDI" + channel + ":CC10:" + songPosition;
 
-        if (lastSentMidiSetIdx != setIdx) {
-            // Playlist changed: send CC 63 first, wait 300ms for Helix to switch playlist, then send CC 10
+        // Always send CC 63 (Playlist) with 300ms delay before CC 10 for Set 0 (Song Library) or when playlist changes,
+        // so Helix stays locked onto the target playlist!
+        if (lastSentMidiSetIdx != setIdx || setIdx == 0) {
             lastSentMidiSetIdx = setIdx;
             getMidi().sendMidiHexSequence(msgSet);
             getMainHandler().postDelayed(() -> {
                 getMidi().sendMidiHexSequence(msgSong);
             }, 300);
         } else {
-            // Helix is already on this playlist: send CC 10 directly
-            getMidi().sendMidiHexSequence(msgSong);
+            getMidi().sendMidiHexSequence(msgSet + "\n" + msgSong);
         }
     }
 
