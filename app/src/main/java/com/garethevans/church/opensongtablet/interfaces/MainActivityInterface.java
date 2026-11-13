@@ -54,7 +54,6 @@ import com.garethevans.church.opensongtablet.nearby.NearbyActions;
 import com.garethevans.church.opensongtablet.openchords.OpenChordsAPI;
 import com.garethevans.church.opensongtablet.pads.Pad;
 import com.garethevans.church.opensongtablet.pdf.MakePDF;
-import com.garethevans.church.opensongtablet.pdf.OCR;
 
 import com.garethevans.church.opensongtablet.performance.DisplayPrevNext;
 import com.garethevans.church.opensongtablet.performance.PerformanceFragment;
@@ -350,7 +349,7 @@ public interface MainActivityInterface {
     boolean validScreenShotFile();
     void setScreenshotFile(Bitmap bitmap);
 
-    OCR getOCR();
+
     MakePDF getMakePDF();
 
 

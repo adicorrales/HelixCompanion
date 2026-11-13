@@ -106,7 +106,7 @@ public class SongDetailsBottomSheet extends BottomSheetCommon {
     private void setupListeners() {
         myView.textExtract.setOnClickListener(v -> {
             if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP) {
-                extractText();
+
             } else {
                 mainActivityInterface.getShowToast().doIt(not_available_string);
             }
@@ -117,21 +117,4 @@ public class SongDetailsBottomSheet extends BottomSheetCommon {
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private void extractText() {
-        String filetype = mainActivityInterface.getSong().getFiletype();
-        String folder = mainActivityInterface.getSong().getFolder();
-        String filename = mainActivityInterface.getSong().getFilename();
-        if (filetype.equals("PDF")) {
-            mainActivityInterface.getOCR().getTextFromPDF(mainActivityInterface.getSong().getFolder(),
-                    mainActivityInterface.getSong().getFilename(),false);
-            dismiss();
-        } else if (filetype.equals("IMG")) {
-            Bitmap bitmap = mainActivityInterface.getProcessSong().getSongBitmap(folder,filename);
-            if (bitmap!=null) {
-                mainActivityInterface.getOCR().getTextFromImage(bitmap);
-                dismiss();
-            }
-        }
-    }
 }

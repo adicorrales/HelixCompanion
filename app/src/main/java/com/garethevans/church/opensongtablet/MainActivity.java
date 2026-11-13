@@ -138,8 +138,6 @@ import com.garethevans.church.opensongtablet.openchords.OpenChordsAPI;
 import com.garethevans.church.opensongtablet.openchords.OpenChordsFragment;
 import com.garethevans.church.opensongtablet.pads.Pad;
 import com.garethevans.church.opensongtablet.pdf.MakePDF;
-import com.garethevans.church.opensongtablet.pdf.OCR;
-
 import com.garethevans.church.opensongtablet.performance.DisplayPrevNext;
 import com.garethevans.church.opensongtablet.performance.PerformanceFragment;
 import com.garethevans.church.opensongtablet.performance.PerformanceGestures;
@@ -266,7 +264,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private MultiTrackPlayer multiTrackPlayer;
     private NearbyActions nearbyActions;
     private NonOpenSongSQLiteHelper nonOpenSongSQLiteHelper;
-    private OCR ocr;
+
 
     private OpenChordsAPI openChordsAPI;
     private OpenSongSetBundle openSongSetBundle;
@@ -296,7 +294,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private Transpose transpose;
     private Variations variations;
     private VersionNumber versionNumber;
-//    private VoiceLive voiceLive;
+
     private WebDownload webDownload;
     private WebServer webServer;
 
@@ -4424,13 +4422,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         return showCase;
     }
 
-    @Override
-    public OCR getOCR() {
-        if (ocr == null) {
-            ocr = new OCR(this);
-        }
-        return ocr;
-    }
 
     @Override
     public MakePDF getMakePDF() {

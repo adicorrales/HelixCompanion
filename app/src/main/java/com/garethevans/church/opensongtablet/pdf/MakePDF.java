@@ -24,7 +24,7 @@ public class MakePDF {
 public void getColumns(ArrayList<View> v1, ArrayList<Integer> i1, ArrayList<Integer> i2) {}
   public Uri createTextPDF(ArrayList<View> v1, ArrayList<Integer> i1, ArrayList<Integer> i2, LinearLayout l, int w, int h, String name, Object o) { return Uri.EMPTY; }
     public void createBlankPDFDoc(String name, PrintAttributes a) {}
-    public void addCurrentItemToPDF(ArrayList<View> v, ArrayList<Integer> i1, ArrayList<Integer> i2, LinearLayout l) {}
+
     public void addCurrentItemToPDF(ArrayList<View> v, ArrayList<Integer> i1, ArrayList<Integer> i2, LinearLayout l, int w, int h) {}
     public String getExportFilename() { return ""; }
     public Uri getPDFFile(String name) { return Uri.EMPTY; }
