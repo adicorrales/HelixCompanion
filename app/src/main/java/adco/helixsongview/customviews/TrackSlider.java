@@ -13,7 +13,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 
 import adco.helixsongview.R;
-import adco.helixsongview.multitrack.MultiTrackPlayer;
 import adco.helixsongview.screensetup.Palette;
 import com.google.android.material.slider.Slider;
 
@@ -33,7 +32,6 @@ public class TrackSlider extends LinearLayout {
     private boolean trackMute, trackSolo;
     private int boost=1;
     private int buttonTextOnColor, buttonTextOffColor;
-    private MultiTrackPlayer multiTrackPlayer;
     private View levelIndicator;
     private View muteBox, soloBox, boost1Box, boost2Box, boost3Box;
     private Palette palette;
@@ -49,18 +47,6 @@ public class TrackSlider extends LinearLayout {
         setupViews(context);
     }
 
-    public TrackSlider(Context context, MultiTrackPlayer multiTrackPlayer, int trackNumber, String trackName, Integer trackVolume, String trackPan, Boolean trackMute, Boolean trackSolo) {
-        super(context);
-        this.multiTrackPlayer = multiTrackPlayer;
-        this.trackNumber = trackNumber;
-        this.trackName = trackName==null ? "" : trackName;
-        this.trackVolume = trackVolume==null ? 100 : trackVolume;
-        this.trackPan = trackPan==null ? "C" : trackPan;
-        this.trackMute = trackMute != null && trackMute;
-        this.trackSolo = trackSolo != null && trackSolo;
-        setupViews(context);
-        setupListeners();
-    }
 
     private void setupViews(Context context) {
         inflate(context, R.layout.view_track_slider, this);
@@ -188,53 +174,6 @@ public class TrackSlider extends LinearLayout {
         }
         levelIndicator.setBackgroundColor(palette.secondary);
         updateButtons();
-    }
-
-    private void setupListeners() {
-        volumeSlider.addOnChangeListener((slider, value, fromUser) -> {
-            trackVolume = (int) value;
-            if (trackVolumeTextView!=null) {
-                trackVolumeTextView.setText(String.valueOf((int)value));
-            }
-            multiTrackPlayer.setVolume(trackNumber, trackVolume);
-        });
-        panSlider.addOnChangeListener((slider, value, fromUser) -> {
-            trackPan = getPanSliderString((int)value);
-            multiTrackPlayer.setPan(trackNumber, trackPan);
-        });
-        muteButton.setOnClickListener(v -> {
-            trackMute = !trackMute;
-            if (trackMute) {
-                setSolo(false);
-            }
-            multiTrackPlayer.setSolo(trackNumber,false);
-            multiTrackPlayer.setMute(trackNumber, trackMute);
-            updateButtons();
-        });
-        soloButton.setOnClickListener(v -> {
-            trackSolo = !trackSolo;
-            multiTrackPlayer.setSolo(trackNumber,trackSolo);
-            if (trackSolo) {
-                setMute(false);
-                multiTrackPlayer.setMute(trackNumber, false);
-            }
-            updateButtons();
-        });
-        masterBoost1.setOnClickListener(v -> {
-            boost = 1;
-            multiTrackPlayer.setMasterGainBoost(1f);
-            updateButtons();
-        });
-        masterBoost2.setOnClickListener(v -> {
-            boost = 2;
-            multiTrackPlayer.setMasterGainBoost(2f);
-            updateButtons();
-        });
-        masterBoost3.setOnClickListener(v -> {
-            boost = 3;
-            multiTrackPlayer.setMasterGainBoost(3f);
-            updateButtons();
-        });
     }
 
     public void setMute(boolean trackMute) {
