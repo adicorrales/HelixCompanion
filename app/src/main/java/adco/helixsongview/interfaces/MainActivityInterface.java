@@ -48,7 +48,6 @@ import adco.helixsongview.importsongs.WebDownload;
 import adco.helixsongview.justchords.ConvertJustChords;
 import adco.helixsongview.midi.Midi;
 import adco.helixsongview.midi.MidiFragment;
-//import adco.helixsongview.multitrack.MultiTrackPlayer;
 import adco.helixsongview.nearby.NearbyActions;
 import adco.helixsongview.openchords.OpenChordsAPI;
 import adco.helixsongview.pads.Pad;
@@ -60,7 +59,6 @@ import adco.helixsongview.performance.PerformanceGestures;
 import adco.helixsongview.preferences.AppPermissions;
 import adco.helixsongview.preferences.Preferences;
 import adco.helixsongview.preferences.ProfileActions;
-//import adco.helixsongview.presenter.PresenterSettings;
 import adco.helixsongview.screensetup.BatteryStatus;
 import adco.helixsongview.screensetup.Palette;
 import adco.helixsongview.screensetup.ShowToast;
@@ -109,8 +107,7 @@ public interface MainActivityInterface {
     String getMode();
     void setMode(String whichMode);
     String modePerformanceString();
-    String modeStageString();
-    String modeHybridString();
+
     void setFirstRun(boolean firstRun);
     boolean getFirstRun();
     int getOrientation();
@@ -284,6 +281,7 @@ public interface MainActivityInterface {
     void onTransportNext();
     void sendHelixSetMidi(int setIdx);
     void sendHelixMidiSetAndSong(int setIdx, int songPosition);
+    void resetLastSentMidiSetIdx();
     void toggleBeatBuddyControlPopUp();
     void forceCloseBeatBuddyControlPopUp();
     void updateBeatBuddyControlPopUp();

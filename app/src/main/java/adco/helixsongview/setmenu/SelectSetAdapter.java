@@ -162,10 +162,8 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
     }
 
     private void loadSelectedSet(int position) {
-        // Send MIDI CC 63 immediately on main thread for set change
-        mainActivityInterface.getMainHandler().post(() -> {
-            mainActivityInterface.sendHelixSetMidi(position);
-        });
+        // Reset lastSentMidiSetIdx so sendHelixMidiSetAndSong correctly waits 300ms for playlist loading on Helix
+        mainActivityInterface.resetLastSentMidiSetIdx();
 
         mainActivityInterface.getThreadPoolExecutor().execute(() -> {
             // First, ALWAYS initialize/clear the current set to prevent duplicates!
@@ -207,6 +205,7 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
                     mainActivityInterface.navigateToFragment(null, R.id.performanceFragment);
                 } else {
                     mainActivityInterface.chooseMenu(true);
+                    mainActivityInterface.sendHelixSetMidi(position);
                 }
             });
         });

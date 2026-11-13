@@ -18,7 +18,7 @@ import adco.helixsongview.databinding.EditSongMainBinding;
 import adco.helixsongview.interfaces.EditSongFragmentInterface;
 import adco.helixsongview.interfaces.MainActivityInterface;
 import adco.helixsongview.preferences.TextInputBottomSheet;
-import adco.helixsongview.stickynotes.StickyNote;
+
 
 import java.util.ArrayList;
 

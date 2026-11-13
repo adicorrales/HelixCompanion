@@ -3411,6 +3411,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private int lastSentMidiSetIdx = -1;
 
     @Override
+    public void resetLastSentMidiSetIdx() {
+        lastSentMidiSetIdx = -1;
+    }
+
+    @Override
     public void sendHelixSetMidi(int setIdx) {
         int channel = getPreferences().getMyPreferenceInt("helixGlobalMidiChannel", 1);
         if (channel < 1) {
@@ -4213,15 +4218,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     }
     @Override
     public String modePerformanceString() {
-        return mode_performance;
-    }
-
-    @Override
-    public String modeStageString() {
-        return mode_performance;
-    }
-    @Override
-    public String modeHybridString() {
         return mode_performance;
     }
 

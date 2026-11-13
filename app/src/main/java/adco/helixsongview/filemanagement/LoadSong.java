@@ -24,6 +24,11 @@ public class LoadSong {
     private Uri uri;
     private ArrayList<Song> songsToFix;
     private boolean importingFile = false;
+    private static final android.util.LruCache<String, Song> songCache = new android.util.LruCache<>(50);
+
+    public static void clearSongCache() {
+        songCache.evictAll();
+    }
 
     public LoadSong(Context c) {
         this.c = c;
@@ -55,6 +60,16 @@ public class LoadSong {
             return null;
         }
 
+        String cacheKey = folder + "/" + filename;
+        if (!indexing) {
+            Song cached = songCache.get(cacheKey);
+            if (cached != null) {
+                cached.setCurrentlyLoading(false);
+                mainActivityInterface.setHighlightChangeAllowed(true);
+                return cached;
+            }
+        }
+
         // Clear the song object then add the folder filename back
         thisSong = new Song();
         thisSong.setFolder(folder);
@@ -67,6 +82,7 @@ public class LoadSong {
         if (thisSong.getFiletype()==null) {
             thisSong.setFiletype(mainActivityInterface.getStorageAccess().tryToFixFileTypeFromNull(thisSong.getFilename()));
         }
+        Song loadedSong;
         if (!mainActivityInterface.getSongListBuildIndex().getIndexComplete() ||
                 mainActivityInterface.getSongListBuildIndex().getCurrentlyIndexing() ||
                 thisSong.getFolder().contains("**") || thisSong.getFolder().startsWith("../") ||
@@ -75,10 +91,10 @@ public class LoadSong {
                 (thisSong.getFiletype()!=null && (thisSong.getFiletype().equals("TXT") || thisSong.getFiletype().equals("CHO") || thisSong.getFiletype().equals("iOS")))) {
             // This is set to true once the index is completed, so we either haven't finished indexing
             // or this is a custom slide/note as identified by the folder (which aren't indexed)
-            return doLoadSongFile(thisSong, indexing);
+            loadedSong = doLoadSongFile(thisSong, indexing);
         } else {
             if (thisSong.getFilename().equals("Welcome to OpenSongApp") || thisSong.getFilename().endsWith(c.getString(R.string.welcome))) {
-                return mainActivityInterface.getSong().showWelcomeSong(c, thisSong);
+                loadedSong = mainActivityInterface.getSong().showWelcomeSong(c, thisSong);
             } else {
                 thisSong = mainActivityInterface.getSQLiteHelper().getSpecificSong(
                         thisSong.getFolder(), thisSong.getFilename());
@@ -97,9 +113,14 @@ public class LoadSong {
                 // Check the tempo for the MIDI clock
                 //mainActivityInterface.getMidi().calculateMidiClock(thisSong);
 
-                return thisSong;
+                loadedSong = thisSong;
             }
         }
+
+        if (!indexing && loadedSong != null) {
+            songCache.put(cacheKey, loadedSong);
+        }
+        return loadedSong;
     }
 
     public Song doLoadSongFile(Song thisSong, boolean indexing) {
