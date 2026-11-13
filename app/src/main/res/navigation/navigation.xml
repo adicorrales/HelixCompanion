@@ -17,9 +17,6 @@
             android:id="@+id/action_bootUpFragment_to_performanceFragment"
             app:destination="@id/performanceFragment" />
         <action
-            android:id="@+id/action_bootUpFragment_to_presentationFragment"
-            app:destination="@id/presenterFragment" />
-        <action
             android:id="@+id/action_global_setStorageLocationFragment"
             app:destination="@id/setStorageLocationFragment"/>
     </fragment>
@@ -58,27 +55,6 @@
     </fragment>
 
     <!-- The presenter fragment -->
-    <fragment
-        android:id="@+id/presenterFragment"
-        android:name="com.garethevans.church.opensongtablet.presenter.PresenterFragment"
-        android:label="fragment_presenter"
-        tools:layout="@layout/mode_presenter">
-        <action
-            android:id="@+id/action_presenterFragment_to_preferences_graph"
-            app:destination="@id/preferences_graph" />
-        <action
-            android:id="@+id/action_presenterFragment_to_editsong_graph"
-            app:destination="@id/editsong_graph" />
-        <action
-            android:id="@+id/action_presenterFragment_to_import_graph"
-            app:destination="@id/import_graph" />
-        <deepLink
-            android:id="@+id/deepLinkPresenter"
-            app:uri="@string/deeplink_presenter" />
-        <action
-            android:id="@+id/action_presenterFragment_to_alertInfoDialogFragment"
-            app:destination="@id/alertInfoDialogFragment" />
-    </fragment>
 
     <!-- The preferences graph -->
     <navigation
@@ -915,15 +891,6 @@
                     app:uri="@string/deeplink_sets_backup_restore"/>
             </fragment>
         </navigation>
-        <fragment
-            android:id="@+id/VoiceLive"
-            android:name="com.garethevans.church.opensongtablet.voicelive.VoiceLiveFragment"
-            android:label="VoiceLiveFragment"
-            tools:layout="@layout/settings_voicelive_options">
-            <deepLink
-                android:id="@+id/deepLinkVoiceLive"
-                app:uri="@string/deeplink_voicelive" />
-        </fragment>
 
 
         <fragment

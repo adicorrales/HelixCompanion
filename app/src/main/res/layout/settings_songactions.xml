@@ -97,14 +97,6 @@
                 style="@style/MyDividerLine"/>
 
 
-
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
-                android:id="@+id/drummer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/drummer"
-                android:hint="@string/drummer_player"
-                app:size="large"/>
             <com.garethevans.church.opensongtablet.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
@@ -152,13 +144,6 @@
             <com.garethevans.church.opensongtablet.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
-                android:id="@+id/notation"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/music_score"
-                android:hint="@string/music_score_info"
-                app:size="large"/>
             <com.garethevans.church.opensongtablet.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
