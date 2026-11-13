@@ -37,8 +37,16 @@ public class SearchSettingsAdapter extends RecyclerView.Adapter<SearchSettingsVi
         this.c = c;
         mainActivityInterface = (MainActivityInterface) c;
         this.searchMenuFragment = searchMenuFragment;
-        setupItems();
-        displayedItems = new ArrayList<>(allItems);
+        displayedItems = new ArrayList<>();
+        allItems = new ArrayList<>();
+        mainActivityInterface.getThreadPoolExecutor().execute(() -> {
+            setupItems();
+            synchronized (displayedItems) {
+                displayedItems.clear();
+                displayedItems.addAll(allItems);
+            }
+            mainActivityInterface.getMainHandler().post(this::notifyDataSetChanged);
+        });
     }
 
     // IMPORTANT: THIS IS ALL THE MENU OPTIONS - MUST BE KEPT UP TO DATE FOR SEARCH
