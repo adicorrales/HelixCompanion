@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.garethevans.church.opensongtablet.customviews.DialogHeader
+    <adco.helixsongview.customviews.DialogHeader
         android:id="@+id/dialogHeading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -35,7 +35,7 @@
             app:rowCount="2"
             app:columnCount="3">
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+            <adco.helixsongview.customviews.MyMaterialTextView
                 android:id="@+id/keyInfo"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -44,7 +44,7 @@
                 app:layout_columnWeight="1"
                 android:text="@string/tempo"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+            <adco.helixsongview.customviews.MyMaterialTextView
                 android:id="@+id/durationInfo"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -53,7 +53,7 @@
                 app:layout_columnWeight="1"
                 android:text="@string/song_duration"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+            <adco.helixsongview.customviews.MyMaterialTextView
                 android:id="@+id/tempoInfo"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -62,7 +62,7 @@
                 app:layout_columnWeight="1"
                 android:text="@string/tempo"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
+            <adco.helixsongview.customviews.MyMaterialButton
                 android:id="@+id/keyButton"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -70,7 +70,7 @@
                 app:layout_gravity="center_horizontal"
                 android:text="@string/copy_of"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
+            <adco.helixsongview.customviews.MyMaterialButton
                 android:id="@+id/durationButton"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -78,7 +78,7 @@
                 app:layout_gravity="center_horizontal"
                 android:text="@string/copy_of"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
+            <adco.helixsongview.customviews.MyMaterialButton
                 android:id="@+id/tempoButton"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"

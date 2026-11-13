@@ -17,14 +17,14 @@
             android:orientation="vertical"
             android:paddingBottom="@dimen/extra_scroll_space_large">
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+            <adco.helixsongview.customviews.MyMaterialTextView
                 android:id="@+id/performanceMode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/performance_mode"
                 android:hint="@string/performance_mode_info"
                 app:size="large"/>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
+            <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine"/>
         </LinearLayout>
     </ScrollView>

@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <com.garethevans.church.opensongtablet.customviews.DialogHeader
+        <adco.helixsongview.customviews.DialogHeader
             android:id="@+id/dialogHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
@@ -25,13 +25,13 @@
                 android:orientation="vertical"
                 android:paddingBottom="@dimen/extra_scroll_space">
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                <adco.helixsongview.customviews.MyMaterialTextView
                     android:id="@+id/currentRandomSong"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"/>
 
-                <com.garethevans.church.opensongtablet.customviews.MyExtendedFloatingActionButton
+                <adco.helixsongview.customviews.MyExtendedFloatingActionButton
                     android:id="@+id/findRandom"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -41,7 +41,7 @@
                     android:layout_marginBottom="8dp"
                     android:layout_gravity="end"/>
 
-                <com.garethevans.church.opensongtablet.customviews.MyExtendedFloatingActionButton
+                <adco.helixsongview.customviews.MyExtendedFloatingActionButton
                     android:id="@+id/loadRandom"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

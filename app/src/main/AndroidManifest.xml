@@ -149,7 +149,7 @@
 
 
         <!--
-        android:authorities="com.garethevans.church.opensongtablet.fileprovider"
+        android:authorities="adco.helixsongview.fileprovider"
             -->
         <!--
             Not sure if this is a safe option

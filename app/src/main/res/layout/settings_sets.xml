@@ -16,106 +16,106 @@
             android:orientation="vertical"
             android:paddingBottom="@dimen/extra_scroll_space_large">
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+            <adco.helixsongview.customviews.MyMaterialTextView
                 android:id="@+id/createSet"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/set_new"
                 android:hint="@string/set_new_info"
                 app:size="large"/>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
+            <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+            <adco.helixsongview.customviews.MyMaterialTextView
                 android:id="@+id/loadSet"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/load"
                 android:hint="@string/set_load_info"
                 app:size="large"/>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
+            <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+            <adco.helixsongview.customviews.MyMaterialTextView
                 android:id="@+id/saveSet"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/save"
                 android:hint="@string/set_save_info"
                 app:size="large"/>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
+            <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+            <adco.helixsongview.customviews.MyMaterialTextView
                 android:id="@+id/renameSet"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/rename"
                 android:hint="@string/rename_info"
                 app:size="large"/>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
+            <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+            <adco.helixsongview.customviews.MyMaterialTextView
                 android:id="@+id/deleteSet"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/delete"
                 android:hint="@string/set_delete_info"
                 app:size="large"/>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
+            <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
 
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+            <adco.helixsongview.customviews.MyMaterialTextView
                 android:id="@+id/slideButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/custom_slide"
                 android:hint="@string/add_custom_slide"
                 app:size="large"/>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
+            <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+            <adco.helixsongview.customviews.MyMaterialTextView
                 android:id="@+id/exportSet"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/export"
                 android:hint="@string/set_share_info"
                 app:size="large"/>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
+            <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+            <adco.helixsongview.customviews.MyMaterialTextView
                 android:id="@+id/importSet"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/import_basic"
                 android:hint="@string/import_from_file"
                 app:size="large"/>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
+            <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+            <adco.helixsongview.customviews.MyMaterialTextView
                 android:id="@+id/backupSets"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/backup"
                 android:hint="@string/backup_info"
                 app:size="large"/>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
+            <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+            <adco.helixsongview.customviews.MyMaterialTextView
                 android:id="@+id/restoreSets"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/restore"
                 android:hint="@string/backup_import"
                 app:size="large"/>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
+            <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine"/>
         </LinearLayout>
     </ScrollView>

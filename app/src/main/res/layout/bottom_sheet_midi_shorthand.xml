@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <com.garethevans.church.opensongtablet.customviews.DialogHeader
+    <adco.helixsongview.customviews.DialogHeader
         android:id="@+id/dialogHeading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -23,13 +23,13 @@
             android:orientation="vertical"
             android:paddingBottom="@dimen/extra_scroll_space_large">
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialEditText
+            <adco.helixsongview.customviews.MyMaterialEditText
                 android:id="@+id/midiName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
                 android:hint="@string/title"/>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
+            <adco.helixsongview.customviews.MyDivider
                 android:id="@+id/midiNameDivider"
                 style="@style/MyDividerLine"/>
 
@@ -38,13 +38,13 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
+                <adco.helixsongview.customviews.ExposedDropDown
                     android:id="@+id/midiChannel"
                     android:layout_width="96dp"
                     android:layout_height="wrap_content"
                     android:hint="@string/midi_channel" />
 
-                <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
+                <adco.helixsongview.customviews.ExposedDropDown
                     android:id="@+id/midiCommand"
                     android:layout_width="0dp"
                     android:layout_weight="1"
@@ -61,14 +61,14 @@
                 android:baselineAligned="false"
                 android:orientation="horizontal">
 
-                <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
+                <adco.helixsongview.customviews.ExposedDropDown
                     android:id="@+id/midiValue1"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:hint="@string/midi_value" />
 
-                <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
+                <adco.helixsongview.customviews.ExposedDropDown
                     android:id="@+id/midiValue2"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -77,7 +77,7 @@
                     android:hint="@string/midi_value" />
             </LinearLayout>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+            <adco.helixsongview.customviews.MyMaterialTextView
                 android:id="@+id/midiShortHand"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -88,23 +88,23 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_horizontal">
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
+                <adco.helixsongview.customviews.MyMaterialButton
                     android:id="@+id/midiTest"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/midi_test"
                     android:layout_margin="8dp"/>
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
+                <adco.helixsongview.customviews.MyMaterialButton
                     android:id="@+id/midiAdd"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
                     android:text="@string/midi_add"/>
             </LinearLayout>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
+            <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+            <adco.helixsongview.customviews.MyMaterialSimpleTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/midi_list_item"
@@ -115,10 +115,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="@dimen/extra_scroll_space_large"/>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
+            <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyExtendedFloatingActionButton
+            <adco.helixsongview.customviews.MyExtendedFloatingActionButton
                 android:id="@+id/addCommandButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <com.garethevans.church.opensongtablet.customviews.DialogHeader
+    <adco.helixsongview.customviews.DialogHeader
         android:id="@+id/dialogHeading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -29,13 +29,13 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                <adco.helixsongview.customviews.MyMaterialSimpleTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/songs"
                     android:textSize="@dimen/text_xxlarge" />
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                <adco.helixsongview.customviews.MyMaterialSimpleTextView
                     android:id="@+id/songsNoChangesRequired"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -48,13 +48,13 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                    <adco.helixsongview.customviews.MyMaterialTextView
                         android:id="@+id/newSongs"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/sync_items_not_on_local" />
 
-                    <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
+                    <adco.helixsongview.customviews.MyMaterialButton
                         android:id="@+id/newSongsAction"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -70,13 +70,13 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                    <adco.helixsongview.customviews.MyMaterialTextView
                         android:id="@+id/updateSongs"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/sync_local_items_older" />
 
-                    <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
+                    <adco.helixsongview.customviews.MyMaterialButton
                         android:id="@+id/updateSongsAction"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -84,7 +84,7 @@
                         android:text="@string/sync_update_local_items"
                         app:icon="@drawable/sync" />
 
-                    <com.garethevans.church.opensongtablet.customviews.MyDivider
+                    <adco.helixsongview.customviews.MyDivider
                         style="@style/MyDividerLine"
                         android:layout_marginTop="32dp" />
                 </LinearLayout>
@@ -95,13 +95,13 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                    <adco.helixsongview.customviews.MyMaterialTextView
                         android:id="@+id/songsToDelete"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/sync_delete_local_not_in_remote_info" />
 
-                    <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
+                    <adco.helixsongview.customviews.MyMaterialButton
                         android:id="@+id/deleteSongsAction"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -119,13 +119,13 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                <adco.helixsongview.customviews.MyMaterialSimpleTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/set_lists"
                     android:textSize="@dimen/text_xxlarge" />
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                <adco.helixsongview.customviews.MyMaterialSimpleTextView
                     android:id="@+id/setsNoChangesRequired"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -138,13 +138,13 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                    <adco.helixsongview.customviews.MyMaterialTextView
                         android:id="@+id/newSets"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/sync_items_not_on_local" />
 
-                    <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
+                    <adco.helixsongview.customviews.MyMaterialButton
                         android:id="@+id/newSetsAction"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -162,13 +162,13 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                    <adco.helixsongview.customviews.MyMaterialTextView
                         android:id="@+id/updateSets"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/sync_local_items_older" />
 
-                    <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
+                    <adco.helixsongview.customviews.MyMaterialButton
                         android:id="@+id/updateSetsAction"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -185,13 +185,13 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                    <adco.helixsongview.customviews.MyMaterialTextView
                         android:id="@+id/setsToDelete"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/sync_delete_local_not_in_remote_info" />
 
-                    <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
+                    <adco.helixsongview.customviews.MyMaterialButton
                         android:id="@+id/deleteSetsAction"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

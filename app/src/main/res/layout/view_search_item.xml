@@ -8,7 +8,7 @@
     android:paddingTop="4dp"
     android:paddingEnd="8dp">
 
-    <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+    <adco.helixsongview.customviews.MyMaterialTextView
         android:id="@+id/searchItem"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,7 +16,7 @@
         android:text="@string/title"
         android:visibility="visible" />
 
-    <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+    <adco.helixsongview.customviews.MyMaterialTextView
         android:id="@+id/searchMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -25,7 +25,7 @@
         android:textSize="@dimen/text_small"
         android:textStyle="italic"
         android:visibility="visible" />
-    <com.garethevans.church.opensongtablet.customviews.MyDivider
+    <adco.helixsongview.customviews.MyDivider
         style="@style/MyDividerLine"/>
 
 </LinearLayout>

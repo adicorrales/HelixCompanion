@@ -17,7 +17,7 @@
             android:orientation="vertical"
             android:paddingBottom="@dimen/extra_scroll_space_large">
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSlider
+            <adco.helixsongview.customviews.MyMaterialSlider
                 android:id="@+id/opacity"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -26,7 +26,7 @@
                 android:valueFrom="20"
                 android:valueTo="100" />
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+            <adco.helixsongview.customviews.MyMaterialSwitch
                 android:id="@+id/pageButtonMini"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -34,17 +34,17 @@
                 android:text="@string/small_buttons"
                 android:hint="@string/small_buttons_info"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+            <adco.helixsongview.customviews.MyMaterialSwitch
                 android:id="@+id/pageButtonHide"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 android:text="@string/autohide_page_button"
                 android:hint="@string/info_text_autohide_info"/>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
+            <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+            <adco.helixsongview.customviews.MyMaterialSwitch
                 android:id="@+id/button1Active"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -62,7 +62,7 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+                    <adco.helixsongview.customviews.MyFloatingActionButton
                         android:id="@+id/button1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -71,7 +71,7 @@
                         android:contentDescription="@string/button"
                         android:src="@drawable/help" />
 
-                    <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
+                    <adco.helixsongview.customviews.ExposedDropDown
                         android:id="@+id/button1Opt"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -80,7 +80,7 @@
                         android:hint="@string/action" />
                 </LinearLayout>
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                <adco.helixsongview.customviews.MyMaterialTextView
                     android:id="@+id/button1ShortPress"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -89,7 +89,7 @@
                     android:paddingBottom="8dp"
                     android:text="@string/action_short_press" />
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                <adco.helixsongview.customviews.MyMaterialTextView
                     android:id="@+id/button1LongPress"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -98,10 +98,10 @@
                     android:paddingBottom="8dp"
                     android:text="@string/action_long_press" />
             </LinearLayout>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
+            <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+            <adco.helixsongview.customviews.MyMaterialSwitch
                 android:id="@+id/button2Active"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -119,7 +119,7 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+                    <adco.helixsongview.customviews.MyFloatingActionButton
                         android:id="@+id/button2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -128,7 +128,7 @@
                         android:contentDescription="@string/button"
                         android:src="@drawable/help" />
 
-                    <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
+                    <adco.helixsongview.customviews.ExposedDropDown
                         android:id="@+id/button2Opt"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -137,7 +137,7 @@
                         android:hint="@string/action" />
                 </LinearLayout>
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                <adco.helixsongview.customviews.MyMaterialTextView
                     android:id="@+id/button2ShortPress"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -146,7 +146,7 @@
                     android:paddingBottom="8dp"
                     android:text="@string/action_short_press" />
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                <adco.helixsongview.customviews.MyMaterialTextView
                     android:id="@+id/button2LongPress"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -155,10 +155,10 @@
                     android:paddingBottom="8dp"
                     android:text="@string/action_long_press" />
             </LinearLayout>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
+            <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+            <adco.helixsongview.customviews.MyMaterialSwitch
                 android:id="@+id/button3Active"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -176,7 +176,7 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+                    <adco.helixsongview.customviews.MyFloatingActionButton
                         android:id="@+id/button3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -185,7 +185,7 @@
                         android:contentDescription="@string/button"
                         android:src="@drawable/help" />
 
-                    <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
+                    <adco.helixsongview.customviews.ExposedDropDown
                         android:id="@+id/button3Opt"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -194,7 +194,7 @@
                         android:hint="@string/action" />
                 </LinearLayout>
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                <adco.helixsongview.customviews.MyMaterialTextView
                     android:id="@+id/button3ShortPress"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -203,7 +203,7 @@
                     android:paddingBottom="8dp"
                     android:text="@string/action_short_press" />
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                <adco.helixsongview.customviews.MyMaterialTextView
                     android:id="@+id/button3LongPress"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -212,10 +212,10 @@
                     android:paddingBottom="8dp"
                     android:text="@string/action_long_press" />
             </LinearLayout>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
+            <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+            <adco.helixsongview.customviews.MyMaterialSwitch
                 android:id="@+id/button4Active"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -233,7 +233,7 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+                    <adco.helixsongview.customviews.MyFloatingActionButton
                         android:id="@+id/button4"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -242,7 +242,7 @@
                         android:contentDescription="@string/button"
                         android:src="@drawable/help" />
 
-                    <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
+                    <adco.helixsongview.customviews.ExposedDropDown
                         android:id="@+id/button4Opt"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -251,7 +251,7 @@
                         android:hint="@string/action" />
                 </LinearLayout>
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                <adco.helixsongview.customviews.MyMaterialTextView
                     android:id="@+id/button4ShortPress"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -260,7 +260,7 @@
                     android:paddingBottom="8dp"
                     android:text="@string/action_short_press" />
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                <adco.helixsongview.customviews.MyMaterialTextView
                     android:id="@+id/button4LongPress"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -269,10 +269,10 @@
                     android:paddingBottom="8dp"
                     android:text="@string/action_long_press" />
             </LinearLayout>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
+            <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+            <adco.helixsongview.customviews.MyMaterialSwitch
                 android:id="@+id/button5Active"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -290,7 +290,7 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+                    <adco.helixsongview.customviews.MyFloatingActionButton
                         android:id="@+id/button5"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -299,7 +299,7 @@
                         android:contentDescription="@string/button"
                         android:src="@drawable/help" />
 
-                    <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
+                    <adco.helixsongview.customviews.ExposedDropDown
                         android:id="@+id/button5Opt"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -308,7 +308,7 @@
                         android:hint="@string/action" />
                 </LinearLayout>
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                <adco.helixsongview.customviews.MyMaterialTextView
                     android:id="@+id/button5ShortPress"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -317,7 +317,7 @@
                     android:paddingBottom="8dp"
                     android:text="@string/action_short_press" />
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                <adco.helixsongview.customviews.MyMaterialTextView
                     android:id="@+id/button5LongPress"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -326,10 +326,10 @@
                     android:paddingBottom="8dp"
                     android:text="@string/action_long_press" />
             </LinearLayout>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
+            <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+            <adco.helixsongview.customviews.MyMaterialSwitch
                 android:id="@+id/button6Active"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -347,7 +347,7 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+                    <adco.helixsongview.customviews.MyFloatingActionButton
                         android:id="@+id/button6"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -356,7 +356,7 @@
                         android:contentDescription="@string/button"
                         android:src="@drawable/help" />
 
-                    <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
+                    <adco.helixsongview.customviews.ExposedDropDown
                         android:id="@+id/button6Opt"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -365,7 +365,7 @@
                         android:hint="@string/action" />
                 </LinearLayout>
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                <adco.helixsongview.customviews.MyMaterialTextView
                     android:id="@+id/button6ShortPress"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -374,7 +374,7 @@
                     android:paddingBottom="8dp"
                     android:text="@string/action_short_press" />
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                <adco.helixsongview.customviews.MyMaterialTextView
                     android:id="@+id/button6LongPress"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -383,10 +383,10 @@
                     android:paddingBottom="8dp"
                     android:text="@string/action_long_press" />
             </LinearLayout>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
+            <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+            <adco.helixsongview.customviews.MyMaterialSwitch
                 android:id="@+id/button7Active"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -404,7 +404,7 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+                    <adco.helixsongview.customviews.MyFloatingActionButton
                         android:id="@+id/button7"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -413,7 +413,7 @@
                         android:contentDescription="@string/button"
                         android:src="@drawable/help" />
 
-                    <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
+                    <adco.helixsongview.customviews.ExposedDropDown
                         android:id="@+id/button7Opt"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -422,7 +422,7 @@
                         android:hint="@string/action" />
                 </LinearLayout>
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                <adco.helixsongview.customviews.MyMaterialTextView
                     android:id="@+id/button7ShortPress"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -431,7 +431,7 @@
                     android:paddingBottom="8dp"
                     android:text="@string/action_short_press" />
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                <adco.helixsongview.customviews.MyMaterialTextView
                     android:id="@+id/button7LongPress"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -440,10 +440,10 @@
                     android:paddingBottom="8dp"
                     android:text="@string/action_long_press" />
             </LinearLayout>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
+            <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+            <adco.helixsongview.customviews.MyMaterialSwitch
                 android:id="@+id/button8Active"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -461,7 +461,7 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+                    <adco.helixsongview.customviews.MyFloatingActionButton
                         android:id="@+id/button8"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -470,7 +470,7 @@
                         android:contentDescription="@string/button"
                         android:src="@drawable/help" />
 
-                    <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
+                    <adco.helixsongview.customviews.ExposedDropDown
                         android:id="@+id/button8Opt"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -479,7 +479,7 @@
                         android:hint="@string/action" />
                 </LinearLayout>
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                <adco.helixsongview.customviews.MyMaterialTextView
                     android:id="@+id/button8ShortPress"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -488,7 +488,7 @@
                     android:paddingBottom="8dp"
                     android:text="@string/action_short_press" />
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                <adco.helixsongview.customviews.MyMaterialTextView
                     android:id="@+id/button8LongPress"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

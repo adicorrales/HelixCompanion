@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.garethevans.church.opensongtablet.customviews.DialogHeader
+    <adco.helixsongview.customviews.DialogHeader
         android:id="@+id/dialogHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -22,13 +22,13 @@
             android:orientation="vertical"
             android:paddingBottom="@dimen/extra_scroll_space">
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+            <adco.helixsongview.customviews.MyMaterialSimpleTextView
                 android:id="@+id/pages_notavailable"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/not_available" />
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSlider
+            <adco.helixsongview.customviews.MyMaterialSlider
                 android:id="@+id/pageSlider"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -42,14 +42,14 @@
                 android:gravity="center"
                 android:orientation="horizontal">
 
-                <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+                <adco.helixsongview.customviews.MyFloatingActionButton
                     android:id="@+id/previousPage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/arrow_left"
                     android:contentDescription="@string/back" />
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                <adco.helixsongview.customviews.MyMaterialSimpleTextView
                     android:id="@+id/pageNumber"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -58,7 +58,7 @@
                     android:gravity="center"
                     android:padding="16dp" />
 
-                <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+                <adco.helixsongview.customviews.MyFloatingActionButton
                     android:id="@+id/nextPage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

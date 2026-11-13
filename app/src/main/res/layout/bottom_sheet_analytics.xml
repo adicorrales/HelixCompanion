@@ -9,20 +9,20 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <com.garethevans.church.opensongtablet.customviews.DialogHeader
+    <adco.helixsongview.customviews.DialogHeader
         android:id="@+id/dialogHeading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/analytics_popularity" />
 
-    <com.garethevans.church.opensongtablet.customviews.MyRecyclerView
+    <adco.helixsongview.customviews.MyRecyclerView
         android:id="@+id/analyticsRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/extra_scroll_space"/>
 
 </LinearLayout>
-    <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+    <adco.helixsongview.customviews.MyFloatingActionButton
         android:id="@+id/sortButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

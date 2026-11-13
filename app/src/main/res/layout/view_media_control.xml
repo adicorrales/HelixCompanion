@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+            <adco.helixsongview.customviews.MyMaterialSimpleTextView
                 android:id="@+id/playbackTime"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -35,7 +35,7 @@
                 android:textSize="16sp"
                 tools:text="0:00" />
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+            <adco.helixsongview.customviews.MyMaterialSimpleTextView
                 android:id="@+id/playbackLength"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -48,7 +48,7 @@
         </LinearLayout>
     </LinearLayout>
 
-    <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+    <adco.helixsongview.customviews.MyFloatingActionButton
         android:id="@+id/playbackStartStop"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

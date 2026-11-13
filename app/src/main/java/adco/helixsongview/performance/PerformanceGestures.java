@@ -1,0 +1,1354 @@
+package adco.helixsongview.performance;
+
+// The gestures used in the app
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
+import android.provider.DocumentsContract;
+import android.util.Log;
+import android.view.View;
+
+import androidx.recyclerview.widget.RecyclerView;
+
+import adco.helixsongview.R;
+import adco.helixsongview.autoscroll.AutoscrollBottomSheet;
+import adco.helixsongview.chords.ChordFingeringBottomSheet;
+import adco.helixsongview.chords.TransposeBottomSheet;
+import adco.helixsongview.customviews.MyRecyclerView;
+import adco.helixsongview.customviews.MyZoomLayout;
+import adco.helixsongview.interfaces.ActionInterface;
+import adco.helixsongview.interfaces.DisplayInterface;
+import adco.helixsongview.interfaces.MainActivityInterface;
+import adco.helixsongview.midi.MidiBoardBottomSheet;
+import adco.helixsongview.midi.MidiSongBottomSheet;
+import adco.helixsongview.pads.PadsBottomSheet;
+import adco.helixsongview.pdf.PDFPageAdapter;
+import adco.helixsongview.pdf.PDFPageBottomSheet;
+import adco.helixsongview.songmenu.RandomSongBottomSheet;
+import adco.helixsongview.stage.StageSectionAdapter;
+
+
+import java.util.ArrayList;
+import java.util.Locale;
+
+public class PerformanceGestures {
+
+    private final Context c;
+    private final MainActivityInterface mainActivityInterface;
+    private final DisplayInterface displayInterface;
+    @SuppressWarnings({"unused", "FieldCanBeLocal"})
+    private final String TAG = "PerformanceGestures";
+    private final ActionInterface actionInterface;
+    private MyZoomLayout myZoomLayout;
+    private MyRecyclerView recyclerView;
+    private RecyclerView presenterRecyclerView;
+    private final String not_allowed_string;
+    private final Handler scrollPosCheckHandler = new Handler(Looper.getMainLooper());
+    private final Runnable scrollPosRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (!canScroll(true)) {
+                mainActivityInterface.getDisplayPrevNext().showAndHide();
+            }
+        }
+    };
+
+    // Initialise
+    public PerformanceGestures(Context c) {
+        this.c = c;
+        mainActivityInterface = (MainActivityInterface) c;
+        actionInterface = (ActionInterface) c;
+        displayInterface = (DisplayInterface) c;
+        not_allowed_string = c.getString(R.string.not_allowed);
+    }
+
+    public void setZoomLayout(MyZoomLayout myZoomLayout) {
+        this.myZoomLayout = myZoomLayout;
+    }
+
+    public void setRecyclerView(MyRecyclerView recyclerView) {
+        this.recyclerView = recyclerView;
+        if (mainActivityInterface != null) {
+            this.recyclerView.initialiseRecyclerView(mainActivityInterface);
+        }
+    }
+
+    public void setPresenterRecyclerView(RecyclerView presenterRecyclerView) {
+        this.presenterRecyclerView = presenterRecyclerView;
+    }
+
+
+    public void doAction(String action, boolean isLongPress) {
+        // Get the action we are trying to run
+        switch (action) {
+            case "pageButtons":
+            case "?":
+                editPageButtons();
+                break;
+
+            // Set actions
+            case "set":
+                setMenu();
+                break;
+            case "inlineset":
+                if (isLongPress) {
+                    inlineSetSettings();
+                } else {
+                    inlineSet();
+                }
+                break;
+            case "inlinesetsettings":
+                inlineSetSettings();
+                break;
+            case "addtoset":
+                if (isLongPress) {
+                    addToSetAsVariation();
+                } else {
+                    addToSet();
+                }
+                break;
+            case "addtosetvariation":
+                addToSetAsVariation();
+                break;
+            case "exportset":
+                if (isLongPress) {
+                    manageSets();
+                } else {
+                    exportSet();
+                }
+                break;
+
+            // Song actions
+            case "pad":
+                if (isLongPress) {
+                    padSettings();
+                } else {
+                    togglePad();
+                }
+                break;
+            case "padsettings":
+                padSettings();
+                break;
+            case "autoscroll":
+                if (isLongPress) {
+                    autoscrollSettings();
+                } else {
+                    toggleAutoscroll();
+                }
+                break;
+            case "autoscrollsettings":
+                autoscrollSettings();
+                break;
+            case "inc_autoscroll_speed":
+                speedUpAutoscroll();
+                break;
+            case "dec_autoscroll_speed":
+                slowDownAutoscroll();
+                break;
+            case "toggle_autoscroll_pause":
+                pauseAutoscroll();
+                break;
+            case "pad_autoscroll":
+                togglePad();
+                toggleAutoscroll();
+                break;
+            case "pad_metronome":
+                togglePad();
+                break;
+            case "autoscroll_metronome":
+                toggleAutoscroll();
+                break;
+            case "pad_autoscroll_metronome":
+                togglePad();
+                toggleAutoscroll();
+                break;
+            case "editsong":
+                editSong();
+                break;
+            case "share_song":
+                shareSong();
+                break;
+            case "import":
+                if (isLongPress) {
+                    addSongs();
+                } else {
+                    onlineImport();
+                }
+                break;
+            case "importonline":
+                onlineImport();
+                break;
+            case "importoptions":
+                addSongs();
+                break;
+
+
+            // Song navigation
+            case "songmenu":
+                songMenu();
+                break;
+            case "scrolldown":
+            case "down":
+                scroll(true);
+                break;
+            case "scrollup":
+            case "up":
+                scroll(false);
+                break;
+            case "next":
+                nextSong();
+                break;
+            case "prev":
+            case "previous":
+                prevSong();
+                break;
+            case "randomsong":
+                randomSong();
+                break;
+            case "scrollmenuup":
+                mainActivityInterface.scrollOpenMenu(false);
+                break;
+            case "scrollmenudown":
+                mainActivityInterface.scrollOpenMenu(true);
+                break;
+
+
+            // Chords
+            case "transpose":
+                if (isLongPress) {
+                    mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_chords), 0);
+                } else {
+                    transpose();
+                }
+                break;
+            case "transposesettings":
+                mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_chords), 0);
+                break;
+            case "chordfingerings":
+                if (isLongPress) {
+                    customChords();
+                } else {
+                    showChordFingerings();
+                }
+                break;
+            case "customchords":
+                customChords();
+                break;
+            case "chordsettings":
+                chordSettings();
+                break;
+
+
+            // Song information
+            case "link":
+                openLinks();
+                break;
+            case "stickynotes":
+                if (isLongPress) {
+                    stickySettings();
+                } else {
+                    showSticky();
+                }
+                break;
+            case "stickynotessettings":
+                stickySettings();
+                break;
+            case "highlight":
+                Log.d(TAG,"highlight");
+                if (isLongPress) {
+                    highlighterEdit();
+                } else {
+                    showHighlight();
+                }
+                break;
+            case "highlightedit":
+                highlighterEdit();
+                break;
+            case "abc":
+                if (isLongPress) {
+                    abcEdit();
+                } else {
+                    showABCNotation();
+                }
+                break;
+            case "abcedit":
+                abcEdit();
+                break;
+
+
+            // Display
+            case "profiles":
+                editProfiles();
+                break;
+            case "showchords":
+                showChords();
+                break;
+            case "showcapo":
+                showCapo();
+                break;
+            case "showlyrics":
+                showLyrics();
+                break;
+            case "curlybrackets":
+                showCurlyBrackets();
+                break;
+            case "curlybracketsdevice":
+                showCurlyBracketsDevice();
+                break;
+            case "theme":
+                editTheme();
+                break;
+            case "togglescale":
+                if (isLongPress) {
+                    editAutoscale();
+                } else {
+                    toggleScale();
+                }
+                break;
+            case "autoscalesettings":
+                editAutoscale();
+                break;
+            case "pdfpage":
+                pdfPage();
+                break;
+            case "invertpdf":
+                invertPDF();
+                break;
+            case "fonts":
+                editFonts();
+                break;
+            case "refreshsong":
+                loadSong();
+                break;
+
+
+            // Controls
+            case "nearby":
+                if (isLongPress) {
+                    nearbySettings();
+                } else {
+                    // If we are already set up to be a host from preferences and allowing connections when not in the settings
+                    if (!mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().getNearbyHostMenuOnly() &&
+                            (mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().getIsHost() ||
+                                    mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().getNearbyPreferredHost())) {
+                        nearbyAdvertise();
+                    } else if (mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().getNearbyHostMenuOnly() &&
+                            (mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().getIsHost() ||
+                                    mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().getNearbyPreferredHost())) {
+                        // We want to act as the host, but because we need to be on the settings page, do that
+                        nearbySettings();
+                        String text = c.getString(R.string.nearby_host_menu_only) + ": " + c.getString(R.string.on);
+                        mainActivityInterface.getShowToast().doIt(text);
+
+                    } else {
+                        // We default to being the client
+                        nearbyDiscover();
+                    }
+                }
+                break;
+            case "nearbysettings":
+                nearbySettings();
+                break;
+            case "gestures":
+                editGestures();
+                break;
+            case "pedals":
+                editPedals();
+                break;
+            case "midi":
+                if (isLongPress) {
+                    toggleMidiSend();
+                } else {
+                    songMidi();
+                }
+                break;
+            case "midiboard":
+                openMidiBoard();
+                break;
+            case "midisend":
+                toggleMidiSend();
+                break;
+            case "midisettings":
+                editMidi();
+                break;
+            case "midiaction1":
+                midiAction(1);
+                break;
+            case "midiaction2":
+                midiAction(2);
+                break;
+            case "midiaction3":
+                midiAction(3);
+                break;
+            case "midiaction4":
+                midiAction(4);
+                break;
+            case "midiaction5":
+                midiAction(5);
+                break;
+            case "midiaction6":
+                midiAction(6);
+                break;
+            case "midiaction7":
+                midiAction(7);
+                break;
+            case "midiaction8":
+                midiAction(8);
+                break;
+            case "sysexstart":
+                sysexStart();
+                break;
+            case "sysexstop":
+                sysexStop();
+                break;
+            case "midiclock":
+                if (isLongPress) {
+                    mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_midi_clock), 0);
+                }
+                break;
+            case "midiclockburst":
+                if (isLongPress) {
+                    mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_midi_clock), 0);
+                }
+                break;
+
+            // Nearby messages
+            case "nearbymessage1":
+                nearbyMessage(1);
+                break;
+            case "nearbymessage2":
+                nearbyMessage(2);
+                break;
+            case "nearbymessage3":
+                nearbyMessage(3);
+                break;
+            case "nearbymessage4":
+                nearbyMessage(4);
+                break;
+            case "nearbymessage5":
+                nearbyMessage(5);
+                break;
+            case "nearbymessage6":
+                nearbyMessage(6);
+                break;
+            case "nearbymessage7":
+                nearbyMessage(7);
+                break;
+            case "nearbymessage8":
+                nearbyMessage(8);
+                break;
+
+
+            case "audiorecorder":
+                audioRecorder();
+                break;
+            case "audioplayer":
+                audioPlayer();
+                break;
+            case "audioplayerpopup":
+                audioPlayerPopup();
+                break;
+            case "webservermessages":
+                webServerMessages();
+                break;
+
+            // Projection
+            case "showlogo":
+            case "showLogo":
+                showLogo();
+                break;
+            case "blackscreen":
+                blackScreen();
+                break;
+            case "blankscreen":
+                blankScreen();
+                break;
+
+            // Exit
+            case "exit":
+                onBackPressed();
+                break;
+        }
+    }
+
+    // The following are called from GestureListener, PedalActions, PageButtons
+
+    // Edit page buttons
+    public void editPageButtons() {
+        mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_page_buttons), 0);
+    }
+
+    // Song menu
+    public void songMenu() {
+        mainActivityInterface.chooseMenu(false);
+    }
+
+    // Set menu
+    public void setMenu() {
+        mainActivityInterface.chooseMenu(true);
+    }
+
+    // Inline set
+    public void inlineSet() {
+        mainActivityInterface.toggleInlineSet();
+    }
+
+    public void inlineSetSettings() {
+        mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_inlineset), 0);
+    }
+
+    // Edit song
+    public void editSong() {
+        if (mainActivityInterface != null && mainActivityInterface.getProcessSong().isValidSong(mainActivityInterface.getSong())) {
+            // The song is a valid XML file
+            // If this is in a set and it is a temp variation, we need to edit the original instead
+            if (mainActivityInterface.getVariations().getIsNormalVariation(mainActivityInterface.getSong())) {
+                mainActivityInterface.setWhattodo("editActualVariation");
+            } else if (mainActivityInterface.getVariations().getIsKeyVariation(mainActivityInterface.getSong())) {
+                mainActivityInterface.setWhattodo("editTempVariation");
+                String[] getOriginal = mainActivityInterface.getVariations().getPreVariationInfo(mainActivityInterface.getSong());
+                mainActivityInterface.getSong().setFolder(getOriginal[0]);
+                mainActivityInterface.getSong().setFilename(getOriginal[1]);
+                mainActivityInterface.getLoadSong().doLoadSongFile(mainActivityInterface.getSong(), false);
+            } else {
+                mainActivityInterface.setWhattodo("");
+            }
+
+            mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_edit), 0);
+
+        } else {
+            if (mainActivityInterface != null) {
+                mainActivityInterface.getShowToast().doIt(c.getString(R.string.not_allowed));
+            }
+        }
+    }
+
+    // Add to set
+    public void addToSet() {
+        // Add to the currently loaded to the currentSet
+        // Log this as well
+        if (mainActivityInterface.getSong()!=null) {
+            mainActivityInterface.getAnalyticsHelper().incrementSetCount(mainActivityInterface.getSong().getUuid());
+        }
+        mainActivityInterface.getCurrentSet().addItemToSet(mainActivityInterface.getSong());
+
+        // Tell the user that the song has been added.
+        mainActivityInterface.getShowToast().doIt("\"" + mainActivityInterface.getSong().getFilename() + "\" " +
+                c.getString(R.string.added_to_set));
+
+        // Update the set list
+        mainActivityInterface.updateSetList();
+        mainActivityInterface.updateCheckForThisSong(mainActivityInterface.getSong());
+
+        // Updating the toolbar with null updates the set tick as it checks the song
+        mainActivityInterface.updateToolbar(null);
+
+        // Rebuild the prev/next
+        mainActivityInterface.getDisplayPrevNext().setPrevNext();
+    }
+
+    // Add to set as a variation
+    public void addToSetAsVariation() {
+        if (mainActivityInterface.getSong().getFilename() != null &&
+                !mainActivityInterface.getSong().getFilename().toLowerCase(Locale.ROOT).endsWith(".pdf")) {
+            // Make a copy of this song in the variations folder
+            mainActivityInterface.getStorageAccess().writeFileFromString("Variations", "",
+                    mainActivityInterface.getSong().getFilename(), mainActivityInterface.getProcessSong().getXML(mainActivityInterface.getSong()), false);
+            mainActivityInterface.getSong().setFolder("**Variations");
+
+            // Log this as well
+            if (mainActivityInterface.getSong()!=null) {
+                mainActivityInterface.getAnalyticsHelper().incrementSetCount(mainActivityInterface.getSong().getUuid());
+            }
+
+            // Add to the current set
+            mainActivityInterface.getCurrentSet().addItemToSet(mainActivityInterface.getSong());
+
+            // Tell the user that the song has been added.
+            mainActivityInterface.getShowToast().doIt("\"" + mainActivityInterface.getSong().getFilename() + "\" " +
+                    c.getString(R.string.added_to_set) + " (" + c.getString(R.string.variation) + " )");
+
+            // Update the set list
+            mainActivityInterface.updateSetList();
+            mainActivityInterface.updateCheckForThisSong(mainActivityInterface.getSong());
+        } else {
+            mainActivityInterface.getShowToast().doIt(not_allowed_string);
+        }
+    }
+
+    public void exportSet() {
+        mainActivityInterface.setWhattodo("exportset");
+        mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_sets_manage), 0);
+    }
+
+    public void manageSets() {
+        mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_sets), 0);
+    }
+
+    // Redraw the lyrics page
+    public void loadSong() {
+        mainActivityInterface.doSongLoad(mainActivityInterface.getSong().getFolder(), mainActivityInterface.getSong().getFilename(), true);
+    }
+
+    // Stop or start autoscroll
+    public void toggleAutoscroll() {
+        mainActivityInterface.toggleAutoscroll();
+    }
+
+    // Autoscroll settings
+    public void autoscrollSettings() {
+        AutoscrollBottomSheet autoscrollBottomSheet = new AutoscrollBottomSheet();
+        autoscrollBottomSheet.show(actionInterface.getMyFragmentManager(), "AutoscrollBottomSheet");
+    }
+
+    // Stop or start pads
+    public void togglePad() {
+        mainActivityInterface.playPad();
+    }
+
+    // Show the pad bottom sheet
+    public void padSettings() {
+        PadsBottomSheet padsBottomSheet = new PadsBottomSheet();
+        padsBottomSheet.show(actionInterface.getMyFragmentManager(), "padsBottomSheet");
+    }
+
+
+
+    // Next song
+    public void nextSong() {
+        if (mainActivityInterface.getPedalActions().getPedalScrollBeforeMove() && canScroll(true)) {
+            scroll(true);
+        } else {
+            if (mainActivityInterface.getMode().equals(c.getString(R.string.mode_presenter))) {
+                int pos = mainActivityInterface.getCurrentSet().getIndexSongInSet();
+                if (pos == -1) {
+                    pos = mainActivityInterface.getSetActions().indexSongInSet(mainActivityInterface.getSong());
+                }
+                if (pos > -1 && pos < mainActivityInterface.getCurrentSet().getCurrentSetSize()) {
+                    mainActivityInterface.loadSongFromSet(pos + 1);
+                } else {
+                    mainActivityInterface.getShowToast().doIt(c.getString(R.string.last_song));
+                }
+            } else {
+                mainActivityInterface.getDisplayPrevNext().moveToNext();
+            }
+        }
+    }
+
+    // Next song
+    public void prevSong() {
+        if (mainActivityInterface.getPedalActions().getPedalScrollBeforeMove() && canScroll(false)) {
+            scroll(false);
+        } else {
+            if (mainActivityInterface.getMode().equals(c.getString(R.string.mode_presenter))) {
+                int pos = mainActivityInterface.getCurrentSet().getIndexSongInSet();
+                if (pos == -1) {
+                    pos = mainActivityInterface.getSetActions().indexSongInSet(mainActivityInterface.getSong());
+                }
+                if (pos > 0) {
+                    mainActivityInterface.loadSongFromSet(pos - 1);
+                } else {
+                    mainActivityInterface.getShowToast().doIt(c.getString(R.string.first_song));
+                }
+            } else {
+                mainActivityInterface.getDisplayPrevNext().moveToPrev();
+            }
+        }
+    }
+
+    // This is for the scroll before move
+    public boolean canScroll(boolean scrollDown) {
+        if (mainActivityInterface.getSong().getFiletype()==null) {
+            mainActivityInterface.getSong().setFiletype(mainActivityInterface.getStorageAccess().tryToFixFileTypeFromNull(mainActivityInterface.getSong().getFilename()));
+        }
+        // Check the ZoomLayout for XML
+        if (myZoomLayout != null && myZoomLayout.getVisibility() == View.VISIBLE) {
+            // Can we scroll down?
+            if (scrollDown) {
+                return !myZoomLayout.getScrolledToBottom();
+            } else {
+                return !myZoomLayout.getScrolledToTop();
+            }
+
+            // Check the recyclerView for images/pdfs
+        } else if (recyclerView != null && recyclerView.getVisibility() == View.VISIBLE) {
+            if (mainActivityInterface.getMode().equals(c.getString(R.string.mode_stage)) ||
+                    mainActivityInterface.getMode().equals(c.getString(R.string.mode_hybrid))) {
+                int currentPos, finalPos;
+                if (mainActivityInterface.getSong().getFiletype().equals("PDF")) {
+                    currentPos = mainActivityInterface.getSong().getPdfPageCurrent();
+                    finalPos = mainActivityInterface.getSong().getPdfPageCount() - 1;
+                } else {
+                    currentPos = mainActivityInterface.getSong().getCurrentSection();
+                    finalPos = mainActivityInterface.getSong().getPresoOrderSongSections().size() - 1;
+                }
+                if (scrollDown && currentPos <= finalPos && displayInterface.getIsSecondaryDisplaying()) {
+                    return true;
+                } else if (scrollDown && currentPos < finalPos) {
+                    return true;
+                } else if (scrollDown && currentPos == finalPos) {
+                    return false;
+                } else {
+                    return !scrollDown && currentPos > 0;
+                }
+            } else {
+                if (scrollDown && !recyclerView.getScrolledToBottom()) {
+                    return true;
+                } else {
+                    return !scrollDown && !recyclerView.getScrolledToTop();
+                }
+            }
+        } else if (presenterRecyclerView != null) {
+            int currentPos, finalPos;
+            if (mainActivityInterface.getSong().getFiletype().equals("PDF")) {
+                currentPos = mainActivityInterface.getSong().getPdfPageCurrent();
+                finalPos = mainActivityInterface.getSong().getPdfPageCount() - 1;
+            } else {
+                currentPos = mainActivityInterface.getSong().getCurrentSection();
+                finalPos = mainActivityInterface.getSong().getPresoOrderSongSections().size() - 1;
+            }
+            if (scrollDown && currentPos < finalPos) {
+                return true;
+            } else {
+                return !scrollDown && currentPos > 0;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    // Scroll up/down
+    public void scroll(boolean scrollDown) {
+        if (mainActivityInterface.getMode().equals(c.getString(R.string.mode_stage)) &&
+                recyclerView != null && recyclerView.getVisibility() == View.VISIBLE) {
+            int newPosition = getPosition(scrollDown);
+
+            if (mainActivityInterface.getSong().getFiletype().equals("PDF")) {
+                mainActivityInterface.getSong().setPdfPageCurrent(newPosition);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
+                        recyclerView.getAdapter() != null) {
+                    try {
+                        ((PDFPageAdapter) recyclerView.getAdapter()).clickOnSection(newPosition);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else {
+                mainActivityInterface.getSong().setCurrentSection(newPosition);
+                if (recyclerView.getAdapter() != null) {
+                    try {
+                        ((StageSectionAdapter) recyclerView.getAdapter()).clickOnSection(newPosition);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+
+        } else if ((mainActivityInterface.getMode().equals(c.getString(R.string.mode_performance)) ||
+                mainActivityInterface.getMode().equals(c.getString(R.string.mode_hybrid))) &&
+                recyclerView != null && recyclerView.getVisibility() == View.VISIBLE) {
+            if (mainActivityInterface.getGestures().getPdfLandscapeView()) {
+                // Scroll horizontally
+                int width = (int) (mainActivityInterface.getGestures().getScrollDistance() * recyclerView.getWidth());
+                if (!scrollDown) {
+                    width = -width;
+                }
+                recyclerView.smoothScrollBy(width, 0);
+            } else {
+                // Scroll vertically
+                int height = (int) (mainActivityInterface.getGestures().getScrollDistance() * recyclerView.getHeight());
+                if (!scrollDown) {
+                    height = -height;
+                }
+                recyclerView.smoothScrollBy(0, height);
+                // We will also send this to nearby devices if we are a host
+                mainActivityInterface.getNearbyActions().getNearbySendPayloads().sendScrollByPayload(scrollDown,
+                        mainActivityInterface.getGestures().getScrollDistance());
+            }
+
+
+        } else if (myZoomLayout != null && myZoomLayout.getVisibility() == View.VISIBLE) {
+            myZoomLayout.animateScrollBy(
+                    mainActivityInterface.getGestures().getScrollDistance(), scrollDown);
+
+            // We will also send this to nearby devices if we are a host
+            mainActivityInterface.getNearbyActions().getNearbySendPayloads().sendScrollByPayload(scrollDown,
+                    mainActivityInterface.getGestures().getScrollDistance());
+        }
+
+        scrollPosCheckHandler.removeCallbacks(scrollPosRunnable);
+        scrollPosCheckHandler.postDelayed(scrollPosRunnable, 800);
+
+    }
+
+    private int getPosition(boolean scrollDown) {
+        int currentPosition = mainActivityInterface.getSong().getCurrentSection();
+        int finalPosition = mainActivityInterface.getSong().getPresoOrderSongSections().size() - 1;
+        if (mainActivityInterface.getSong().getFiletype()==null) {
+            mainActivityInterface.getSong().setFiletype(mainActivityInterface.getStorageAccess().tryToFixFileTypeFromNull(mainActivityInterface.getSong().getFilename()));
+        }
+
+        if (mainActivityInterface.getSong().getFiletype().equals("PDF")) {
+            currentPosition = mainActivityInterface.getSong().getPdfPageCurrent();
+            finalPosition = mainActivityInterface.getSong().getPdfPageCount() - 1;
+        }
+        return getNewPosition(scrollDown, currentPosition, finalPosition);
+    }
+
+    private int getNewPosition(boolean scrollDown, int currentPosition, int finalPosition) {
+        int newPosition = currentPosition;
+
+        if (scrollDown) {
+            // GE only need to allow extra blank fake section if presenting
+            if (displayInterface.getIsSecondaryDisplaying() &&
+                    currentPosition <= finalPosition) {
+                newPosition++;
+            } else if (currentPosition < finalPosition) {
+                newPosition++;
+            }
+        } else {
+            if (currentPosition > 0) {
+                newPosition--;
+            }
+        }
+        return newPosition;
+    }
+
+    // Find a random song
+    public void randomSong() {
+        RandomSongBottomSheet randomSongBottomSheet;
+        if (mainActivityInterface.getShowSetMenu()) {
+            randomSongBottomSheet = new RandomSongBottomSheet("set");
+        } else {
+            randomSongBottomSheet = new RandomSongBottomSheet("song");
+        }
+        randomSongBottomSheet.show(mainActivityInterface.getMyFragmentManager(), "randomSongBottomSheet");
+    }
+
+    // Transpose the chords
+    public void transpose() {
+        TransposeBottomSheet transposeBottomSheet = new TransposeBottomSheet(false);
+        transposeBottomSheet.show(mainActivityInterface.getMyFragmentManager(), "transposeBottomSheet");
+    }
+
+    // Show chord fingering in the song
+    public void showChordFingerings() {
+        ChordFingeringBottomSheet chordFingeringBottomSheet = new ChordFingeringBottomSheet();
+        chordFingeringBottomSheet.show(mainActivityInterface.getMyFragmentManager(), "chordFingeringBottomSheet");
+    }
+
+    // Show chords in the song display
+    public void showChords() {
+        boolean displayChords = mainActivityInterface.getPreferences().getMyPreferenceBoolean("displayChords", true);
+        mainActivityInterface.getPreferences().setMyPreferenceBoolean("displayChords", !displayChords);
+        mainActivityInterface.getProcessSong().updateProcessingPreferences();
+        mainActivityInterface.navHome();
+    }
+
+    // Custom chords
+    public void customChords() {
+        mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_chords_custom), 0);
+    }
+
+    // Chord settings
+    public void chordSettings() {
+        mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_chords), 0);
+    }
+
+    // Toggle between native, capo and both
+    public void showCapo() {
+        boolean displayCapoChords = mainActivityInterface.getPreferences().getMyPreferenceBoolean("displayCapoChords", true);
+        boolean displayCapoAndNativeChords = mainActivityInterface.getPreferences().getMyPreferenceBoolean("displayCapoAndNativeChords", false);
+        if (displayCapoAndNativeChords) {
+            displayCapoAndNativeChords = false;
+            displayCapoChords = false;
+        } else if (displayCapoChords) {
+            displayCapoAndNativeChords = true;
+        } else {
+            displayCapoChords = true;
+            //displayCapoAndNativeChords = false; // Already set to this
+        }
+        mainActivityInterface.getPreferences().setMyPreferenceBoolean("displayCapoChords", displayCapoChords);
+        mainActivityInterface.getPreferences().setMyPreferenceBoolean("displayCapoAndNativeChords", displayCapoAndNativeChords);
+        mainActivityInterface.getProcessSong().updateProcessingPreferences();
+        mainActivityInterface.navHome();
+    }
+
+
+
+    // Show or hide the lyrics
+    public void showLyrics() {
+        boolean displayLyrics = mainActivityInterface.getPreferences().getMyPreferenceBoolean("displayLyrics", true);
+        mainActivityInterface.getPreferences().setMyPreferenceBoolean("displayLyrics", !displayLyrics);
+        mainActivityInterface.getProcessSong().updateProcessingPreferences();
+        mainActivityInterface.navHome();
+    }
+
+    // Show the audio recording popup
+    public void audioRecorder() {
+        mainActivityInterface.setRequireAudioRecorder();
+        mainActivityInterface.displayAudioRecorder();
+    }
+
+    // Show the audio player
+    public void audioPlayer() {
+        // Ask the user to select a file
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("*/*");
+        ArrayList<String> input = new ArrayList<>();
+        input.add("audio/mpeg");    // .mp3, .m4a
+        input.add("audio/wav");     // .wav
+        input.add("audio/aac");     // .aac
+        input.add("audio/ogg");     // .ogg, .opus
+        input.add("audio/mp4");     // .mp4 audio
+        input.add("application/ogg");
+        input.add("audio/3gp");
+        input.add("video/3gp");
+        input.add("video/mp4)");
+        intent.putExtra(Intent.EXTRA_MIME_TYPES, input);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI,
+                    mainActivityInterface.getStorageAccess().getUriForItem("Media", "", ""));
+        }
+        intent.addFlags(mainActivityInterface.getStorageAccess().getAddReadUriFlags());
+        mainActivityInterface.setWhattodo("audioplayer");
+        mainActivityInterface.selectFile(intent);
+    }
+
+    public void audioPlayerPopup() {
+        // Ask the user to select a file
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("*/*");
+        ArrayList<String> input = new ArrayList<>();
+        input.add("audio/mpeg");    // .mp3, .m4a
+        input.add("audio/wav");     // .wav
+        input.add("audio/aac");     // .aac
+        input.add("audio/ogg");     // .ogg, .opus
+        input.add("audio/mp4");     // .mp4 audio
+        input.add("application/ogg");
+        input.add("audio/3gp");
+        input.add("video/3gp");
+        input.add("video/mp4)");
+        intent.putExtra(Intent.EXTRA_MIME_TYPES, input);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI,
+                    mainActivityInterface.getStorageAccess().getUriForItem("Media", "", ""));
+        }
+        intent.addFlags(mainActivityInterface.getStorageAccess().getAddReadUriFlags());
+        mainActivityInterface.setWhattodo("audioplayerpopup");
+        mainActivityInterface.selectFile(intent);
+    }
+
+    // Show the multitrack player
+
+    // Show the webServerMessages
+    public void webServerMessages() {
+        mainActivityInterface.openWebServerMessages();
+    }
+
+    // Show the abc notation
+    public void showABCNotation() {
+        actionInterface.showAbc(true, false);
+    }
+
+    // Abc notation settings
+    public void abcEdit() {
+        mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_abc),0);
+    }
+
+    // Show the highlighter notes
+    public void showHighlight() {
+        actionInterface.toggleHighlighter();
+    }
+
+    // Highlighter edit
+    public void highlighterEdit() {
+        if (mainActivityInterface.getSong().getFiletype()==null) {
+            mainActivityInterface.getSong().setFiletype(mainActivityInterface.getStorageAccess().tryToFixFileTypeFromNull(mainActivityInterface.getSong().getFilename()));
+        }
+
+        if (ifPDFAndAllowed() || !mainActivityInterface.getSong().getFiletype().equals("PDF")) {
+            actionInterface.navigateToFragment(c.getString(R.string.deeplink_highlighter), 0);
+        }
+    }
+
+    // Show the song sticky notes
+    public void showSticky() {
+        // Toggle the force show (hide is for moving away from performace/stage mode)
+        actionInterface.showSticky(true,false);
+    }
+
+    // Sticky notes settings
+    public void stickySettings() {
+        actionInterface.navigateToFragment(c.getString(R.string.deeplink_sticky_notes),0);
+    }
+
+    // Curly brackets
+    public void showCurlyBrackets() {
+        mainActivityInterface.getPreferences().setMyPreferenceBoolean("curlyBrackets",!mainActivityInterface.getPreferences().getMyPreferenceBoolean("curlyBrackets",true));
+        mainActivityInterface.getProcessSong().updateProcessingPreferences();
+        mainActivityInterface.refreshSong();
+        displayInterface.updateDisplay("setSongContentPrefs");
+    }
+    public void showCurlyBracketsDevice() {
+        mainActivityInterface.getPreferences().setMyPreferenceBoolean("curlyBracketsDevice",!mainActivityInterface.getPreferences().getMyPreferenceBoolean("curlyBracketsDevice",false));
+        mainActivityInterface.getProcessSong().updateProcessingPreferences();
+        mainActivityInterface.refreshSong();
+        displayInterface.updateDisplay("setSongContentPrefs");
+    }
+
+    // Increase the autoscroll speed
+    public void speedUpAutoscroll() {
+        mainActivityInterface.getAutoscroll().speedUpAutoscroll();
+        mainActivityInterface.getNearbyActions().getNearbySendPayloads().sendCommandIfHost(mainActivityInterface.getNearbyActions().autoscrollIncrease);
+    }
+
+    // Decrease the autoscroll speed
+    public void slowDownAutoscroll() {
+        mainActivityInterface.getAutoscroll().slowDownAutoscroll();
+        mainActivityInterface.getNearbyActions().getNearbySendPayloads().sendCommandIfHost(mainActivityInterface.getNearbyActions().autoscrollDecrease);
+    }
+
+    // Pause autoscrolling
+    public void pauseAutoscroll() {
+        mainActivityInterface.getAutoscroll().pauseAutoscroll();
+        mainActivityInterface.getNearbyActions().getNearbySendPayloads().sendCommandIfHost(mainActivityInterface.getNearbyActions().autoscrollPause);
+    }
+
+    // Open links
+    public void openLinks() {
+        mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_links),0);
+    }
+
+    // Nearby connections
+    public void nearbySettings() {
+        mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_nearby),0);
+    }
+    public void nearbyAdvertise() {
+        // Advertise device to others
+        // Stop advertising/discovering if we were already doing that
+        mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().stopAdvertising();
+        mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().stopDiscovery();
+
+        mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().setUsingNearby(true);
+
+        // Advertise device
+        // The advertise will check the user's settings and display a warning popup first time
+        mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().startAdvertising();
+    }
+    public void nearbyDiscover() {
+        // Run a 10 second discovery attempt
+        // Stop advertising/discovering if we were already doing that
+        mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().stopAdvertising();
+        mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().stopDiscovery();
+
+        mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().setUsingNearby(true);
+
+        // Temp discovery will run for 10 secs after showing a warning/popup the first time
+        mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().doTempDiscover();
+    }
+
+    // PDF page chooser
+    public void pdfPage() {
+        if (ifPDFAndAllowed()) {
+            PDFPageBottomSheet pdfPageBottomSheet = new PDFPageBottomSheet();
+            pdfPageBottomSheet.show(actionInterface.getMyFragmentManager(),"PDFPageBottomSheet");
+        }
+    }
+
+    // Open the theme chooser
+    public void editTheme() {
+        mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_theme),0);
+    }
+
+    // Open the autoscale options
+    public void editAutoscale() {
+        mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_scaling),0);
+    }
+    public void toggleScale() {
+        mainActivityInterface.toggleScale();
+    }
+
+    // Edit the fonts
+    public void editFonts() {
+        mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_fonts),0);
+    }
+
+    // Open the gestures settings
+    public void editGestures() {
+        mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_gestures),0);
+    }
+
+    // Open the profile settings
+    public void editProfiles() {
+        mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_profiles),0);
+    }
+
+    // Open the pedal settings
+    public void editPedals() {
+        mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_pedals),0);
+    }
+
+    // Open the song midi bottom sheet
+    public void songMidi() {
+        if (isMidiAllowed()) {
+            MidiSongBottomSheet midiSongBottomSheet = new MidiSongBottomSheet();
+            midiSongBottomSheet.show(mainActivityInterface.getMyFragmentManager(), "midiSongBottomSheet");
+        }
+    }
+
+    // Open the midi settings
+    public void editMidi() {
+        if (isMidiAllowed()) {
+            mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_midi), 0);
+        }
+    }
+
+    // Open the MIDI board
+    public void openMidiBoard() {
+        if (isMidiAllowed()) {
+            MidiBoardBottomSheet midiBoardBottomSheet = new MidiBoardBottomSheet();
+            midiBoardBottomSheet.show(mainActivityInterface.getMyFragmentManager(), "MidiBoardBottomSheet");
+        }
+    }
+
+    // Toggle auto MIDI send on/off
+    public void toggleMidiSend() {
+        if (isMidiAllowed()) {
+            boolean newPref = !mainActivityInterface.getMidi().getMidiSendAuto();
+            if (newPref) {
+                mainActivityInterface.getShowToast().doIt(c.getString(R.string.midi_auto) + ": " + c.getString(R.string.on));
+            } else {
+                mainActivityInterface.getShowToast().doIt(c.getString(R.string.midi_auto) + ": " + c.getString(R.string.off));
+            }
+            mainActivityInterface.getMidi().setMidiSendAuto(newPref);
+        }
+    }
+
+
+
+    // Back pressed
+    public void onBackPressed() {
+        actionInterface.onBackPressed();
+    }
+
+    // Import online song or files
+    public void onlineImport() {
+        mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_import_online),0);
+    }
+    public void addSongs() {
+        mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_import),0);
+    }
+
+    public void invertPDF() {
+        if (ifPDFAllowed()) {
+            mainActivityInterface.getMyThemeColors().setInvertPDF(!mainActivityInterface.getMyThemeColors().getInvertPDF());
+            mainActivityInterface.navHome();
+        }
+    }
+
+    public void shareSong() {
+        mainActivityInterface.setWhattodo("exportSong");
+        mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_export),0);
+    }
+
+
+    // The BeatBuddy stuff
+//    public void beatBuddy() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_beatbuddy_commands),0);
+//        }
+//    }
+//    public void beatBuddyController() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.toggleBeatBuddyControlPopUp();
+//        }
+//    }
+//    public void beatBuddyStart() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyStart();
+//        }
+//    }
+//    public void beatBuddyStop() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyStop();
+//        }
+//    }
+//    public void beatBuddyPause() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyPause();
+//        }
+//    }
+//    public void beatBuddyAccent() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyAccent();
+//        }
+//    }
+//    public void beatBuddyFill() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyFill();
+//        }
+//    }
+//    public void beatBuddyTransition1() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyTransition1();
+//        }
+//    }
+//    public void beatBuddyTransition2() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyTransition2();
+//        }
+//    }
+//    public void beatBuddyTransition3() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyTransition3();
+//        }
+//    }
+//    public void beatBuddyTransitionNext() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyTransitionNext();
+//        }
+//    }
+//    public void beatBuddyTransitionPrev() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyTransitionPrev();
+//        }
+//    }
+//    public void beatBuddyTransitionExit() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyTransitionExit();
+//        }
+//    }
+//    public void beatBuddyExclusiveTransition1() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyExclusiveTransition1();
+//        }
+//    }
+//    public void beatBuddyExclusiveTransition2() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyExclusiveTransition2();
+//        }
+//    }
+//    public void beatBuddyExclusiveTransition3() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyExclusiveTransition3();
+//        }
+//    }
+//    public void beatBuddyExclusiveTransitionNext() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyExclusiveTransitionNext();
+//        }
+//    }
+//    public void beatBuddyExclusiveTransitionPrev() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyExclusiveTransitionPrev();
+//        }
+//    }
+//    public void beatBuddyExclusiveTransitionExit() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyExclusiveTransitionExit();
+//        }
+//    }
+//    public void beatBuddyHalfTime() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyHalfTime();
+//        }
+//    }
+//    public void beatBuddyHalfTimeExit() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyHalfTimeExit();
+//        }
+//    }
+//    public void beatBuddyDoubleTime() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyDoubleTime();
+//        }
+//    }
+//    public void beatBuddyDoubleTimeExit() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyDoubleTimeExit();
+//        }
+//    }
+//    public void beatBuddyVolUp() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyVolUp();
+//        }
+//    }
+//    public void beatBuddyVolDown() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyVolDown();
+//        }
+//    }
+//    public void beatBuddyVolHPUp() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyVolHPUp();
+//        }
+//    }
+//    public void beatBuddyVolHPDown() {
+//        if (isMidiAllowed()) {
+//            mainActivityInterface.getBeatBuddy().beatBuddyVolHPDown();
+//        }
+//    }
+    public void midiAction(int which) {
+        if (isMidiAllowed()) {
+            mainActivityInterface.getMidi().sendMidiHexSequence(mainActivityInterface.getMidi().getMidiAction(which));
+            if (mainActivityInterface.getNearbyActions().getNearbyMessages().getNearbyMessageMIDIAction()) {
+                mainActivityInterface.getNearbyActions().getNearbySendPayloads().sendMessage(which);
+            }
+        }
+    }
+    public void sysexStart() {
+        if (isMidiAllowed()) {
+            mainActivityInterface.getMidi().sendMidiHexSequence(mainActivityInterface.getMidi().getSysexStartCode());
+        }
+    }
+    public void sysexStop() {
+        if (isMidiAllowed()) {
+            mainActivityInterface.getMidi().sendMidiHexSequence(mainActivityInterface.getMidi().getSysexStopCode());
+        }
+    }
+
+
+    // Nearby messages
+    public void nearbyMessage(int which) {
+        mainActivityInterface.getNearbyActions().getNearbySendPayloads().sendMessage(which);
+    }
+
+    // The second screen
+    // Toggle the show logo on the secondary screen
+    public void showLogo() {}
+    public void blackScreen() {}
+    public void blankScreen() {}
+    private void updatePresenterSettings(boolean setLogoOn, boolean setBlackscreenOn, boolean setBlankscreenOn) {}
+
+    // The checks
+    private boolean ifPDFAndAllowed() {
+        if (mainActivityInterface.getSong().getFiletype()==null) {
+            mainActivityInterface.getSong().setFiletype(mainActivityInterface.getStorageAccess().tryToFixFileTypeFromNull(mainActivityInterface.getSong().getFilename()));
+        }
+
+        if (mainActivityInterface.getSong().getFiletype().equals("PDF")) {
+            if (ifPDFAllowed()) {
+                return true;
+            } else {
+                mainActivityInterface.getShowToast().doIt(c.getString(R.string.not_allowed));
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    private boolean ifPDFAllowed() {
+        return Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP;
+    }
+    private boolean isMidiAllowed() {
+        return Build.VERSION.SDK_INT>=Build.VERSION_CODES.M;
+    }
+}

@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
+        <adco.helixsongview.customviews.ExposedDropDown
             android:id="@+id/folderFilter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -20,14 +20,14 @@
             android:text=""
             android:visibility="gone"/>
 
-        <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+        <adco.helixsongview.customviews.MyMaterialSwitch
             android:id="@+id/showNewUpdate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/sync_show_new_updated_only"
             android:hint="@string/sync_show_new_updated_info"/>
 
-        <com.garethevans.church.opensongtablet.customviews.MyMaterialCheckbox
+        <adco.helixsongview.customviews.MyMaterialCheckbox
             android:id="@+id/selectAllItems"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -43,7 +43,7 @@
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
     </LinearLayout>
-    <com.garethevans.church.opensongtablet.customviews.MyExtendedFloatingActionButton
+    <adco.helixsongview.customviews.MyExtendedFloatingActionButton
         android:id="@+id/downloadItems"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

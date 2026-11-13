@@ -7,13 +7,13 @@
     android:orientation="vertical"
     android:paddingBottom="16dp">
 
-    <com.garethevans.church.opensongtablet.customviews.DialogHeader
+    <adco.helixsongview.customviews.DialogHeader
         android:id="@+id/dialogHeading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/transpose" />
 
-    <com.garethevans.church.opensongtablet.customviews.ScrollViewWithFAB
+    <adco.helixsongview.customviews.ScrollViewWithFAB
         android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -29,7 +29,7 @@
             android:orientation="vertical"
             android:paddingBottom="@dimen/extra_scroll_space_large">
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+            <adco.helixsongview.customviews.MyMaterialSimpleTextView
                 android:id="@+id/keyChangeTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -38,7 +38,7 @@
                 android:text="@string/key"
                 android:textSize="24sp" />
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSlider
+            <adco.helixsongview.customviews.MyMaterialSlider
                 android:id="@+id/transposeSlider"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -48,7 +48,7 @@
                 app:thumbRadius="16dp"
                 app:trackHeight="8dp" />
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+            <adco.helixsongview.customviews.MyMaterialSimpleTextView
                 android:id="@+id/capoChange"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -57,14 +57,14 @@
                 android:text="@string/transpose_capo"
                 android:visibility="invisible" />
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+            <adco.helixsongview.customviews.MyMaterialSwitch
                 android:id="@+id/assumePreferred"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:checked="false"
                 android:text="@string/chordformat_preferred" />
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+            <adco.helixsongview.customviews.MyMaterialTextView
                 android:id="@+id/warningFormatMatch"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -79,7 +79,7 @@
                 android:layout_marginBottom="12dp"
                 android:orientation="horizontal">
 
-                <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
+                <adco.helixsongview.customviews.ExposedDropDown
                     android:id="@+id/chordFormatFrom"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -87,7 +87,7 @@
                     android:layout_weight="1"
                     android:hint="@string/chordformat_detected" />
 
-                <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
+                <adco.helixsongview.customviews.ExposedDropDown
                     android:id="@+id/chordFormatTo"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -95,20 +95,20 @@
                     android:layout_weight="1"
                     android:hint="@string/chordformat_desired" />
             </LinearLayout>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
+            <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+            <adco.helixsongview.customviews.MyMaterialTextView
                 android:id="@+id/chordsFormat"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:hint="@string/pref_key_text"
                 android:text="@string/chord_settings"
                 app:mydrawable="@drawable/settings_outline" />
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
+            <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+            <adco.helixsongview.customviews.MyMaterialSwitch
                 android:id="@+id/transposeCapo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -116,7 +116,7 @@
                 android:text="@string/transpose_capo"
                 android:visibility="gone" />
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+            <adco.helixsongview.customviews.MyMaterialSwitch
                 android:id="@+id/transposeSetItem"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -124,7 +124,7 @@
                 android:text="@string/transpose_set_item"
                 android:visibility="gone" />
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+            <adco.helixsongview.customviews.MyMaterialSwitch
                 android:id="@+id/transposeVariation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -132,17 +132,17 @@
                 android:text="@string/variation"
                 android:visibility="gone" />
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+            <adco.helixsongview.customviews.MyMaterialSwitch
                 android:id="@+id/transposeCopy"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/transpose_copy"
                 android:text="@string/duplicate_song"
                 android:visibility="gone" />
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
+            <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+            <adco.helixsongview.customviews.MyMaterialTextView
                 android:id="@+id/transposeOriginal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -150,12 +150,12 @@
                 android:text="@string/key_original"
                 android:visibility="gone" />
 
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
+            <adco.helixsongview.customviews.MyDivider
                 android:id="@+id/transposeOriginalDivider"
                 style="@style/MyDividerLine" />
 
         </LinearLayout>
-    </com.garethevans.church.opensongtablet.customviews.ScrollViewWithFAB>
+    </adco.helixsongview.customviews.ScrollViewWithFAB>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -166,7 +166,7 @@
         android:padding="16dp"
         android:layout_marginBottom="32dp">
 
-        <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+        <adco.helixsongview.customviews.MyFloatingActionButton
             android:id="@+id/convertToFlats"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -176,7 +176,7 @@
             android:src="@drawable/flat"
             tools:ignore="HardcodedText" />
 
-        <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+        <adco.helixsongview.customviews.MyFloatingActionButton
             android:id="@+id/convertToSharps"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -192,7 +192,7 @@
             android:layout_weight="1"
             android:minWidth="280dp">
 
-            <com.garethevans.church.opensongtablet.customviews.MyExtendedFloatingActionButton
+            <adco.helixsongview.customviews.MyExtendedFloatingActionButton
                 android:id="@+id/doTransposeButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

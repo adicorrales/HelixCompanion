@@ -8,7 +8,7 @@
     android:clipToPadding="false"
     android:orientation="vertical">
 
-    <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+    <adco.helixsongview.customviews.MyMaterialSimpleTextView
         android:id="@+id/titleText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,7 +16,7 @@
         tools:text="@string/title"
         android:textSize="@dimen/text_medium"/>
 
-    <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+    <adco.helixsongview.customviews.MyMaterialSimpleTextView
         android:id="@+id/infoText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -39,7 +39,7 @@
             android:minHeight="24dp"
             android:visibility="gone">
 
-            <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+            <adco.helixsongview.customviews.MyFloatingActionButton
                 android:id="@+id/minus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -61,7 +61,7 @@
             android:contentDescription="@string/filter_by_this_value"
             android:padding="16dp" />
 
-        <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+        <adco.helixsongview.customviews.MyMaterialSimpleTextView
             android:id="@+id/valueText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -79,7 +79,7 @@
             android:minHeight="24dp"
             android:visibility="gone">
 
-            <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+            <adco.helixsongview.customviews.MyFloatingActionButton
                 android:id="@+id/plus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -93,7 +93,7 @@
         </FrameLayout>
     </LinearLayout>
 
-    <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+    <adco.helixsongview.customviews.MyMaterialSimpleTextView
         android:id="@+id/bottomHint"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

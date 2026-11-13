@@ -28,14 +28,14 @@
                     android:layout_marginBottom="8dp"
                     android:orientation="horizontal">
 
-                    <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
+                    <adco.helixsongview.customviews.ExposedDropDown
                         android:id="@+id/lyricFont"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:hint="@string/lyrics" />
 
-                    <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+                    <adco.helixsongview.customviews.MyFloatingActionButton
                         android:id="@+id/lyricWebPreview"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -54,14 +54,14 @@
                     android:layout_marginTop="8dp"
                     android:orientation="horizontal">
 
-                    <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
+                    <adco.helixsongview.customviews.ExposedDropDown
                         android:id="@+id/chordFont"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:hint="@string/chords" />
 
-                    <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+                    <adco.helixsongview.customviews.MyFloatingActionButton
                         android:id="@+id/chordWebPreview"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -83,7 +83,7 @@
                     android:layout_marginTop="16dp"
                     android:padding="16dp">
 
-                    <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                    <adco.helixsongview.customviews.MyMaterialSimpleTextView
                         android:id="@+id/chordPreview"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -91,7 +91,7 @@
                         android:text="G    D    C    G"
                         tools:ignore="HardcodedText" />
 
-                    <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                    <adco.helixsongview.customviews.MyMaterialSimpleTextView
                         android:id="@+id/lyricPreview"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -113,14 +113,14 @@
                     android:layout_marginBottom="8dp"
                     android:orientation="horizontal">
 
-                    <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
+                    <adco.helixsongview.customviews.ExposedDropDown
                         android:id="@+id/presoFont"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:hint="@string/font_presentation" />
 
-                    <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+                    <adco.helixsongview.customviews.MyFloatingActionButton
                         android:id="@+id/presoWebPreview"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -141,14 +141,14 @@
                     android:layout_marginTop="8dp"
                     android:orientation="horizontal">
 
-                    <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
+                    <adco.helixsongview.customviews.ExposedDropDown
                         android:id="@+id/presoInfoFont"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:hint="@string/font_presentation_info" />
 
-                    <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+                    <adco.helixsongview.customviews.MyFloatingActionButton
                         android:id="@+id/presoInfoWebPreview"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -169,14 +169,14 @@
                     android:layout_marginTop="16dp"
                     android:orientation="vertical">
 
-                    <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                    <adco.helixsongview.customviews.MyMaterialSimpleTextView
                         android:id="@+id/presoLorem"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="16dp"
                         android:text="@string/lorem" />
 
-                    <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                    <adco.helixsongview.customviews.MyMaterialSimpleTextView
                         android:id="@+id/presoInfoLorem"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -198,14 +198,14 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
+                    <adco.helixsongview.customviews.ExposedDropDown
                         android:id="@+id/stickyFont"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:hint="@string/song_notes" />
 
-                    <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+                    <adco.helixsongview.customviews.MyFloatingActionButton
                         android:id="@+id/stickyWebPreview"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -220,7 +220,7 @@
                         app:myFabSize="mini" />
                 </LinearLayout>
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                <adco.helixsongview.customviews.MyMaterialSimpleTextView
                     android:id="@+id/stickyLorem"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -237,13 +237,13 @@
                 android:background="@drawable/section_box"
                 android:orientation="vertical">
 
-                <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
+                <adco.helixsongview.customviews.ExposedDropDown
                         android:id="@+id/monoFont"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/lyrics_monospace_font" />
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                <adco.helixsongview.customviews.MyMaterialSimpleTextView
                     android:id="@+id/monoLorem"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

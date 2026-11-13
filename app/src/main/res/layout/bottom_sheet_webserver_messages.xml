@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <com.garethevans.church.opensongtablet.customviews.DialogHeader
+    <adco.helixsongview.customviews.DialogHeader
         android:id="@+id/dialogHeading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -29,7 +29,7 @@
                 android:layout_gravity="top|start"
                 android:gravity="top|start">
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialEditText
+                <adco.helixsongview.customviews.MyMaterialEditText
                     android:id="@+id/webServerMessage1"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -38,7 +38,7 @@
                     android:layout_margin="0dp"
                     android:layout_gravity="top|start" />
 
-                <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+                <adco.helixsongview.customviews.MyFloatingActionButton
                     android:id="@+id/webServerMessage1Send"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -52,14 +52,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialEditText
+                <adco.helixsongview.customviews.MyMaterialEditText
                     android:id="@+id/webServerMessage2"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_gravity="top|start" />
 
-                <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+                <adco.helixsongview.customviews.MyFloatingActionButton
                     android:id="@+id/webServerMessage2Send"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -73,14 +73,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialEditText
+                <adco.helixsongview.customviews.MyMaterialEditText
                     android:id="@+id/webServerMessage3"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_gravity="top|start" />
 
-                <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+                <adco.helixsongview.customviews.MyFloatingActionButton
                     android:id="@+id/webServerMessage3Send"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -94,14 +94,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialEditText
+                <adco.helixsongview.customviews.MyMaterialEditText
                     android:id="@+id/webServerMessage4"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_gravity="top|start" />
 
-                <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+                <adco.helixsongview.customviews.MyFloatingActionButton
                     android:id="@+id/webServerMessage4Send"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -115,14 +115,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialEditText
+                <adco.helixsongview.customviews.MyMaterialEditText
                     android:id="@+id/webServerMessage5"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_gravity="top|start" />
 
-                <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+                <adco.helixsongview.customviews.MyFloatingActionButton
                     android:id="@+id/webServerMessage5Send"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

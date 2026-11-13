@@ -16,7 +16,7 @@
             android:orientation="vertical"
             android:paddingBottom="@dimen/extra_scroll_space_large">
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+            <adco.helixsongview.customviews.MyMaterialSwitch
                 android:id="@+id/fileWriteLog"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -31,7 +31,7 @@
                 android:gravity="center_horizontal"
                 android:orientation="horizontal">
 
-                <com.garethevans.church.opensongtablet.customviews.MyExtendedFloatingActionButton
+                <adco.helixsongview.customviews.MyExtendedFloatingActionButton
                     android:id="@+id/fileWriteReset"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -40,7 +40,7 @@
                     android:contentDescription="@string/reset"
                     app:icon="@drawable/delete" />
 
-                <com.garethevans.church.opensongtablet.customviews.MyExtendedFloatingActionButton
+                <adco.helixsongview.customviews.MyExtendedFloatingActionButton
                     android:id="@+id/fileWriteShare"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -49,10 +49,10 @@
                     android:contentDescription="@string/share"
                     app:icon="@drawable/share" />
             </LinearLayout>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
+            <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine" />
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+            <adco.helixsongview.customviews.MyMaterialSwitch
                 android:id="@+id/fileViewLog"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -67,7 +67,7 @@
                 android:gravity="center_horizontal"
                 android:orientation="horizontal">
 
-                <com.garethevans.church.opensongtablet.customviews.MyExtendedFloatingActionButton
+                <adco.helixsongview.customviews.MyExtendedFloatingActionButton
                     android:id="@+id/fileViewReset"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -75,7 +75,7 @@
                     android:text="@string/reset"
                     app:icon="@drawable/delete" />
 
-                <com.garethevans.church.opensongtablet.customviews.MyExtendedFloatingActionButton
+                <adco.helixsongview.customviews.MyExtendedFloatingActionButton
                     android:id="@+id/fileViewShare"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -83,10 +83,10 @@
                     android:text="@string/share"
                     app:icon="@drawable/share" />
             </LinearLayout>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
+            <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine" />
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+            <adco.helixsongview.customviews.MyMaterialSwitch
                 android:id="@+id/songIndexDebug"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -101,7 +101,7 @@
                 android:gravity="center_horizontal"
                 android:orientation="horizontal">
 
-                <com.garethevans.church.opensongtablet.customviews.MyExtendedFloatingActionButton
+                <adco.helixsongview.customviews.MyExtendedFloatingActionButton
                     android:id="@+id/songIndexDebugReset"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -110,7 +110,7 @@
                     android:contentDescription="@string/reset"
                     app:icon="@drawable/delete" />
 
-                <com.garethevans.church.opensongtablet.customviews.MyExtendedFloatingActionButton
+                <adco.helixsongview.customviews.MyExtendedFloatingActionButton
                     android:id="@+id/songIndexDebugShare"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -119,10 +119,10 @@
                     android:contentDescription="@string/share"
                     app:icon="@drawable/share" />
             </LinearLayout>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
+            <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine" />
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+            <adco.helixsongview.customviews.MyMaterialTextView
                 android:id="@+id/crashView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -137,7 +137,7 @@
                 android:gravity="center_horizontal"
                 android:orientation="horizontal">
 
-                <com.garethevans.church.opensongtablet.customviews.MyExtendedFloatingActionButton
+                <adco.helixsongview.customviews.MyExtendedFloatingActionButton
                     android:id="@+id/crashLogReset"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -145,7 +145,7 @@
                     android:text="@string/reset"
                     app:icon="@drawable/delete" />
 
-                <com.garethevans.church.opensongtablet.customviews.MyExtendedFloatingActionButton
+                <adco.helixsongview.customviews.MyExtendedFloatingActionButton
                     android:id="@+id/crashLogShare"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -153,7 +153,7 @@
                     android:text="@string/share"
                     app:icon="@drawable/share" />
             </LinearLayout>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
+            <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine" />
 
 

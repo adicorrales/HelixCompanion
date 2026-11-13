@@ -1,0 +1,65 @@
+package adco.helixsongview.customviews;
+
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.content.res.TypedArray;
+import android.util.AttributeSet;
+import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+
+import androidx.annotation.Nullable;
+
+import adco.helixsongview.R;
+import adco.helixsongview.screensetup.Palette;
+
+public class ThemeItemColor extends LinearLayout {
+
+    private final View colorSwatch;
+    private final MyMaterialButton labelText;
+
+    public ThemeItemColor(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+        inflate(context, R.layout.view_theme_item_color, this);
+
+        colorSwatch = findViewById(R.id.colorSwatch);
+        labelText = findViewById(R.id.labelText);
+        FrameLayout colorLayout = findViewById(R.id.colorLayout);
+
+        colorSwatch.setId(View.generateViewId());
+        labelText.setId(View.generateViewId());
+        colorLayout.setId(View.generateViewId());
+
+
+        int[] set = new int[] {android.R.attr.text};
+        TypedArray typedArray = context.obtainStyledAttributes(attrs,set);
+        try {
+            setText(typedArray.getString(0));
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            typedArray.recycle();
+        }
+
+        labelText.setClickable(false);
+
+        setPalette(new Palette(context));
+    }
+
+    public void setText(String text) {
+        labelText.setText(text);
+    }
+
+    public void setColor(int color) {
+        colorSwatch.setBackgroundColor(color);
+    }
+
+    public void setPalette(Palette palette) {
+        //labelText.setBackgroundTintList(ColorStateList.valueOf(palette.secondary));
+        labelText.setBackgroundTintList(new ColorStateList(
+                new int[][]{new int[0]},
+                new int[]{palette.secondary}
+        ));
+        labelText.setTextColor(palette.textColor);
+    }
+}

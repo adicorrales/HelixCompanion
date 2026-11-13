@@ -13,7 +13,7 @@
         android:orientation="vertical"
         android:background="@drawable/popup_bg">
 
-        <com.garethevans.church.opensongtablet.customviews.DialogHeader
+        <adco.helixsongview.customviews.DialogHeader
             android:id="@+id/dialogHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
@@ -26,7 +26,7 @@
                     android:padding="8dp"
                     android:paddingBottom="@dimen/extra_scroll_space">
 
-                    <com.garethevans.church.opensongtablet.customviews.MyMaterialSlider
+                    <adco.helixsongview.customviews.MyMaterialSlider
                         android:id="@+id/seekBar"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>
@@ -47,7 +47,7 @@
                             android:layout_height="wrap_content"
                             android:clipChildren="false"
                             android:clipToPadding="false">
-                            <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+                            <adco.helixsongview.customviews.MyFloatingActionButton
                                 android:id="@+id/playPauseButton"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -60,7 +60,7 @@
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:layout_height="wrap_content">
-                            <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+                            <adco.helixsongview.customviews.MyFloatingActionButton
                                 android:id="@+id/stopButton"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"

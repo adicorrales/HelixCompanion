@@ -10,7 +10,7 @@
     android:paddingBottom="2dp">
 
     <!-- Set number column -->
-    <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+    <adco.helixsongview.customviews.MyMaterialSimpleTextView
         android:id="@+id/select_set_number"
         android:layout_width="48dp"
         android:layout_height="wrap_content"
@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:padding="6dp">
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialCheckbox
+            <adco.helixsongview.customviews.MyMaterialCheckbox
                 android:id="@+id/select_set_checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -42,7 +42,7 @@
                 android:layout_centerVertical="true"
                 android:padding="8dp" />
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+            <adco.helixsongview.customviews.MyMaterialSimpleTextView
                 android:id="@+id/select_set_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -57,7 +57,7 @@
                 android:textSize="14sp"
                 android:visibility="visible"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+            <adco.helixsongview.customviews.MyMaterialSimpleTextView
                 android:id="@+id/select_set_folder"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

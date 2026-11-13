@@ -8,7 +8,7 @@
     android:padding="16dp"
     android:orientation="horizontal">
 
-    <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+    <adco.helixsongview.customviews.MyMaterialSimpleTextView
         android:id="@+id/textView"
         android:layout_width="0dp"
         android:layout_weight="1"
@@ -17,7 +17,7 @@
         style="@style/largeText"
         tools:text="Title"/>
 
-    <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+    <adco.helixsongview.customviews.MyFloatingActionButton
         android:id="@+id/webHelp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -29,7 +29,7 @@
         app:makeFlat="true"
         app:myFabSize="mini"/>
 
-    <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+    <adco.helixsongview.customviews.MyFloatingActionButton
         android:id="@+id/minimiseButtonDialog"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -41,7 +41,7 @@
         android:visibility="gone"
         app:myFabSize="mini"/>
 
-    <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+    <adco.helixsongview.customviews.MyFloatingActionButton
         android:id="@+id/closeButtonDialog"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

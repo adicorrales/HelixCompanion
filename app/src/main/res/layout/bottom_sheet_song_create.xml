@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <com.garethevans.church.opensongtablet.customviews.DialogHeader
+    <adco.helixsongview.customviews.DialogHeader
         android:id="@+id/dialogHeading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
@@ -21,13 +21,13 @@
             android:orientation="vertical"
             android:paddingBottom="@dimen/extra_scroll_space">
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+            <adco.helixsongview.customviews.MyMaterialSimpleTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:text="@string/song_new_name" />
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialEditText
+            <adco.helixsongview.customviews.MyMaterialEditText
                 android:id="@+id/filenameEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -35,20 +35,20 @@
                 android:gravity="start"
                 android:hint="@string/filename"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+            <adco.helixsongview.customviews.MyMaterialSimpleTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:layout_marginTop="16dp"
                 android:text="@string/not_saved_folder" />
 
-            <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
+            <adco.helixsongview.customviews.ExposedDropDown
                 android:id="@+id/folderDropdown"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/folder" />
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
+            <adco.helixsongview.customviews.MyMaterialButton
                 android:id="@+id/continueButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

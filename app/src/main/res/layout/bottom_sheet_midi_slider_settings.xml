@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <com.garethevans.church.opensongtablet.customviews.DialogHeader
+    <adco.helixsongview.customviews.DialogHeader
         android:id="@+id/dialogHeading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -22,7 +22,7 @@
             android:orientation="vertical"
             android:paddingBottom="@dimen/extra_scroll_space">
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialEditText
+            <adco.helixsongview.customviews.MyMaterialEditText
                 android:id="@+id/midiName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -35,14 +35,14 @@
                 android:orientation="horizontal"
                 android:layout_marginBottom="16dp">
 
-                <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
+                <adco.helixsongview.customviews.ExposedDropDown
                     android:id="@+id/midiChannel"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:hint="@string/midi_channel" />
 
-                <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
+                <adco.helixsongview.customviews.ExposedDropDown
                     android:id="@+id/midiController"
                     android:layout_width="0dp"
                     android:layout_weight="1"
@@ -50,7 +50,7 @@
                     android:layout_marginStart="8dp"
                     android:hint="@string/midi_controller" />
             </LinearLayout>
-            <com.garethevans.church.opensongtablet.customviews.MyExtendedFloatingActionButton
+            <adco.helixsongview.customviews.MyExtendedFloatingActionButton
                 android:id="@+id/doSave"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

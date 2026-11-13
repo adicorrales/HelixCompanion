@@ -14,30 +14,30 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+            <adco.helixsongview.customviews.MyMaterialSimpleTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 android:text="@string/import_bulk_details" />
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
+            <adco.helixsongview.customviews.MyMaterialButton
                 android:id="@+id/fileChooser"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="@string/file_chooser" />
 
-            <com.garethevans.church.opensongtablet.customviews.ScrollViewWithFAB
+            <adco.helixsongview.customviews.ScrollViewWithFAB
                 android:id="@+id/filesNestedScroll"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                <adco.helixsongview.customviews.MyMaterialSimpleTextView
                     android:id="@+id/filesFound"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
-            </com.garethevans.church.opensongtablet.customviews.ScrollViewWithFAB>
+            </adco.helixsongview.customviews.ScrollViewWithFAB>
         </LinearLayout>
 
         <FrameLayout
@@ -53,7 +53,7 @@
                 android:layout_height="@dimen/progress_bar_size"
                 android:layout_gravity="center" />
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+            <adco.helixsongview.customviews.MyMaterialSimpleTextView
                 android:id="@+id/progressText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -62,7 +62,7 @@
         </FrameLayout>
     </RelativeLayout>
 
-    <com.garethevans.church.opensongtablet.customviews.MyExtendedFloatingActionButton
+    <adco.helixsongview.customviews.MyExtendedFloatingActionButton
         android:id="@+id/doImport"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

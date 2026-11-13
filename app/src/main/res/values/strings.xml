@@ -209,7 +209,7 @@
     <string name="capture_device_audio">Capture device audio</string>
     <string name="capture_device_audio_full_info">Analyzes device audio locally in real time. No audio is recorded or stored.</string>
     <string name="cast_info_string">OpenSongApp using screen mirroring to display on a second screen.  If the app is unable to open your cast settings page showing available devices, you will have to manually start screen mirroring on your device before running OpenSongApp.  The app will then use the connected screen</string>
-    <string name="cast_namespace" translatable="false">urn:x-cast:com.garethevans.church.opensongtablet</string>
+    <string name="cast_namespace" translatable="false">urn:x-cast:adco.helixsongview</string>
     <string name="category">Category</string>
     <string name="cavaquinho">Cavaquinho</string>
     <string name="ccli" translatable="false">CCLI</string>
@@ -1313,7 +1313,7 @@
     <string name="select_page">Select page</string>
     <string name="send">Send</string>
     <string name="server">Server</string>
-    <string name="service_id" translatable="false">com.garethevans.church.opensongtablet</string>
+    <string name="service_id" translatable="false">adco.helixsongview</string>
     <string name="set">Set</string>
     <string name="set_add">Add to set</string>
     <string name="set_bundle_justchords">JustChords set bundle</string>

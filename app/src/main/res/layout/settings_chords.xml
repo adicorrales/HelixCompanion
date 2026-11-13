@@ -16,44 +16,44 @@
             android:orientation="vertical"
             android:paddingBottom="@dimen/extra_scroll_space_large">
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+            <adco.helixsongview.customviews.MyMaterialTextView
                 android:id="@+id/chordsView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:hint="@string/chord_fingering"
                 android:text="@string/chords"
                 app:size="large"/>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
+            <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+            <adco.helixsongview.customviews.MyMaterialTextView
                 android:id="@+id/chordsCustom"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:hint="@string/custom_chords_info"
                 android:text="@string/custom_chords"
                 app:size="large"/>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
+            <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+            <adco.helixsongview.customviews.MyMaterialTextView
                 android:id="@+id/chordsTranspose"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:hint="@string/transpose_info"
                 android:text="@string/transpose"
                 app:size="large"/>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
+            <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+            <adco.helixsongview.customviews.MyMaterialTextView
                 android:id="@+id/chordsFormat"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:hint="@string/pref_key_text"
                 android:text="@string/chord_settings"
                 app:size="large"/>
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
+            <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
         </LinearLayout>

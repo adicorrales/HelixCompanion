@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:padding="6dp">
 
-        <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+        <adco.helixsongview.customviews.MyMaterialSimpleTextView
             android:id="@+id/select_set_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -28,7 +28,7 @@
             android:textSize="14sp"
             android:visibility="visible"/>
 
-        <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+        <adco.helixsongview.customviews.MyMaterialSimpleTextView
             android:id="@+id/select_set_folder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -15,7 +15,7 @@
             android:orientation="vertical"
             android:paddingBottom="@dimen/extra_scroll_space_large">
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+            <adco.helixsongview.customviews.MyMaterialSwitch
                 android:id="@+id/swipeActive"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -28,39 +28,39 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialSlider
+                <adco.helixsongview.customviews.MyMaterialSlider
                     android:id="@+id/swipeDistance"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/swipe_distance" />
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialSlider
+                <adco.helixsongview.customviews.MyMaterialSlider
                     android:id="@+id/swipeSpeed"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/time" />
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialSlider
+                <adco.helixsongview.customviews.MyMaterialSlider
                     android:id="@+id/swipeHeight"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/swipe_allowance" />
-                <com.garethevans.church.opensongtablet.customviews.MyDivider
+                <adco.helixsongview.customviews.MyDivider
                     style="@style/MyDividerLine"/>
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                <adco.helixsongview.customviews.MyMaterialSimpleTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:text="@string/midi_test" />
-                <com.garethevans.church.opensongtablet.customviews.MyDivider
+                <adco.helixsongview.customviews.MyDivider
                     style="@style/MyDividerLine"/>
 
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
 
-    <com.garethevans.church.opensongtablet.customviews.DrawNotes
+    <adco.helixsongview.customviews.DrawNotes
         android:id="@+id/drawingArea"
         android:layout_width="match_parent"
         android:layout_height="200dp"

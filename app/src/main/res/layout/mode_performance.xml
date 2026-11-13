@@ -58,7 +58,7 @@
     </HorizontalScrollView>
 
     <!-- This is used for the pdf pages, images and stage mode -->
-    <com.garethevans.church.opensongtablet.customviews.MyRecyclerView
+    <adco.helixsongview.customviews.MyRecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -69,7 +69,7 @@
         android:visibility="invisible" />
 
     <!-- The main content inside a zoom layout -->
-    <com.garethevans.church.opensongtablet.customviews.MyZoomLayout
+    <adco.helixsongview.customviews.MyZoomLayout
         android:id="@+id/zoomLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -96,7 +96,7 @@
                 android:orientation="vertical" />
 
             <!-- The song lyrics etc. go here -->
-            <com.garethevans.church.opensongtablet.customviews.SongContent
+            <adco.helixsongview.customviews.SongContent
                 android:id="@+id/songView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -129,9 +129,9 @@
                 android:visibility="invisible"
                 tools:ignore="ImageContrastCheck" />
         </RelativeLayout>
-    </com.garethevans.church.opensongtablet.customviews.MyZoomLayout>
+    </adco.helixsongview.customviews.MyZoomLayout>
 
-    <com.garethevans.church.opensongtablet.customviews.InlineSetList
+    <adco.helixsongview.customviews.InlineSetList
         android:id="@+id/inlineSetList"
         android:layout_width="0dp"
         android:layout_height="match_parent"

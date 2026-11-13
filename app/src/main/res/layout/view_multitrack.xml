@@ -7,7 +7,7 @@
     android:orientation="vertical"
     tools:ignore="VisualLintLongText">
 
-    <com.garethevans.church.opensongtablet.customviews.DialogHeader
+    <adco.helixsongview.customviews.DialogHeader
         android:id="@+id/dialogHeading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -39,7 +39,7 @@
                     android:orientation="horizontal"
                     android:layout_marginBottom="32dp">
 
-                    <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                    <adco.helixsongview.customviews.MyMaterialTextView
                         android:id="@+id/folderTextView"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -47,7 +47,7 @@
                         android:layout_marginEnd="16dp"
                         android:text="@string/multitrack_folder_found" />
 
-                    <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+                    <adco.helixsongview.customviews.MyFloatingActionButton
                         android:id="@+id/folderButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -65,7 +65,7 @@
                     android:orientation="horizontal"
                     android:layout_marginBottom="16dp">
 
-                    <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+                    <adco.helixsongview.customviews.MyMaterialTextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -73,7 +73,7 @@
                         android:text="@string/multitrack_requires_conversion"
                         android:hint="@string/multitrack_requires_conversion_info"/>
 
-                    <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+                    <adco.helixsongview.customviews.MyFloatingActionButton
                         android:id="@+id/conversionButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -107,7 +107,7 @@
                             android:orientation="horizontal" />
                     </HorizontalScrollView>
 
-                    <com.garethevans.church.opensongtablet.customviews.MyMaterialSlider
+                    <adco.helixsongview.customviews.MyMaterialSlider
                         android:id="@+id/seekBar"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
@@ -124,7 +124,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1">
 
-                        <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+                        <adco.helixsongview.customviews.MyFloatingActionButton
                             android:id="@+id/audioPlay"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -138,7 +138,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1">
 
-                        <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+                        <adco.helixsongview.customviews.MyFloatingActionButton
                             android:id="@+id/audioPause"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -153,7 +153,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1">
 
-                        <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+                        <adco.helixsongview.customviews.MyFloatingActionButton
                             android:id="@+id/audioStop"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -174,7 +174,7 @@
             android:layout_height="@dimen/progress_bar_size"
             android:layout_gravity="center" />
 
-        <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+        <adco.helixsongview.customviews.MyMaterialTextView
             android:id="@+id/progressText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

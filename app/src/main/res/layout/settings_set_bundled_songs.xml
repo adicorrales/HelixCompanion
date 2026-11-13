@@ -9,7 +9,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+        <adco.helixsongview.customviews.MyMaterialSimpleTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp"
@@ -27,7 +27,7 @@
 
     </LinearLayout>
 
-    <com.garethevans.church.opensongtablet.customviews.MyExtendedFloatingActionButton
+    <adco.helixsongview.customviews.MyExtendedFloatingActionButton
         android:id="@+id/importSelectedSongs"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -43,7 +43,7 @@
         style="@style/ScrimBackground"
         android:visibility="gone" />
 
-    <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+    <adco.helixsongview.customviews.MyMaterialTextView
         android:id="@+id/progressText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

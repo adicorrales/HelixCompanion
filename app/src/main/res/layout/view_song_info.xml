@@ -18,7 +18,7 @@
         android:contentDescription="@string/logo"
         app:srcCompat="@drawable/logo" />
 
-    <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+    <adco.helixsongview.customviews.MyMaterialSimpleTextView
         android:id="@+id/capoInfo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -39,31 +39,31 @@
         android:paddingEnd="0dp"
         android:paddingBottom="8dp">
 
-        <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+        <adco.helixsongview.customviews.MyMaterialSimpleTextView
             android:id="@+id/songTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:includeFontPadding="false" />
 
-        <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+        <adco.helixsongview.customviews.MyMaterialSimpleTextView
             android:id="@+id/songAuthor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:includeFontPadding="false" />
 
-        <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+        <adco.helixsongview.customviews.MyMaterialSimpleTextView
             android:id="@+id/songCopyright"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:includeFontPadding="false" />
 
-        <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+        <adco.helixsongview.customviews.MyMaterialSimpleTextView
             android:id="@+id/songCCLI"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:includeFontPadding="false" />
 
-        <com.garethevans.church.opensongtablet.customviews.SafeTextClock
+        <adco.helixsongview.customviews.SafeTextClock
         android:id="@+id/textClock"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -30,7 +30,7 @@
         android:orientation="vertical"
         android:padding="8dp">
 
-        <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+        <adco.helixsongview.customviews.MyMaterialSimpleTextView
             android:id="@+id/sliderValue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -38,14 +38,14 @@
             android:text="@string/midi_value"
             android:textSize="18sp" />
 
-        <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+        <adco.helixsongview.customviews.MyMaterialSimpleTextView
             android:id="@+id/sliderName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/title" />
 
-        <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+        <adco.helixsongview.customviews.MyMaterialSimpleTextView
             android:id="@+id/sliderMidi"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

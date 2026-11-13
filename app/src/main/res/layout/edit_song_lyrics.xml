@@ -5,7 +5,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <com.garethevans.church.opensongtablet.customviews.ScrollViewWithFAB
+    <adco.helixsongview.customviews.ScrollViewWithFAB
         android:id="@+id/lyricsScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -22,7 +22,7 @@
             android:focusableInTouchMode="false"
             android:paddingBottom="@dimen/extra_scroll_space_large">
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
+            <adco.helixsongview.customviews.MyMaterialButton
                 android:id="@+id/ocr"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -33,7 +33,7 @@
                 app:icon="@drawable/ocr"
                 app:iconTint="@color/white" />
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
+            <adco.helixsongview.customviews.MyMaterialButton
                 android:id="@+id/imageEdit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -43,7 +43,7 @@
                 app:icon="@drawable/crop_rotate"
                 app:iconTint="@color/white" />
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialEditText
+            <adco.helixsongview.customviews.MyMaterialEditText
                 android:id="@+id/lyrics"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -59,7 +59,7 @@
                 app:autoSizeTextType="uniform"
                 app:useMonospace="true" />
 
-            <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+            <adco.helixsongview.customviews.MyFloatingActionButton
                 android:id="@+id/findAndReplace"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -77,7 +77,7 @@
                 android:visibility="visible"
                 android:contentDescription="@string/image" />
         </RelativeLayout>
-    </com.garethevans.church.opensongtablet.customviews.ScrollViewWithFAB>
+    </adco.helixsongview.customviews.ScrollViewWithFAB>
 
     <!-- The custom bar -->
     <RelativeLayout
@@ -118,7 +118,7 @@
         android:clipToPadding="false"
         android:layout_alignTop="@+id/settingsButton">
 
-        <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+        <adco.helixsongview.customviews.MyFloatingActionButton
             android:id="@+id/undoButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -129,7 +129,7 @@
             android:contentDescription="@string/back"
             android:src="@drawable/undo" />
 
-        <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+        <adco.helixsongview.customviews.MyFloatingActionButton
             android:id="@+id/redoButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -141,7 +141,7 @@
             android:src="@drawable/redo" />
     </LinearLayout>
 
-    <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+    <adco.helixsongview.customviews.MyFloatingActionButton
         android:id="@+id/settingsButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

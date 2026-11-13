@@ -6,7 +6,7 @@
     android:minHeight="96dp"
     android:orientation="vertical">
 
-    <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
+    <adco.helixsongview.customviews.MyMaterialButton
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:minHeight="96dp"

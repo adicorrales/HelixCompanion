@@ -1,0 +1,91 @@
+package adco.helixsongview.pads;
+
+import android.content.Context;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import adco.helixsongview.R;
+import adco.helixsongview.databinding.SettingsPadsBinding;
+import adco.helixsongview.interfaces.MainActivityInterface;
+
+public class PadSettingsFragment extends Fragment {
+
+    @SuppressWarnings({"unused","FieldCanBeLocal"})
+    private final String TAG = "PadSettingsFragment";
+    private SettingsPadsBinding myView;
+    private MainActivityInterface mainActivityInterface;
+    private boolean padPlaying;
+    private String pad_string="", website_pad_string="";
+    private String webAddress;
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mainActivityInterface.updateToolbar(pad_string);
+        mainActivityInterface.updateToolbarHelp(webAddress);
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        mainActivityInterface = (MainActivityInterface) context;
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        myView = SettingsPadsBinding.inflate(inflater, container, false);
+
+        prepareStrings();
+
+        webAddress = website_pad_string;
+
+        setListeners();
+
+        return myView.getRoot();
+    }
+
+    private void prepareStrings() {
+        if (getContext()!=null) {
+            pad_string = getString(R.string.pad);
+            website_pad_string = getString(R.string.website_pad);
+        }
+    }
+    private void setListeners() {
+        myView.padCurrent.setOnClickListener(v -> {
+            if (mainActivityInterface!=null) {
+                PadsBottomSheet padsBottomSheet = new PadsBottomSheet();
+                padsBottomSheet.show(mainActivityInterface.getMyFragmentManager(), "padsBottomSheet");
+                // Nav home then open the pad bottom sheet
+                mainActivityInterface.navHome();
+            }
+        });
+        myView.padCustom.setOnClickListener(v -> mainActivityInterface.navigateToFragment(null, R.id.customPadsFragment));
+        myView.padSettings.setOnClickListener(v -> mainActivityInterface.navigateToFragment(null, R.id.padDefaultsFragment));
+        padPlaying = mainActivityInterface.getPad().isPadPlaying();
+        changePlayIcon();
+
+        myView.nestedScrollView.setFabToAnimate(myView.startStopButton);
+        
+        myView.startStopButton.setOnClickListener(v -> {
+            padPlaying = mainActivityInterface.playPad();
+            changePlayIcon();
+        });
+    }
+
+    private void changePlayIcon() {
+        if (getContext()!=null) {
+            if (padPlaying) {
+                myView.startStopButton.setImageDrawable(R.drawable.stop);
+            } else {
+                myView.startStopButton.setImageDrawable(R.drawable.play);
+            }
+        }
+    }
+}

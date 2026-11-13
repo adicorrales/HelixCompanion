@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.garethevans.church.opensongtablet.customviews.ScrollViewWithFAB
+        <adco.helixsongview.customviews.ScrollViewWithFAB
             android:id="@+id/nestedScrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -20,7 +20,7 @@
                 android:orientation="vertical"
                 android:paddingBottom="@dimen/extra_scroll_space_large">
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                <adco.helixsongview.customviews.MyMaterialSimpleTextView
                     android:id="@+id/importTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -28,7 +28,7 @@
                     android:paddingBottom="8dp"
                     android:text="@string/backup_sets" />
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialEditText
+                <adco.helixsongview.customviews.MyMaterialEditText
                     android:id="@+id/backupName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -38,7 +38,7 @@
                     android:paddingBottom="8dp"
                     android:text="@string/app_name" />
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                <adco.helixsongview.customviews.MyMaterialSwitch
                     android:id="@+id/overWrite"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -48,7 +48,7 @@
                     android:text="@string/overwrite"
                     android:visibility="gone" />
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                <adco.helixsongview.customviews.MyMaterialSimpleTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingTop="16dp"
@@ -65,7 +65,7 @@
                     android:paddingBottom="60dp" />
 
             </LinearLayout>
-        </com.garethevans.church.opensongtablet.customviews.ScrollViewWithFAB>
+        </adco.helixsongview.customviews.ScrollViewWithFAB>
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -75,7 +75,7 @@
             android:visibility="gone" />
     </RelativeLayout>
 
-    <com.garethevans.church.opensongtablet.customviews.MyExtendedFloatingActionButton
+    <adco.helixsongview.customviews.MyExtendedFloatingActionButton
         android:id="@+id/createBackup_FAB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

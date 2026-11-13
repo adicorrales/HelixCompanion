@@ -1,0 +1,31 @@
+package adco.helixsongview.customviews;
+
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.util.AttributeSet;
+
+import androidx.annotation.Nullable;
+import androidx.core.widget.ImageViewCompat;
+
+import adco.helixsongview.screensetup.Palette;
+
+public class MyImageView extends androidx.appcompat.widget.AppCompatImageView {
+    public MyImageView(Context context) {
+        this(context,null);
+    }
+
+    public MyImageView(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+        if (!isInEditMode()) {
+            setPalette(new Palette(context));
+        }
+    }
+
+    public void setPalette(Palette palette) {
+        //ImageViewCompat.setImageTintList(this,ColorStateList.valueOf(palette.textColor));
+        ImageViewCompat.setImageTintList(this,new ColorStateList(
+                new int[][]{new int[0]},
+                new int[]{palette.textColor}
+        ));
+    }
+}

@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <com.garethevans.church.opensongtablet.customviews.DialogHeader
+        <adco.helixsongview.customviews.DialogHeader
             android:id="@+id/dialogHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
@@ -25,7 +25,7 @@
                 android:orientation="vertical"
                 android:paddingBottom="@dimen/extra_scroll_space">
 
-                <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
+                <adco.helixsongview.customviews.ExposedDropDown
                     android:id="@+id/instrument"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -33,7 +33,7 @@
                     android:paddingTop="0dp"
                     android:paddingBottom="16dp"/>
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialSwitch
+                <adco.helixsongview.customviews.MyMaterialSwitch
                     android:id="@+id/capoChords"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

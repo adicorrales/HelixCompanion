@@ -7,7 +7,7 @@
     android:padding="16dp">
 
     <!-- Use a style that matches your app's typography -->
-    <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+    <adco.helixsongview.customviews.MyMaterialSimpleTextView
         android:id="@+id/sort_item_popularity"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -18,7 +18,7 @@
         android:drawableStart="@drawable/star"
         android:drawablePadding="16dp" />
 
-    <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+    <adco.helixsongview.customviews.MyMaterialSimpleTextView
         android:id="@+id/sort_item_added_to_set"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -29,7 +29,7 @@
         android:drawableStart="@drawable/set_add"
         android:drawablePadding="16dp" />
 
-    <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+    <adco.helixsongview.customviews.MyMaterialSimpleTextView
         android:id="@+id/sort_item_last_viewed"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -40,7 +40,7 @@
         android:drawableStart="@drawable/eye_outline"
         android:drawablePadding="16dp" />
 
-    <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+    <adco.helixsongview.customviews.MyMaterialSimpleTextView
         android:id="@+id/sort_item_last_added"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -51,7 +51,7 @@
         android:drawableStart="@drawable/plus"
         android:drawablePadding="16dp" />
 
-    <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+    <adco.helixsongview.customviews.MyMaterialSimpleTextView
         android:id="@+id/sort_item_last_cast"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -62,13 +62,13 @@
         android:drawableStart="@drawable/cast"
         android:drawablePadding="24dp" />
 
-    <com.garethevans.church.opensongtablet.customviews.MyDivider
+    <adco.helixsongview.customviews.MyDivider
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"/>
 
-    <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+    <adco.helixsongview.customviews.MyMaterialSimpleTextView
         android:id="@+id/reset_analytics"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

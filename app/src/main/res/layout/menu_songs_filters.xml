@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
-    <com.garethevans.church.opensongtablet.customviews.MyMaterialEditText
+    <adco.helixsongview.customviews.MyMaterialEditText
         android:id="@+id/titleSearch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,7 +17,7 @@
         android:paddingBottom="2dp"
         android:visibility="gone"/>
 
-    <com.garethevans.church.opensongtablet.customviews.MyMaterialEditText
+    <adco.helixsongview.customviews.MyMaterialEditText
         android:id="@+id/filterSearch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -29,7 +29,7 @@
         android:paddingBottom="2dp"
         android:visibility="gone"/>
 
-    <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
+    <adco.helixsongview.customviews.ExposedDropDown
         android:id="@+id/keySearch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -40,7 +40,7 @@
         android:paddingBottom="2dp"
         android:visibility="gone"/>
 
-    <com.garethevans.church.opensongtablet.customviews.MyMaterialEditText
+    <adco.helixsongview.customviews.MyMaterialEditText
         android:id="@+id/artistSearch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -59,7 +59,7 @@
         android:orientation="horizontal"
         android:visibility="gone">
 
-    <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
+    <adco.helixsongview.customviews.ExposedDropDown
         android:id="@+id/folderSearch"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -70,7 +70,7 @@
         android:paddingTop="2dp"
         android:paddingBottom="2dp"/>
 
-        <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+        <adco.helixsongview.customviews.MyFloatingActionButton
             android:id="@+id/manageFolders"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -93,7 +93,7 @@
         android:orientation="horizontal"
         android:visibility="gone">
 
-    <com.garethevans.church.opensongtablet.customviews.MyMaterialEditText
+    <adco.helixsongview.customviews.MyMaterialEditText
         android:id="@+id/tagSearch"
         android:layout_width="0dp"
         android:layout_weight="1"
@@ -106,7 +106,7 @@
         android:paddingBottom="2dp"
         android:layout_gravity="bottom" />
 
-        <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+        <adco.helixsongview.customviews.MyFloatingActionButton
             android:id="@+id/manageTags"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

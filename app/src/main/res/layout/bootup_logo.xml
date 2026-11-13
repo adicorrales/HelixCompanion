@@ -19,7 +19,7 @@
         android:visibility="visible"
         app:srcCompat="@drawable/splash_logo" />
 
-    <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+    <adco.helixsongview.customviews.MyMaterialSimpleTextView
         android:id="@+id/currentAction"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

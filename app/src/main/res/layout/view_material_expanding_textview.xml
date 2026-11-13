@@ -9,7 +9,7 @@
     android:paddingTop="4dp"
     android:paddingBottom="4dp">
 
-    <com.garethevans.church.opensongtablet.customviews.MyImageView
+    <adco.helixsongview.customviews.MyImageView
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -24,7 +24,7 @@
         android:layout_weight="1"
         android:orientation="vertical">
 
-        <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+        <adco.helixsongview.customviews.MyMaterialSimpleTextView
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -35,7 +35,7 @@
             android:gravity="start"
             tools:text="Main text" />
 
-        <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+        <adco.helixsongview.customviews.MyMaterialSimpleTextView
             android:id="@+id/hintView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -51,7 +51,7 @@
     </LinearLayout>
 
     <!-- Expand / Collapse Drop Down Arrow -->
-    <com.garethevans.church.opensongtablet.customviews.MyImageView
+    <adco.helixsongview.customviews.MyImageView
         android:id="@+id/expandArrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -61,7 +61,7 @@
         android:src="@android:drawable/arrow_down_float"
         android:visibility="gone"/>
 
-    <com.garethevans.church.opensongtablet.customviews.MyImageView
+    <adco.helixsongview.customviews.MyImageView
         android:id="@+id/checkMark"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -80,7 +80,7 @@
         android:paddingEnd="0dp"
         android:visibility="gone">
 
-        <com.garethevans.church.opensongtablet.customviews.MyMaterialCheckbox
+        <adco.helixsongview.customviews.MyMaterialCheckbox
             android:id="@+id/checkBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -90,7 +90,7 @@
 
     </FrameLayout>
 
-    <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+    <adco.helixsongview.customviews.MyFloatingActionButton
         android:id="@+id/endActionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

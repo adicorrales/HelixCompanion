@@ -11,7 +11,7 @@
         android:gravity="center_vertical"
         android:minHeight="72dp"
         android:orientation="horizontal">
-        <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+        <adco.helixsongview.customviews.MyMaterialTextView
             android:id="@+id/setTitle"
             android:layout_width="0dp"
             android:layout_weight="1"
@@ -53,7 +53,7 @@
 
     </LinearLayout>
 
-    <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+    <adco.helixsongview.customviews.MyFloatingActionButton
         android:id="@+id/setMasterFAB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

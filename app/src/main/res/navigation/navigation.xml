@@ -8,7 +8,7 @@
     <!-- The boot up fragment -->
     <fragment
         android:id="@+id/bootUpFragment"
-        android:name="com.garethevans.church.opensongtablet.appdata.BootUpFragment"
+        android:name="adco.helixsongview.appdata.BootUpFragment"
         android:label="bootup_logo"
         tools:layout="@layout/bootup_logo">
         <deepLink android:id="@+id/deepLinkBoot"
@@ -25,7 +25,7 @@
     <!-- The performance fragment -->
     <fragment
         android:id="@+id/performanceFragment"
-        android:name="com.garethevans.church.opensongtablet.performance.PerformanceFragment"
+        android:name="adco.helixsongview.performance.PerformanceFragment"
         android:label="fragment_performance"
         tools:layout="@layout/mode_performance">
         <action
@@ -64,7 +64,7 @@
         <!-- The main preferences fragment -->
         <fragment
             android:id="@+id/preferencesFragment"
-            android:name="com.garethevans.church.opensongtablet.preferences.SettingsCategories"
+            android:name="adco.helixsongview.preferences.SettingsCategories"
             android:label="settings_categories"
             tools:layout="@layout/settings_categories">
             <action
@@ -120,7 +120,7 @@
             <!-- The storage layout fragment -->
             <fragment
                 android:id="@+id/storageManagementFragment"
-                android:name="com.garethevans.church.opensongtablet.filemanagement.StorageManagementFragment"
+                android:name="adco.helixsongview.filemanagement.StorageManagementFragment"
                 android:label="storage_folder_display"
                 tools:layout="@layout/storage_folder_display">
                 <action
@@ -140,7 +140,7 @@
             <!-- Choose the storage fragment -->
             <fragment
                 android:id="@+id/setStorageLocationFragment"
-                android:name="com.garethevans.church.opensongtablet.filemanagement.SetStorageLocationFragment"
+                android:name="adco.helixsongview.filemanagement.SetStorageLocationFragment"
                 android:label="fragment_setstoragelocation"
                 tools:layout="@layout/storage_choose">
                 <deepLink
@@ -154,7 +154,7 @@
             <!-- The options fragment -->
             <fragment
                 android:id="@+id/storageOptionsFragment"
-                android:name="com.garethevans.church.opensongtablet.filemanagement.StorageOptionsFragment"
+                android:name="adco.helixsongview.filemanagement.StorageOptionsFragment"
                 android:label="fragment_storageoption"
                 tools:layout="@layout/settings_storage_options">
                 <deepLink
@@ -174,7 +174,7 @@
             <!-- The Sync with Nearby fragment -->
             <fragment
                 android:id="@+id/syncNearbyFragment"
-                android:name="com.garethevans.church.opensongtablet.nearby.SyncNearbyFragment"
+                android:name="adco.helixsongview.nearby.SyncNearbyFragment"
                 android:label="BrowseHostFiles"
                 tools:layout="@layout/settings_sync">
                 <deepLink
@@ -185,7 +185,7 @@
             <!-- The OpenChords fragment -->
             <fragment
                 android:id="@+id/openChordsFragment"
-                android:name="com.garethevans.church.opensongtablet.openchords.OpenChordsFragment"
+                android:name="adco.helixsongview.openchords.OpenChordsFragment"
                 android:label="OpenChordsFragment"
                 tools:layout="@layout/settings_openchords">
                 <deepLink
@@ -195,7 +195,7 @@
 
             <fragment
                 android:id="@+id/kitKatFolderChoose"
-                android:name="com.garethevans.church.opensongtablet.filemanagement.KitKatFolderChooseFragment"
+                android:name="adco.helixsongview.filemanagement.KitKatFolderChooseFragment"
                 android:label="storage_kitkat_choose"
                 tools:layout="@layout/storage_kitkat_chooser">
                 <deepLink
@@ -205,7 +205,7 @@
             <!-- Choose the storage fragment -->
             <fragment
                 android:id="@+id/backupOSBFragment"
-                android:name="com.garethevans.church.opensongtablet.backupandrestore.BackupOSBFragment"
+                android:name="adco.helixsongview.backupandrestore.BackupOSBFragment"
                 android:label="fragment_osbbackup"
                 tools:layout="@layout/storage_backup">
                 <deepLink
@@ -215,7 +215,7 @@
 
             <fragment
                 android:id="@+id/moveContentFragment"
-                android:name="com.garethevans.church.opensongtablet.filemanagement.MoveContentFragment"
+                android:name="adco.helixsongview.filemanagement.MoveContentFragment"
                 android:label="MoveContentDialog"
                 tools:layout="@layout/storage_move">
                 <deepLink android:id="@+id/deepLinkMove"
@@ -227,7 +227,7 @@
         <!-- Google Nearby -->
         <fragment
             android:id="@+id/nearbyConnectionsFragment"
-            android:name="com.garethevans.church.opensongtablet.nearby.NearbyConnectionsFragment"
+            android:name="adco.helixsongview.nearby.NearbyConnectionsFragment"
             android:label="settings_nearbyconnections"
             tools:layout="@layout/settings_nearbyconnections">
             <deepLink
@@ -243,7 +243,7 @@
             <!-- Display fragment -->
             <fragment
                 android:id="@+id/displayMenuFragment"
-                android:name="com.garethevans.church.opensongtablet.screensetup.DisplayMenuFragment"
+                android:name="adco.helixsongview.screensetup.DisplayMenuFragment"
                 android:label="settings_display"
                 tools:layout="@layout/settings_display">
                 <deepLink
@@ -281,7 +281,7 @@
             <!-- Theme fragment -->
             <fragment
                 android:id="@+id/themeSetupFragment"
-                android:name="com.garethevans.church.opensongtablet.screensetup.ThemeSetupFragment"
+                android:name="adco.helixsongview.screensetup.ThemeSetupFragment"
                 android:label="settings_theme"
                 tools:layout="@layout/settings_theme">
                 <deepLink
@@ -292,14 +292,14 @@
             <!-- Colour chooser -->
             <dialog
                 android:id="@+id/chooseColorBottomSheet"
-                android:name="com.garethevans.church.opensongtablet.screensetup.ChooseColorBottomSheet"
+                android:name="adco.helixsongview.screensetup.ChooseColorBottomSheet"
                 android:label="display_color_settings"
                 tools:layout="@layout/bottom_sheet_choose_color" />
 
             <!-- Font chooser -->
             <fragment
                 android:id="@+id/fontSetupFragment"
-                android:name="com.garethevans.church.opensongtablet.screensetup.FontSetupFragment"
+                android:name="adco.helixsongview.screensetup.FontSetupFragment"
                 android:label="settings_fonts"
                 tools:layout="@layout/settings_fonts">
                 <action
@@ -313,12 +313,12 @@
             <!-- Font preview -->
             <fragment
                 android:id="@+id/fontSetupPreviewFragment"
-                android:name="com.garethevans.church.opensongtablet.screensetup.FontSetupPreviewFragment"
+                android:name="adco.helixsongview.screensetup.FontSetupPreviewFragment"
                 android:label="settings_fonts_preview"
                 tools:layout="@layout/settings_fonts_preview" />
             <fragment
                 android:id="@+id/actionBarSettingsFragment"
-                android:name="com.garethevans.church.opensongtablet.screensetup.ActionBarSettingsFragment"
+                android:name="adco.helixsongview.screensetup.ActionBarSettingsFragment"
                 android:label="settings_actionbar"
                 tools:layout="@layout/settings_actionbar">
                 <deepLink
@@ -327,7 +327,7 @@
             </fragment>
             <fragment
                 android:id="@+id/menuSettingsFragment"
-                android:name="com.garethevans.church.opensongtablet.screensetup.MenuSettingsFragment"
+                android:name="adco.helixsongview.screensetup.MenuSettingsFragment"
                 android:label="MenuSettingsFragment"
                 tools:layout="@layout/settings_menu">
                 <deepLink
@@ -336,7 +336,7 @@
             </fragment>
             <fragment
                 android:id="@+id/displayExtraFragment"
-                android:name="com.garethevans.church.opensongtablet.screensetup.DisplayExtraFragment"
+                android:name="adco.helixsongview.screensetup.DisplayExtraFragment"
                 android:label="DisplayExtraFragment"
                 tools:layout="@layout/settings_display_extra">
                 <deepLink
@@ -345,7 +345,7 @@
             </fragment>
             <fragment
                 android:id="@+id/displayScalingFragment"
-                android:name="com.garethevans.church.opensongtablet.screensetup.DisplayScalingFragment"
+                android:name="adco.helixsongview.screensetup.DisplayScalingFragment"
                 android:label="DisplayScalingFragment"
                 tools:layout="@layout/settings_display_scaling">
                 <deepLink
@@ -356,7 +356,7 @@
             <!-- Connected display -->
             <fragment
                 android:id="@+id/connectedDisplayFragment"
-                android:name="com.garethevans.church.opensongtablet.secondarydisplay.SecondaryDisplaySettingsFragment"
+                android:name="adco.helixsongview.secondarydisplay.SecondaryDisplaySettingsFragment"
                 android:label="settings_connected_display"
                 tools:layout="@layout/settings_display_connected">
                 <deepLink
@@ -365,7 +365,7 @@
             </fragment>
             <fragment
                 android:id="@+id/inlineSetFragment"
-                android:name="com.garethevans.church.opensongtablet.setmenu.InlineSetFragment"
+                android:name="adco.helixsongview.setmenu.InlineSetFragment"
                 android:label="settings_display_inline_set"
                 tools:layout="@layout/settings_sets_inline">
                 <deepLink
@@ -374,7 +374,7 @@
             </fragment>
             <fragment
                 android:id="@+id/marginsFragment"
-                android:name="com.garethevans.church.opensongtablet.screensetup.MarginsFragment"
+                android:name="adco.helixsongview.screensetup.MarginsFragment"
                 android:label="settings_margins"
                 tools:layout="@layout/settings_margins">
                 <deepLink
@@ -389,7 +389,7 @@
         <!-- Profiles -->
         <fragment
             android:id="@+id/profileFragment"
-            android:name="com.garethevans.church.opensongtablet.preferences.ProfileFragment"
+            android:name="adco.helixsongview.preferences.ProfileFragment"
             android:label="settings_profiles"
             tools:layout="@layout/settings_profiles">
             <deepLink
@@ -405,7 +405,7 @@
             <!-- Control options -->
             <fragment
                 android:id="@+id/controlMenuFragment"
-                android:name="com.garethevans.church.opensongtablet.controls.ControlMenuFragment"
+                android:name="adco.helixsongview.controls.ControlMenuFragment"
                 android:label="settings_control"
                 tools:layout="@layout/settings_control">
                 <action
@@ -431,7 +431,7 @@
             <!-- Pedal settings -->
             <fragment
                 android:id="@+id/pedalsFragment"
-                android:name="com.garethevans.church.opensongtablet.controls.PedalsFragment"
+                android:name="adco.helixsongview.controls.PedalsFragment"
                 android:label="settings_pedal"
                 tools:layout="@layout/settings_pedal">
                 <deepLink
@@ -440,7 +440,7 @@
             </fragment>
             <fragment
                 android:id="@+id/pageButtonFragment"
-                android:name="com.garethevans.church.opensongtablet.controls.PageButtonFragment"
+                android:name="adco.helixsongview.controls.PageButtonFragment"
                 android:label="PageButtonFragment"
                 tools:layout="@layout/settings_pagebuttons">
                 <deepLink
@@ -449,7 +449,7 @@
             </fragment>
             <fragment
                 android:id="@+id/gesturesFragment"
-                android:name="com.garethevans.church.opensongtablet.controls.GesturesFragment"
+                android:name="adco.helixsongview.controls.GesturesFragment"
                 android:label="GesturesFragment"
                 tools:layout="@layout/settings_gestures">
                 <deepLink
@@ -458,7 +458,7 @@
             </fragment>
             <fragment
                 android:id="@+id/swipeFragment"
-                android:name="com.garethevans.church.opensongtablet.controls.SwipeFragment"
+                android:name="adco.helixsongview.controls.SwipeFragment"
                 android:label="SwipeFragment"
                 tools:layout="@layout/settings_swipes">
                 <deepLink
@@ -467,7 +467,7 @@
             </fragment>
             <fragment
                 android:id="@+id/hotZonesSettingsFragment"
-                android:name="com.garethevans.church.opensongtablet.controls.HotZonesSettingsFragment"
+                android:name="adco.helixsongview.controls.HotZonesSettingsFragment"
                 android:label="HotZonesSettingsFragment"
                 tools:layout="@layout/settings_hot_zones">
                 <deepLink
@@ -485,7 +485,7 @@
             <!-- About options -->
             <fragment
                 android:id="@+id/aboutAppFragment"
-                android:name="com.garethevans.church.opensongtablet.appdata.AboutAppFragment"
+                android:name="adco.helixsongview.appdata.AboutAppFragment"
                 android:label="settings_about"
                 tools:layout="@layout/settings_about">
                 <deepLink
@@ -505,7 +505,7 @@
             <!-- Language -->
             <fragment
                 android:id="@+id/languageFragment"
-                android:name="com.garethevans.church.opensongtablet.appdata.LanguageFragment"
+                android:name="adco.helixsongview.appdata.LanguageFragment"
                 android:label="settings_language"
                 tools:layout="@layout/settings_language">
                 <deepLink
@@ -517,7 +517,7 @@
             <!-- Share logs -->
             <fragment
                 android:id="@+id/shareLogsFragment"
-                android:name="com.garethevans.church.opensongtablet.appdata.ShareLogsFragment"
+                android:name="adco.helixsongview.appdata.ShareLogsFragment"
                 android:label="ShareLogsFragment"
                 tools:layout="@layout/settings_share_logs">
                 <deepLink
@@ -528,7 +528,7 @@
             <!-- Forum -->
             <fragment
                 android:id="@+id/forumFragment"
-                android:name="com.garethevans.church.opensongtablet.utilities.ForumFragment"
+                android:name="adco.helixsongview.utilities.ForumFragment"
                 android:label="ForumFragment"
                 tools:layout="@layout/settings_forum_webview">
                 <deepLink
@@ -548,7 +548,7 @@
 
             <fragment
                 android:id="@+id/songActionsMenuFragment"
-                android:name="com.garethevans.church.opensongtablet.songprocessing.SongActionsMenuFragment"
+                android:name="adco.helixsongview.songprocessing.SongActionsMenuFragment"
                 android:label="SongActionsMenuFragment"
                 tools:layout="@layout/settings_songactions">
                 <action
@@ -590,7 +590,7 @@
            </fragment>
             <fragment
                 android:id="@+id/highlighterFragment"
-                android:name="com.garethevans.church.opensongtablet.highlighter.HighlighterFragment"
+                android:name="adco.helixsongview.highlighter.HighlighterFragment"
                 android:label="HighlighterFragment"
                 tools:layout="@layout/settings_highlighter">
                 <action
@@ -599,7 +599,7 @@
             </fragment>
             <fragment
                 android:id="@+id/highlighterEditFragment"
-                android:name="com.garethevans.church.opensongtablet.highlighter.HighlighterEditFragment"
+                android:name="adco.helixsongview.highlighter.HighlighterEditFragment"
                 android:label="HighlighterEditFragment"
                 tools:layout="@layout/settings_highlighter_edit">
                 <deepLink
@@ -608,7 +608,7 @@
             </fragment>
             <fragment
                 android:id="@+id/musicScoreFragment"
-                android:name="com.garethevans.church.opensongtablet.abcnotation.MusicScoreFragment"
+                android:name="adco.helixsongview.abcnotation.MusicScoreFragment"
                 android:label="MusicScoreFragment"
                 tools:layout="@layout/settings_abcnotation">
                 <deepLink
@@ -617,7 +617,7 @@
             </fragment>
             <fragment
                 android:id="@+id/stickyNotesFragment"
-                android:name="com.garethevans.church.opensongtablet.stickynotes.StickyNotesFragment"
+                android:name="adco.helixsongview.stickynotes.StickyNotesFragment"
                 android:label="StickyNotesFragment"
                 tools:layout="@layout/settings_stickynotes">
                 <deepLink
@@ -626,7 +626,7 @@
             </fragment>
             <fragment
                 android:id="@+id/exportFragment"
-                android:name="com.garethevans.church.opensongtablet.export.ExportFragment"
+                android:name="adco.helixsongview.export.ExportFragment"
                 android:label="ExportFragment"
                 tools:layout="@layout/settings_export">
                 <deepLink
@@ -635,7 +635,7 @@
             </fragment>
             <fragment
                 android:id="@+id/linksFragment"
-                android:name="com.garethevans.church.opensongtablet.links.LinksFragment"
+                android:name="adco.helixsongview.links.LinksFragment"
                 android:label="LinksFragment"
                 tools:layout="@layout/settings_links">
                 <deepLink
@@ -647,14 +647,14 @@
             </fragment>
             <dialog
                 android:id="@+id/linksBottomSheet"
-                android:name="com.garethevans.church.opensongtablet.links.LinksBottomSheet"
+                android:name="adco.helixsongview.links.LinksBottomSheet"
                 android:label="LinksBottomSheet"
                 tools:layout="@layout/bottom_sheet_links"/>
             <navigation android:id="@+id/chords_graph"
                 app:startDestination="@id/chordSettingsFragment">
                 <fragment
                     android:id="@+id/chordSettingsFragment"
-                    android:name="com.garethevans.church.opensongtablet.chords.ChordSettingsFragment"
+                    android:name="adco.helixsongview.chords.ChordSettingsFragment"
                     android:label="ChordSettingsFragment"
                     tools:layout="@layout/settings_chords">
                     <action
@@ -669,7 +669,7 @@
                 </fragment>
                 <fragment
                     android:id="@+id/chordFormatFragment"
-                    android:name="com.garethevans.church.opensongtablet.chords.ChordFormatFragment"
+                    android:name="adco.helixsongview.chords.ChordFormatFragment"
                     android:label="ChordFormatFragment"
                     tools:layout="@layout/settings_chords_format">
                 <deepLink
@@ -678,7 +678,7 @@
                 </fragment>
                 <fragment
                     android:id="@+id/customChordsFragment"
-                    android:name="com.garethevans.church.opensongtablet.chords.CustomChordsFragment"
+                    android:name="adco.helixsongview.chords.CustomChordsFragment"
                     android:label="CustomChordsFragment"
                     tools:layout="@layout/settings_chords_custom">
                     <deepLink
@@ -691,7 +691,7 @@
                 app:startDestination="@id/padSettingsFragment">
                 <fragment
                     android:id="@+id/padSettingsFragment"
-                    android:name="com.garethevans.church.opensongtablet.pads.PadSettingsFragment"
+                    android:name="adco.helixsongview.pads.PadSettingsFragment"
                     android:label="PadSettingsFragment"
                     tools:layout="@layout/settings_pads">
                     <action
@@ -706,12 +706,12 @@
                 </fragment>
                 <fragment
                     android:id="@+id/customPadsFragment"
-                    android:name="com.garethevans.church.opensongtablet.pads.CustomPadsFragment"
+                    android:name="adco.helixsongview.pads.CustomPadsFragment"
                     android:label="CustomPadsFragment"
                     tools:layout="@layout/settings_pads_custom"/>
                 <fragment
                     android:id="@+id/padDefaultsFragment"
-                    android:name="com.garethevans.church.opensongtablet.pads.PadDefaultsFragment"
+                    android:name="adco.helixsongview.pads.PadDefaultsFragment"
                     android:label="PadDefaultsFragment"
                     tools:layout="@layout/settings_pads_defaults"/>
             </navigation>
@@ -728,7 +728,7 @@
                 <!-- The import options fragment -->
                 <fragment
                     android:id="@+id/importOptionsFragment"
-                    android:name="com.garethevans.church.opensongtablet.importsongs.ImportOptionsFragment"
+                    android:name="adco.helixsongview.importsongs.ImportOptionsFragment"
                     android:label="settings_import"
                     tools:layout="@layout/settings_import">
                     <action
@@ -751,7 +751,7 @@
                 <!-- OSB Import -->
                 <fragment
                     android:id="@+id/importOSBFragment"
-                    android:name="com.garethevans.church.opensongtablet.backupandrestore.ImportOSBFragment"
+                    android:name="adco.helixsongview.backupandrestore.ImportOSBFragment"
                     android:label="fragment_osbbackup"
                     tools:layout="@layout/storage_backup">
                     <deepLink
@@ -761,7 +761,7 @@
 
                 <fragment
                     android:id="@+id/importOnlineFragment"
-                    android:name="com.garethevans.church.opensongtablet.importsongs.ImportOnlineFragment"
+                    android:name="adco.helixsongview.importsongs.ImportOnlineFragment"
                     android:label="ImportOnlineFragment"
                     tools:layout="@layout/settings_import_online">
                     <deepLink
@@ -770,7 +770,7 @@
                 </fragment>
                 <fragment
                     android:id="@+id/importFileFragment"
-                    android:name="com.garethevans.church.opensongtablet.importsongs.ImportFileFragment"
+                    android:name="adco.helixsongview.importsongs.ImportFileFragment"
                     android:label="ImportFileFragment"
                     tools:layout="@layout/settings_import_file">
                     <deepLink
@@ -780,7 +780,7 @@
                 </fragment>
                 <fragment
                     android:id="@+id/importBulkFragment"
-                    android:name="com.garethevans.church.opensongtablet.importsongs.ImportBulkFragment"
+                    android:name="adco.helixsongview.importsongs.ImportBulkFragment"
                     android:label="ImportBulkFragment"
                     tools:layout="@layout/settings_import_bulk">
                     <deepLink
@@ -790,7 +790,7 @@
                 </fragment>
                 <fragment
                     android:id="@+id/importIOSFragment"
-                    android:name="com.garethevans.church.opensongtablet.backupandrestore.ImportIOSFragment"
+                    android:name="adco.helixsongview.backupandrestore.ImportIOSFragment"
                     android:label="ImportIOSFragment"
                     tools:layout="@layout/settings_import_ios">
                     <deepLink
@@ -801,7 +801,7 @@
             </navigation>
             <fragment
                 android:id="@+id/autoscrollSettingsFragment"
-                android:name="com.garethevans.church.opensongtablet.autoscroll.AutoscrollSettingsFragment"
+                android:name="adco.helixsongview.autoscroll.AutoscrollSettingsFragment"
                 android:label="AutoscrollSettings"
                 tools:layout="@layout/settings_autoscroll">
                 <deepLink android:id="@+id/deepLinkAutoscroll"
@@ -809,7 +809,7 @@
             </fragment>
             <fragment
                 android:id="@+id/bulkTagAssignFragment"
-                android:name="com.garethevans.church.opensongtablet.tags.BulkTagAssignFragment"
+                android:name="adco.helixsongview.tags.BulkTagAssignFragment"
                 android:label="BulkTagAssignFragment"
                 tools:layout="@layout/settings_tag_manage">
                 <deepLink android:id="@+id/bulkTagAssignFragment"
@@ -820,7 +820,7 @@
 
         <fragment
             android:id="@+id/modeFragment"
-            android:name="com.garethevans.church.opensongtablet.appdata.ModeFragment"
+            android:name="adco.helixsongview.appdata.ModeFragment"
             android:label="ModeFragment"
             tools:layout="@layout/settings_mode">
             <deepLink
@@ -832,7 +832,7 @@
             app:startDestination="@id/setActionsFragment">
             <fragment
                 android:id="@+id/setActionsFragment"
-                android:name="com.garethevans.church.opensongtablet.setprocessing.SetActionsFragment"
+                android:name="adco.helixsongview.setprocessing.SetActionsFragment"
                 android:label="SetActionsFragment"
                 tools:layout="@layout/settings_sets">
                 <deepLink
@@ -854,7 +854,7 @@
             </fragment>
             <fragment
                 android:id="@+id/setManageFragment"
-                android:name="com.garethevans.church.opensongtablet.setprocessing.SetManageFragment"
+                android:name="adco.helixsongview.setprocessing.SetManageFragment"
                 android:label="SetManageFragment"
                 tools:layout="@layout/settings_sets_manage">
                 <deepLink
@@ -864,7 +864,7 @@
 
             <fragment
                 android:id="@+id/importSetBundleFragment"
-                android:name="com.garethevans.church.opensongtablet.setprocessing.ImportSetBundleFragment"
+                android:name="adco.helixsongview.setprocessing.ImportSetBundleFragment"
                 android:label="ImportSetBundleFragment"
                 tools:layout="@layout/settings_set_import_bundle">
                 <deepLink
@@ -874,7 +874,7 @@
 
             <fragment
                 android:id="@+id/customSlideFragment"
-                android:name="com.garethevans.church.opensongtablet.customslides.CustomSlideFragment"
+                android:name="adco.helixsongview.customslides.CustomSlideFragment"
                 android:label="CustomSlideFragment"
                 tools:layout="@layout/settings_custom_slide">
                 <deepLink
@@ -883,7 +883,7 @@
             </fragment>
             <fragment
                 android:id="@+id/backupRestoreSetsFragment"
-                android:name="com.garethevans.church.opensongtablet.setprocessing.BackupRestoreSetsFragment"
+                android:name="adco.helixsongview.setprocessing.BackupRestoreSetsFragment"
                 android:label="BackupRestoreSetsFragment"
                 tools:layout="@layout/settings_sets_backups">
                 <deepLink
@@ -895,7 +895,7 @@
 
         <fragment
             android:id="@+id/searchMenuFragment"
-            android:name="com.garethevans.church.opensongtablet.appdata.SearchMenuFragment"
+            android:name="adco.helixsongview.appdata.SearchMenuFragment"
             android:label="SearchMenuFragment"
             tools:layout="@layout/settings_search_menu">
             <deepLink
@@ -904,7 +904,7 @@
         </fragment>
         <fragment
             android:id="@+id/webServerFragment"
-            android:name="com.garethevans.church.opensongtablet.webserver.WebServerFragment"
+            android:name="adco.helixsongview.webserver.WebServerFragment"
             android:label="WebServerFragment"
             tools:layout="@layout/settings_web_server">
             <deepLink
@@ -915,7 +915,7 @@
             app:startDestination="@id/midiOptionsFragment">
             <fragment
                 android:id="@+id/midiFragment"
-                android:name="com.garethevans.church.opensongtablet.midi.MidiFragment"
+                android:name="adco.helixsongview.midi.MidiFragment"
                 android:label="settings_midi"
                 tools:layout="@layout/settings_midi"
                 tools:targetApi="23">
@@ -925,7 +925,7 @@
             </fragment>
             <fragment
                 android:id="@+id/midiClock"
-                android:name="com.garethevans.church.opensongtablet.midi.MidiClockFragment"
+                android:name="adco.helixsongview.midi.MidiClockFragment"
                 android:label="settings_midi_clock"
                 tools:layout="@layout/settings_midi_clock">
                 <deepLink
@@ -934,7 +934,7 @@
             </fragment>
             <fragment
                 android:id="@+id/midiOptionsFragment"
-                android:name="com.garethevans.church.opensongtablet.midi.MidiOptionsFragment"
+                android:name="adco.helixsongview.midi.MidiOptionsFragment"
                 android:label="options_midi"
                 tools:layout="@layout/settings_midi_options" >
                 <action
@@ -955,17 +955,17 @@
             </fragment>
             <dialog
                 android:id="@+id/midiSongActionsBottomSheet"
-                android:name="com.garethevans.church.opensongtablet.midi.MidiSongBottomSheet"
+                android:name="adco.helixsongview.midi.MidiSongBottomSheet"
                 android:label="midi_song_actions"
                 tools:layout="@layout/bottom_sheet_song_midi"/>
             <dialog
                 android:id="@+id/midiCustomActionsBottomSheet"
-                android:name="com.garethevans.church.opensongtablet.midi.MidiActionBottomSheet"
+                android:name="adco.helixsongview.midi.MidiActionBottomSheet"
                 android:label="midi_custom_actions"
                 tools:layout="@layout/bottom_sheet_midi_action"/>
             <dialog
                 android:id="@+id/midiBoardBottomSheet"
-                android:name="com.garethevans.church.opensongtablet.midi.MidiSongBottomSheet"
+                android:name="adco.helixsongview.midi.MidiSongBottomSheet"
                 android:label="midi_song_actions"
                 tools:layout="@layout/bottom_sheet_midi_board"/>
         </navigation>
@@ -979,7 +979,7 @@
         <!-- Edit Song Fragment (holder) ViewPager-->
         <fragment
             android:id="@+id/editSongFragment"
-            android:name="com.garethevans.church.opensongtablet.songprocessing.EditSongFragment"
+            android:name="adco.helixsongview.songprocessing.EditSongFragment"
             android:label="EditSongFragment"
             tools:layout="@layout/edit_song">
             <action
@@ -1002,21 +1002,21 @@
         <!-- The main song fields -->
         <fragment
             android:id="@+id/editSongFragmentMain"
-            android:name="com.garethevans.church.opensongtablet.songprocessing.EditSongFragmentMain"
+            android:name="adco.helixsongview.songprocessing.EditSongFragmentMain"
             android:label="fragment_edit_song_1"
             tools:layout="@layout/edit_song_main"/>
 
         <!-- The song features -->
         <fragment
             android:id="@+id/editsongFeatures"
-            android:name="com.garethevans.church.opensongtablet.songprocessing.EditSongFragmentFeatures"
+            android:name="adco.helixsongview.songprocessing.EditSongFragmentFeatures"
             android:label="fragment_edit_song_2"
             tools:layout="@layout/edit_song_lyrics"/>
 
         <!-- The song tags -->
         <fragment
             android:id="@+id/editSongTags"
-            android:name="com.garethevans.church.opensongtablet.songprocessing.EditSongFragmentTags"
+            android:name="adco.helixsongview.songprocessing.EditSongFragmentTags"
             android:label="fragment_edit_song_3"
             tools:layout="@layout/edit_song_features"/>
 
@@ -1025,7 +1025,7 @@
         app:startDestination="@id/songMenuFragment">
         <fragment
             android:id="@+id/songMenuFragment"
-            android:name="com.garethevans.church.opensongtablet.songmenu.SongMenuFragment"
+            android:name="adco.helixsongview.songmenu.SongMenuFragment"
             android:label="SongMenuFragment"
             tools:layout="@layout/menu_songs">
             <action
@@ -1034,7 +1034,7 @@
         </fragment>
         <dialog
             android:id="@+id/songMenuBottomSheet"
-            android:name="com.garethevans.church.opensongtablet.songmenu.SongMenuBottomSheet"
+            android:name="adco.helixsongview.songmenu.SongMenuBottomSheet"
             android:label="SongMenuBottomSheet"
             tools:layout="@layout/bottom_sheet_menu_songs"/>
     </navigation>
@@ -1042,7 +1042,7 @@
         app:startDestination="@id/setMenuFragment">
         <fragment
             android:id="@+id/setMenuFragment"
-            android:name="com.garethevans.church.opensongtablet.setmenu.SetMenuFragment"
+            android:name="adco.helixsongview.setmenu.SetMenuFragment"
             android:label="SetMenuFragment"
             tools:layout="@layout/menu_sets">
             <action
@@ -1054,18 +1054,18 @@
         </fragment>
         <dialog
             android:id="@+id/setMenuBottomSheet"
-            android:name="com.garethevans.church.opensongtablet.setmenu.SetMenuBottomSheet"
+            android:name="adco.helixsongview.setmenu.SetMenuBottomSheet"
             android:label="SetMenuBottomSheet"
             tools:layout="@layout/bottom_sheet_menu_set"/>
         <dialog
             android:id="@+id/setVariationBottomSheet"
-            android:name="com.garethevans.church.opensongtablet.setmenu.SetEditItemBottomSheet"
+            android:name="adco.helixsongview.setmenu.SetEditItemBottomSheet"
             android:label="SetVariationBottomSheet"
             tools:layout="@layout/bottom_sheet_setitemedit"/>
     </navigation>
     <dialog
         android:id="@+id/alertInfoBottomSheet"
-        android:name="com.garethevans.church.opensongtablet.appdata.AlertInfoBottomSheet"
+        android:name="adco.helixsongview.appdata.AlertInfoBottomSheet"
         android:label="AlertInfoBottomSheet"
         tools:layout="@layout/bottom_sheet_alert_info"/>
 

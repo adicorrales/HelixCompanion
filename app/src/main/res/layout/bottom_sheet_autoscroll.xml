@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <com.garethevans.church.opensongtablet.customviews.DialogHeader
+    <adco.helixsongview.customviews.DialogHeader
         android:id="@+id/dialogHeading"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -24,7 +24,7 @@
             android:orientation="vertical"
             android:paddingBottom="@dimen/extra_scroll_space">
 
-            <com.garethevans.church.opensongtablet.customviews.MyExtendedFloatingActionButton
+            <adco.helixsongview.customviews.MyExtendedFloatingActionButton
                 android:id="@+id/startStopAutoscroll"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -41,7 +41,7 @@
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp">
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialEditText
+                <adco.helixsongview.customviews.MyMaterialEditText
                     android:id="@+id/durationMins"
                     android:layout_width="0dp"
                     android:layout_weight="1"
@@ -52,14 +52,14 @@
                     app:suffixText="m"
                     android:layout_gravity="start"/>
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                <adco.helixsongview.customviews.MyMaterialSimpleTextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text=":"
                     android:gravity="center_vertical"
                     tools:ignore="HardcodedText" />
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialEditText
+                <adco.helixsongview.customviews.MyMaterialEditText
                     android:id="@+id/durationSecs"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -70,7 +70,7 @@
                     app:suffixText="s"
                     android:layout_gravity="start"/>
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialEditText
+                <adco.helixsongview.customviews.MyMaterialEditText
                     android:id="@+id/delay"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -82,7 +82,7 @@
                     android:layout_gravity="start"/>
             </LinearLayout>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialTextView
+            <adco.helixsongview.customviews.MyMaterialTextView
                 android:id="@+id/usingDefault"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -91,20 +91,20 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
+            <adco.helixsongview.customviews.MyMaterialButton
                 android:id="@+id/linkAudio"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/autoscroll_link_audio" />
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
+            <adco.helixsongview.customviews.MyMaterialButton
                 android:id="@+id/autoscrollSettings"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/settings"/>
 
             <!-- TODO Bring this back if I decide it is used enough -->
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
+            <adco.helixsongview.customviews.MyMaterialButton
                 android:id="@+id/learnAutoscroll"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

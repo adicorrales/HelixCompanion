@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <com.garethevans.church.opensongtablet.customviews.DialogHeader
+        <adco.helixsongview.customviews.DialogHeader
             android:id="@+id/dialogHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
@@ -147,35 +147,35 @@
                     android:orientation="vertical"
                     android:paddingBottom="50dp">
 
-                    <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                    <adco.helixsongview.customviews.MyMaterialSimpleTextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:gravity="center_horizontal"
                         android:text="@string/volume_value" />
 
-                    <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                    <adco.helixsongview.customviews.MyMaterialSimpleTextView
                         android:id="@+id/dBTextView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:gravity="center_horizontal" />
 
-                    <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                    <adco.helixsongview.customviews.MyMaterialSimpleTextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:gravity="center_horizontal"
                         android:text="@string/average" />
 
-                    <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                    <adco.helixsongview.customviews.MyMaterialSimpleTextView
                         android:id="@+id/averagevol"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:gravity="center_horizontal" />
 
-                    <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
+                    <adco.helixsongview.customviews.MyMaterialButton
                         android:id="@+id/resetaverage"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -183,7 +183,7 @@
                         android:layout_margin="8dp"
                         android:text="@string/reset" />
 
-                    <com.garethevans.church.opensongtablet.customviews.MyMaterialSlider
+                    <adco.helixsongview.customviews.MyMaterialSlider
                         android:id="@+id/maxvolrange"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

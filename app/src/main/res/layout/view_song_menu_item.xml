@@ -28,21 +28,21 @@
                 android:layout_weight="1"
                 android:orientation="vertical">
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                <adco.helixsongview.customviews.MyMaterialSimpleTextView
                     android:id="@+id/cardview_title"
                     style="@style/cardView_Title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     tools:text="Song Title" />
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                <adco.helixsongview.customviews.MyMaterialSimpleTextView
                     android:id="@+id/cardview_author"
                     style="@style/cardView_Subtitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     tools:text="Song subtitle" />
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                <adco.helixsongview.customviews.MyMaterialSimpleTextView
                     android:id="@+id/cardview_foldernamepair"
                     style="@style/cardView_Subtitle"
                     android:layout_width="match_parent"
@@ -59,7 +59,7 @@
                 android:minWidth="48dp"
                 android:minHeight="48dp">
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialCheckbox
+                <adco.helixsongview.customviews.MyMaterialCheckbox
                     android:id="@+id/cardview_setcheck"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -71,7 +71,7 @@
             </FrameLayout>
         </LinearLayout>
 
-        <com.garethevans.church.opensongtablet.customviews.MyDivider
+        <adco.helixsongview.customviews.MyDivider
             style="@style/MyDividerLine"
             android:layout_marginStart="0dp"
             android:layout_marginTop="2dp"

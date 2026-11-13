@@ -1,0 +1,100 @@
+package adco.helixsongview.appdata;
+
+import android.content.Context;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
+import adco.helixsongview.R;
+import adco.helixsongview.databinding.SettingsSearchMenuBinding;
+import adco.helixsongview.interfaces.MainActivityInterface;
+
+public class SearchMenuFragment extends Fragment {
+
+    @SuppressWarnings({"unused","FieldCanBeLocal"})
+    private final String TAG = "SearchMenuFragment";
+    private MainActivityInterface mainActivityInterface;
+    private SettingsSearchMenuBinding myView;
+    private SearchSettingsAdapter searchSettingsAdapter;
+    private String title="";
+    private String searchMenuText = "";
+    private final String webSearchAddress = "https://www.opensongapp.com/_/search?universe=classic&scope=site&showCloudSearchTab=false&query=";
+    private final Handler handler = new Handler(Looper.getMainLooper());
+    private Runnable searchRunnable;
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        mainActivityInterface = (MainActivityInterface) context;
+    }
+
+    @Nullable
+    @Override
+    public @org.jetbrains.annotations.Nullable View onCreateView(@NonNull LayoutInflater inflater, @Nullable @org.jetbrains.annotations.Nullable ViewGroup container, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        myView = SettingsSearchMenuBinding.inflate(inflater, container, false);
+
+        myView.getRoot().setBackgroundColor(mainActivityInterface.getPalette().background);
+
+        prepareStrings();
+        setupViews();
+        setupListeners();
+
+        // If we have text already searched, re-enter that
+        myView.searchBox.post(() -> myView.searchBox.setText(mainActivityInterface.getPreferences().getMyPreferenceString("searchMenuText","")));
+        return myView.getRoot();
+    }
+
+    private void prepareStrings() {
+        if (getContext()!=null) {
+            title = getString(R.string.search_settings);
+        }
+    }
+    private void setupViews() {
+        if (getContext()!=null) {
+            mainActivityInterface.updateToolbar(title);
+            myView.displayedItems.setLayoutManager(new LinearLayoutManager(getContext()));
+            searchSettingsAdapter = new SearchSettingsAdapter(getContext(),this);
+            myView.displayedItems.setAdapter(searchSettingsAdapter);
+            myView.searchBox.setEnabled(true);
+            myView.searchBox.post(() -> {
+                myView.searchBox.requestFocus();
+                mainActivityInterface.getWindowFlags().showKeyboard();
+            });
+        }
+    }
+
+    private void setupListeners() {
+        myView.searchBox.addTextChangedListener(new TextWatcher() {
+                                                    @Override
+                                                    public void afterTextChanged(Editable editable) {
+                                                    }
+
+                                                    @Override
+                                                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                                                    }
+
+                                                    @Override
+                                                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                                                        handler.removeCallbacks(searchRunnable); // Cancel previous search
+                                                        searchRunnable = () -> {
+                                                            if (searchSettingsAdapter != null) {
+                                                                searchSettingsAdapter.filterAndRank(myView.searchBox.getText().toString());
+                                                                mainActivityInterface.getPreferences().setMyPreferenceString("searchMenuText",myView.searchBox.getText().toString());
+                                                            }
+                                                        };
+                                                        handler.postDelayed(searchRunnable, 150); // Wait 150ms before searching
+                                                    }
+                                                });
+        myView.searchOnline.setOnClickListener(view -> mainActivityInterface.openDocument(webSearchAddress+myView.searchBox.getText().toString()));
+    }
+}

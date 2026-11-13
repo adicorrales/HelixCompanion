@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.garethevans.church.opensongtablet.customviews.DialogHeader
+    <adco.helixsongview.customviews.DialogHeader
         android:id="@+id/dialogHeading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <com.garethevans.church.opensongtablet.customviews.MyMaterialEditText
+        <adco.helixsongview.customviews.MyMaterialEditText
             android:id="@+id/newTag"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -32,7 +32,7 @@
             app:endIconMode="clear_text"
             android:padding="16dp" />
 
-        <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+        <adco.helixsongview.customviews.MyFloatingActionButton
             android:id="@+id/insertTag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

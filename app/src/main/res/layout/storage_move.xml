@@ -15,7 +15,7 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
+            <adco.helixsongview.customviews.ExposedDropDown
                 android:id="@+id/currentFolderChoice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -25,7 +25,7 @@
                 android:paddingEnd="16dp"
                 android:paddingBottom="8dp" />
 
-            <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
+            <adco.helixsongview.customviews.ExposedDropDown
                 android:id="@+id/folderChoice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -34,17 +34,17 @@
                 android:paddingTop="8dp"
                 android:paddingEnd="16dp"
                 android:paddingBottom="8dp" />
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
+            <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialCheckbox
+            <adco.helixsongview.customviews.MyMaterialCheckbox
                 android:id="@+id/selectAllCheckBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:text="@string/select_all" />
-            <com.garethevans.church.opensongtablet.customviews.MyDivider
+            <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
             <ScrollView
@@ -59,7 +59,7 @@
                     android:orientation="vertical" />
             </ScrollView>
         </LinearLayout>
-        <com.garethevans.church.opensongtablet.customviews.MyDivider
+        <adco.helixsongview.customviews.MyDivider
             style="@style/MyDividerLine"/>
 
         <LinearLayout
@@ -78,7 +78,7 @@
                 android:padding="16dp"
                 android:text="@string/move_to_folder" />
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
+            <adco.helixsongview.customviews.MyMaterialButton
                 android:id="@+id/progressText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <com.garethevans.church.opensongtablet.customviews.DialogHeader
+    <adco.helixsongview.customviews.DialogHeader
         android:id="@+id/dialogHeading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -32,7 +32,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
             <!-- Find Input -->
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialEditText
+            <adco.helixsongview.customviews.MyMaterialEditText
                 android:id="@+id/editFind"
                 android:layout_width="0dp"
                 android:layout_weight="1"
@@ -44,7 +44,7 @@
                 app:endIconMode="clear_text" />
 
             <!-- Replace Input -->
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialEditText
+            <adco.helixsongview.customviews.MyMaterialEditText
                 android:id="@+id/editReplace"
                 android:layout_width="0dp"
                 android:layout_weight="1"
@@ -56,7 +56,7 @@
                 app:endIconMode="clear_text" />
             </LinearLayout>
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialCheckbox
+            <adco.helixsongview.customviews.MyMaterialCheckbox
                 android:id="@+id/chkCaseSensitive"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -69,7 +69,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
+                <adco.helixsongview.customviews.MyMaterialButton
                     android:id="@+id/btnFindNext"
                     style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
                     android:layout_width="0dp"
@@ -78,7 +78,7 @@
                     android:layout_marginEnd="4dp"
                     android:text="@string/find_next" />
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
+                <adco.helixsongview.customviews.MyMaterialButton
                     android:id="@+id/btnReplace"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="0dp"
@@ -88,7 +88,7 @@
                     android:layout_marginEnd="4dp"
                     android:text="@string/replace" />
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialButton
+                <adco.helixsongview.customviews.MyMaterialButton
                     android:id="@+id/btnReplaceAll"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="0dp"

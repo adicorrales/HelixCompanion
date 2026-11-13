@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.garethevans.church.opensongtablet.customviews.MyMaterialCheckbox
+        <adco.helixsongview.customviews.MyMaterialCheckbox
             android:id="@+id/tagName"
             style="@style/cardView_Title"
             android:layout_width="match_parent"
@@ -22,7 +22,7 @@
             android:layout_toStartOf="@+id/tagDelete"
             tools:text="Tag" />
 
-        <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+        <adco.helixsongview.customviews.MyMaterialSimpleTextView
             android:id="@+id/matchingSongs"
             style="@style/cardView_Subtitle"
             android:layout_width="match_parent"
@@ -35,7 +35,7 @@
             android:layout_marginStart="16dp"
             tools:text="Songs found" />
 
-        <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+        <adco.helixsongview.customviews.MyFloatingActionButton
             android:id="@+id/tagDelete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -51,7 +51,7 @@
                 android:paddingStart="11dp"
                 android:paddingEnd="11dp">
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                <adco.helixsongview.customviews.MyMaterialSimpleTextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -59,7 +59,7 @@
                     android:textSize="@dimen/text_small"
                     tools:ignore="HardcodedText,TextContrastCheck" />
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                <adco.helixsongview.customviews.MyMaterialSimpleTextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -68,7 +68,7 @@
                     android:textSize="@dimen/text_small"
                     tools:ignore="HardcodedText,TextContrastCheck" />
 
-                <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                <adco.helixsongview.customviews.MyMaterialSimpleTextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -121,7 +121,7 @@
             android:orientation="vertical"
             android:padding="0dp">
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+            <adco.helixsongview.customviews.MyMaterialSimpleTextView
                 android:id="@+id/trackNameTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -129,7 +129,7 @@
                 android:text="@string/title"
                 android:textSize="@dimen/text_small" />
 
-            <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+            <adco.helixsongview.customviews.MyMaterialSimpleTextView
                 android:id="@+id/trackVolumeTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -158,7 +158,7 @@
                         android:background="@drawable/rounded_box"
                         app:backgroundTint="?attr/colorSurface"/>
 
-                    <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                    <adco.helixsongview.customviews.MyMaterialSimpleTextView
                         android:id="@+id/masterBoost1"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -182,7 +182,7 @@
                         android:background="@drawable/rounded_box"
                         app:backgroundTint="?attr/colorSurface"/>
 
-                    <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                    <adco.helixsongview.customviews.MyMaterialSimpleTextView
                         android:id="@+id/masterBoost2"
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
@@ -206,7 +206,7 @@
                         android:background="@drawable/rounded_box"
                         app:backgroundTint="?attr/colorSurface"/>
 
-                    <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                    <adco.helixsongview.customviews.MyMaterialSimpleTextView
                         android:id="@+id/masterBoost3"
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
@@ -238,7 +238,7 @@
                         android:layout_height="match_parent"
                         android:background="@drawable/rounded_box" />
 
-                    <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                    <adco.helixsongview.customviews.MyMaterialSimpleTextView
                         android:id="@+id/muteButton"
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
@@ -261,7 +261,7 @@
                         android:layout_height="match_parent"
                         android:background="@drawable/rounded_box" />
 
-                    <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+                    <adco.helixsongview.customviews.MyMaterialSimpleTextView
                         android:id="@+id/soloButton"
                         android:layout_width="match_parent"
                         android:layout_height="48dp"

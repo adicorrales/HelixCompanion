@@ -16,7 +16,7 @@
         android:layout_gravity="center"
         android:orientation="vertical">
 
-        <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+        <adco.helixsongview.customviews.MyMaterialSimpleTextView
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -26,7 +26,7 @@
             android:gravity="start"
             android:textSize="@dimen/text_medium"/>
 
-        <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+        <adco.helixsongview.customviews.MyMaterialSimpleTextView
             android:id="@+id/hintView"
             android:textSize="@dimen/text_small"
             android:layout_width="match_parent"

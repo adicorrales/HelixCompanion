@@ -10,7 +10,7 @@
     android:orientation="horizontal"
     app:elevation="8dp">
 
-    <com.garethevans.church.opensongtablet.customviews.MyExtendedFloatingActionButton
+    <adco.helixsongview.customviews.MyExtendedFloatingActionButton
         android:id="@+id/btnStopRecording"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -18,14 +18,14 @@
 "
             android:orientation="horizontal">
 
-            <com.garethevans.church.opensongtablet.customviews.ExposedDropDown
+            <adco.helixsongview.customviews.ExposedDropDown
                 android:id="@+id/chooseConnected"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:hint="@string/sync_choose_device" />
 
-            <com.garethevans.church.opensongtablet.customviews.MyFloatingActionButton
+            <adco.helixsongview.customviews.MyFloatingActionButton
                 android:id="@+id/checkForUpdates"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -70,7 +70,7 @@
         android:layout_gravity="center"
         android:visibility="gone" />
 
-    <com.garethevans.church.opensongtablet.customviews.MyMaterialSimpleTextView
+    <adco.helixsongview.customviews.MyMaterialSimpleTextView
         android:id="@+id/hostProgressTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
