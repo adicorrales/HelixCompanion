@@ -96,7 +96,7 @@ import adco.helixsongview.controls.SwipeFragment;
 import adco.helixsongview.controls.Swipes;
 import adco.helixsongview.customslides.CustomSlide;
 import adco.helixsongview.customslides.CustomSlideFragment;
-import adco.helixsongview.customviews.DrawNotes;
+//import adco.helixsongview.customviews.DrawNotes;
 import adco.helixsongview.customviews.ExposedDropDown;
 import adco.helixsongview.customviews.MyExtendedFloatingActionButton;
 import adco.helixsongview.customviews.MyMaterialButton;
@@ -243,7 +243,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private CustomAnimation customAnimation;
     private CustomSlide customSlide;
     private DisplayPrevNext displayPrevNext;
-    private DrawNotes drawNotes;
     private ExportActions exportActions;
     private FixLocale fixLocale;
     private Gestures gestures;
@@ -267,7 +266,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private PerformanceGestures performanceGestures;
     private Preferences preferences;
     private PrepareFormats prepareFormats;
-    private PresenterSettings presenterSettings;
     private ProcessSong processSong;
     private ProfileActions profileActions;
     private SaveSong saveSong;
@@ -295,11 +293,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private ActivityResultLauncher<Intent> selectFileLauncher;
     private ActivityResultLauncher<Intent> selectFolderLauncher;
 
-    private MediaProjectionManager projectionManager;
-    private MediaProjection mediaProjection;
+
     private ActivityResultLauncher<Intent> mediaProjectionLauncher;
     private Consumer<MediaProjection> onMediaProjectionReady;
-    private boolean isScreenRecordingMode = false;
 
     // The navigation controls
     private NavHostFragment navHostFragment;
@@ -4445,15 +4441,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         return alertChecks;
     }
 
-    @Override
-    public DrawNotes getDrawNotes() {
-        return drawNotes;
-    }
 
-    @Override
-    public void setDrawNotes(DrawNotes view) {
-        drawNotes = view;
-    }
 
     @Override
     public ProfileActions getProfileActions() {

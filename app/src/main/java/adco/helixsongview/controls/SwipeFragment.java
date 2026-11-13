@@ -98,12 +98,7 @@ public class SwipeFragment extends Fragment {
 
         // Set up the drawing area - attach the drawNotes to the desired view
         myView.drawingArea.setBackgroundColor(mainActivityInterface.getPalette().secondary);
-        mainActivityInterface.setDrawNotes(myView.drawingArea);
-        mainActivityInterface.getDrawNotes().setCurrentPaint(20,mainActivityInterface.getPalette().textColor);
-        mainActivityInterface.getDrawNotes().delayClear = true;
 
-        // Measure the view and set the sizes based on this and user preferences
-        mainActivityInterface.getSwipes().setSizes(mainActivityInterface.getDrawNotes().getMeasuredWidth(), mainActivityInterface.getDrawNotes().getMeasuredHeight());
 
         // Set up the sliders
         setSlider(myView.swipeDistance, "swipeWidth", mainActivityInterface.getSwipes().getWidthPx(), mainActivityInterface.getSwipes().getMinWidth(), mainActivityInterface.getSwipes().getMaxWidth(), " px", true);
@@ -209,9 +204,6 @@ public class SwipeFragment extends Fragment {
         // Only do one at a time
         if (!dealingWith) {
             dealingWith = true;
-            startX = (mainActivityInterface.getDrawNotes().getCanvasWidth() - mainActivityInterface.getSwipes().getWidthPx()) / 2.0f;
-            startY = (mainActivityInterface.getDrawNotes().getCanvasHeight() + mainActivityInterface.getSwipes().getHeightPx()) / 2.0f;
-
             // This will be drawn over the time chosen.
             // This will be called in a runnable
             // We will update every 50ms
@@ -222,12 +214,6 @@ public class SwipeFragment extends Fragment {
             float moveByX = (float) mainActivityInterface.getSwipes().getWidthPx() / (float) updatesRequired;
             float moveByY = (float) mainActivityInterface.getSwipes().getHeightPx() / (float) updatesRequired;
 
-            // Move to the correct start point
-            mainActivityInterface.getDrawNotes().resetSwipe();
-            mainActivityInterface.getDrawNotes().setSwipeAnimate(true);
-            Path myPath = new Path();
-            myPath.moveTo(startX, startY);
-            mainActivityInterface.getDrawNotes().addToSwipePaths(myPath);
 
             // Now build up a series of postDelayed handlers to build and draw the swipe gesture
             ArrayList<Handler> handlers = new ArrayList<>();
@@ -239,8 +225,7 @@ public class SwipeFragment extends Fragment {
                     // Now go through each bit of the animation
                     newX = startX + moveByX;
                     newY = startY - moveByY;
-                    myPath.quadTo(startX, startY, newX, newY);
-                    mainActivityInterface.getDrawNotes().addToSwipePaths(myPath);
+
                     startX = newX;
                     startY = newY;
                 });
@@ -255,8 +240,7 @@ public class SwipeFragment extends Fragment {
 
             // Finally release the animation lock
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                mainActivityInterface.getDrawNotes().setSwipeAnimate(false);
-                mainActivityInterface.getDrawNotes().resetSwipe();
+
                 dealingWith = false;
             }, timeNow + timeBetween);
 
