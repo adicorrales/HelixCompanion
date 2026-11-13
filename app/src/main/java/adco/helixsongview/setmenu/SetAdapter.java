@@ -553,10 +553,27 @@ public class SetAdapter extends RecyclerView.Adapter<SetListItemViewHolder> impl
     // When we load a song, we stop any highlight changes until loading is completed
     public void setHighlightChangeAllowed(boolean highlightChangeAllowed) {
         this.highlightChangeAllowed = highlightChangeAllowed;
-        // If we are allowed to change the highlight, do it
+        // If we are allowed to change the highlight, do it safely on UI thread
         if (highlightChangeAllowed) {
-            notifyItemChanged(mainActivityInterface.getCurrentSet().getPrevIndexSongInSet(),unhighlightItem);
-            notifyItemChanged(mainActivityInterface.getCurrentSet().getIndexSongInSet(),highlightItem);
+            mainActivityInterface.getMainHandler().post(() -> {
+                try {
+                    if (recyclerView != null && recyclerView.isComputingLayout()) {
+                        recyclerView.post(() -> {
+                            try {
+                                notifyItemChanged(mainActivityInterface.getCurrentSet().getPrevIndexSongInSet(), unhighlightItem);
+                                notifyItemChanged(mainActivityInterface.getCurrentSet().getIndexSongInSet(), highlightItem);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        });
+                    } else {
+                        notifyItemChanged(mainActivityInterface.getCurrentSet().getPrevIndexSongInSet(), unhighlightItem);
+                        notifyItemChanged(mainActivityInterface.getCurrentSet().getIndexSongInSet(), highlightItem);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
         }
     }
 
