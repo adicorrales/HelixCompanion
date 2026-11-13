@@ -1,7 +1,6 @@
 package com.garethevans.church.opensongtablet.abcnotation;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -12,7 +11,6 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -23,10 +21,9 @@ import com.garethevans.church.opensongtablet.databinding.SettingsAbcnotationBind
 import com.garethevans.church.opensongtablet.interfaces.MainActivityInterface;
 import com.google.android.material.slider.Slider;
 
-import java.io.InputStream;
 import java.util.Arrays;
 
-public class MusicScoreFragment extends Fragment {
+public class _MusicScoreFragment extends Fragment {
 
     @SuppressWarnings({"unused","FieldCanBeLocal"})
     private final String TAG = "MusicScoreFragment";
@@ -37,7 +34,7 @@ public class MusicScoreFragment extends Fragment {
     private String webAddress;
     private InlineAbcObject inlineAbcObject;
     private ActivityResultLauncher<String[]> filePickerLauncher;
-    private ScoreToAbcExtractor scoreExtractor;
+    //private ScoreToAbcExtractor scoreExtractor;
 
 
     @Override
@@ -58,14 +55,14 @@ public class MusicScoreFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         // Initialize file picker activity launcher
-        filePickerLauncher = registerForActivityResult(
-                new ActivityResultContracts.OpenDocument(),
-                uri -> {
-                    if (uri != null) {
-                        processSelectedScoreUri(uri);
-                    }
-                }
-        );
+//        filePickerLauncher = registerForActivityResult(
+//                new ActivityResultContracts.OpenDocument(),
+//                uri -> {
+//                    if (uri != null) {
+//                        processSelectedScoreUri(uri);
+//                    }
+//                }
+//        );
     }
 
     @Nullable
@@ -76,9 +73,9 @@ public class MusicScoreFragment extends Fragment {
         webAddress = website_music_score;
 
         // Initialize background score extractor
-        if (getContext() != null) {
-            scoreExtractor = new ScoreToAbcExtractor(getContext());
-        }
+//        if (getContext() != null) {
+//            scoreExtractor = new ScoreToAbcExtractor(getContext());
+//        }
 
         requireActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
@@ -339,31 +336,31 @@ public class MusicScoreFragment extends Fragment {
         }
     }
 
-    private void processSelectedScoreUri(Uri uri) {
-        if (getContext() == null) return;
-        try {
-            InputStream inputStream = getContext().getContentResolver().openInputStream(uri);
-            String fileName = uri.getLastPathSegment();
-
-            mainActivityInterface.getShowToast().doIt("Extracting ABC notation...");
-
-            scoreExtractor.extractFromStream(inputStream, fileName, new ScoreToAbcExtractor.ExtractionCallback() {
-                @Override
-                public void onSuccess(String abcNotation) {
-                    // Automatically update the edit box with the extracted ABC notation
-                    myView.abcText.setText(abcNotation);
-                    mainActivityInterface.getShowToast().success();
-                }
-
-                @Override
-                public void onError(String errorMessage) {
-                    mainActivityInterface.getShowToast().doIt("Error: " + errorMessage);
-                }
-            });
-        } catch (Exception e) {
-            mainActivityInterface.getShowToast().doIt("Could not open file stream");
-        }
-    }
+//    private void processSelectedScoreUri(Uri uri) {
+//        if (getContext() == null) return;
+//        try {
+//            InputStream inputStream = getContext().getContentResolver().openInputStream(uri);
+//            String fileName = uri.getLastPathSegment();
+//
+//            mainActivityInterface.getShowToast().doIt("Extracting ABC notation...");
+//
+//            scoreExtractor.extractFromStream(inputStream, fileName, new ScoreToAbcExtractor.ExtractionCallback() {
+//                @Override
+//                public void onSuccess(String abcNotation) {
+//                    // Automatically update the edit box with the extracted ABC notation
+//                    myView.abcText.setText(abcNotation);
+//                    mainActivityInterface.getShowToast().success();
+//                }
+//
+//                @Override
+//                public void onError(String errorMessage) {
+//                    mainActivityInterface.getShowToast().doIt("Error: " + errorMessage);
+//                }
+//            });
+//        } catch (Exception e) {
+//            mainActivityInterface.getShowToast().doIt("Could not open file stream");
+//        }
+//    }
 
     private String showPositiveValue(int value) {
         if (value>0) {

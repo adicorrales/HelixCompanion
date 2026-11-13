@@ -15,7 +15,7 @@ import android.webkit.WebViewClient;
 import java.io.InputStream;
 import java.io.ByteArrayOutputStream;
 
-public class ScoreToAbcExtractor {
+public class _ScoreToAbcExtractor {
 
     private static final String TAG = "ScoreToAbcExtractor";
     private static final String WEB_APP_URL = "https://thebigg73.github.io/GP2ABCStudio/";
@@ -30,7 +30,7 @@ public class ScoreToAbcExtractor {
     private boolean isReady = false;
     private ExtractionCallback currentCallback;
 
-    public ScoreToAbcExtractor(Context context) {
+    public _ScoreToAbcExtractor(Context context) {
         this.context = context.getApplicationContext();
         initEngine();
     }

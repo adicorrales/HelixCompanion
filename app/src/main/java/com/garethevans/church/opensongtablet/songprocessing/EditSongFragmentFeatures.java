@@ -18,7 +18,7 @@ import androidx.fragment.app.Fragment;
 
 import com.garethevans.church.opensongtablet.R;
 import com.garethevans.church.opensongtablet.abcnotation.ABCEditorBottomSheet;
-import com.garethevans.church.opensongtablet.abcnotation.ScoreToAbcExtractor;
+//import com.garethevans.church.opensongtablet.abcnotation.ScoreToAbcExtractor;
 import com.garethevans.church.opensongtablet.customviews.ExposedDropDownArrayAdapter;
 import com.garethevans.church.opensongtablet.databinding.EditSongFeaturesBinding;
 import com.garethevans.church.opensongtablet.interfaces.EditSongFragmentInterface;
@@ -53,7 +53,7 @@ public class EditSongFragmentFeatures extends Fragment {
     private ArrayList<String> instruments = new ArrayList<>();
 
     private ActivityResultLauncher<String[]> filePickerLauncher;
-    private ScoreToAbcExtractor scoreExtractor;
+    //private ScoreToAbcExtractor scoreExtractor;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -82,14 +82,14 @@ public class EditSongFragmentFeatures extends Fragment {
         super.onCreate(savedInstanceState);
 
         // Initialize file picker activity launcher
-        filePickerLauncher = registerForActivityResult(
-                new ActivityResultContracts.OpenDocument(),
-                uri -> {
-                    if (uri != null) {
-                        processSelectedScoreUri(uri);
-                    }
-                }
-        );
+//        filePickerLauncher = registerForActivityResult(
+//                new ActivityResultContracts.OpenDocument(),
+//                uri -> {
+//                    if (uri != null) {
+//                        processSelectedScoreUri(uri);
+//                    }
+//                }
+//        );
     }
 
     @Override
@@ -131,9 +131,9 @@ public class EditSongFragmentFeatures extends Fragment {
         }
 
         // Initialize background score extractor
-        if (getContext() != null) {
-            scoreExtractor = new ScoreToAbcExtractor(getContext());
-        }
+        //if (getContext() != null) {
+        //    scoreExtractor = new ScoreToAbcExtractor(getContext());
+        //}
 
         // The key
         mainActivityInterface.getTranspose().checkOriginalKeySet(mainActivityInterface.getTempSong());
@@ -775,31 +775,31 @@ public class EditSongFragmentFeatures extends Fragment {
         }
     }
 
-    private void processSelectedScoreUri(Uri uri) {
-        if (getContext() == null) return;
-        try {
-            InputStream inputStream = getContext().getContentResolver().openInputStream(uri);
-            String fileName = uri.getLastPathSegment();
-
-            mainActivityInterface.getShowToast().doIt("Extracting ABC notation...");
-
-            scoreExtractor.extractFromStream(inputStream, fileName, new ScoreToAbcExtractor.ExtractionCallback() {
-                @Override
-                public void onSuccess(String abcNotation) {
-                    // Automatically update the edit box with the extracted ABC notation
-                    myView.abc.setText(abcNotation);
-                    mainActivityInterface.getShowToast().success();
-                }
-
-                @Override
-                public void onError(String errorMessage) {
-                    mainActivityInterface.getShowToast().doIt("Error: " + errorMessage);
-                }
-            });
-        } catch (Exception e) {
-            mainActivityInterface.getShowToast().doIt("Could not open file stream");
-        }
-    }
+//    private void processSelectedScoreUri(Uri uri) {
+//        if (getContext() == null) return;
+//        try {
+//            InputStream inputStream = getContext().getContentResolver().openInputStream(uri);
+//            String fileName = uri.getLastPathSegment();
+//
+//            mainActivityInterface.getShowToast().doIt("Extracting ABC notation...");
+//
+//            scoreExtractor.extractFromStream(inputStream, fileName, new ScoreToAbcExtractor.ExtractionCallback() {
+//                @Override
+//                public void onSuccess(String abcNotation) {
+//                    // Automatically update the edit box with the extracted ABC notation
+//                    myView.abc.setText(abcNotation);
+//                    mainActivityInterface.getShowToast().success();
+//                }
+//
+//                @Override
+//                public void onError(String errorMessage) {
+//                    mainActivityInterface.getShowToast().doIt("Error: " + errorMessage);
+//                }
+//            });
+//        } catch (Exception e) {
+//            mainActivityInterface.getShowToast().doIt("Could not open file stream");
+//        }
+//    }
 
     @Override
     public void onDetach() {
