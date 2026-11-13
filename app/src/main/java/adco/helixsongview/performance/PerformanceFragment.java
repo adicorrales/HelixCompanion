@@ -460,6 +460,7 @@ public class PerformanceFragment extends Fragment {
 
     // This stuff loads the song and prepares the views
     public void doSongLoad(String folder, String filename) {
+        processingTestView = false;
         // IV - Set a boolean indicating song change
         songChange = !mainActivityInterface.getSong().getFilename().equals(filename) ||
                 !mainActivityInterface.getSong().getFolder().equals(folder) ||
@@ -478,7 +479,6 @@ public class PerformanceFragment extends Fragment {
         }
 
         boolean needToTryAgain = false;
-        boolean needToPauseTryAgain = false;
         String keyInFilename;
 
         // If this is a key variation and it doesn't exist, we need to load the original
@@ -494,31 +494,11 @@ public class PerformanceFragment extends Fragment {
             needToTryAgain = true;
         }
 
-        // If there is a delay processing the song, try again with a delay
-        if (processingTestView && !needToTryAgain) {
-            // Switch this off in 1 sec as there might have been a problem
-            needToTryAgain = true;
-            needToPauseTryAgain = true;
-        }
-
         if (needToTryAgain) {
             String tryagainfolder = folder;
             String tryagainfilename = filename;
             firstSongLoad = true;
-            if (needToPauseTryAgain) {
-                mainActivityInterface.getMainHandler().postDelayed(() -> {
-                    if (processingTestView) {
-                        processingTestView = false;
-                        try {
-                            doSongLoad(tryagainfolder, tryagainfilename);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                },1000);
-            } else {
-                mainActivityInterface.getMainHandler().post(() -> doSongLoad(tryagainfolder,tryagainfilename));
-            }
+            mainActivityInterface.getMainHandler().post(() -> doSongLoad(tryagainfolder,tryagainfilename));
             // End this run now
             return;
         }
