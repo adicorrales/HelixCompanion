@@ -16,8 +16,4 @@ public class PDFPageViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         this.v = itemView;
     }
-    public PDFPageViewHolder(Object o, @NonNull View itemView) {
-        super(itemView);
-        this.v = itemView;
-    }
 }
