@@ -40,6 +40,7 @@
                     style="@style/cardView_Subtitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="?attr/hintTextColor"
                     tools:text="Song subtitle" />
 
                 <adco.helixsongview.customviews.MyMaterialSimpleTextView
@@ -47,6 +48,7 @@
                     style="@style/cardView_Subtitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="?attr/hintTextColor"
                     tools:text="Foldername pair" />
 
 

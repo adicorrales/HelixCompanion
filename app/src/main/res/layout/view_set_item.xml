@@ -30,7 +30,8 @@
             android:drawablePadding="16dp"
             android:padding="4dp"
             android:text="@string/number_1"
-            android:drawableStart="@drawable/music_note" />
+            android:drawableStart="@drawable/music_note"
+            android:textColor="?attr/colorOnPrimary" />
 
         <FrameLayout
             android:id="@+id/fileOrTitle"
@@ -93,7 +94,7 @@
             android:paddingEnd="4dp"
             android:paddingBottom="4dp"
             android:text="@string/mainfoldername"
-            android:textColor="?attr/colorOnPrimary" />
+            android:textColor="?attr/hintTextColor" />
 
         <adco.helixsongview.customviews.MyMaterialSimpleTextView
             android:id="@+id/cardview_exists"

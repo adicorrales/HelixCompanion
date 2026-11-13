@@ -178,9 +178,9 @@
     <!-- Set item -->
     <style name="setItem" parent="@style/Widget.MaterialComponents.CardView">
         <item name="contentPadding">4dp</item>
-        <item name="cardCornerRadius">16dp</item>
+        <item name="cardCornerRadius">8dp</item>
         <item name="android:layout_margin">4dp</item>
-        <item name="elevation">8dp</item>
+        <item name="elevation">4dp</item>
         <item name="strokeWidth">0dp</item>
         <item name="strokeColor">@color/transparent</item>
         <item name="cardBackgroundColor">?attr/colorSecondary</item>
@@ -232,12 +232,12 @@
     <!-- Recycler view items -->
     <style name="recyclerItem" parent="@style/Widget.MaterialComponents.CardView">
         <item name="contentPadding">8dp</item>
-        <item name="cardCornerRadius">16dp</item>
+        <item name="cardCornerRadius">8dp</item>
         <item name="android:layout_marginTop">4dp</item>
         <item name="android:layout_marginBottom">8dp</item>
         <item name="android:layout_marginStart">8dp</item>
         <item name="android:layout_marginEnd">4dp</item>
-        <item name="elevation">8dp</item>
+        <item name="elevation">4dp</item>
         <item name="cardBackgroundColor">?attr/colorPrimary</item>
     </style>
 

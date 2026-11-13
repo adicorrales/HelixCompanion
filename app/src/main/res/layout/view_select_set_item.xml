@@ -17,7 +17,8 @@
         android:gravity="center"
         android:textSize="14sp"
         android:textStyle="bold"
-        android:text="0:" />
+        android:text="0:"
+        android:textColor="?attr/colorOnPrimary" />
 
     <!-- Card containing set name and checkbox -->
     <com.google.android.material.card.MaterialCardView
@@ -55,6 +56,7 @@
                 android:paddingBottom="0dp"
                 android:text="Title"
                 android:textSize="14sp"
+                android:textColor="?attr/colorOnPrimary"
                 android:visibility="visible"/>
 
             <adco.helixsongview.customviews.MyMaterialSimpleTextView
@@ -70,7 +72,8 @@
                 android:paddingEnd="4dp"
                 android:paddingBottom="2dp"
                 android:text="Folder"
-                android:textSize="11sp" />
+                android:textSize="11sp"
+                android:textColor="?attr/hintTextColor" />
 
         </RelativeLayout>
     </com.google.android.material.card.MaterialCardView>

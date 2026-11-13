@@ -1,41 +1,44 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <color name="dark_primary">#141b22</color>              <!-- dark primary -->
-    <color name="dark_primary_variant">#1A222C</color>      <!-- dark primary variant -->
-    <color name="dark_secondary">#294959</color>            <!-- FABs, etc -->
-    <color name="dark_secondary_variant">#365c6e</color>    <!-- variant (more emphasised) -->
-    <color name="dark_secondary_fixed">#3C667A</color>      <!-- variant (even more emphasised) -->
-    <color name="dark_surface">#183441</color>              <!-- Bottom sheets, component backgrounds -->
-    <color name="dark_surface_variant">#203640</color>      <!-- variant (more emphasised) -->"
-    <color name="dark_error">#AA0000</color>                <!-- dark red -->
-    <color name="dark_hint">#adb6bf</color>                 <!-- very light grey -->
-    <color name="dark_color">#f1faff</color>                <!-- text and icon color -->
+    <!-- Helix Stadium Dark Theme Colors -->
+    <color name="dark_primary">#0f172a</color>              <!-- dark primary - deep slate -->
+    <color name="dark_primary_variant">#1e293b</color>      <!-- dark primary variant -->
+    <color name="dark_secondary">#0f766e</color>            <!-- FABs, accents - teal -->
+    <color name="dark_secondary_variant">#14b8a6</color>    <!-- variant (more emphasised) - lighter teal -->
+    <color name="dark_secondary_fixed">#155e55</color>      <!-- variant (even more emphasised) -->
+    <color name="dark_surface">#1e293b</color>              <!-- Bottom sheets, component backgrounds -->
+    <color name="dark_surface_variant">#334155</color>      <!-- variant (more emphasised) -->
+    <color name="dark_error">#ef4444</color>                <!-- red -->
+    <color name="dark_hint">#94a3b8</color>                <!-- light grey for hints -->
+    <color name="dark_color">#f1f5f9</color>               <!-- text and icon color - light -->
+
+    <!-- Light theme colors remain unchanged -->
     <color name="light_primary">#FFFFFF</color>             <!-- light primary -->
     <color name="light_primary_variant">#FAFAFF</color>     <!-- light primary variant -->
-    <!--<color name="light_secondary">#E5F3F6</color>-->           <!-- FABs, etc -->
     <color name="light_secondary">#C8E4EF</color>           <!-- FABs, etc -->
     <color name="light_secondary_variant">#B0C5CA</color>   <!-- variant (more emphasised) -->
-    <!--<color name="light_secondary_fixed">#C8DBE0</color>-->     <!-- variant (even more emphasised) -->
     <color name="light_secondary_fixed">#94AAB1</color>     <!-- variant (even more emphasised) -->
     <color name="light_surface">#fafaff</color>             <!-- Bottom sheets, component backgrounds -->
-    <color name="light_surface_variant">#E2D9DA</color>     <!-- variant (more emphasised) -->"
+    <color name="light_surface_variant">#E2D9DA</color>     <!-- variant (more emphasised) -->
     <color name="light_error">#F46262</color>               <!-- light red -->
     <color name="light_hint">#8e969f</color>                <!-- grey -->
     <color name="light_color">#141b22</color>               <!-- text and icon color -->
+
+    <!-- AMOLED theme colors -->
     <color name="amoled_primary">#000000</color>              <!-- amoled primary -->
     <color name="amoled_primary_variant">#222222</color>      <!-- dark primary variant -->
-    <color name="amoled_secondary">#294959</color>            <!-- FABs, etc -->
-    <color name="amoled_secondary_variant">#365c6e</color>    <!-- variant (more emphasised) -->
-    <color name="amoled_secondary_fixed">#3C667A</color>      <!-- variant (even more emphasised) -->
-    <color name="amoled_surface">#141b22</color>              <!-- Bottom sheets, component backgrounds -->
-    <color name="amoled_surface_variant">#1A222C</color>      <!-- variant (more emphasised) -->"
-    <color name="amoled_error">#AA0000</color>                <!-- dark red -->
-    <color name="amoled_hint">#adb6bf</color>                 <!-- very light grey -->
-    <color name="amoled_color">#ffffff</color>                <!-- text and icon color -->
+    <color name="amoled_secondary">#0f766e</color>            <!-- FABs, etc - teal -->
+    <color name="amoled_secondary_variant">#14b8a6</color>    <!-- variant (more emphasised) -->
+    <color name="amoled_secondary_fixed">#155e55</color>      <!-- variant (even more emphasised) -->
+    <color name="amoled_surface">#0f172a</color>              <!-- Bottom sheets, component backgrounds -->
+    <color name="amoled_surface_variant">#1e293b</color>      <!-- variant (more emphasised) -->
+    <color name="amoled_error">#ef4444</color>                <!-- red -->
+    <color name="amoled_hint">#94a3b8</color>                 <!-- light grey for hints -->
+    <color name="amoled_color">#f1f5f9</color>                <!-- text and icon color -->
 
     <!-- The tuner -->
     <color name="dark_tuner_off">@color/dark_secondary</color>
-    <color name="dark_tuner_green">@color/green</color>
-    <color name="dark_tuner_red">@color/red</color>
+    <color name="dark_tuner_green">#10b981</color>
+    <color name="dark_tuner_red">#ef4444</color>
     <color name="light_tuner_off">@color/light_secondary</color>
     <color name="light_tuner_green">#88FF88</color>
     <color name="light_tuner_red">#FF8888</color>
@@ -43,12 +46,12 @@
     <!-- Piano on notes -->
     <color name="piano_on_color">#66AAFF</color>
 
-    <!--Showcase overlay colour-->
-    <color name="showcaseColor">#EE141B22</color>
+    <!-- Showcase overlay colour -->
+    <color name="showcaseColor">#EE0f172a</color>
 
     <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">#888888</color>
 
-    <!--Obviously named colours used as needed-->
+    <!-- Obviously named colours used as needed -->
     <color name="transparent">#00000000</color>
     <color name="black">#000000</color>
     <color name="blue">#0000aa</color>
@@ -57,7 +60,7 @@
     <color name="vdarkred">#660000</color>
     <color name="vvdarkred">#440000</color>
     <color name="lightred">#884646</color>
-    <color name="green">#00aa00</color>
+    <color name="green">#10b981</color>
     <color name="lightgreen">#378857</color>
     <color name="vlightgreen">#33ff33</color>
     <color name="grey">#555555</color>

@@ -96,7 +96,6 @@ import adco.helixsongview.controls.SwipeFragment;
 import adco.helixsongview.controls.Swipes;
 import adco.helixsongview.customslides.CustomSlide;
 import adco.helixsongview.customslides.CustomSlideFragment;
-//import adco.helixsongview.customviews.DrawNotes;
 import adco.helixsongview.customviews.ExposedDropDown;
 import adco.helixsongview.customviews.MyExtendedFloatingActionButton;
 import adco.helixsongview.customviews.MyMaterialButton;
@@ -142,7 +141,6 @@ import adco.helixsongview.preferences.AppPermissions;
 import adco.helixsongview.preferences.AreYouSureBottomSheet;
 import adco.helixsongview.preferences.Preferences;
 import adco.helixsongview.preferences.ProfileActions;
-import adco.helixsongview.presenter.PresenterSettings;
 import adco.helixsongview.screensetup.BatteryStatus;
 import adco.helixsongview.screensetup.FontSetupFragment;
 import adco.helixsongview.screensetup.Palette;
@@ -1947,12 +1945,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             performanceFragment.showNearbyAlertPopUp(message);
         }
     }
-
-    // For audio recording
-
-
-
-
 
     // Instructions sent from fragments for MainActivity to deal with
     @Override
