@@ -131,11 +131,7 @@ public class MidiInputReceiver extends MidiReceiver {
                         Log.d(TAG,"Start autoscroll");
                         mainActivityInterface.getAutoscroll().startAutoscroll();
                     }
-                    if (mainActivityInterface.getMidi().getMidiInputMetronome()) {
-                        Log.d(TAG,"Start metronome");
-                        mainActivityInterface.getDrumViewModel().startMetronome();
-                        //mainActivityInterface.getMetronome().startMetronome();
-                    }
+
                     if (mainActivityInterface.getMidi().getMidiInputPad()) {
                         Log.d(TAG,"Start pad");
                         int whichPad = mainActivityInterface.getPad().whichPadPlaying();
@@ -151,11 +147,7 @@ public class MidiInputReceiver extends MidiReceiver {
                         Log.d(TAG,"Pause autoscroll");
                         mainActivityInterface.getAutoscroll().pauseAutoscroll();
                     }
-                    if (mainActivityInterface.getMidi().getMidiInputMetronome()) {
-                        Log.d(TAG,"Stop metronome");
-                        mainActivityInterface.getDrumViewModel().stopMetronome();
-                        //mainActivityInterface.getMetronome().stopMetronome();
-                    }
+
                     if (mainActivityInterface.getMidi().getMidiInputPad()) {
                         Log.d(TAG,"Pause pad");
                         mainActivityInterface.getPad().playStopOrPause(mainActivityInterface.getPad().whichPadPlaying());

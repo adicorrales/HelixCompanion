@@ -279,16 +279,16 @@ public class NearbyReceivePayloads {
     }
 
     // Metronome actions
-    private void metronomeStart() {
-        if (nearbyReceiveHostMetronome && !nearbyActions.getNearbyConnectionManagement().getIsHost()) {
-            mainActivityInterface.getDrumViewModel().startMetronome();
-        }
-    }
-    private void metronomeStop() {
-        if (nearbyReceiveHostMetronome && !nearbyActions.getNearbyConnectionManagement().getIsHost()) {
-            mainActivityInterface.getDrumViewModel().stopMetronome();
-        }
-    }
+//    private void metronomeStart() {
+//        if (nearbyReceiveHostMetronome && !nearbyActions.getNearbyConnectionManagement().getIsHost()) {
+//            mainActivityInterface.getDrumViewModel().startMetronome();
+//        }
+//    }
+//    private void metronomeStop() {
+//        if (nearbyReceiveHostMetronome && !nearbyActions.getNearbyConnectionManagement().getIsHost()) {
+//            mainActivityInterface.getDrumViewModel().stopMetronome();
+//        }
+//    }
 
     // Scroll to actions
     private void scrollByProportion(NearbyJson nearbyJson) {

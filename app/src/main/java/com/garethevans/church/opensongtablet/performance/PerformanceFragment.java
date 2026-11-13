@@ -1542,29 +1542,9 @@ public class PerformanceFragment extends Fragment {
                 mainActivityInterface.getAutoscroll().startAutoscroll();
             }
 
-            // Process our song time signature and tempo
-            boolean metronomeWasRunning = mainActivityInterface.getDrumViewModel().getMetronome().getIsRunning();
-            boolean drummerWasRunning = mainActivityInterface.getDrumViewModel().getDrummer().getIsRunning();
-            boolean metronomeAutostart = mainActivityInterface.getDrumViewModel().getMetronome().getMetronomeAutoStart();
-
             // Prepare the new values for the metronome/drummer in case we need them
             mainActivityInterface.getDrumViewModel().prepareSongValues(mainActivityInterface.getSong());
 
-            // Stop the metronome and drummer in case they were running if we have changed song
-            if (metronomeDrummerChange) {
-                mainActivityInterface.getDrumViewModel().stopMetronome();
-                mainActivityInterface.getDrumViewModel().stopDrummer();
-            }
-
-            // Now, if we were running the metronome or drummer, start them again
-            if (metronomeDrummerChange && metronomeWasRunning && metronomeAutostart) {
-                // Start the metronome
-                mainActivityInterface.getDrumViewModel().startMetronome();
-            }
-            if (metronomeDrummerChange && drummerWasRunning) {
-                // Start the drummer
-                mainActivityInterface.getDrumViewModel().startDrummer();
-            }
 
             // If we have switched on the midiClock, start that again
             if (mainActivityInterface.getDrumViewModel().getMidiClock().getMidiClock()) {
