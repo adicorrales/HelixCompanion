@@ -460,6 +460,8 @@ public class PerformanceFragment extends Fragment {
 
     // This stuff loads the song and prepares the views
     public void doSongLoad(String folder, String filename) {
+        // Reset autoscale when loading a new song (especially first song after set change)
+        scaleFactor = 1.0f;
         processingTestView = false;
         // IV - Set a boolean indicating song change
         songChange = !mainActivityInterface.getSong().getFilename().equals(filename) ||

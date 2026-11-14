@@ -3456,36 +3456,83 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 return;
             }
 
+            String playMode = getPreferences().getMyPreferenceString("helixPlayMode", "Play");
+
             String msgSet = "MIDI" + channel + ":CC63:" + targetSet;
             String msgSong0 = "MIDI" + channel + ":CC10:0";
             String msgTargetSong = "MIDI" + channel + ":CC10:" + targetSong;
             String msgPlay = "MIDI" + channel + ":CC51:127";
 
+            // Send synchronously (not via sendMidiHexSequence, which posts to the main thread)
+            // so the Helix receives the commands in order and on time, even when the UI thread is busy.
             if (lastSentMidiSetIdx != targetSet) {
-                // Playlist changed! Send CC63, wait 300ms, send CC10:0 and CC51:127 to LOAD/ACTIVATE new playlist on Helix
+                // Playlist changed! Send CC63, wait, send CC10:0 and CC51:127 to LOAD/ACTIVATE new playlist on Helix.
+                // Loading song 0 with PLAY makes the playlist change take effect on the Helix.
                 lastSentMidiSetIdx = targetSet;
                 lastSentMidiSongPos = 0;
 
-                getMidi().sendMidiHexSequence(msgSet);
+                // CC51:0: ensure Helix is paused before changing playlist (so CC51 later loads cued song)
+                String msgPause = "MIDI" + channel + ":CC51:0";
+                getMidi().sendMidi(getMidi().returnBytesFromHexText(msgPause));
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException ignored) {}
+
+                // CC63: select playlist (cues first song)
+                getMidi().sendMidi(getMidi().returnBytesFromHexText(msgSet));
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException ignored) {}
+
+                // CC51:127: start playback / load cued song (CC63 already cued song 0)
+                getMidi().sendMidi(getMidi().returnBytesFromHexText(msgPlay));
                 try {
                     Thread.sleep(300);
                 } catch (InterruptedException ignored) {}
 
-                getMidi().sendMidiHexSequence(msgSong0);
-                getMidi().sendMidiHexSequence(msgPlay);
-
-                // If target song is > 0, wait 300ms for Helix to finish loading playlist, then cue target song
+                // If target song is > 0, wait for Helix to finish loading playlist, then cue target song
                 if (targetSong > 0) {
                     try {
                         Thread.sleep(300);
                     } catch (InterruptedException ignored) {}
                     lastSentMidiSongPos = targetSong;
-                    getMidi().sendMidiHexSequence(msgTargetSong);
+                    getMidi().sendMidi(getMidi().returnBytesFromHexText(msgTargetSong));
+
+                    // target song is now in cue (not loaded/playing)
+                    isPlaying = false;
+                    transportClickCount = 0;
+                    getMainHandler().post(() -> {
+                        if (myView != null && myView.myToolbar != null) {
+                            myView.myToolbar.updatePlayButton(false);
+                        }
+                    });
+                } else {
+                    // target song 0 was loaded with PLAY: update transport state per mode
+                    if (playMode.equals("Play")) {
+                        isPlaying = true;
+                        transportClickCount = 2;
+                    } else {
+                        isPlaying = false;
+                        transportClickCount = 1;
+                    }
+                    getMainHandler().post(() -> {
+                        if (myView != null && myView.myToolbar != null) {
+                            myView.myToolbar.updatePlayButton(isPlaying);
+                        }
+                    });
                 }
             } else {
-                // Same playlist: send CC10 for target song directly
+                // Same playlist: send CC10 for target song directly (placed in cue)
                 lastSentMidiSongPos = targetSong;
-                getMidi().sendMidiHexSequence(msgTargetSong);
+                getMidi().sendMidi(getMidi().returnBytesFromHexText(msgTargetSong));
+
+                isPlaying = false;
+                transportClickCount = 0;
+                getMainHandler().post(() -> {
+                    if (myView != null && myView.myToolbar != null) {
+                        myView.myToolbar.updatePlayButton(false);
+                    }
+                });
             }
         });
     }
