@@ -65,7 +65,6 @@ public class PerformanceFragment extends Fragment {
     private boolean processingTestView;
     @SuppressWarnings("FieldCanBeLocal")
     private boolean songChange;
-    private boolean metronomeDrummerChange;
     private boolean firstSongLoad = true;
     private float scaleFactor = 1.0f;
     private ModePerformanceBinding myView;
@@ -151,8 +150,6 @@ public class PerformanceFragment extends Fragment {
     public void onDestroyView() {
         if (mainActivityInterface!=null) {
         }
-
-
         myView = null;
         super.onDestroyView();
     }
@@ -451,8 +448,6 @@ public class PerformanceFragment extends Fragment {
                 !mainActivityInterface.getSong().getFolder().equals(folder) ||
                 firstSongLoad || mainActivityInterface.getNearbyActions().getNearbyReceivePayloads().getForceReload() ||
                 mainActivityInterface.getForceReload();
-        metronomeDrummerChange = !mainActivityInterface.getSong().getFilename().equals(filename) ||
-                !mainActivityInterface.getSong().getFolder().equals(folder);
         mainActivityInterface.setHighlightChangeAllowed(true);
 
         if (filename==null || filename.isEmpty() ||
