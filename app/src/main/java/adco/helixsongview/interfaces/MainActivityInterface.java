@@ -267,7 +267,6 @@ public interface MainActivityInterface {
 
     // Nearby connections
     NearbyActions getNearbyActions();
-    void updateConnectionsLog();
 
 
     // Midi

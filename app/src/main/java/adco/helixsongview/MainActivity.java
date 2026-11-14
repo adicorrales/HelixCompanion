@@ -1930,24 +1930,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         }
     }
 
-    @Override
-    public void updateConnectionsLog() {
-        // Send the command to the Nearby Connections fragment (if it exists!)
-        try {
-            if (nearbyConnectionsFragment != null &&
-                    nearbyActions.getNearbyConnectionManagement().getConnectionsOpen()) {
-                try {
-                    nearbyConnectionsFragment.updateConnectionsLog();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
     // Instructions sent from fragments for MainActivity to deal with
     @Override
     public void hideActionButton(boolean hide) {
