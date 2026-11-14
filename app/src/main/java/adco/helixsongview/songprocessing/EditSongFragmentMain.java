@@ -244,6 +244,17 @@ public class EditSongFragmentMain extends Fragment  {
         }
     }
 
+    public void commitChanges() {
+        if (myView != null && mainActivityInterface != null && mainActivityInterface.getTempSong() != null) {
+            Song temp = mainActivityInterface.getTempSong();
+            if (myView.title != null) temp.setTitle(myView.title.getText().toString());
+            if (myView.author != null) temp.setAuthor(myView.author.getText().toString());
+            if (myView.copyright != null) temp.setCopyright(myView.copyright.getText().toString());
+            if (myView.filename != null) temp.setFilename(myView.filename.getText().toString());
+            if (myView.folder != null) temp.setFolder(myView.folder.getText().toString());
+        }
+    }
+
     // Finished with this view
     @Override
     public void onDetach() {

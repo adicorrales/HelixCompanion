@@ -464,7 +464,8 @@ public class PerformanceFragment extends Fragment {
         // IV - Set a boolean indicating song change
         songChange = !mainActivityInterface.getSong().getFilename().equals(filename) ||
                 !mainActivityInterface.getSong().getFolder().equals(folder) ||
-                firstSongLoad || mainActivityInterface.getNearbyActions().getNearbyReceivePayloads().getForceReload();
+                firstSongLoad || mainActivityInterface.getNearbyActions().getNearbyReceivePayloads().getForceReload() ||
+                mainActivityInterface.getForceReload();
         metronomeDrummerChange = !mainActivityInterface.getSong().getFilename().equals(filename) ||
                 !mainActivityInterface.getSong().getFolder().equals(folder);
         mainActivityInterface.setHighlightChangeAllowed(true);

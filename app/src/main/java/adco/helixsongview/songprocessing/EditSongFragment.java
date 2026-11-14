@@ -86,8 +86,10 @@ public class EditSongFragment extends Fragment implements EditSongFragmentInterf
         }
 
         if (mainActivityInterface!=null) {
-            // Set up the updated song (a copy of the current song for editing)
-            mainActivityInterface.setTempSong(new Song(mainActivityInterface.getSong()));
+            // Set up the updated song (fully loaded from storage to ensure title and filename match correctly)
+            Song songToEdit = new Song(mainActivityInterface.getSong());
+            songToEdit = mainActivityInterface.getLoadSong().doLoadSong(songToEdit, false);
+            mainActivityInterface.setTempSong(songToEdit);
             mainActivityInterface.getTempSong().setLyricsUndosPos(0);
             mainActivityInterface.getTempSong().setLyricsUndos(0, mainActivityInterface.getTempSong().getLyrics());
 
@@ -242,6 +244,15 @@ public class EditSongFragment extends Fragment implements EditSongFragmentInterf
                 // Make sure the soft keyboard is closed
                 mainActivityInterface.getWindowFlags().hideKeyboard();
 
+                // Force commit any pending text changes from child fragments
+                for (Fragment frag : getChildFragmentManager().getFragments()) {
+                    if (frag instanceof EditSongFragmentLyrics) {
+                        ((EditSongFragmentLyrics) frag).commitChanges();
+                    } else if (frag instanceof EditSongFragmentMain) {
+                        ((EditSongFragmentMain) frag).commitChanges();
+                    }
+                }
+
                 // Send this off for processing in a new Thread
                 mainActivityInterface.getThreadPoolExecutor().execute(() -> {
                     // If we were editing the lyrics as ChoPro, convert to OpenSong
@@ -270,6 +281,7 @@ public class EditSongFragment extends Fragment implements EditSongFragmentInterf
                         if (mainActivityInterface!=null) {
                             mainActivityInterface.getMainHandler().post(() -> {
                                 if (mainActivityInterface != null) {
+                                    mainActivityInterface.setForceReload(true);
                                     mainActivityInterface.navHome();
                                 }
                                 alreadySaving = false;

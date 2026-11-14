@@ -775,6 +775,13 @@ public class EditSongFragmentLyrics extends Fragment {
         }
         return "";
     }
+
+    public void commitChanges() {
+        if (myView != null && myView.lyrics != null && mainActivityInterface != null && mainActivityInterface.getTempSong() != null) {
+            handler.removeCallbacks(runnable);
+            mainActivityInterface.getTempSong().setLyrics(myView.lyrics.getText().toString());
+        }
+    }
     @Override
     public void onDetach() {
         super.onDetach();
