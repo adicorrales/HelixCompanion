@@ -87,16 +87,7 @@ public class EditSongFragmentMain extends Fragment  {
                 if (myView!=null) {
                     myView.title.setText(mainActivityInterface.getTempSong().getTitle());
                     myView.author.setText(mainActivityInterface.getTempSong().getAuthor());
-                    myView.copyright.setText(mainActivityInterface.getTempSong().getCopyright());
-
-                    // TODO remove once finished
-                    //myView.songNotes.setText(mainActivityInterface.getTempSong().getNotes());
-                    //mainActivityInterface.getProcessSong().editBoxToMultiline(myView.songNotes);
-                    //mainActivityInterface.getProcessSong().stretchEditBoxToLines(myView.songNotes, 5);
-
                     myView.filename.setText(mainActivityInterface.getTempSong().getFilename());
-
-
                 }
             });
 
@@ -117,9 +108,6 @@ public class EditSongFragmentMain extends Fragment  {
                 myView.folder.addTextChangedListener(new MyTextWatcher("folder"));
                 myView.filename.addTextChangedListener(new MyTextWatcher("filename"));
                 myView.author.addTextChangedListener(new MyTextWatcher("author"));
-                myView.copyright.addTextChangedListener(new MyTextWatcher("copyright"));
-
-
                 // Scroll listener
                 myView.mainScrollView.setExtendedFabToAnimate(editSongFragmentInterface.getSaveButton());
             }
@@ -249,7 +237,6 @@ public class EditSongFragmentMain extends Fragment  {
             Song temp = mainActivityInterface.getTempSong();
             if (myView.title != null) temp.setTitle(myView.title.getText().toString());
             if (myView.author != null) temp.setAuthor(myView.author.getText().toString());
-            if (myView.copyright != null) temp.setCopyright(myView.copyright.getText().toString());
             if (myView.filename != null) temp.setFilename(myView.filename.getText().toString());
             if (myView.folder != null) temp.setFolder(myView.folder.getText().toString());
         }

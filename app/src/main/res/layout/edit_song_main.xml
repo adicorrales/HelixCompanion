@@ -39,14 +39,6 @@
                 android:hint="@string/artist"
                 app:endIconMode="clear_text" />
 
-            <adco.helixsongview.customviews.MyMaterialEditText
-                android:id="@+id/copyright"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:hint="@string/copyright"
-                app:endIconMode="clear_text" />
             <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
@@ -81,57 +73,6 @@
             <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
-            <LinearLayout
-                android:id="@+id/stickyNotesContainer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"/>
-
-            <!-- Button to add a new sticky note -->
-            <adco.helixsongview.customviews.MyExtendedFloatingActionButton
-                android:id="@+id/addStickyNoteButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_marginBottom="16dp"
-                android:text="@string/new_something"
-                app:icon="@drawable/plus" />
-
-            <!--<adco.helixsongview.customviews.MyMaterialEditText
-                android:id="@+id/songNotes"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/song_notes"
-                android:imeOptions="actionNone"
-                android:inputType="text|textMultiLine"
-                android:lines="5"
-                android:maxLines="5"
-                android:minLines="5"
-                app:autoSizeMaxTextSize="24sp"
-                app:autoSizeMinTextSize="8sp"
-                app:autoSizeStepGranularity="1sp"
-                app:autoSizeTextType="uniform"
-                app:endIconMode="clear_text" />
-            -->
-            <adco.helixsongview.customviews.MyDivider
-                style="@style/MyDividerLine"/>
-
-            <adco.helixsongview.customviews.MyMaterialSimpleTextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="0dp"
-                android:text="@string/override_sticky" />
-
-            <adco.helixsongview.customviews.TextThreeSlider
-                android:id="@+id/overrideStickySlider"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="0dp"
-                android:layout_marginTop="0dp"
-                app:textL="@string/override_none"
-                app:textC="@string/override_on"
-                app:textR="@string/override_off"/>
         </LinearLayout>
     </adco.helixsongview.customviews.ScrollViewWithFAB>
 </LinearLayout>

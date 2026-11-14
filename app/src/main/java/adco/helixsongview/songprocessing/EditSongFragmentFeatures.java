@@ -167,27 +167,9 @@ public class EditSongFragmentFeatures extends Fragment {
         } else if (mainActivityInterface.getProcessSong().getHasAbcOnOverride(mainActivityInterface.getTempSong())) {
             sliderPos = 1;
         }
-        final int sliderPosFinal = sliderPos;
-        mainActivityInterface.getMainHandler().post(() -> {
-            if (myView!=null) {
-                myView.overrideAbcSlider.setSliderPos(sliderPosFinal);
-            }
-        });
 
-        // Check for preview overrides
-        int previewSliderPos = 0;
-        String previewOverride = mainActivityInterface.getTempSong().getPreviewoverride();
-        if (previewOverride != null && previewOverride.equals("force_off")) {
-            previewSliderPos = 2;
-        } else if (previewOverride != null && previewOverride.equals("force_on")) {
-            previewSliderPos = 1;
-        }
-        final int previewSliderPosFinal = previewSliderPos;
-        mainActivityInterface.getMainHandler().post(() -> {
-            if (myView!=null) {
-                myView.overridePreviewSlider.setSliderPos(previewSliderPosFinal);
-            }
-        });
+
+
 
         // The pad file
         ArrayList<String> padfiles = new ArrayList<>();
@@ -285,23 +267,7 @@ public class EditSongFragmentFeatures extends Fragment {
         // The drummer
 //        updateDrummerAdapter();
 
-        // The preferred instrument for the song
-        if (getContext()!=null) {
-            mainActivityInterface.getMainHandler().post(() -> {
-                if (myView!=null && getContext()!=null) {
-                    // Add the default text temporarily
-                    instruments.add(0, use_default_string);
-                    ExposedDropDownArrayAdapter instrumentsAdapter = new ExposedDropDownArrayAdapter(getContext(), myView.preferredInstrument, R.layout.view_exposed_dropdown_item, instruments);
-                    myView.preferredInstrument.setAdapter(instrumentsAdapter);
-                    String chosen = mainActivityInterface.getChordDisplayProcessing().getSongInstrumentNice(mainActivityInterface.getTempSong().getPreferredInstrument());
-                    myView.preferredInstrument.setText(chosen);
-                    // Now take the default out of the arraylist
-                    instruments.remove(0);
-                }
-            });
-        }
-
-        // Duration and delay
+           // Duration and delay
         if (mainActivityInterface.getTempSong().getAutoscrolllength()==null ||
                 mainActivityInterface.getTempSong().getAutoscrolllength().isEmpty()) {
             mainActivityInterface.getTempSong().setAutoscrolllength("0");
@@ -334,8 +300,6 @@ public class EditSongFragmentFeatures extends Fragment {
                 // The midi, abc and customchords
                 myView.midi.setText(mainActivityInterface.getTempSong().getMidi());
                 mainActivityInterface.getProcessSong().editBoxToMultiline(myView.midi);
-                myView.abc.setText(mainActivityInterface.getTempSong().getAbc());
-                mainActivityInterface.getProcessSong().editBoxToMultiline(myView.abc);
                 myView.customChords.setText(mainActivityInterface.getTempSong().getCustomchords());
                 mainActivityInterface.getProcessSong().editBoxToMultiline(myView.customChords);
             }
@@ -469,21 +433,11 @@ public class EditSongFragmentFeatures extends Fragment {
     private void checkLines() {
         mainActivityInterface.getMainHandler().post(() -> {
             mainActivityInterface.getProcessSong().stretchEditBoxToLines(myView.midi, 2);
-            mainActivityInterface.getProcessSong().stretchEditBoxToLines(myView.abc, 2);
-        });
+          });
     }
     private void setupListeners() {
         mainActivityInterface.getMainHandler().post(() -> {
-            // NEW: Wire up extract score button
-            myView.btnExtractScore.setOnClickListener(v -> {
-                String[] mimeTypes = {
-                        "application/octet-stream",
-                        "text/xml",
-                        "application/xml",
-                        "text/plain"
-                };
-                filePickerLauncher.launch(mimeTypes);
-            });
+
 
             myView.searchOnline.setOnClickListener(view -> {
                 GetBPMBottomSheet getBPMBottomSheet = new GetBPMBottomSheet(EditSongFragmentFeatures.this);
@@ -503,59 +457,15 @@ public class EditSongFragmentFeatures extends Fragment {
             });
             myView.tempo.addTextChangedListener(new MyTextWatcher("tempo"));
             myView.timesig.addTextChangedListener(new MyTextWatcher("timesig"));
-            myView.drummer.addTextChangedListener(new MyTextWatcher("drummer"));
-            myView.drummerKit.addTextChangedListener(new MyTextWatcher("drummerKit"));
             myView.durationMins.addTextChangedListener(new MyTextWatcher("durationMins"));
             myView.durationSecs.addTextChangedListener(new MyTextWatcher("durationSecs"));
             myView.delay.addTextChangedListener(new MyTextWatcher("delay"));
             myView.midi.addTextChangedListener(new MyTextWatcher("midi"));
-            myView.abc.addTextChangedListener(new MyTextWatcher("abc"));
+
             myView.customChords.addTextChangedListener(new MyTextWatcher("customchords"));
             myView.linkType.addTextChangedListener(new MyTextWatcher("linktype"));
             myView.linkValue.addTextChangedListener(new MyTextWatcher("linkvalue"));
 
-            //myView.tapTempo.setOnClickListener(button -> mainActivityInterface.getDrumViewModel().tapTempo());
-
-            // The ABC override
-            myView.overrideAbcSlider.addOnChangeListener((slider, value, fromUser) -> {
-                // All options should clear existing override value
-                mainActivityInterface.getProcessSong().removeAbcOverrides(mainActivityInterface.getTempSong(), true);
-                // Get rid of any existing sticky_off values
-                mainActivityInterface.getProcessSong().removeAbcOverrides(mainActivityInterface.getTempSong(),false);
-
-                if (value==1) {
-                    // Add the abc_on override
-                    mainActivityInterface.getProcessSong().addAbcOverride(
-                            mainActivityInterface.getTempSong(),true);
-
-                } else if (value==2) {
-                    // Add the abc_off override
-                    mainActivityInterface.getProcessSong().addAbcOverride(
-                            mainActivityInterface.getTempSong(), false);
-                }
-                myView.overrideAbcSlider.updateAlphas();
-            });
-
-            myView.onlineAbc.setOnClickListener(view -> {
-                ABCEditorBottomSheet abcEditorBottomSheet = new ABCEditorBottomSheet(EditSongFragmentFeatures.this,mainActivityInterface.getTempSong(),"abc");
-                abcEditorBottomSheet.show(mainActivityInterface.getMyFragmentManager(),"AbcEditor");
-            });
-            // The preview override
-            myView.overridePreviewSlider.addOnChangeListener((slider, value, fromUser) -> {
-                if (value==1) {
-                    // Force preview ON
-                    mainActivityInterface.getTempSong().setPreviewoverride("force_on");
-                } else if (value==2) {
-                    // Force preview OFF
-                    mainActivityInterface.getTempSong().setPreviewoverride("force_off");
-                } else {
-                    // Use global setting (no override)
-                    mainActivityInterface.getTempSong().setPreviewoverride("");
-                }
-                myView.overridePreviewSlider.updateAlphas();
-            });
-
-            myView.preferredInstrument.addTextChangedListener(new MyTextWatcher("preferredinstrument"));
             // Scroll listener
             myView.featuresScrollView.setExtendedFabToAnimate(editSongFragmentInterface.getSaveButton());
         });
@@ -708,41 +618,7 @@ public class EditSongFragmentFeatures extends Fragment {
         mainActivityInterface.getTempSong().setPreferredInstrument(preferredInstrument);
     }
 
-    public void updateAbc(String abc) {
-        if (myView!=null) {
-            myView.abc.post(() -> {
-                if (myView!=null) {
-                    myView.abc.setText(abc);
-                }
-            });
-        }
-    }
 
-//    private void processSelectedScoreUri(Uri uri) {
-//        if (getContext() == null) return;
-//        try {
-//            InputStream inputStream = getContext().getContentResolver().openInputStream(uri);
-//            String fileName = uri.getLastPathSegment();
-//
-//            mainActivityInterface.getShowToast().doIt("Extracting ABC notation...");
-//
-//            scoreExtractor.extractFromStream(inputStream, fileName, new ScoreToAbcExtractor.ExtractionCallback() {
-//                @Override
-//                public void onSuccess(String abcNotation) {
-//                    // Automatically update the edit box with the extracted ABC notation
-//                    myView.abc.setText(abcNotation);
-//                    mainActivityInterface.getShowToast().success();
-//                }
-//
-//                @Override
-//                public void onError(String errorMessage) {
-//                    mainActivityInterface.getShowToast().doIt("Error: " + errorMessage);
-//                }
-//            });
-//        } catch (Exception e) {
-//            mainActivityInterface.getShowToast().doIt("Could not open file stream");
-//        }
-//    }
 
     @Override
     public void onDetach() {

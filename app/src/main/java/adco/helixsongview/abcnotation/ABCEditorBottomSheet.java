@@ -99,13 +99,6 @@ public class ABCEditorBottomSheet extends BottomSheetCommon {
 
                         Log.d(TAG,"finalAbc:"+finalAbc);
 
-                        try {
-                            ((EditSongFragmentFeatures) frag).updateAbc(finalAbc);
-                            dismiss();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
