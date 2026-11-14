@@ -280,6 +280,7 @@ public class MyToolbar extends Toolbar {
             hideView(btnTransportPrevContainer, false);
             hideView(btnTransportRt0, false);
             hideView(btnTransportNextContainer, false);
+            hideView(btnTransportPlayContainer, !performanceMode);
             updatePrevNextTitles();
 
             float mainsize = mainActivityInterface.getPreferences().getMyPreferenceFloat("songTitleSize",13.0f);
@@ -432,6 +433,7 @@ public class MyToolbar extends Toolbar {
             hideView(btnTransportPrevContainer, true);
             hideView(btnTransportRt0, true);
             hideView(btnTransportNextContainer, true);
+            hideView(btnTransportPlayContainer, true);
             if (songandauthor!=null) {
                 songandauthor.setOnClickListener(null);
                 songandauthor.setOnLongClickListener(null);
