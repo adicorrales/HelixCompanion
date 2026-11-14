@@ -44,9 +44,11 @@ public class MyToolbar extends Toolbar {
     private final TextClock clock;
     private final MyMaterialSimpleTextView tempo;
     private final ImageView setIcon, batteryimage;
-    private final ImageView btnTransportPrev, btnTransportRt0, btnTransportPlay, btnTransportNext;
-    private final ConstraintLayout songandauthor;
-    private final LinearLayout metronomeLayout, transportBarLayout;
+    private final ImageView btnTransportRt0, playPauseIndicator, btnTransportPrevArrow, btnTransportNextArrow;
+    private final MyMaterialSimpleTextView btnTransportPrevTitle, btnTransportNextTitle;
+    private final LinearLayout btnTransportPrevContainer, btnTransportNextContainer, songandauthor;
+    private final FrameLayout btnTransportPlayContainer;
+    private final LinearLayout metronomeLayout;
     private final ArrayList<View> beatView;
     private final MyMaterialSimpleTextView batterycharge;
     private Handler delayActionBarHide;
@@ -115,7 +117,7 @@ public class MyToolbar extends Toolbar {
         batterycharge = v.findViewById(R.id.batterycharge);
         songandauthor = v.findViewById(R.id.songandauthor);
         clock = v.findViewById(R.id.digitalclock);
-        metronomeLayout = v.findViewById(R.id.metronomeLayout);
+
         beatView = new ArrayList<>();
         beatView.add(null);
         beatView.add(v.findViewById(R.id.beat1));
@@ -135,29 +137,36 @@ public class MyToolbar extends Toolbar {
         beatView.add(v.findViewById(R.id.beat15));
         beatView.add(v.findViewById(R.id.beat16));
 
-        metronomeLayout.setVisibility(View.GONE);
+       
 
-        transportBarLayout = v.findViewById(R.id.transportBarLayout);
-        if (transportBarLayout != null) {
-            transportBarLayout.setVisibility(View.VISIBLE);
-        }
-
-        btnTransportPrev = v.findViewById(R.id.btnTransportPrev);
+        metronomeLayout = v.findViewById(R.id.metronomeLayout);
+        btnTransportPrevContainer = v.findViewById(R.id.btnTransportPrevContainer);
+        btnTransportNextContainer = v.findViewById(R.id.btnTransportNextContainer);
         btnTransportRt0 = v.findViewById(R.id.btnTransportRt0);
-        btnTransportPlay = v.findViewById(R.id.btnTransportPlay);
-        btnTransportNext = v.findViewById(R.id.btnTransportNext);
+        playPauseIndicator = v.findViewById(R.id.playPauseIndicator);
+        btnTransportPlayContainer = v.findViewById(R.id.btnTransportPlayContainer);
+        btnTransportPrevArrow = v.findViewById(R.id.btnTransportPrevArrow);
+        btnTransportNextArrow = v.findViewById(R.id.btnTransportNextArrow);
+        btnTransportPrevTitle = v.findViewById(R.id.btnTransportPrevTitle);
+        btnTransportNextTitle = v.findViewById(R.id.btnTransportNextTitle);
 
-        if (btnTransportPrev != null) {
-            btnTransportPrev.setOnClickListener(v1 -> mainActivityInterface.onTransportPrev());
+        if (btnTransportPrevContainer != null) {
+            btnTransportPrevContainer.setOnClickListener(v1 -> mainActivityInterface.onTransportPrev());
         }
         if (btnTransportRt0 != null) {
             btnTransportRt0.setOnClickListener(v1 -> mainActivityInterface.onTransportRt0());
         }
-        if (btnTransportPlay != null) {
-            btnTransportPlay.setOnClickListener(v1 -> mainActivityInterface.onTransportPlay());
+        if (songandauthor != null) {
+            songandauthor.setOnClickListener(v1 -> openDetails());
         }
-        if (btnTransportNext != null) {
-            btnTransportNext.setOnClickListener(v1 -> mainActivityInterface.onTransportNext());
+        if (btnTransportPlayContainer != null) {
+            btnTransportPlayContainer.setOnClickListener(v1 -> {
+                mainActivityInterface.onTransportPlay();
+                openDetails();
+            });
+        }
+        if (btnTransportNextContainer != null) {
+            btnTransportNextContainer.setOnClickListener(v1 -> mainActivityInterface.onTransportNext());
         }
 
         batteryholder.setOnClickListener(v1 -> {
@@ -167,13 +176,15 @@ public class MyToolbar extends Toolbar {
     }
 
     public void updatePlayButton(boolean isPlaying) {
-        if (btnTransportPlay != null && c != null) {
+        if (playPauseIndicator != null && c != null) {
             if (isPlaying) {
-                btnTransportPlay.setImageResource(R.drawable.pause);
-                btnTransportPlay.setColorFilter(android.graphics.Color.parseColor("#4CAF50"));
+                playPauseIndicator.setImageResource(R.drawable.pause);
+                playPauseIndicator.setColorFilter(android.graphics.Color.parseColor("#4CAF50"));
             } else {
-                btnTransportPlay.setImageResource(R.drawable.play);
-                btnTransportPlay.clearColorFilter();
+                playPauseIndicator.setImageResource(R.drawable.play);
+                if (mainActivityInterface != null && mainActivityInterface.getPalette() != null) {
+                    playPauseIndicator.setColorFilter(mainActivityInterface.getPalette().textColor);
+                }
             }
         }
     }
@@ -269,6 +280,11 @@ public class MyToolbar extends Toolbar {
 
         if (newtitle == null) {
             // We are in the Performance/Stage mode
+            hideView(btnTransportPrevContainer, false);
+            hideView(btnTransportRt0, false);
+            hideView(btnTransportNextContainer, false);
+            updatePrevNextTitles();
+
             float mainsize = mainActivityInterface.getPreferences().getMyPreferenceFloat("songTitleSize",13.0f);
 
             if (title != null && mainActivityInterface.getSong().getTitle() != null) {
@@ -416,10 +432,78 @@ public class MyToolbar extends Toolbar {
             hideView(key, true);
             hideView(capo,true);
             hideView(tempo,true);
+            hideView(btnTransportPrevContainer, true);
+            hideView(btnTransportRt0, true);
+            hideView(btnTransportNextContainer, true);
             if (songandauthor!=null) {
                 songandauthor.setOnClickListener(null);
                 songandauthor.setOnLongClickListener(null);
             }
+        }
+    }
+
+    public void updatePrevNextTitles() {
+        if (mainActivityInterface == null) return;
+        try {
+            int setPosition = mainActivityInterface.getCurrentSet().getIndexSongInSet();
+            if (setPosition < 0) {
+                setPosition = mainActivityInterface.getSetActions().indexSongInSet(mainActivityInterface.getSong());
+            }
+            int prevIndex = -1;
+            int currentPos = setPosition;
+            while (currentPos > 0) {
+                currentPos--;
+                String songfolder = mainActivityInterface.getCurrentSet().getSetItemInfo(currentPos).songfolder;
+                if (!songfolder.contains("Divider") && !songfolder.contains("divider")) {
+                    prevIndex = currentPos;
+                    break;
+                }
+            }
+
+            int nextIndex = -1;
+            currentPos = setPosition;
+            while (currentPos < mainActivityInterface.getCurrentSet().getCurrentSetSize() - 1) {
+                currentPos++;
+                String songfolder = mainActivityInterface.getCurrentSet().getSetItemInfo(currentPos).songfolder;
+                if (!songfolder.contains("Divider") && !songfolder.contains("divider")) {
+                    nextIndex = currentPos;
+                    break;
+                }
+            }
+
+            String prevTitle = "";
+            if (prevIndex >= 0 && prevIndex < mainActivityInterface.getCurrentSet().getCurrentSetSize()) {
+                prevTitle = mainActivityInterface.getCurrentSet().getSetItemInfo(prevIndex).songtitle;
+                if (prevTitle == null || prevTitle.isEmpty()) {
+                    prevTitle = mainActivityInterface.getCurrentSet().getSetItemInfo(prevIndex).songfilename;
+                }
+            }
+
+            String nextTitle = "";
+            if (nextIndex >= 0 && nextIndex < mainActivityInterface.getCurrentSet().getCurrentSetSize()) {
+                nextTitle = mainActivityInterface.getCurrentSet().getSetItemInfo(nextIndex).songtitle;
+                if (nextTitle == null || nextTitle.isEmpty()) {
+                    nextTitle = mainActivityInterface.getCurrentSet().getSetItemInfo(nextIndex).songfilename;
+                }
+            }
+
+            MyMaterialSimpleTextView prevTv = findViewById(R.id.btnTransportPrevTitle);
+            MyMaterialSimpleTextView nextTv = findViewById(R.id.btnTransportNextTitle);
+
+            if (prevTv != null) {
+                prevTv.setText(prevTitle);
+            }
+            if (btnTransportPrevContainer != null) {
+                btnTransportPrevContainer.setVisibility(prevTitle.isEmpty() ? View.GONE : View.VISIBLE);
+            }
+            if (nextTv != null) {
+                nextTv.setText(nextTitle);
+            }
+            if (btnTransportNextContainer != null) {
+                btnTransportNextContainer.setVisibility(nextTitle.isEmpty() ? View.GONE : View.VISIBLE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -621,97 +705,7 @@ public class MyToolbar extends Toolbar {
         return isShown();
     }
 
-    public void setUpMetronomeBar(int beats) {
-        this.beats = beats;
 
-        // Force visibility NOW so it's ready for Beat 1
-        if (metronomeLayout != null) {
-            metronomeLayout.post(() -> metronomeLayout.setVisibility(View.VISIBLE));
-            makeAllBeatsTransparent();
-        }
-
-        if (beats==0) {
-            // Something wrong, so hide all
-            for (int x = 1; x <= 16; x++) {
-                if (beatView!=null && beatView.get(x)!=null) {
-                    beatView.get(x).setVisibility(View.GONE);
-                }
-            }
-            if (metronomeLayout!=null) {
-                metronomeLayout.post(() -> metronomeLayout.setVisibility(View.GONE));
-            }
-        } else {
-            // Make the ones we need visible, but transparent
-            for (int x = 1; x <= beats; x++) {
-                if (beatView!=null && beatView.get(x)!=null) {
-                    beatView.get(x).setBackgroundColor(Color.TRANSPARENT);
-                    beatView.get(x).setVisibility(View.VISIBLE);
-                }
-            }
-            // Hide the ones we don't need
-            for (int x = beats + 1; x <= 16; x++) {
-                if (beatView!=null && beatView.get(x)!=null) {
-                    beatView.get(x).setBackgroundColor(Color.TRANSPARENT);
-                    beatView.get(x).setVisibility(View.GONE);
-                }
-            }
-            if (metronomeLayout!=null) {
-                metronomeLayout.post(() -> metronomeLayout.setVisibility(View.VISIBLE));
-            }
-        }
-
-        // Add this at the end of the method to ensure the UI thread
-        // has actually finished drawing the views before the timer hits
-        if (metronomeLayout!=null) {
-            metronomeLayout.post(metronomeLayout::requestLayout);
-        }
-    }
-
-    public void hideMetronomeBar() {
-        makeAllBeatsTransparent();
-        metronomeLayout.post(() -> metronomeLayout.setVisibility(View.GONE));
-    }
-
-    public void makeAllBeatsTransparent() {
-        for (int x=1; x<=16; x++) {
-            View view = beatView.get(x);
-            view.post(() -> view.setBackgroundColor(Color.TRANSPARENT));
-        }
-    }
-
-    public void highlightBeat(int beat, int colorOn, long flashDuration) {
-        post(() -> {
-            // Metronome sends 1, 2, 3, 4.
-            // Your list is [null, view1, view2, view3, view4]
-            int index = beat;
-
-            if (beatView == null || index < 1 || index >= beatView.size()) {
-                // This is likely where Beat 1 is dying
-                Log.e("MyToolbar", "OUT OF BOUNDS: index=" + index + " size=" + (beatView != null ? beatView.size() : 0));
-                return;
-            }
-
-            if (metronomeLayout.getVisibility() != View.VISIBLE) {
-                metronomeLayout.setVisibility(View.VISIBLE);
-            }
-
-            View light = beatView.get(index);
-            if (light != null) {
-                light.animate().cancel();
-                light.setAlpha(1.0f);
-                light.setBackgroundColor(colorOn);
-
-                // Calculate gap so beats don't bleed together
-                long adjustedDuration = Math.max(10, flashDuration - 20);
-
-                light.animate()
-                        .alpha(0f)
-                        .setDuration(10)
-                        .setStartDelay(adjustedDuration)
-                        .start();
-            }
-        });
-    }
 
     public void changeTheme() {
         this.setTitleTextColor(mainActivityInterface.getPalette().textColor);
@@ -727,6 +721,24 @@ public class MyToolbar extends Toolbar {
         tempo.setTextColor(mainActivityInterface.getPalette().textColor);
         clock.setTextColor(mainActivityInterface.getPalette().textColor);
         setIcon.setColorFilter(mainActivityInterface.getPalette().textColor);
+        if (btnTransportPrevArrow != null && mainActivityInterface.getPalette() != null) {
+            btnTransportPrevArrow.setColorFilter(mainActivityInterface.getPalette().textColor);
+        }
+        if (btnTransportNextArrow != null && mainActivityInterface.getPalette() != null) {
+            btnTransportNextArrow.setColorFilter(mainActivityInterface.getPalette().textColor);
+        }
+        if (btnTransportRt0 != null && mainActivityInterface.getPalette() != null) {
+            btnTransportRt0.setColorFilter(mainActivityInterface.getPalette().textColor);
+        }
+        if (playPauseIndicator != null && mainActivityInterface.getPalette() != null) {
+            playPauseIndicator.setColorFilter(mainActivityInterface.getPalette().textColor);
+        }
+        if (btnTransportPrevTitle != null && mainActivityInterface.getPalette() != null) {
+            btnTransportPrevTitle.setTextColor(mainActivityInterface.getPalette().textColor);
+        }
+        if (btnTransportNextTitle != null && mainActivityInterface.getPalette() != null) {
+            btnTransportNextTitle.setTextColor(mainActivityInterface.getPalette().textColor);
+        }
 
         mainActivityInterface.refreshToolbarMenu();
     }

@@ -14,6 +14,7 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:orientation="horizontal"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/batterySpace"
         app:layout_constraintStart_toStartOf="parent"
@@ -116,208 +117,217 @@
             android:layout_weight="1" />
     </LinearLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/songandauthor"
-        android:layout_width="0dp"
-        android:layout_height="?attr/actionBarSize"
-        app:layout_constrainedWidth="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/transportBarLayout"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5">
-
-        <ImageView
-            android:id="@+id/setIcon"
-            android:layout_width="16dp"
-            android:layout_height="0dp"
-            android:layout_marginBottom="0dp"
-            android:contentDescription="@string/set"
-            android:paddingBottom="0dp"
-            android:scaleType="fitEnd"
-            app:layout_constraintBottom_toBottomOf="@id/songtitle_ab"
-            app:layout_constraintEnd_toStartOf="@+id/songtitle_ab"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/songtitle_ab"
-            app:layout_constraintVertical_bias="0.5"
-            app:layout_constraintVertical_chainStyle="packed"
-            app:srcCompat="@drawable/check"
-            app:tint="?attr/colorOnPrimary" />
-
-        <adco.helixsongview.customviews.MyMaterialSimpleTextView
-            android:id="@+id/songtitle_ab"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textColor="?attr/colorOnPrimary"
-            android:textSize="16sp"
-            app:layout_constrainedWidth="true"
-            app:layout_constraintBottom_toTopOf="@+id/songauthor_ab"
-            app:layout_constraintEnd_toStartOf="@+id/songkey_ab"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintStart_toEndOf="@+id/setIcon"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.5"
-            app:layout_constraintVertical_chainStyle="packed"
-            tools:text="Title" />
-
-        <adco.helixsongview.customviews.MyMaterialSimpleTextView
-            android:id="@+id/songkey_ab"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:ellipsize="none"
-            android:gravity="start|bottom"
-            android:singleLine="true"
-            android:textColor="?attr/colorOnPrimary"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="@+id/songtitle_ab"
-            app:layout_constraintEnd_toStartOf="@id/songcapo_ab"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/songtitle_ab"
-            app:layout_constraintTop_toTopOf="@+id/songtitle_ab"
-            app:layout_constraintVertical_bias="0.5"
-            app:layout_constraintVertical_chainStyle="packed"
-            tools:text=" (Key)" />
-
-        <adco.helixsongview.customviews.MyMaterialSimpleTextView
-            android:id="@+id/songcapo_ab"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:ellipsize="none"
-            android:gravity="start|bottom"
-            android:singleLine="true"
-            android:textColor="?attr/colorOnPrimary"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="@+id/songtitle_ab"
-            app:layout_constraintEnd_toStartOf="@+id/songtempo_ab"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/songkey_ab"
-            app:layout_constraintTop_toTopOf="@+id/songtitle_ab"
-            app:layout_constraintVertical_bias="0.5"
-            app:layout_constraintVertical_chainStyle="packed"
-            tools:text=" [Capo]" />
-
-        <adco.helixsongview.customviews.MyMaterialSimpleTextView
-            android:id="@+id/songtempo_ab"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:ellipsize="none"
-            android:gravity="start|bottom"
-            android:singleLine="true"
-            android:textColor="?attr/colorOnPrimary"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="@+id/songtitle_ab"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/songcapo_ab"
-            app:layout_constraintTop_toTopOf="@+id/songtitle_ab"
-            app:layout_constraintVertical_bias="0.5"
-            app:layout_constraintVertical_chainStyle="packed"
-            tools:text=" 120bpm" />
-
-        <adco.helixsongview.customviews.MyMaterialSimpleTextView
-            android:id="@+id/songauthor_ab"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginTop="0dp"
-            android:ellipsize="end"
-            android:gravity="start|top"
-            android:maxLines="1"
-            android:textColor="?attr/colorOnPrimary"
-            android:textSize="14sp"
-            android:visibility="visible"
-            app:layout_constrainedWidth="true"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintStart_toEndOf="@+id/setIcon"
-            app:layout_constraintTop_toBottomOf="@id/songtitle_ab"
-            app:layout_constraintVertical_bias="0.5"
-            app:layout_constraintVertical_chainStyle="packed"
-            tools:text="Author" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
+    <!-- Main Horizontal Transport & Song Info Bar -->
     <LinearLayout
-        android:id="@+id/transportBarLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/transportAndSongBar"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:gravity="center"
-        android:padding="3dp"
-        android:elevation="8dp"
-        android:background="@drawable/transport_bar_bg"
+        android:gravity="center_vertical"
+        android:paddingStart="2dp"
+        android:paddingEnd="2dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/batterySpace"
-        app:layout_constraintStart_toEndOf="@id/songandauthor"
+        app:layout_constraintEnd_toStartOf="@+id/batterySpace"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/btnTransportPrev"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_margin="2dp"
+        <!-- 1. Prev Song Button (Framed) -->
+        <LinearLayout
+            android:id="@+id/btnTransportPrevContainer"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.2"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
             android:background="@drawable/transport_btn_bg"
             android:clickable="true"
-            android:focusable="true"
-            android:contentDescription="Prev"
-            android:padding="6dp"
-            app:srcCompat="@drawable/arrow_left"
-            app:tint="#E0E0E0" />
+            android:focusable="true">
 
+            <ImageView
+                android:id="@+id/btnTransportPrevArrow"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/arrow_left"
+                android:contentDescription="Prev" />
+
+            <adco.helixsongview.customviews.MyMaterialSimpleTextView
+                android:id="@+id/btnTransportPrevTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:gravity="start|center_vertical"
+                android:textSize="12sp"
+                tools:text="Previous Song" />
+        </LinearLayout>
+
+        <!-- 2. Return to Zero Button (Wider, Framed) -->
         <ImageView
             android:id="@+id/btnTransportRt0"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_margin="2dp"
+            android:layout_width="44dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
             android:background="@drawable/transport_btn_bg"
             android:clickable="true"
             android:focusable="true"
             android:contentDescription="Return to 0"
-            android:padding="6dp"
-            app:srcCompat="@drawable/refresh"
-            app:tint="#E0E0E0" />
+            android:padding="10dp"
+            app:srcCompat="@drawable/refresh" />
 
-        <ImageView
-            android:id="@+id/btnTransportPlay"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_margin="2dp"
+        <!-- 3. Current Song & Artist (Framed) -->
+        <LinearLayout
+            android:id="@+id/songandauthor"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2.0"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:orientation="vertical"
+            android:gravity="center_vertical"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
             android:background="@drawable/transport_btn_bg"
             android:clickable="true"
-            android:focusable="true"
-            android:contentDescription="Play"
-            android:padding="6dp"
-            app:srcCompat="@drawable/play"
-            app:tint="#E0E0E0" />
+            android:focusable="true">
 
-        <ImageView
-            android:id="@+id/btnTransportNext"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_margin="2dp"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:id="@+id/setIcon"
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:layout_marginEnd="2dp"
+                    android:visibility="gone"
+                    android:contentDescription="@string/set"
+                    app:srcCompat="@drawable/check" />
+
+                <adco.helixsongview.customviews.MyMaterialSimpleTextView
+                    android:id="@+id/songtitle_ab"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    tools:text="Song Title" />
+
+                <adco.helixsongview.customviews.MyMaterialSimpleTextView
+                    android:id="@+id/songkey_ab"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:textSize="12sp"
+                    tools:text=" (Key)" />
+
+                <adco.helixsongview.customviews.MyMaterialSimpleTextView
+                    android:id="@+id/songcapo_ab"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:textSize="12sp"
+                    tools:text=" [Capo]" />
+
+                <adco.helixsongview.customviews.MyMaterialSimpleTextView
+                    android:id="@+id/songtempo_ab"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:textSize="12sp"
+                    tools:text=" 120bpm" />
+            </LinearLayout>
+
+            <adco.helixsongview.customviews.MyMaterialSimpleTextView
+                android:id="@+id/songauthor_ab"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textSize="11sp"
+                tools:text="Artist" />
+        </LinearLayout>
+
+        <!-- 4. Independent Play/Pause Button (Framed, width weight = 2.0 matching title) -->
+        <FrameLayout
+            android:id="@+id/btnTransportPlayContainer"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2.0"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
             android:background="@drawable/transport_btn_bg"
             android:clickable="true"
-            android:focusable="true"
-            android:contentDescription="Next"
-            android:padding="6dp"
-            app:srcCompat="@drawable/arrow_right"
-            app:tint="#E0E0E0" />
+            android:focusable="true">
 
+            <ImageView
+                android:id="@+id/playPauseIndicator"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                app:srcCompat="@drawable/play"
+                android:contentDescription="Play/Pause" />
+        </FrameLayout>
+
+        <!-- 5. Next Song Button -->
+        <LinearLayout
+            android:id="@+id/btnTransportNextContainer"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.2"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
+            android:background="@drawable/transport_btn_bg"
+            android:clickable="true"
+            android:focusable="true">
+
+            <adco.helixsongview.customviews.MyMaterialSimpleTextView
+                android:id="@+id/btnTransportNextTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:gravity="end|center_vertical"
+                android:textSize="12sp"
+                tools:text="Next Song" />
+
+            <ImageView
+                android:id="@+id/btnTransportNextArrow"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/arrow_right"
+                android:contentDescription="Next" />
+        </LinearLayout>
     </LinearLayout>
 
     <Space
         android:id="@+id/batterySpace"
-        android:layout_width="12dp"
+        android:layout_width="8dp"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/batteryholder"
@@ -338,7 +348,6 @@
         android:id="@+id/batteryholder"
         android:layout_width="?attr/actionBarSize"
         android:layout_height="?attr/actionBarSize"
-        android:gravity="center_vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -389,4 +398,4 @@
             app:layout_constraintVertical_weight="0.5"
             tools:text="12:00" />
     </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.constraintlayout.widget.ConstraintLayout><!--</com.google.android.material.appbar.MaterialToolbar>-->
+</androidx.constraintlayout.widget.ConstraintLayout>
