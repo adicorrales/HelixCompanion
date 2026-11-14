@@ -655,18 +655,6 @@ public class PerformanceGestures {
                 recyclerView != null && recyclerView.getVisibility() == View.VISIBLE) {
             int newPosition = getPosition(scrollDown);
 
-            if (mainActivityInterface.getSong().getFiletype().equals("PDF")) {
-                mainActivityInterface.getSong().setPdfPageCurrent(newPosition);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
-                        recyclerView.getAdapter() != null) {
-                    try {
-                        ((PDFPageAdapter) recyclerView.getAdapter()).clickOnSection(newPosition);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
 
         } else if ((mainActivityInterface.getMode().equals(c.getString(R.string.mode_performance)) ||
                 mainActivityInterface.getMode().equals(c.getString(R.string.mode_hybrid))) &&
