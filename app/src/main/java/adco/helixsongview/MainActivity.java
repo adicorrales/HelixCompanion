@@ -94,8 +94,6 @@ import adco.helixsongview.controls.PedalActions;
 import adco.helixsongview.controls.PedalsFragment;
 import adco.helixsongview.controls.SwipeFragment;
 import adco.helixsongview.controls.Swipes;
-import adco.helixsongview.customslides.CustomSlide;
-import adco.helixsongview.customslides.CustomSlideFragment;
 import adco.helixsongview.customviews.ExposedDropDown;
 import adco.helixsongview.customviews.MyExtendedFloatingActionButton;
 import adco.helixsongview.customviews.MyMaterialButton;
@@ -238,7 +236,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private ConvertWord convertWord;
     private CurrentSet currentSet;
     private CustomAnimation customAnimation;
-    private CustomSlide customSlide;
     private DisplayPrevNext displayPrevNext;
     private ExportActions exportActions;
     private FixLocale fixLocale;
@@ -905,7 +902,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
         // Other file actions
         exportActions = getExportActions();
-        customSlide = getCustomSlide();
         abcNotation = getAbcNotation();
 
         // Webserver (for displaying song over html server)
@@ -3353,13 +3349,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
 
 
-    @Override
-    public CustomSlide getCustomSlide() {
-        if (customSlide == null) {
-            customSlide = new CustomSlide(this);
-        }
-        return customSlide;
-    }
+
 
     @Override
     public void doSongLoad(String folder, String filename, boolean closeDrawer) {
@@ -4483,13 +4473,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         return screenshotFile;
     }
 
-    @Override
-    public boolean validScreenShotFile() {
-        if (screenshotFile == null) {
-            getScreenshotFile();
-        }
-        return screenshotFile.exists() && screenshotFile.length() > 0;
-    }
 
     @Override
     public ABCNotation getAbcNotation() {
@@ -4828,9 +4811,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                         break;
                     case "songActionsMenuFragment":
                         ((SongActionsMenuFragment) fragment).doDuplicate(value);
-                        break;
-                    case "CustomSlideFragment":
-                        ((CustomSlideFragment) fragment).getReusable(value);
                         break;
                     case "StorageManagementFragment":
                         if (whattodo.equals("newfolder")) {
