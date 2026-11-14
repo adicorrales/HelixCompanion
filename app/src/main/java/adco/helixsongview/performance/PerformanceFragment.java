@@ -30,8 +30,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import adco.helixsongview.R;
-import adco.helixsongview.abcnotation.ABCPopup;
-import adco.helixsongview.abcnotation.InlineAbcObject;
 import adco.helixsongview.appdata.AlertInfoBottomSheet;
 import adco.helixsongview.controls.GestureListener;
 import adco.helixsongview.customslides.ImageSlideAdapter;
@@ -51,7 +49,6 @@ public class PerformanceFragment extends Fragment {
 
     @SuppressWarnings({"FieldCanBeLocal","unused"})
     private final String TAG = "PerformanceFragment";
-    private ABCPopup abcPopup;
     private Bitmap.Config bmpFormat = Bitmap.Config.ARGB_8888;
     private MainActivityInterface mainActivityInterface;
     private DisplayInterface displayInterface;
@@ -284,7 +281,6 @@ public class PerformanceFragment extends Fragment {
     // Getting the preferences and helpers ready
     private void initialiseHelpers() {
         if (getContext() != null) {
-              abcPopup = new ABCPopup(getContext());
             mainActivityInterface.getPerformanceGestures().setZoomLayout(myView.zoomLayout);
             mainActivityInterface.getPerformanceGestures().setRecyclerView(myView.recyclerView);
             //myView.recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
@@ -1148,19 +1144,6 @@ public class PerformanceFragment extends Fragment {
                 for (int x = 0; x < mainActivityInterface.getSectionViews().size(); x++) {
                     int width = mainActivityInterface.getSectionViews().get(x).getWidth();
                     int height = mainActivityInterface.getSectionViews().get(x).getHeight();
-                    if (mainActivityInterface.getAbcNotation().countInlineAbcObjects()>0) {
-                        // Get the extra webView height for any webview in this section
-                        for (InlineAbcObject inlineAbcObject:mainActivityInterface.getAbcNotation().getInlineAbcObjects()) {
-                            if (inlineAbcObject.getAbcContainingItem()==x && inlineAbcObject.getAbcHeight()>1) {
-                                // The inlineAbcWebView was hidden, so had no size
-                                // We are going to switch on the ImageView and need to size this to what the webView reported
-                                inlineAbcObject.drawTheImageView(inlineAbcObject.getInlineAbcImageView(false));
-                                // To make the scroll work properly, adjust the size
-                                height = height + inlineAbcObject.getAbcHeight();
-                                width = Math.max(width,inlineAbcObject.getAbcWidth());
-                            }
-                        }
-                    }
                     mainActivityInterface.addSectionSize(x, width, height);
                 }
 
@@ -1544,17 +1527,14 @@ public class PerformanceFragment extends Fragment {
     }
     public void dealWithAbc(boolean forceShow, boolean hide) {
         if (hide) {
-            if (abcPopup!=null) {
-                abcPopup.closeScore();
-            }
+
         } else {
             if ((mainActivityInterface != null && mainActivityInterface.getSong() != null &&
                     mainActivityInterface.getSong().getAbc() != null &&
                     !mainActivityInterface.getSong().getAbc().trim().isEmpty() &&
                     (mainActivityInterface.getPreferences().
                             getMyPreferenceBoolean("abcAuto", false)) || forceShow)) {
-                // This is called from the MainActivity when we clicked on the page button
-                abcPopup.floatABC(myView.pageHolder, forceShow);
+
             }
         }
     }
