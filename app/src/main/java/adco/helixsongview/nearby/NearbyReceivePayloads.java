@@ -331,7 +331,6 @@ public class NearbyReceivePayloads {
                 } else {
                     mainActivityInterface.getSong().setCurrentSection(nearbyJson.getSection());
                 }
-                nearbyReturnActionsInterface.selectSection(nearbyJson.getSection());
             }
         }
     }

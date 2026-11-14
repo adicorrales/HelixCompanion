@@ -154,10 +154,6 @@ public class PerformanceFragment extends Fragment {
 
 
         myView = null;
-
-        // If we had the BeatBuddy popup open, close that too
-        mainActivityInterface.forceCloseBeatBuddyControlPopUp();
-
         super.onDestroyView();
     }
 
@@ -1410,8 +1406,6 @@ public class PerformanceFragment extends Fragment {
                         }, delay);
                     }
 
-                    // Update the BeatBuddyControlPopUp (if visible)
-                    mainActivityInterface.updateBeatBuddyControlPopUp();
                 }
             }
 

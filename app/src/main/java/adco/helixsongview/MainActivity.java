@@ -2974,11 +2974,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         }
     }
 
-
-    @Override
-    public void toggleHighlighter() {}
-
-
     // Capo
     @Override
     public void dealWithCapo() {
@@ -4741,20 +4736,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     }
 
     @Override
-    public void selectSection(int i) {
-        // Only do this if we are not in a settings fragment
-        if (!settingsOpen) {
-            if (performanceValid()) {
-                performanceFragment.selectSection(i);
-                performanceShowSection(i);
-            }
-            updateDisplay("showSection");
-        } else {
-            getNearbyActions().getNearbyReceivePayloads().setPendingSection(i);
-        }
-    }
-
-    @Override
     public void loadSong(boolean updateSongMenu) {
         // If we are not in a settings window, load the song
         // Otherwise it will happen when the user closes the settings fragments
@@ -5132,16 +5113,5 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             performanceFragment.performanceShowSection(position);
         }
     }
-
-    @Override
-    public void toggleBeatBuddyControlPopUp() {}
-
-    @Override
-    public void forceCloseBeatBuddyControlPopUp() {}
-
-    @Override
-    public void updateBeatBuddyControlPopUp() {}
-
-
 
 }

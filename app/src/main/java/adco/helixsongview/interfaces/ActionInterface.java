@@ -12,7 +12,6 @@ public interface ActionInterface {
     Preferences getPreferences();
     void navigateToFragment(String deepLink, int id);
 
-    default void toggleHighlighter() {}
     void onBackPressed();
 
     FragmentManager getMyFragmentManager();

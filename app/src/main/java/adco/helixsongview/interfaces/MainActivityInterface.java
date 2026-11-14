@@ -279,9 +279,6 @@ public interface MainActivityInterface {
     void sendHelixSetMidi(int setIdx);
     void sendHelixMidiSetAndSong(int setIdx, int songPosition);
     void resetLastSentMidiSetIdx();
-    void toggleBeatBuddyControlPopUp();
-    void forceCloseBeatBuddyControlPopUp();
-    void updateBeatBuddyControlPopUp();
 
     // Database
     SQLiteHelper getSQLiteHelper();
