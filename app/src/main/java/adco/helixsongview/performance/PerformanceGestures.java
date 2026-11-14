@@ -203,9 +203,6 @@ public class PerformanceGestures {
             case "previous":
                 prevSong();
                 break;
-            case "randomsong":
-                randomSong();
-                break;
             case "scrollmenuup":
                 mainActivityInterface.scrollOpenMenu(false);
                 break;
@@ -275,12 +272,6 @@ public class PerformanceGestures {
                 break;
             case "autoscalesettings":
                 editAutoscale();
-                break;
-            case "pdfpage":
-                pdfPage();
-                break;
-            case "invertpdf":
-                invertPDF();
                 break;
             case "fonts":
                 editFonts();
@@ -721,10 +712,6 @@ public class PerformanceGestures {
             mainActivityInterface.getSong().setFiletype(mainActivityInterface.getStorageAccess().tryToFixFileTypeFromNull(mainActivityInterface.getSong().getFilename()));
         }
 
-        if (mainActivityInterface.getSong().getFiletype().equals("PDF")) {
-            currentPosition = mainActivityInterface.getSong().getPdfPageCurrent();
-            finalPosition = mainActivityInterface.getSong().getPdfPageCount() - 1;
-        }
         return getNewPosition(scrollDown, currentPosition, finalPosition);
     }
 
@@ -933,14 +920,6 @@ public class PerformanceGestures {
         mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().doTempDiscover();
     }
 
-    // PDF page chooser
-    public void pdfPage() {
-        if (ifPDFAndAllowed()) {
-            PDFPageBottomSheet pdfPageBottomSheet = new PDFPageBottomSheet();
-            pdfPageBottomSheet.show(actionInterface.getMyFragmentManager(),"PDFPageBottomSheet");
-        }
-    }
-
     // Open the theme chooser
     public void editTheme() {
         mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_theme),0);
@@ -1025,12 +1004,6 @@ public class PerformanceGestures {
         mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_import),0);
     }
 
-    public void invertPDF() {
-        if (ifPDFAllowed()) {
-            mainActivityInterface.getMyThemeColors().setInvertPDF(!mainActivityInterface.getMyThemeColors().getInvertPDF());
-            mainActivityInterface.navHome();
-        }
-    }
 
     public void shareSong() {
         mainActivityInterface.setWhattodo("exportSong");
@@ -1199,26 +1172,6 @@ public class PerformanceGestures {
     private void updatePresenterSettings(boolean setLogoOn, boolean setBlackscreenOn, boolean setBlankscreenOn) {}
 
     // The checks
-    private boolean ifPDFAndAllowed() {
-        if (mainActivityInterface.getSong().getFiletype()==null) {
-            mainActivityInterface.getSong().setFiletype(mainActivityInterface.getStorageAccess().tryToFixFileTypeFromNull(mainActivityInterface.getSong().getFilename()));
-        }
-
-        if (mainActivityInterface.getSong().getFiletype().equals("PDF")) {
-            if (ifPDFAllowed()) {
-                return true;
-            } else {
-                mainActivityInterface.getShowToast().doIt(c.getString(R.string.not_allowed));
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
-
-    private boolean ifPDFAllowed() {
-        return Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP;
-    }
     private boolean isMidiAllowed() {
         return Build.VERSION.SDK_INT>=Build.VERSION_CODES.M;
     }

@@ -37,7 +37,6 @@ import adco.helixsongview.customviews.RecyclerLayoutManager;
 import adco.helixsongview.databinding.ModePerformanceBinding;
 import adco.helixsongview.interfaces.DisplayInterface;
 import adco.helixsongview.interfaces.MainActivityInterface;
-import adco.helixsongview.pdf.PDFPageAdapter;
 import adco.helixsongview.songprocessing.Song;
 
 
@@ -72,7 +71,6 @@ public class PerformanceFragment extends Fragment {
     private ModePerformanceBinding myView;
     private Animation animSlideIn, animSlideOut;
     private GestureDetector gestureDetector;
-    private PDFPageAdapter pdfPageAdapter;
     private ImageSlideAdapter imageSlideAdapter;
 
     private RecyclerLayoutManager recyclerLayoutManager;
@@ -626,7 +624,6 @@ public class PerformanceFragment extends Fragment {
                         mainActivityInterface.setScreenshotFile(null);
 
                         mainActivityInterface.getSong().setCurrentSection(0);
-                        mainActivityInterface.getSong().setPdfPageCurrent(0);
 
                         if (mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().sendAsHost()) {
                             // Only the first (with no delay) and last (with delay) of a long sequence of song changes is actually sent
@@ -786,18 +783,14 @@ public class PerformanceFragment extends Fragment {
 
             // Depending on what we are doing, create the content.
             // Options are
-            // - PDF        PDF file. Use the recyclerView (not inside zoomLayout).  All sizes from image representations of pages
             // - IMG        Image file.  Use the imageView (inside pageHolder, inside zoomLayout).  All sizes from the bitmap file.
-            // - **Image    Custom image slide (multiple images).  Same as PDF
+            // - **Image    Custom image slide (multiple images).
             // - XML        OpenSong song.  Views need to be drawn and measured. Stage mode uses recyclerView, Performance, the pageHolder
 
             // Reset the recycler view to vertical by default
             if (recyclerLayoutManager!=null) {
                 recyclerLayoutManager.setOrientation(RecyclerLayoutManager.VERTICAL);
             }
-
-            // Set as not using pdfLandscape by default
-            mainActivityInterface.getGestures().setPdfLandscapeView(false);
 
             if (mainActivityInterface.getSong()!=null && mainActivityInterface.getSong().getFiletype()==null) {
                 mainActivityInterface.getSong().setFiletype(mainActivityInterface.getStorageAccess().tryToFixFileTypeFromNull(mainActivityInterface.getSong().getFilename()));
@@ -807,19 +800,13 @@ public class PerformanceFragment extends Fragment {
                     mainActivityInterface.getSong().getFiletype() != null &&
                     mainActivityInterface.getSong().getFolder() != null) {
 
-                if (mainActivityInterface.getSong().getFiletype().equals("PDF") &&
-                        android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                    preparePDFView();
-
-                } else if (mainActivityInterface.getSong().getFiletype().equals("IMG")) {
+                if (mainActivityInterface.getSong().getFiletype().equals("IMG")) {
                     prepareIMGView();
 
                 } else if (mainActivityInterface.getSong().getFolder().contains("**Image")) {
                     prepareSlideImageView();
 
-                } else if (mainActivityInterface.getSong().getFiletype().equals("XML") ||
-                        (mainActivityInterface.getSong().getFiletype().equals("PDF") &&
-                                android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.LOLLIPOP)) {
+                } else if (mainActivityInterface.getSong().getFiletype().equals("XML")) {
                     prepareXMLView();
                 } else {
                     endProcessing();
@@ -827,63 +814,7 @@ public class PerformanceFragment extends Fragment {
             }
         }
     }
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private void preparePDFView() {
-        // If we can't deal with a PDF (old Android), it will default to the info from the database as XML
-        // We populate the recyclerView with the pages of the PDF
-        myView.recyclerView.setVisibility(View.INVISIBLE);
-        myView.pageHolder.setVisibility(View.GONE);
-        myView.songView.setVisibility(View.GONE);
-        myView.zoomLayout.setVisibility(View.GONE);
 
-        if (mainActivityInterface.getPreferences().getMyPreferenceBoolean("pdfLandscapeView",true) &&
-                mainActivityInterface.getPreferences().getMyPreferenceString("songAutoScale", "Y").equals("Y") &&
-                mainActivityInterface.getOrientation() == Configuration.ORIENTATION_LANDSCAPE &&
-                recyclerLayoutManager!=null) {
-            recyclerLayoutManager.setOrientation(RecyclerLayoutManager.HORIZONTAL);
-            // We can't allow swiping to move songs - set a record of this mode
-            mainActivityInterface.getGestures().setPdfLandscapeView(true);
-        } else if (recyclerLayoutManager!=null) {
-            recyclerLayoutManager.setOrientation(RecyclerLayoutManager.VERTICAL);
-            mainActivityInterface.getGestures().setPdfLandscapeView(false);
-        }
-
-        if (getContext()!=null) {
-            pdfPageAdapter = new PDFPageAdapter(getContext(), mainActivityInterface, displayInterface,
-                    availableWidth, availableHeight, myView.inlineSetList.getInlineSetWidth());
-        }
-
-        myView.recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                if (myView!=null && myView.recyclerView.getViewTreeObserver()!=null) {
-                    myView.recyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    float scale = pdfPageAdapter.getPdfHorizontalScale();
-                    widthBeforeScale = pdfPageAdapter.getWidth();
-                    widthAfterScale = widthBeforeScale;
-                    heightBeforeScale = pdfPageAdapter.getHeight();
-                    heightAfterScale = heightBeforeScale;
-                    recyclerLayoutManager.setSizes(pdfPageAdapter.getWidths(), pdfPageAdapter.getHeights(), availableWidth, availableHeight, scale);
-                    myView.recyclerView.setPadding(myView.inlineSetList.getInlineSetWidth(), 0, 0, 0);
-                    myView.recyclerView.setMaxScrollY(heightAfterScale - availableHeight);
-                    //IV - Reset zoom
-                    myView.recyclerView.toggleScale();
-
-
-                    // Do the slide in
-                    myView.recyclerView.setVisibility(View.VISIBLE);
-                    myView.recyclerView.startAnimation(animSlideIn);
-
-                    // Get a null screenshot
-                    getScreenshot(0, 0, 0);
-
-                    // Deal with song actions to run after display (highlighter, notes, etc)
-                    dealWithStuffAfterReady(true);
-                }
-            }
-        });
-        myView.recyclerView.setAdapter(pdfPageAdapter);
-    }
     private void prepareIMGView() {
         // We use the imageView inside the pageHolder, inside the zoomLayout
         myView.recyclerView.setVisibility(View.GONE);
@@ -1013,11 +944,6 @@ public class PerformanceFragment extends Fragment {
     private void prepareXMLView() {
         if (mainActivityInterface.getSong().getFiletype()==null) {
             mainActivityInterface.getSong().setFiletype(mainActivityInterface.getStorageAccess().tryToFixFileTypeFromNull(mainActivityInterface.getSong().getFilename()));
-        }
-        // If we are old Android and can't show a pdf, tell the user
-        if (mainActivityInterface.getSong().getFiletype().equals("PDF") &&
-                android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.LOLLIPOP) {
-            mainActivityInterface.getShowToast().doIt(not_allowed);
         }
 
         mainActivityInterface.setSectionViews(null);
@@ -1161,11 +1087,7 @@ public class PerformanceFragment extends Fragment {
                         if (mainActivityInterface.getSong().getFiletype()==null) {
                             mainActivityInterface.getSong().setFiletype(mainActivityInterface.getStorageAccess().tryToFixFileTypeFromNull(mainActivityInterface.getSong().getFilename()));
                         }
-                        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP &&
-                                mainActivityInterface.getSong().getFiletype().equals("PDF")) {
-                            pdfPageAdapter = new PDFPageAdapter(getContext(), mainActivityInterface,
-                                    displayInterface, availableWidth, availableHeight, myView.inlineSetList.getInlineSetWidth());
-                        }
+
                     }
 
                     myView.recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -1174,13 +1096,7 @@ public class PerformanceFragment extends Fragment {
                             if (myView!=null) {
                                 myView.recyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
 
-                                if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP &&
-                                        mainActivityInterface.getSong().getFiletype().equals("PDF")) {
-                                    widthBeforeScale = pdfPageAdapter.getWidth();
-                                    widthAfterScale = widthBeforeScale;
-                                    heightBeforeScale = pdfPageAdapter.getHeight();
-                                    heightAfterScale = heightBeforeScale;
-                               }
+
                                 myView.recyclerView.setHasFixedSize(false);
                                 myView.recyclerView.setMaxScrollY(heightAfterScale - availableHeight);
                                 myView.recyclerView.setPadding(myView.inlineSetList.getInlineSetWidth(), 0, 0, 0);
@@ -1207,17 +1123,7 @@ public class PerformanceFragment extends Fragment {
                             }
                         }
                     });
-                    myView.recyclerView.post(() -> {
-                        try {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
-                                    mainActivityInterface.getSong().getFiletype().equals("PDF")) {
-                                myView.recyclerView.setAdapter(pdfPageAdapter);
-                            }
-                        } catch (Exception e) {
-                            mainActivityInterface.getStorageAccess().updateCrashLog(e.toString());
-                            e.printStackTrace();
-                        }
-                    });
+
 
                 } else {
                     // We are in Performance mode, so use the songView
@@ -1687,26 +1593,6 @@ public class PerformanceFragment extends Fragment {
             }
         }
     }
-    public void toggleHighlighter() {
-        Log.d(TAG,"toggleHighlighter()");
-        if (myView!=null) {
-            if (mainActivityInterface.getMode().equals(mode_performance) ||
-                    mainActivityInterface.getMode().equals(mode_hybrid)) {
-                if (mainActivityInterface.getSong().getFiletype()!=null &&
-                    mainActivityInterface.getSong().getFiletype().equals("PDF") &&
-                    pdfPageAdapter!=null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    // Notify the pdfAdapter that the highlighter should be toggled
-                    pdfPageAdapter.toggleHighlighter();
-                } else if (myView.highlighterView.getVisibility() == View.VISIBLE) {
-                    myView.highlighterView.setVisibility(View.GONE);
-                } else {
-                    myView.highlighterView.setVisibility(View.VISIBLE);
-                }
-            }
-        }
-    }
-
-
 
     // The scale and gesture bits of the code
     @SuppressLint("ClickableViewAccessibility")
@@ -1790,22 +1676,9 @@ public class PerformanceFragment extends Fragment {
         if (!alreadyChoosingSections) {
             alreadyChoosingSections = true;
             // Scroll the recyclerView to the position as long as we aren't in an autoscroll or in hybrid mode
-            if (myView != null && recyclerLayoutManager != null && !mainActivityInterface.getMode().equals(mode_hybrid) &&
-                    (
-                            (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && pdfPageAdapter !=null && pdfPageAdapter.getItemCount() > position)) &&
-                    position >= 0) {
-                if (!mainActivityInterface.getAutoscroll().getIsAutoscrolling()) {
-                        myView.recyclerView.doSmoothScrollTo(recyclerLayoutManager, position);
-                }
-                 try {
-                    displayInterface.updateDisplay("showSection");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                mainActivityInterface.getHotZones().checkScrollButtonOn(myView.zoomLayout, myView.recyclerView);
+            if (myView != null && recyclerLayoutManager != null) {
+                mainActivityInterface.getMode();
             }
-
-
         }
         // Allow scroll to section in 500ms
         mainActivityInterface.getMainHandler().postDelayed(() -> alreadyChoosingSections = false, 500);
@@ -1817,13 +1690,6 @@ public class PerformanceFragment extends Fragment {
             mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().hasValidConnections()) {
             if (mainActivityInterface.getSong().getFiletype()==null) {
                 mainActivityInterface.getSong().setFiletype(mainActivityInterface.getStorageAccess().tryToFixFileTypeFromNull(mainActivityInterface.getSong().getFilename()));
-            }
-            if (mainActivityInterface.getSong().getFiletype().equals("PDF") &&
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
-                    pdfPageAdapter!=null && pdfPageAdapter.getItemCount()>position && position>=0) {
-                pdfPageAdapter.sectionSelected(position);
-                pdfPageAdapter.clickOnSection(position);
-                performanceShowSection(position);
             }
         }
     }
