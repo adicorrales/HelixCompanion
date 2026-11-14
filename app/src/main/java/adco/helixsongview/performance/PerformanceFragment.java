@@ -39,7 +39,6 @@ import adco.helixsongview.customviews.RecyclerLayoutManager;
 import adco.helixsongview.databinding.ModePerformanceBinding;
 import adco.helixsongview.interfaces.DisplayInterface;
 import adco.helixsongview.interfaces.MainActivityInterface;
-import adco.helixsongview.nearby.NearbyAlertPopUp;
 import adco.helixsongview.pdf.PDFPageAdapter;
 import adco.helixsongview.songprocessing.Song;
 import adco.helixsongview.stage.StageSectionAdapter;
@@ -52,7 +51,6 @@ public class PerformanceFragment extends Fragment {
 
     @SuppressWarnings({"FieldCanBeLocal","unused"})
     private final String TAG = "PerformanceFragment";
-    private NearbyAlertPopUp nearbyAlertPopUp;
     private ABCPopup abcPopup;
     private Bitmap.Config bmpFormat = Bitmap.Config.ARGB_8888;
     private MainActivityInterface mainActivityInterface;
@@ -159,18 +157,9 @@ public class PerformanceFragment extends Fragment {
         if (mainActivityInterface!=null) {
         }
 
-        try {
-            nearbyAlertPopUp.closeSticky();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            nearbyAlertPopUp.destroyPopup();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
         myView = null;
-        nearbyAlertPopUp = null;
+
         // If we had the BeatBuddy popup open, close that too
         mainActivityInterface.forceCloseBeatBuddyControlPopUp();
 
@@ -295,8 +284,7 @@ public class PerformanceFragment extends Fragment {
     // Getting the preferences and helpers ready
     private void initialiseHelpers() {
         if (getContext() != null) {
-            nearbyAlertPopUp = new NearbyAlertPopUp(getContext());
-            abcPopup = new ABCPopup(getContext());
+              abcPopup = new ABCPopup(getContext());
             mainActivityInterface.getPerformanceGestures().setZoomLayout(myView.zoomLayout);
             mainActivityInterface.getPerformanceGestures().setRecyclerView(myView.recyclerView);
             //myView.recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
@@ -1750,13 +1738,7 @@ public class PerformanceFragment extends Fragment {
         }
     }
 
-    public void showNearbyAlertPopUp(String message) {
-        // Clear any existing popup
-        nearbyAlertPopUp.destroyPopup();
 
-        // Show the new one
-        nearbyAlertPopUp.floatSticky(myView.pageHolder,message);
-    }
 
     // The scale and gesture bits of the code
     @SuppressLint("ClickableViewAccessibility")

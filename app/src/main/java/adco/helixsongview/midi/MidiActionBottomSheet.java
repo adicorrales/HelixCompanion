@@ -51,8 +51,6 @@ public class MidiActionBottomSheet extends BottomSheetCommon {
 
         myView.currentCode.setHint(mainActivityInterface.getMidi().getMidiAction(1));
 
-        setViews();
-        setListeners();
 
         return myView.getRoot();
     }
@@ -67,39 +65,7 @@ public class MidiActionBottomSheet extends BottomSheetCommon {
         }
     }
 
-    private void setViews() {
-        myView.nearbyMessageMIDIAction.setChecked(mainActivityInterface.getNearbyActions().getNearbyMessages().getNearbyMessageMIDIAction());
-        myView.nearbyMessage.setText(nearby_message_string+" "+which);
-        myView.nearbyMessage.setHint(mainActivityInterface.getNearbyActions().getNearbyMessages().getNearbyMessage(which));
-        myView.nearbyMessage.setVisibility(mainActivityInterface.getNearbyActions().getNearbyMessages().getNearbyMessageMIDIAction() ? View.VISIBLE:View.GONE);
-    }
-    private void setListeners() {
-        myView.nearbyMessageMIDIAction.setOnCheckedChangeListener((compoundButton, b) -> {
-            mainActivityInterface.getNearbyActions().getNearbyMessages().setNearbyMessageMIDIAction(b);
-            myView.nearbyMessage.setText(mainActivityInterface.getNearbyActions().getNearbyMessages().getNearbyMessage(which));
-            myView.nearbyMessage.setVisibility(b ? View.VISIBLE:View.GONE);
-        });
-        myView.nearbyMessage.setOnClickListener(view -> {
-            TextInputBottomSheet textInputBottomSheet = new TextInputBottomSheet(
-                    MidiActionBottomSheet.this,"MidiActionBS",
-                    nearby_message_string + " " + which, nearby_message_string + " " + which,
-                    null,null,null,true);
-            textInputBottomSheet.show(mainActivityInterface.getMyFragmentManager(),"TextInputBottomSheet");
-        });
-        myView.action1.setOnClickListener(new MyOnClick(1));
-        myView.action2.setOnClickListener(new MyOnClick(2));
-        myView.action3.setOnClickListener(new MyOnClick(3));
-        myView.action4.setOnClickListener(new MyOnClick(4));
-        myView.action5.setOnClickListener(new MyOnClick(5));
-        myView.action6.setOnClickListener(new MyOnClick(6));
-        myView.action7.setOnClickListener(new MyOnClick(7));
-        myView.action8.setOnClickListener(new MyOnClick(8));
 
-        myView.editMidi.setOnClickListener(view -> {
-            MidiShortHandBottomSheet midiShortHandBottomSheet = new MidiShortHandBottomSheet(null,MidiActionBottomSheet.this,"MidiActionBottomSheet",null,currentCode);
-            midiShortHandBottomSheet.show(mainActivityInterface.getMyFragmentManager(),"MidiShortHandBottomSheet");
-        });
-    }
 
     private void setWhich(int which) {
         this.which = which;
@@ -163,7 +129,6 @@ public class MidiActionBottomSheet extends BottomSheetCommon {
             currentCode = mainActivityInterface.getMidi().getMidiAction(whichButton);
             myView.currentCode.setHint(currentCode);
             myView.nearbyMessage.setText(nearby_message_string+" "+whichButton);
-            myView.nearbyMessage.setHint(mainActivityInterface.getNearbyActions().getNearbyMessages().getNearbyMessage(whichButton));
         }
     }
 
@@ -175,12 +140,5 @@ public class MidiActionBottomSheet extends BottomSheetCommon {
         myView.currentCode.setHint(mainActivityInterface.getMidi().getMidiAction(which));
     }
 
-    public void updateMessage(String message) {
-        // Received from the TextInputBottomSheet via the MainActivity
-        if (message!=null && which!=-1) {
-            // Update the preference
-            mainActivityInterface.getNearbyActions().getNearbyMessages().setNearbyMessage(which,message);
-            myView.nearbyMessage.setHint(message);
-        }
-    }
+
 }

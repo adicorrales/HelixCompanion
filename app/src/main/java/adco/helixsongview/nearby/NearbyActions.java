@@ -11,7 +11,6 @@ public class NearbyActions {
     private NearbySendPayloads nearbySendPayloads;
     private NearbyReceivePayloads nearbyReceivePayloads;
     private NearbyTransferRecords nearbyTransferRecords;
-    private NearbyMessages nearbyMessages;
     private SyncNearbyFragment syncNearbyFragment = null;
     private NearbyLogs nearbyLogs;
 
@@ -30,8 +29,6 @@ public class NearbyActions {
     public String autoscrollStart = "___autoscrollstart___";
     public String autoscrollStop = "___autoscrollstop___";
     public String autoscrollDecrease = "___autoscrolldecrease___";
-    public String metronomeStart = "___metronomestart___";
-    public String metronomeStop = "___metronomestop___";
 
     // Song section identifiers in bytes payloads
     public String sectionTag = "___section___";
@@ -70,7 +67,6 @@ public class NearbyActions {
         getNearbyReceivePayloads();
         getNearbyLogs();
         getNearbyTransferRecords();
-        getNearbyMessages();
     }
 
     public NearbyLogs getNearbyLogs() {
@@ -102,12 +98,6 @@ public class NearbyActions {
             nearbyTransferRecords = new NearbyTransferRecords(c);
         }
         return nearbyTransferRecords;
-    }
-    public NearbyMessages getNearbyMessages() {
-        if (nearbyMessages == null) {
-            nearbyMessages = new NearbyMessages(c);
-        }
-        return nearbyMessages;
     }
 
     // Deal with synchronising devices

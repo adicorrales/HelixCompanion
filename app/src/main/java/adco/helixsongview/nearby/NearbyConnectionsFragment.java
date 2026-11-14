@@ -189,23 +189,6 @@ public class NearbyConnectionsFragment extends Fragment {
         myView.bottomSheet.receiveScroll.setChecked(mainActivityInterface.getNearbyActions().getNearbyReceivePayloads().getNearbyReceiveHostScroll());
         myView.bottomSheet.matchToPDFSong.setChecked(mainActivityInterface.getNearbyActions().getNearbyReceivePayloads().getNearbyMatchToPDFSong());
 
-        myView.bottomSheet.nearbyMessage1.setText(nearby_message_string+" 1");
-        myView.bottomSheet.nearbyMessage2.setText(nearby_message_string+" 2");
-        myView.bottomSheet.nearbyMessage3.setText(nearby_message_string+" 3");
-        myView.bottomSheet.nearbyMessage4.setText(nearby_message_string+" 4");
-        myView.bottomSheet.nearbyMessage5.setText(nearby_message_string+" 5");
-        myView.bottomSheet.nearbyMessage6.setText(nearby_message_string+" 6");
-        myView.bottomSheet.nearbyMessage7.setText(nearby_message_string+" 7");
-        myView.bottomSheet.nearbyMessage8.setText(nearby_message_string+" 8");
-
-        myView.bottomSheet.nearbyMessage1.setHint(mainActivityInterface.getNearbyActions().getNearbyMessages().getNearbyMessage(1));
-        myView.bottomSheet.nearbyMessage2.setHint(mainActivityInterface.getNearbyActions().getNearbyMessages().getNearbyMessage(2));
-        myView.bottomSheet.nearbyMessage3.setHint(mainActivityInterface.getNearbyActions().getNearbyMessages().getNearbyMessage(3));
-        myView.bottomSheet.nearbyMessage4.setHint(mainActivityInterface.getNearbyActions().getNearbyMessages().getNearbyMessage(4));
-        myView.bottomSheet.nearbyMessage5.setHint(mainActivityInterface.getNearbyActions().getNearbyMessages().getNearbyMessage(5));
-        myView.bottomSheet.nearbyMessage6.setHint(mainActivityInterface.getNearbyActions().getNearbyMessages().getNearbyMessage(6));
-        myView.bottomSheet.nearbyMessage7.setHint(mainActivityInterface.getNearbyActions().getNearbyMessages().getNearbyMessage(7));
-        myView.bottomSheet.nearbyMessage8.setHint(mainActivityInterface.getNearbyActions().getNearbyMessages().getNearbyMessage(8));
 
         myView.bottomSheet.nearbyMessageSticky.setChecked(mainActivityInterface.getNearbyActions().getNearbyReceivePayloads().getNearbyMessageSticky());
         // Show any connection log
@@ -506,43 +489,7 @@ public class NearbyConnectionsFragment extends Fragment {
                 nearby_message_string+" " + editMessageNum,null,null,null,true);
         textInputBottomSheet.show(mainActivityInterface.getMyFragmentManager(),"TextInputBottomSheet");
     }
-    public void updateMessage(String message) {
-        // Received from the TextInputBottomSheet via the MainActivity
-        if (message!=null && editMessageNum!=-1) {
-            // Update the preference
-            mainActivityInterface.getNearbyActions().getNearbyMessages().setNearbyMessage(editMessageNum,message);
 
-            switch (editMessageNum) {
-                case 1:
-                    myView.bottomSheet.nearbyMessage1.setHint(message);
-                    break;
-                case 2:
-                    myView.bottomSheet.nearbyMessage2.setHint(message);
-                    break;
-                case 3:
-                    myView.bottomSheet.nearbyMessage3.setHint(message);
-                    break;
-                case 4:
-                    myView.bottomSheet.nearbyMessage4.setHint(message);
-                    break;
-                case 5:
-                    myView.bottomSheet.nearbyMessage5.setHint(message);
-                    break;
-                case 6:
-                    myView.bottomSheet.nearbyMessage6.setHint(message);
-                    break;
-                case 7:
-                    myView.bottomSheet.nearbyMessage7.setHint(message);
-                    break;
-                case 8:
-                    myView.bottomSheet.nearbyMessage8.setHint(message);
-                    break;
-            }
-
-            // Reset the edit message number
-            editMessageNum = -1;
-        }
-    }
 
     private void doAdvertiseAction() {
         // Stop advertising/discovering if we were already doing that

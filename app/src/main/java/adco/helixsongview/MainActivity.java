@@ -125,7 +125,6 @@ import adco.helixsongview.justchords.ConvertJustChords;
 import adco.helixsongview.justchords.JustChordsObject;
 import adco.helixsongview.links.LinksFragment;
 import adco.helixsongview.midi.Midi;
-import adco.helixsongview.midi.MidiActionBottomSheet;
 import adco.helixsongview.midi.MidiFragment;
 import adco.helixsongview.nearby.NearbyActions;
 import adco.helixsongview.nearby.NearbyConnectionsFragment;
@@ -1948,12 +1947,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         }
     }
 
-    @Override
-    public void showNearbyAlertPopUp(String message) {
-        if (performanceValid()) {
-            performanceFragment.showNearbyAlertPopUp(message);
-        }
-    }
 
     // Instructions sent from fragments for MainActivity to deal with
     @Override
@@ -3473,19 +3466,25 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
                 // CC51:0: ensure Helix is paused before changing playlist (so CC51 later loads cued song)
                 String msgPause = "MIDI" + channel + ":CC51:0";
-                getMidi().sendMidi(getMidi().returnBytesFromHexText(msgPause));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    getMidi().sendMidi(getMidi().returnBytesFromHexText(msgPause));
+                }
                 try {
                     Thread.sleep(200);
                 } catch (InterruptedException ignored) {}
 
                 // CC63: select playlist (cues first song)
-                getMidi().sendMidi(getMidi().returnBytesFromHexText(msgSet));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    getMidi().sendMidi(getMidi().returnBytesFromHexText(msgSet));
+                }
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException ignored) {}
 
                 // CC51:127: start playback / load cued song (CC63 already cued song 0)
-                getMidi().sendMidi(getMidi().returnBytesFromHexText(msgPlay));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    getMidi().sendMidi(getMidi().returnBytesFromHexText(msgPlay));
+                }
                 try {
                     Thread.sleep(300);
                 } catch (InterruptedException ignored) {}
@@ -3496,7 +3495,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                         Thread.sleep(300);
                     } catch (InterruptedException ignored) {}
                     lastSentMidiSongPos = targetSong;
-                    getMidi().sendMidi(getMidi().returnBytesFromHexText(msgTargetSong));
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        getMidi().sendMidi(getMidi().returnBytesFromHexText(msgTargetSong));
+                    }
 
                     // target song is now in cue (not loaded/playing)
                     isPlaying = false;
@@ -3524,7 +3525,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             } else {
                 // Same playlist: send CC10 for target song directly (placed in cue)
                 lastSentMidiSongPos = targetSong;
-                getMidi().sendMidi(getMidi().returnBytesFromHexText(msgTargetSong));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    getMidi().sendMidi(getMidi().returnBytesFromHexText(msgTargetSong));
+                }
 
                 isPlaying = false;
                 transportClickCount = 0;
@@ -4860,12 +4863,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     case "BulkTagAssignFragmentRename":
                         ((BulkTagAssignFragment) fragment).renameTag(value);
                         break;
-                    case "NearbyMessages":
-                        ((NearbyConnectionsFragment) fragment).updateMessage(value);
-                        break;
-                    case "MidiActionBS":
-                        ((MidiActionBottomSheet) fragment).updateMessage(value);
-                        break;
+
                 }
             } catch (Exception e) {
                 e.printStackTrace();

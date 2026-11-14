@@ -68,34 +68,15 @@ public class NearbySendPayloads {
         }
     }
     // Send nearbyMessages
-    public void sendMessage(int which) {
-        NearbyJson nearbyJson = new NearbyJson();
-        nearbyJson.setWhat(nearbyActions.messageTag);
-        String message = nearbyActions.getNearbyMessages().getNearbyMessage(which);
-        nearbyJson.setMessage(message);
 
-        // Show the message on this screen
-        if (nearbyActions.getNearbyReceivePayloads().getNearbyMessageSticky()) {
-            mainActivityInterface.showNearbyAlertPopUp(message);
-        } else {
-            mainActivityInterface.getShowToast().doIt(message);
-        }
-
-        // Send as a payload
-        sendToConnected(Payload.fromBytes(MainActivity.gson.toJson(nearbyJson).getBytes()));
-    }
     public void sendWebServerMessage(int which) {
         NearbyJson nearbyJson = new NearbyJson();
         nearbyJson.setWhat(nearbyActions.messageTag);
         String message = mainActivityInterface.getWebServer().getWebServerMessage(which);
         nearbyJson.setMessage(message);
 
-        // Show the message on this screen
-        if (nearbyActions.getNearbyReceivePayloads().getNearbyMessageSticky()) {
-            mainActivityInterface.showNearbyAlertPopUp(message);
-        } else {
             mainActivityInterface.getShowToast().doIt(message);
-        }
+
 
         // Send as a payload
         sendToConnected(Payload.fromBytes(MainActivity.gson.toJson(nearbyJson).getBytes()));
