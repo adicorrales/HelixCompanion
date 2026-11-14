@@ -41,7 +41,7 @@ import adco.helixsongview.interfaces.DisplayInterface;
 import adco.helixsongview.interfaces.MainActivityInterface;
 import adco.helixsongview.pdf.PDFPageAdapter;
 import adco.helixsongview.songprocessing.Song;
-import adco.helixsongview.stage.StageSectionAdapter;
+
 
 import org.apache.commons.io.FileUtils;
 
@@ -77,7 +77,7 @@ public class PerformanceFragment extends Fragment {
     private GestureDetector gestureDetector;
     private PDFPageAdapter pdfPageAdapter;
     private ImageSlideAdapter imageSlideAdapter;
-    private StageSectionAdapter stageSectionAdapter;
+
     private RecyclerLayoutManager recyclerLayoutManager;
     private final Handler dealWithExtraStuffOnceSettledHandler = new Handler(Looper.getMainLooper());
     private final Runnable dealWithExtraStuffOnceSettledRunnable = this::dealWithExtraStuffOnceSettled;
@@ -1182,9 +1182,6 @@ public class PerformanceFragment extends Fragment {
                                 mainActivityInterface.getSong().getFiletype().equals("PDF")) {
                             pdfPageAdapter = new PDFPageAdapter(getContext(), mainActivityInterface,
                                     displayInterface, availableWidth, availableHeight, myView.inlineSetList.getInlineSetWidth());
-                        } else {
-                            stageSectionAdapter = new StageSectionAdapter(getContext(), mainActivityInterface,
-                                    displayInterface, myView.inlineSetList.getInlineSetWidth());
                         }
                     }
 
@@ -1200,14 +1197,7 @@ public class PerformanceFragment extends Fragment {
                                     widthAfterScale = widthBeforeScale;
                                     heightBeforeScale = pdfPageAdapter.getHeight();
                                     heightAfterScale = heightBeforeScale;
-                                    recyclerLayoutManager.setSizes(stageSectionAdapter.getWidths(), pdfPageAdapter.getHeights(), availableWidth, availableHeight, 1f);
-                                } else {
-                                    widthBeforeScale = stageSectionAdapter.getWidth();
-                                    widthAfterScale = widthBeforeScale;
-                                    heightBeforeScale = stageSectionAdapter.getHeight();
-                                    heightAfterScale = heightBeforeScale;
-                                    recyclerLayoutManager.setSizes(stageSectionAdapter.getWidths(), stageSectionAdapter.getHeights(), availableWidth, availableHeight, 1f);
-                                }
+                               }
                                 myView.recyclerView.setHasFixedSize(false);
                                 myView.recyclerView.setMaxScrollY(heightAfterScale - availableHeight);
                                 myView.recyclerView.setPadding(myView.inlineSetList.getInlineSetWidth(), 0, 0, 0);
@@ -1239,8 +1229,6 @@ public class PerformanceFragment extends Fragment {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
                                     mainActivityInterface.getSong().getFiletype().equals("PDF")) {
                                 myView.recyclerView.setAdapter(pdfPageAdapter);
-                            } else if (!mainActivityInterface.getSong().getFiletype().equals("PDF")) {
-                                myView.recyclerView.setAdapter(stageSectionAdapter);
                             }
                         } catch (Exception e) {
                             mainActivityInterface.getStorageAccess().updateCrashLog(e.toString());
@@ -1823,16 +1811,11 @@ public class PerformanceFragment extends Fragment {
             alreadyChoosingSections = true;
             // Scroll the recyclerView to the position as long as we aren't in an autoscroll or in hybrid mode
             if (myView != null && recyclerLayoutManager != null && !mainActivityInterface.getMode().equals(mode_hybrid) &&
-                    ((stageSectionAdapter != null && stageSectionAdapter.getItemCount() > position) ||
+                    (
                             (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && pdfPageAdapter !=null && pdfPageAdapter.getItemCount() > position)) &&
                     position >= 0) {
                 if (!mainActivityInterface.getAutoscroll().getIsAutoscrolling()) {
-                    // IV - Use a snap to top scroller if scrolling to the top of the screen
-                    if (mainActivityInterface.getPreferences().getMyPreferenceFloat("stageModeScale", 0.8f) == 1.0f) {
-                        myView.recyclerView.smoothScrollTo(getContext(), recyclerLayoutManager, position);
-                    } else {
                         myView.recyclerView.doSmoothScrollTo(recyclerLayoutManager, position);
-                    }
                 }
                  try {
                     displayInterface.updateDisplay("showSection");
@@ -1861,13 +1844,6 @@ public class PerformanceFragment extends Fragment {
                 pdfPageAdapter.sectionSelected(position);
                 pdfPageAdapter.clickOnSection(position);
                 performanceShowSection(position);
-            } else if (mainActivityInterface.getMode().equals(mode_stage)) {
-                mainActivityInterface.getMainHandler().postDelayed(() -> {
-                    if (stageSectionAdapter != null && stageSectionAdapter.getItemCount() > position && position >= 0 && myView != null) {
-                        stageSectionAdapter.clickOnSection(position);
-                        performanceShowSection(position);
-                    }
-                }, 50);
             }
         }
     }

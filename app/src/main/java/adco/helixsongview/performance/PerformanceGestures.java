@@ -28,7 +28,7 @@ import adco.helixsongview.pads.PadsBottomSheet;
 import adco.helixsongview.pdf.PDFPageAdapter;
 import adco.helixsongview.pdf.PDFPageBottomSheet;
 import adco.helixsongview.songmenu.RandomSongBottomSheet;
-import adco.helixsongview.stage.StageSectionAdapter;
+
 
 
 import java.util.ArrayList;
@@ -672,15 +672,6 @@ public class PerformanceGestures {
                         recyclerView.getAdapter() != null) {
                     try {
                         ((PDFPageAdapter) recyclerView.getAdapter()).clickOnSection(newPosition);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            } else {
-                mainActivityInterface.getSong().setCurrentSection(newPosition);
-                if (recyclerView.getAdapter() != null) {
-                    try {
-                        ((StageSectionAdapter) recyclerView.getAdapter()).clickOnSection(newPosition);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
