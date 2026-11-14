@@ -160,10 +160,7 @@ public class MyToolbar extends Toolbar {
             songandauthor.setOnClickListener(v1 -> openDetails());
         }
         if (btnTransportPlayContainer != null) {
-            btnTransportPlayContainer.setOnClickListener(v1 -> {
-                mainActivityInterface.onTransportPlay();
-                openDetails();
-            });
+            btnTransportPlayContainer.setOnClickListener(v1 -> mainActivityInterface.onTransportPlay());
         }
         if (btnTransportNextContainer != null) {
             btnTransportNextContainer.setOnClickListener(v1 -> mainActivityInterface.onTransportNext());
