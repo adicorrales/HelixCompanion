@@ -14,12 +14,10 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import adco.helixsongview.R;
-import adco.helixsongview.customviews.ExposedDropDownArrayAdapter;
 import adco.helixsongview.customviews.MyMaterialSimpleTextView;
 import adco.helixsongview.databinding.EditSongTagsBinding;
 import adco.helixsongview.interfaces.EditSongFragmentInterface;
 import adco.helixsongview.interfaces.MainActivityInterface;
-import adco.helixsongview.tags.TagsBottomSheet;
 
 import java.util.ArrayList;
 
@@ -30,7 +28,6 @@ public class EditSongFragmentTags extends Fragment {
     private final String TAG = "EditSongTags";
     private EditSongFragmentInterface editSongFragmentInterface;
     private EditSongTagsBinding myView;
-    private TagsBottomSheet tagsBottomSheet;
     private PresentationOrderBottomSheet presentationOrderBottomSheet;
     private String search_index_wait_string="", midi_channel_string="";
 
@@ -77,7 +74,6 @@ public class EditSongFragmentTags extends Fragment {
 
     private void setupValues() {
         if (mainActivityInterface.getTempSong()!=null) {
-            tagsBottomSheet = new TagsBottomSheet(this, "EditSongFragmentTags");
             presentationOrderBottomSheet = new PresentationOrderBottomSheet(this, "EditSongFragmentTags");
             mainActivityInterface.getMainHandler().post(() -> {
                 if (myView!=null) {
@@ -105,11 +101,7 @@ public class EditSongFragmentTags extends Fragment {
     private void setupListeners() {
         myView.tags.setOnClickListener(v -> {
             // Only allow if indexing is complete
-            if (mainActivityInterface.getSongListBuildIndex().getIndexComplete()) {
-                if (!tagsBottomSheet.isAdded() && getActivity()!=null) {
-                    tagsBottomSheet.show(getActivity().getSupportFragmentManager(), "ThemesBottomSheet");
-                }
-            } else {
+
                 String progressText = "";
                 if (mainActivityInterface.getSongMenuFragment()!=null) {
                     MyMaterialSimpleTextView progressView = mainActivityInterface.getSongMenuFragment().getProgressText();
@@ -118,7 +110,7 @@ public class EditSongFragmentTags extends Fragment {
                     }
                 }
                 mainActivityInterface.getShowToast().doIt(search_index_wait_string+progressText);
-            }
+
 
         });
         myView.presorder.setOnClickListener(v -> {
@@ -297,8 +289,6 @@ public class EditSongFragmentTags extends Fragment {
                     mainActivityInterface.getSaveSong().updateSong(thisSong,false);
                 }
             }
-            // Update the array adapter in the bottom sheet fragment
-            tagsBottomSheet.deleteTags(position);
         }
 
         mainActivityInterface.getTempSong().

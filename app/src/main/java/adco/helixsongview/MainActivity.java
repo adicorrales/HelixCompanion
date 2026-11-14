@@ -170,7 +170,6 @@ import adco.helixsongview.sqlite.AnalyticsSQLiteHelper;
 import adco.helixsongview.sqlite.CommonSQL;
 import adco.helixsongview.sqlite.NonOpenSongSQLiteHelper;
 import adco.helixsongview.sqlite.SQLiteHelper;
-import adco.helixsongview.tags.BulkTagAssignFragment;
 import adco.helixsongview.variations.Variations;
 import adco.helixsongview.webserver.LocalWiFiHost;
 import adco.helixsongview.webserver.WebServer;
@@ -4819,13 +4818,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                             ((StorageManagementFragment) fragment).renameFolder(value);
                         }
                         break;
-                    case "BulkTagAssignFragment":
-                        ((BulkTagAssignFragment) fragment).addNewTag(value);
-                        break;
-                    case "BulkTagAssignFragmentRename":
-                        ((BulkTagAssignFragment) fragment).renameTag(value);
-                        break;
-
                 }
             } catch (Exception e) {
                 e.printStackTrace();
