@@ -11,11 +11,10 @@ import adco.helixsongview.songprocessing.Song;
 public interface ActionInterface {
     Preferences getPreferences();
     void navigateToFragment(String deepLink, int id);
-    default void showSticky(boolean forceShow, boolean hide) {}
-    void showAbc(boolean forceShow, boolean hide);
+
     default void toggleHighlighter() {}
     void onBackPressed();
-    default void drummerToggle() {}
+
     FragmentManager getMyFragmentManager();
     CurrentSet getCurrentSet();
     Song getSong();

@@ -29,8 +29,6 @@ import adco.helixsongview.pdf.PDFPageAdapter;
 import adco.helixsongview.pdf.PDFPageBottomSheet;
 import adco.helixsongview.songmenu.RandomSongBottomSheet;
 
-
-
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -749,17 +747,6 @@ public class PerformanceGestures {
         return newPosition;
     }
 
-    // Find a random song
-    public void randomSong() {
-        RandomSongBottomSheet randomSongBottomSheet;
-        if (mainActivityInterface.getShowSetMenu()) {
-            randomSongBottomSheet = new RandomSongBottomSheet("set");
-        } else {
-            randomSongBottomSheet = new RandomSongBottomSheet("song");
-        }
-        randomSongBottomSheet.show(mainActivityInterface.getMyFragmentManager(), "randomSongBottomSheet");
-    }
-
     // Transpose the chords
     public void transpose() {
         TransposeBottomSheet transposeBottomSheet = new TransposeBottomSheet(false);
@@ -876,48 +863,9 @@ public class PerformanceGestures {
         mainActivityInterface.selectFile(intent);
     }
 
-    // Show the multitrack player
-
-    // Show the webServerMessages
+     // Show the webServerMessages
     public void webServerMessages() {
         mainActivityInterface.openWebServerMessages();
-    }
-
-    // Show the abc notation
-    public void showABCNotation() {
-        actionInterface.showAbc(true, false);
-    }
-
-    // Abc notation settings
-    public void abcEdit() {
-        mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_abc),0);
-    }
-
-    // Show the highlighter notes
-    public void showHighlight() {
-        actionInterface.toggleHighlighter();
-    }
-
-    // Highlighter edit
-    public void highlighterEdit() {
-        if (mainActivityInterface.getSong().getFiletype()==null) {
-            mainActivityInterface.getSong().setFiletype(mainActivityInterface.getStorageAccess().tryToFixFileTypeFromNull(mainActivityInterface.getSong().getFilename()));
-        }
-
-        if (ifPDFAndAllowed() || !mainActivityInterface.getSong().getFiletype().equals("PDF")) {
-            actionInterface.navigateToFragment(c.getString(R.string.deeplink_highlighter), 0);
-        }
-    }
-
-    // Show the song sticky notes
-    public void showSticky() {
-        // Toggle the force show (hide is for moving away from performace/stage mode)
-        actionInterface.showSticky(true,false);
-    }
-
-    // Sticky notes settings
-    public void stickySettings() {
-        actionInterface.navigateToFragment(c.getString(R.string.deeplink_sticky_notes),0);
     }
 
     // Curly brackets

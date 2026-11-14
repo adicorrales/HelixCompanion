@@ -1247,11 +1247,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 // Hide the keyboard
                 windowFlags.hideKeyboard();
 
-                // Hide the abc notes if required
-                showAbc(false, true);
 
-                // Hide the sticky notes if required
-                showSticky(false, true);
             }
 
             @Override
@@ -1267,11 +1263,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 if (performanceValid() && getAbcNotation().getAutoshowMusicScore() &&
                         getSong().getAbc() != null && !getSong().getAbc().isEmpty()) {
                     showAbc(true, false);
-                }
-
-                // Show the sticky notes if required
-                if (performanceValid()) {
-                    showSticky(false, false);
                 }
             }
 
@@ -2983,19 +2974,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         }
     }
 
-    @Override
-    public void showSticky(boolean forceShow, boolean hide) {}
 
     @Override
     public void toggleHighlighter() {}
-
-    @Override
-    public void drummerToggle() {}
-
-//    @Override
-//    public StickyNoteUtils getStickyNoteUtils() {
-//        return new StickyNoteUtils(this);
-//    }
 
 
     // Capo
