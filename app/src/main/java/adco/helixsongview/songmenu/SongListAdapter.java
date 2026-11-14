@@ -197,33 +197,34 @@ public class SongListAdapter extends RecyclerView.Adapter<SongItemViewHolder> {
                     final String setentryalt2 = mainActivityInterface.getSetActions().getSongForSetWork(itemFolder, itemFilename, "");
                     final String setentry = mainActivityInterface.getSetActions().getSongForSetWork(itemFolder, itemFilename, itemKey).replace("***null***", "******");
                     songItemViewHolder.itemCard.setOnClickListener(v -> {
+                        boolean inSet = false;
+                        String cbFolder = itemFolder;
+                        String cbFilename = itemFilename;
+                        String cbKey = itemKey;
                         if (!songItemViewHolder.itemChecked.isChecked()) {
-                            // Remove the indexSongInSet
+                            // Not checked -> not part of the set: no MIDI
                             mainActivityInterface.getCurrentSet().setIndexSongInSet(-1);
+                            inSet = false;
                         } else {
                             // Look for the song index based on the folder, filename and key of the song
                             mainActivityInterface.getSetActions().indexSongInSet(song);
-                            if (mainActivityInterface.getCurrentSet().getIndexSongInSet()>-1) {
+                            if (mainActivityInterface.getCurrentSet().getIndexSongInSet() > -1) {
                                 // Use the variation if required
                                 SetItemInfo setItemInfo = mainActivityInterface.getCurrentSet().getSetItemInfo(mainActivityInterface.getCurrentSet().getIndexSongInSet());
-                                song.setFilename(setItemInfo.songfilename);
-                                song.setFolder(setItemInfo.songfolder);
-                                song.setKey(setItemInfo.songkey);
-                                if (callback != null) {
-                                    callback.onItemClicked(position, setItemInfo.songfolder, setItemInfo.songfilename, setItemInfo.songkey, true);
-                                }
+                                cbFolder = setItemInfo.songfolder;
+                                cbFilename = setItemInfo.songfilename;
+                                cbKey = setItemInfo.songkey;
+                                inSet = true;
                             } else {
-                                if (callback != null) {
-                                    callback.onItemClicked(position, itemFolder, itemFilename, itemKey, false);
-                                }
+                                inSet = false;
                             }
                         }
-                        mainActivityInterface.notifySetFragment("highlight",-1);
+                        mainActivityInterface.notifySetFragment("highlight", -1);
                         song.setFilename(itemFilename);
                         song.setFolder(itemFolder);
                         song.setKey(itemKey);
                         if (callback != null) {
-                            callback.onItemClicked(position, itemFolder, itemFilename, itemKey,false);
+                            callback.onItemClicked(position, cbFolder, cbFilename, cbKey, inSet);
                         }
                     });
 
