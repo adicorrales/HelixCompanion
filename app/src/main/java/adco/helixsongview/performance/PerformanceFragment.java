@@ -462,6 +462,11 @@ public class PerformanceFragment extends Fragment {
     public void doSongLoad(String folder, String filename) {
         // Reset autoscale when loading a new song (especially first song after set change)
         scaleFactor = 1.0f;
+        try {
+            if (myView != null && myView.zoomLayout != null) {
+                myView.zoomLayout.resetLayout();
+            }
+        } catch (Exception ignored) {}
         processingTestView = false;
         // IV - Set a boolean indicating song change
         songChange = !mainActivityInterface.getSong().getFilename().equals(filename) ||

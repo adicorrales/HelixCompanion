@@ -47,6 +47,7 @@ public class SetActions {
     private final String folderExport = "Export";
     private final String folderImages = "Images";
     private final String TAG = "SetActions";
+    private static boolean cacheInitialized = false;
     private final String cache = "_cache";
     private final String customLocStart = "**";
     private final String customLocBasic = "../";
@@ -426,8 +427,14 @@ public class SetActions {
         String setString = getSetAsPreferenceString();
         mainActivityInterface.getCurrentSet().setSetCurrent(setString);
         mainActivityInterface.getCurrentSet().setSetCurrentBeforeEdits(setString);
-        //mainActivityInterface.updateSetList();
-        mainActivityInterface.updateSongList();
+        // Defer the song-list refresh so it doesn't block first-song display
+        mainActivityInterface.getMainHandler().postDelayed(() -> {
+            try {
+                mainActivityInterface.updateSongList();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }, 4000);
     }
 
     public ArrayList<String> getAllSets() {
@@ -820,15 +827,16 @@ public class SetActions {
         // If it is different, the app creates a variation of our song then transposes it
         // Any variations bundled in the set are extracted as variations here too
 
-        // First up, clear out our _cache folders after we remove any entries from the database
-        removeCacheItemsFromDB(folderScripture);
-        removeCacheItemsFromDB(folderSlides);
-        removeCacheItemsFromDB(folderNotes);
-        removeCacheItemsFromDB(folderImages);
-        removeCacheItemsFromDB(folderVariations);
-
-        // Create the cache directories again as we likely deleted them in SAF
-        mainActivityInterface.getStorageAccess().createOrCheckRootFolders(null);
+        // Only clear cache and recreate folders on first set load (not every set change)
+        if (!cacheInitialized) {
+            removeCacheItemsFromDB(folderScripture);
+            removeCacheItemsFromDB(folderSlides);
+            removeCacheItemsFromDB(folderNotes);
+            removeCacheItemsFromDB(folderImages);
+            removeCacheItemsFromDB(folderVariations);
+            mainActivityInterface.getStorageAccess().createOrCheckRootFolders(null);
+            cacheInitialized = true;
+        }
 
         // Prepare the set name
         mainActivityInterface.getCurrentSet().setSetCurrentLastName(setName);

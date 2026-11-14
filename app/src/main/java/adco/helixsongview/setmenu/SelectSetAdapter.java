@@ -199,14 +199,21 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
             }
 
             mainActivityInterface.getMainHandler().post(() -> {
-                mainActivityInterface.updateSetList();
                 if (mainActivityInterface.getCurrentSet().getCurrentSetSize() > 0) {
-                    mainActivityInterface.loadSongFromSet(0);
+                    if (mainActivityInterface.getPerformanceValid()) {
+                        // Fragment already exists: load directly, no double onCreateView
+                        mainActivityInterface.loadSongFromSet(0);
+                    } else {
+                        // Fragment will be created: let onCreateView handle the load
+                        mainActivityInterface.setWhattodo("pendingLoadSet");
+                    }
                     mainActivityInterface.navigateToFragment(null, R.id.performanceFragment);
                 } else {
                     mainActivityInterface.chooseMenu(true);
                     mainActivityInterface.sendHelixSetMidi(position);
                 }
+                // Defer set-list refresh so it doesn't block first-song display
+                mainActivityInterface.getMainHandler().postDelayed(mainActivityInterface::updateSetList, 3000);
             });
         });
     }

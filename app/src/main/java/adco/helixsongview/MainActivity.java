@@ -3551,8 +3551,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
                 if (getCurrentSet().getCurrentSetSize() > position) {
                     // Send Helix MIDI for Playlist (CC 63) and Song (CC 10 base 0) -> placed in cue
+                    // Run on a separate thread so it doesn't block song loading/display
                     int setIdx = getPreferences().getMyPreferenceInt("selectedSelectSetPosition", 0);
-                    sendHelixMidiSetAndSong(setIdx, position);
+                    getThreadPoolExecutor().execute(() -> sendHelixMidiSetAndSong(setIdx, position));
 
                     // Song is now in cue. 1st click on Play will load it, 2nd click will play.
                     transportClickCount = 0;
