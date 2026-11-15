@@ -46,48 +46,11 @@ public class ABCPopup {
     private InlineAbcWebView inlineAbcWebView;
     private View viewHolder;
 
-    public ABCPopup(Context c) {
+    public ABCPopup(Context c, MainActivityInterface mainActivityInterface) {
         this.c = c;
-        mainActivityInterface = (MainActivityInterface) c;
-        mainActivityInterface.getAbcNotation().setAbcPopup(this);
+        this.mainActivityInterface = mainActivityInterface;
     }
 
-    public void floatABC(View viewHolder, boolean forceShow) {
-        // Force show is if we manually clicked on the score page button
-        // If the popup is showing already, dismiss it
-        // This is called when a song is about to load
-        this.viewHolder = viewHolder;
-        if (popupWindow!=null && popupWindow.isShowing()) {
-            try {
-                popupWindow.dismiss();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            // If no score notes exist for the song, navigate to the edit score fragment
-        } else if (mainActivityInterface.getSong().getAbc()==null || mainActivityInterface.getSong().getAbc().isEmpty()) {
-            mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_abc),0);
-
-            // Let's display the popup music score
-        } else {
-            mainActivityInterface.getAbcNotation().prepareSongValues(mainActivityInterface.getSong());
-            // Set up the views
-            getPositionAndSize();
-            setupViews();
-            setListeners();
-            Log.d(TAG,"popUpWindow:"+popupWindow);
-            Log.d(TAG,"getting here in the PopUp");
-
-            Log.d(TAG,"showing, posX="+posX+"  posY="+posY);
-            // If we want to autohide the score, set a post delayed handler
-            // Not when we manually opened it though
-            if (!forceShow) {
-                dealWithAutohide();
-            }
-
-            // Deal with the moveable element (from the top bar)
-            setupDrag();
-        }
-    }
 
     @SuppressLint("SetJavaScriptEnabled")
     @SuppressWarnings("deprecation")
@@ -96,10 +59,6 @@ public class ABCPopup {
         // The popup
         popupWindow = new PopupWindow(c);
 
-        // Check if the user wants to autotranspose the abc to the song key.  If so do it
-        if (mainActivityInterface.getPreferences().getMyPreferenceBoolean("abcTransposeAuto", true)) {
-            mainActivityInterface.getAbcNotation().getABCTransposeFromSongKey();
-        }
 
         float[] splitColors = mainActivityInterface.getMyThemeColors().getAbcColorAndAlphaSplit();
 
@@ -158,7 +117,7 @@ public class ABCPopup {
         // Make it visible and touchable as the object hides the WebView in favour of the ImageView
         inlineAbcWebView = new InlineAbcWebView(c);
         inlineAbcWebView.setLayoutParams(new LinearLayout.LayoutParams(
-                mainActivityInterface.getAbcNotation().getAbcPopupScreenWidth(),
+                0,
                 LinearLayout.LayoutParams.WRAP_CONTENT));
         inlineAbcObject.setInlineAbcWebView(inlineAbcWebView);
         inlineAbcWebView.setVisibility(View.VISIBLE);

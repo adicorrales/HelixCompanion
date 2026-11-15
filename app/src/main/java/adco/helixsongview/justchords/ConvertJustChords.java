@@ -154,11 +154,7 @@ public class ConvertJustChords {
                 line = mainActivityInterface.getProcessSong().beautifyHeading(line);
                 line = line + ":";
             }
-            if (line.trim().startsWith(mainActivityInterface.getAbcNotation().getInlineAbcLineIndicator())) {
-                // This is inline abc notation, so convert that to abc notation
-                line = line.trim().replace(mainActivityInterface.getAbcNotation().getInlineAbcLineIndicator(),"");
-                line = abc_start + "\n" + line.replace("\\n","\n") + "\n" + abc_end;
-            }
+
             stringBuilder.append(line).append("\n");
         }
 
@@ -366,12 +362,6 @@ public class ConvertJustChords {
                 line = "[" + line.trim() + "]";
                 line = line.replace(":]", "]");
             }
-            // Make sure inline abc starts at the beginning of the line without a space
-            if (line.trim().startsWith(mainActivityInterface.getAbcNotation().getInlineAbcLineIndicator())) {
-                line = line.trim();
-                line = line.replace(mainActivityInterface.getAbcNotation().getInlineAbcLineIndicator()+" ",
-                        mainActivityInterface.getAbcNotation().getInlineAbcLineIndicator());
-            }
 
             stringBuilder.append(line).append("\n");
         }
@@ -388,7 +378,6 @@ public class ConvertJustChords {
         extractedBit = extractedBit.replace("\\n ", "\\n");
         extractedBit = extractedBit.replace(" \\n", "\\n");
         extractedBit = extractedBit.replace("\\n\\n","\\n");
-        extractedBit = mainActivityInterface.getAbcNotation().getInlineAbcLineIndicator() + extractedBit.trim();
         return extractedBit;
     }
 

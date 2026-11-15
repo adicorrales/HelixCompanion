@@ -20,10 +20,9 @@ public class ABCWebViewJSInterface {
     @JavascriptInterface
     public void returnSize(int webViewItem, int width, int height, String abcSvgText, boolean isPopup) {
         boolean isfinished = true;
-        if (isPopup) {
+        if (false) {
             // Is a popup window, so deal with that via the abcNotation fragment
             // We don't use the object arrays for inline objects
-            mainActivityInterface.getAbcNotation().allowPopupToContinue(width,height);
 
         } else {
             for (int x = 0; x < mainActivityInterface.getAbcNotation().countInlineAbcObjects(); x++) {

@@ -182,8 +182,7 @@ public class ProfileActions {
             // Some variables are initialised in the mainActivity (fonts and themes)
             mainActivityInterface.initialiseStartVariables();
 
-            mainActivityInterface.getAbcNotation().getUpdatedPreferences();
-            mainActivityInterface.getFixLocale().getUpdatedPreferences();
+             mainActivityInterface.getFixLocale().getUpdatedPreferences();
             mainActivityInterface.getAutoscroll().setupAutoscrollPreferences();
             mainActivityInterface.getGestures().getPreferences();
             mainActivityInterface.getHotZones().getPreferences();

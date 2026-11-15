@@ -35,7 +35,7 @@ public class ABCNotation {
     private final Context c;
     private ArrayList<InlineAbcObject> inlineAbcObjects = new ArrayList<>();
     private int secondaryInlineAbcObjectPosition = 0;
-    private ABCPopup abcPopup;
+
     private ExportFragment exportFragment;
 
     public ABCNotation(Context c) {
@@ -67,15 +67,8 @@ public class ABCNotation {
     }
 
     // If we need to update the popup, we need a reference to it
-    public void setAbcPopup(ABCPopup abcPopup) {
-        this.abcPopup = abcPopup;
-    }
 
-    public void allowPopupToContinue(int width, int height) {
-        if (abcPopup!=null) {
-            abcPopup.setMeasured(width, height);
-        }
-    }
+
     // This is set when a song is set for editing or displaying the Abc notation
     public void prepareSongValues(Song thisSong) {
         songTitle = thisSong.getTitle();
@@ -495,11 +488,6 @@ public class ABCNotation {
     public void setAbcInlineWidth(int abcInlineWidth) {
         this.abcInlineWidth = abcInlineWidth;
         mainActivityInterface.getPreferences().setMyPreferenceInt("abcInlineWidth",abcInlineWidth);
-    }
-    public void setPopupAbcReady(int width, int height) {
-        if (abcPopup != null) {
-            abcPopup.setMeasured(width,height);
-        }
     }
 
     public void resetInlineAbcObjects() {

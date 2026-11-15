@@ -39,14 +39,9 @@ public class InlineAbcObject {
         this.c = c;
         mainActivityInterface = (MainActivityInterface) c;
 
-        // If the abcInlineText is null, we use the songAbc as we must be editing or showing popup
-        if (abcInlineText==null) {
-            // Use the abcNotation version as it returns a basic start point if songAbc is null/empty
-            this.abcInlineText = mainActivityInterface.getAbcNotation().getSongAbc();
 
-        } else {
             this.abcInlineText = abcInlineText;
-        }
+
 
         this.abcContainingItem = abcContainingItem;
         inlineAbcWebView = new InlineAbcWebView(c);
@@ -106,10 +101,10 @@ public class InlineAbcObject {
         return abcMeasured;
     }
     public boolean getIsInline() {
-        return abcInlineText!=null && abcInlineText.trim().startsWith(mainActivityInterface.getAbcNotation().getInlineAbcLineIndicator());
+        return abcInlineText!=null && false;
     }
     public String getJSReadyAbcText() {
-        String jsReadyAbcText = abcInlineText.trim().replace(mainActivityInterface.getAbcNotation().getInlineAbcLineIndicator(),"");
+        String jsReadyAbcText = abcInlineText.trim().replace("","");
         jsReadyAbcText = jsReadyAbcText.replace("\\n", "__NEWLINE__");
         return Uri.encode(jsReadyAbcText, "UTF-8").replace("'", "&apos;");
     }
@@ -247,7 +242,7 @@ public class InlineAbcObject {
     public void updateContent() {
         inlineAbcWebView.post(() -> {
             if (getIsInline()) {
-                inlineAbcWebView.evaluateJavascript("javascript:setWidth(" + mainActivityInterface.getAbcNotation().getAbcInlineWidth() + ");", null);
+                inlineAbcWebView.evaluateJavascript("javascript:setWidth(" + "0" + ");", null);
                 inlineAbcWebView.evaluateJavascript("javascript:setWebView(" + abcItem + ");", null);
                 inlineAbcWebView.evaluateJavascript("javascript:setMainColor('" + mainActivityInterface.getMyThemeColors().getNonAlphaHexColorFromInt(mainActivityInterface.getMyThemeColors().getLyricsTextColor()) + "');", null);
                 inlineAbcWebView.evaluateJavascript("javascript:setChordColor('" + mainActivityInterface.getMyThemeColors().getNonAlphaHexColorFromInt(mainActivityInterface.getMyThemeColors().getLyricsChordsColor()) + "');", null);
@@ -255,7 +250,7 @@ public class InlineAbcObject {
 
             } else if (isPopup) {
                 // PopUp ABC window
-                inlineAbcWebView.evaluateJavascript("javascript:setWidth(" + mainActivityInterface.getAbcNotation().getAbcInlineWidth() + ");", null);
+                inlineAbcWebView.evaluateJavascript("javascript:setWidth(" +"0" + ");", null);
                 inlineAbcWebView.evaluateJavascript("javascript:setWebView(0);", null);
                 inlineAbcWebView.evaluateJavascript("javascript:setMainColor('"+mainActivityInterface.getMyThemeColors().getNonAlphaHexColorFromInt(mainActivityInterface.getMyThemeColors().getAbcPopupTextColor())+"');", null);
                 inlineAbcWebView.evaluateJavascript("javascript:setChordColor('"+mainActivityInterface.getMyThemeColors().getNonAlphaHexColorFromInt(mainActivityInterface.getMyThemeColors().getAbcPopupTextColor())+"');", null);
@@ -266,7 +261,7 @@ public class InlineAbcObject {
 
             } else {
                 // ABC editor fragment
-                inlineAbcWebView.evaluateJavascript("javascript:setWidth(" + mainActivityInterface.getAbcNotation().getAbcInlineWidth() + ");", null);
+                inlineAbcWebView.evaluateJavascript("javascript:setWidth(" + "0" + ");", null);
                 inlineAbcWebView.evaluateJavascript("javascript:setWebView(0);", null);
                 inlineAbcWebView.evaluateJavascript("javascript:setMainColor('#000000');", null);
                 inlineAbcWebView.evaluateJavascript("javascript:setChordColor('#000000');", null);
@@ -278,12 +273,12 @@ public class InlineAbcObject {
             inlineAbcWebView.evaluateJavascript("javascript:setIsPopup("+isPopup+");", null);
             inlineAbcWebView.evaluateJavascript("javascript:setResponsive('resize');", null);
             inlineAbcWebView.evaluateJavascript("javascript:updateABC('" + getJSReadyAbcText() + "');", null);
-            inlineAbcWebView.evaluateJavascript("javascript:setHideTab(" + !mainActivityInterface.getAbcNotation().getAbcIncludeTab() + ");", null);
-            inlineAbcWebView.evaluateJavascript("javascript:setTranspose(" + mainActivityInterface.getAbcNotation().getSongAbcTranspose() + ");", null);
-            inlineAbcWebView.evaluateJavascript("javascript:setInstrument('" + mainActivityInterface.getAbcNotation().getAbcIntrumentTabForABCJS() + "');", null);
-            String[] strings = mainActivityInterface.getAbcNotation().getAbcInstrumentTuningABCJS();
-            inlineAbcWebView.evaluateJavascript("javascript:setTuning('" + strings[6] + "','" + strings[5] + "','" + strings[4] + "','" + strings[3] + "','" + strings[2] + "','" + strings[1] + "');", null);
-            inlineAbcWebView.evaluateJavascript("javascript:setLabel('" + mainActivityInterface.getAbcNotation().getAbcInstrumentLabelABCJS() + "');", null);
+            inlineAbcWebView.evaluateJavascript("javascript:setHideTab(" +  ");", null);
+            inlineAbcWebView.evaluateJavascript("javascript:setTranspose(" +  ");", null);
+            inlineAbcWebView.evaluateJavascript("javascript:setInstrument('" +  "');", null);
+
+            inlineAbcWebView.evaluateJavascript("javascript:setTuning('" +  "','" +  "','" +  "','" +  "','" +  "','" +  "');", null);
+            inlineAbcWebView.evaluateJavascript("javascript:setLabel('" +  "');", null);
 
             inlineAbcWebView.evaluateJavascript("javascript:initEditor()", null);
         });

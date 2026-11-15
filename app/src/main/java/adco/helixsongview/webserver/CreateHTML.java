@@ -401,9 +401,6 @@ public class CreateHTML {
             string += "  }\n";
         }
 
-        if (song.getLyrics()!=null && song.getLyrics().contains(mainActivityInterface.getAbcNotation().getInlineAbcLineIndicator())) {
-            string += mainActivityInterface.getWebServer().getAbcJSFromAsset();
-        }
 
         string += "  function connect() {\n";
         string += "    dot = document.getElementById(\"status-dot\");\n";

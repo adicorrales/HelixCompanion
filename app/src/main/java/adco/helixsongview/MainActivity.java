@@ -343,12 +343,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             black_screen_info = "", project_panic = "", song_title = "", long_press = "", edit_song = "",
             song_sections_project = "", menu_song_info = "", menu_set_info = "", add_songs = "",
             song_actions = "", deeplink_preferences = "", song_string = "", set_string = "",
-            search_index_start = "", search_index_end = "", deeplink_metronome = "",
+            search_index_start = "", search_index_end = "",
             success = "", okay = "", pad_playback_info = "",
             no_suitable_application = "", indexing_string = "", deeplink_edit = "", cast_info_string = "",
             menu_showcase_info = "";
 
-    private String mode_presenter, mode_performance, mode_stage, mode_hybrid;
+    private String mode_presenter, mode_performance, mode_stage;
     private MenuItem menuScreenMirror, menuScreenHelp, menuSearch, menuSettings;
     private String webHelpAddress = null;
 
@@ -737,11 +737,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             set_string = getString(R.string.set);
             search_index_start = getString(R.string.index_songs_start);
             search_index_end = getString(R.string.index_songs_end);
-            deeplink_metronome = getString(R.string.deeplink_metronome);
             mode_presenter = getString(R.string.mode_presenter);
             mode_performance = getString(R.string.mode_performance);
             mode_stage = getString(R.string.mode_stage);
-            mode_hybrid = getString(R.string.mode_hybrid);
             success = getString(R.string.success);
             okay = getString(R.string.okay);
             pad_playback_info = getString(R.string.pad_playback_info);
@@ -869,8 +867,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         songSheetHeaders = getSongSheetHeaders();
         openChordsAPI = getOpenChordsAPI();
         transpose = getTranspose();
-        abcNotation = getAbcNotation();
-
         song = getSong();
         variations = getVariations();
 
@@ -899,7 +895,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
         // Other file actions
         exportActions = getExportActions();
-        abcNotation = getAbcNotation();
 
         // Webserver (for displaying song over html server)
         webServer = getWebServer();
@@ -1257,11 +1252,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 // Hide the keyboard
                 windowFlags.hideKeyboard();
 
-                // Show the abc notes if required
-                if (performanceValid() && getAbcNotation().getAutoshowMusicScore() &&
-                        getSong().getAbc() != null && !getSong().getAbc().isEmpty()) {
-                    showAbc(true, false);
-                }
             }
 
             @Override

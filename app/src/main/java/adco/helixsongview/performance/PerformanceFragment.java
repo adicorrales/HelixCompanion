@@ -520,11 +520,7 @@ public class PerformanceFragment extends Fragment {
                     // Remove capo
                     mainActivityInterface.updateOnScreenInfo("capoHide");
 
-                    // Clear any reference to existing abcObjects
-                    mainActivityInterface.getAbcNotation().resetInlineAbcObjects();
-                    mainActivityInterface.getAbcNotation().setAbcWebViewsDrawn(false);
-
-                    // Stop any autoscroll if required, but not if it was activated
+                                       // Stop any autoscroll if required, but not if it was activated
                     boolean autoScrollActivated = mainActivityInterface.getAutoscroll().getAutoscrollActivated();
                     mainActivityInterface.getAutoscroll().stopAutoscroll();
                     if (mainActivityInterface.getAutoscroll().getAutoscrollAutoStart()) {
@@ -1036,10 +1032,10 @@ public class PerformanceFragment extends Fragment {
                         }
                     }
                     if (isReady) {
-                        if (mainActivityInterface.getAbcNotation().countInlineAbcObjects()==0) {
-                            songIsReadyToDisplay();
-                        }
+                        // ABC removed: display as soon as views are ready (delay to allow measurement)
+                        mainActivityInterface.getMainHandler().postDelayed(this::songIsReadyToDisplay, 300);
                     }
+
                 },100);
 
                 // Add the view.  The post above gets called once drawn
@@ -1311,15 +1307,7 @@ public class PerformanceFragment extends Fragment {
         // Show the audio recorder if we requested it from the settings menu
         mainActivityInterface.displayAudioRecorder();
 
-        // Load up the abc notation if the user wants them
-        if (!mainActivityInterface.getProcessSong().getHasAbcOffOverride(mainActivityInterface.getSong()) &&
-                (mainActivityInterface.getAbcNotation().getAutoshowMusicScore() ||
-                        mainActivityInterface.getProcessSong().getHasAbcOnOverride(mainActivityInterface.getSong())) &&
-            mainActivityInterface.getSong().getAbc()!=null &&
-                !mainActivityInterface.getSong().getAbc().isEmpty()) {
-            dealWithAbc(mainActivityInterface.getAbcNotation().getAutoshowMusicScore() ||
-                    mainActivityInterface.getProcessSong().getHasAbcOnOverride(mainActivityInterface.getSong()), false);
-        }
+
 
         mainActivityInterface.moveToSongInSongMenu();
 

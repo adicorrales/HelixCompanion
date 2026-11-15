@@ -100,8 +100,7 @@ public class ExportFragment extends Fragment {
         super.onAttach(context);
         mainActivityInterface = (MainActivityInterface) context;
         mainActivityInterface.getSongSheetHeaders().setForExport(true);
-        mainActivityInterface.getAbcNotation().setExportFragment(this);
-    }
+      }
 
     @Nullable
     @Override
@@ -1233,10 +1232,7 @@ public class ExportFragment extends Fragment {
             thisSong.setLyrics(stringBuilder.toString());
         }
 
-        // Create the content for the section views.
-        // In case we have inline abc notation, reset those objects
-        mainActivityInterface.getAbcNotation().resetInlineAbcObjects();
-        mainActivityInterface.getAbcNotation().setAbcWebViewsDrawn(false);
+
 
         myView.hiddenSections.setBackgroundColor(Color.WHITE);
         mainActivityInterface.getMakePDF().setIsSetListPrinting(true);
@@ -1255,13 +1251,7 @@ public class ExportFragment extends Fragment {
                     myView.hiddenSections.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                     sectionsVTO.removeOnGlobalLayoutListener(this);
 
-                    // Proceed if we don't have inlineAbcObjects, or they have been measured
-                    // If there are inlineAbcObjects, we will hear back via the JSInterface that triggers abcFinished()
-                    Log.d(TAG,"inlineAbcObjects:"+mainActivityInterface.getAbcNotation().countInlineAbcObjects()+"  drawn:"+mainActivityInterface.getAbcNotation().getAbcWebViewsDrawn());
-                    if (mainActivityInterface.getAbcNotation().countInlineAbcObjects()==0 ||
-                                mainActivityInterface.getAbcNotation().getAbcWebViewsDrawn()) {
-                        measureSectionsAndContinue();
-                    }
+
                 }
             }
         });
@@ -1279,23 +1269,7 @@ public class ExportFragment extends Fragment {
             int width = view.getMeasuredWidth();
             int height = view.getMeasuredHeight();
             // If we have inlineAbcObjects, then fix these sections to use the ImageView version
-            if (mainActivityInterface.getAbcNotation().countInlineAbcObjects()>0) {
-                // Get the extra webView height for any webview in this section
-                for (InlineAbcObject inlineAbcObject:mainActivityInterface.getAbcNotation().getInlineAbcObjects()) {
-                    Log.d(TAG,"inlineAbcObject("+inlineAbcObject.getAbcItem()+")  containingItem("+inlineAbcObject.getAbcContainingItem()+")  size:"+inlineAbcObject.getAbcWidth()+"x"+inlineAbcObject.getAbcHeight());
-                    if (inlineAbcObject.getAbcContainingItem()==x && inlineAbcObject.getAbcHeight()>1) {
-                        // The inlineAbcWebView was hidden, so had no size
-                        // We are going to switch on the ImageView and need to size this to what the webView reported
-                        ImageView imageView = inlineAbcObject.getInlineAbcImageView(false);
-                        inlineAbcObject.drawTheImageView(imageView);
-                        imageView.setVisibility(View.VISIBLE);
-                        imageView.setBackgroundColor(Color.RED);
-                        // To make the scroll work properly, adjust the size
-                        height = height + inlineAbcObject.getAbcHeight();
-                        width = Math.max(width,inlineAbcObject.getAbcWidth());
-                    }
-                }
-            }
+
             sectionViewWidthsPDF.add(width);
             sectionViewHeightsPDF.add(height);
             if (width>maxWidth) {
@@ -1772,7 +1746,6 @@ public class ExportFragment extends Fragment {
     private void tidyOnClose() {
         try {
             if (mainActivityInterface!=null) {
-                mainActivityInterface.getAbcNotation().setExportFragment(null);
                 mainActivityInterface.getProcessSong().setPdfPrinting(false);
                 mainActivityInterface.getMakePDF().setIsSetListPrinting(false);
                 mainActivityInterface.getOpenSongSetBundle().setProgressText(null);

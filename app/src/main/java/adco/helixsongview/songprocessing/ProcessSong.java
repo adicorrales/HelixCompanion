@@ -581,8 +581,6 @@ public class ProcessSong {
                 type = "capoinfo";
             } else if (string.startsWith(";__")) {
                 type = "extra";
-            } else if (string.contains(mainActivityInterface.getAbcNotation().getInlineAbcLineIndicator())) {
-                type = "abc";
             } else if (string.length() > 4 && (string.indexOf("|") == 2 || string.indexOf("|") == 3)) {
                 // Used to do this by identifying type of string start or drum start
                 // Now just look for ;*| or ;**| where * is anything such as ;e | or ;BD|
@@ -635,9 +633,6 @@ public class ProcessSong {
                 break;
             case "heading":
                 what = "heading";
-                break;
-            case "abc":
-                what = "abc_notation";
                 break;
         }
         return what;
@@ -916,8 +911,6 @@ public class ProcessSong {
             return "chord";
         } else if (string.startsWith("˄")) {
             return "capoline";
-        } else if (string.startsWith(mainActivityInterface.getAbcNotation().getInlineAbcLineIndicator())) {
-            return "abc";
         } else if (string.startsWith(";") && string.contains("|")) {
             return "tab";
         } else if (string.startsWith(";")) {
@@ -997,9 +990,6 @@ public class ProcessSong {
                 if (!string.isEmpty()) {
                     string = string.substring(1);
                 }
-                break;
-            case "abc":
-                string = string.replace(mainActivityInterface.getAbcNotation().getInlineAbcLineIndicator(),"");
                 break;
             case "multilingual":
                 string = string.replace("ʡ","");
@@ -1150,7 +1140,7 @@ public class ProcessSong {
                         sb.append(fixWordStretch(lines[i])).append(groupline_string);
                     }
                 }
-            } else if (lines[i].startsWith(mainActivityInterface.getAbcNotation().getInlineAbcLineIndicator()) &&
+            } else if (false &&
                 displayChords) {
                 String newbit = "\n"+lines[i].trim()+"\n";
                 sb.append(newbit);
@@ -1180,7 +1170,7 @@ public class ProcessSong {
 
     private boolean shouldNextLineBeAdded(int nl, String[] lines, boolean incnormallyricline) {
         boolean isNlTabLine = nl < lines.length && lines[nl].startsWith(";") && lines[nl].contains("|") && lines[nl].indexOf("|")==3;
-        boolean isAbcLine = nl < lines.length && lines[nl].startsWith(mainActivityInterface.getAbcNotation().getInlineAbcLineIndicator());
+        boolean isAbcLine = false;
         if (incnormallyricline) {
             return (nl < lines.length && (lines[nl].startsWith(" ") && !lines[nl].trim().isEmpty() || (lines[nl].startsWith(";") && !isNlTabLine && !isAbcLine) ||
                     lines[nl].matches("\\d.*$")));
@@ -2279,10 +2269,6 @@ public class ProcessSong {
     int abcID = 0;
     public String lineTextHTML(Song thisSong, String linetype,
                                String string) {
-
-        if (string.startsWith(mainActivityInterface.getAbcNotation().getInlineAbcLineIndicator())) {
-            linetype = "abc";
-        }
 
         StringBuilder text = new StringBuilder();
 
