@@ -32,7 +32,7 @@ import com.bumptech.glide.request.RequestOptions;
 import adco.helixsongview.R;
 import adco.helixsongview.appdata.AlertInfoBottomSheet;
 import adco.helixsongview.controls.GestureListener;
-import adco.helixsongview.customslides.ImageSlideAdapter;
+//import adco.helixsongview.customslides.ImageSlideAdapter;
 import adco.helixsongview.customviews.RecyclerLayoutManager;
 import adco.helixsongview.databinding.ModePerformanceBinding;
 import adco.helixsongview.interfaces.DisplayInterface;
@@ -70,7 +70,7 @@ public class PerformanceFragment extends Fragment {
     private ModePerformanceBinding myView;
     private Animation animSlideIn, animSlideOut;
     private GestureDetector gestureDetector;
-    private ImageSlideAdapter imageSlideAdapter;
+//    private ImageSlideAdapter imageSlideAdapter;
 
     private RecyclerLayoutManager recyclerLayoutManager;
     private final Handler dealWithExtraStuffOnceSettledHandler = new Handler(Looper.getMainLooper());
@@ -878,15 +878,15 @@ public class PerformanceFragment extends Fragment {
         myView.songView.setVisibility(View.GONE);
         myView.zoomLayout.setVisibility(View.GONE);
         myView.recyclerView.setVisibility(View.INVISIBLE);
-        if (getContext()!=null) {
-            imageSlideAdapter = new ImageSlideAdapter(getContext(), mainActivityInterface, displayInterface,
-                    availableWidth, availableHeight);
-            try {
-                imageSlideAdapter.setInlineSetWidth(myView.inlineSetList.getInlineSetWidth());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+//        if (getContext()!=null) {
+//            imageSlideAdapter = new ImageSlideAdapter(getContext(), mainActivityInterface, displayInterface,
+//                    availableWidth, availableHeight);
+//            try {
+//                imageSlideAdapter.setInlineSetWidth(myView.inlineSetList.getInlineSetWidth());
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
 
         // If we have a time for each slide, set the song duration
         if (mainActivityInterface.getSong().getUser1()!=null && !mainActivityInterface.getSong().getUser1().isEmpty()) {
@@ -896,7 +896,7 @@ public class PerformanceFragment extends Fragment {
             } catch (Exception e) {
                 time = 0;
             }
-            mainActivityInterface.getSong().setAutoscrolllength(String.valueOf((time*imageSlideAdapter.getItemCount())));
+//            mainActivityInterface.getSong().setAutoscrolllength(String.valueOf((time*imageSlideAdapter.getItemCount())));
             mainActivityInterface.getSong().setAutoscrolldelay("0");
         }
 
@@ -904,11 +904,11 @@ public class PerformanceFragment extends Fragment {
             @Override
             public void onGlobalLayout() {
                 myView.recyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                widthBeforeScale = imageSlideAdapter.getWidth();
+//                widthBeforeScale = imageSlideAdapter.getWidth();
                 widthAfterScale = widthBeforeScale;
-                heightBeforeScale = imageSlideAdapter.getHeight();
+//                heightBeforeScale = imageSlideAdapter.getHeight();
                 heightAfterScale = heightBeforeScale;
-                recyclerLayoutManager.setSizes(imageSlideAdapter.getWidths(), imageSlideAdapter.getHeights(), availableWidth, availableHeight,1f);
+//                recyclerLayoutManager.setSizes(imageSlideAdapter.getWidths(), imageSlideAdapter.getHeights(), availableWidth, availableHeight,1f);
                 myView.recyclerView.setMaxScrollY(heightAfterScale - availableHeight);
                 //IV - Reset zoom
                 myView.recyclerView.toggleScale();
@@ -925,7 +925,7 @@ public class PerformanceFragment extends Fragment {
 
             }
         });
-        myView.recyclerView.setAdapter(imageSlideAdapter);
+//        myView.recyclerView.setAdapter(imageSlideAdapter);
 
     }
     private void prepareXMLView() {

@@ -496,18 +496,12 @@ public class SetActions {
             case "Notes":
                 icon = R.drawable.note_text;
                 break;
-            case "Scripture":
-                icon = R.drawable.bible;
-                break;
             case "Images":
                 icon = R.drawable.image;
                 break;
             case "Variations":
             case "Variation":
                 icon = R.drawable.xml;
-                break;
-            case "PDF":
-                icon = R.drawable.pdf;
                 break;
             case "Divider":
                 icon = R.drawable.divider;

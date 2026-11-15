@@ -208,13 +208,7 @@ public class PageButtons {
         // Song features
         prepareOption("?","--- " + c.getString(R.string.song_features) + " ---","","",R.drawable.help);
         prepareOption("pad",c.getString(R.string.pad),c.getString(R.string.start) + " / " + c.getString(R.string.stop),c.getString(R.string.settings),R.drawable.amplifier);
-        prepareOption("metronome",c.getString(R.string.metronome),c.getString(R.string.start) + " / " + c.getString(R.string.stop),c.getString(R.string.settings),R.drawable.metronome);
-        prepareOption("drummer",c.getString(R.string.drummer),c.getString(R.string.start) + " / " + c.getString(R.string.stop),c.getString(R.string.drummer_player),R.drawable.drummer);
-        prepareOption("drummer_player",c.getString(R.string.drummer_player),c.getString(R.string.open),c.getString(R.string.drummer)+ " " + c.getString(R.string.start) + " / " + c.getString(R.string.stop),R.drawable.drummer_player);
-        prepareOption("drummer_fill",c.getString(R.string.drummer_fill),c.getString(R.string.fill),c.getString(R.string.drummer_transition),R.drawable.drummer_fill);
-        prepareOption("drummer_transition",c.getString(R.string.drummer_transition),c.getString(R.string.transition),c.getString(R.string.drummer_fill),R.drawable.drummer_transition);
-        prepareOption("drummer_settings",c.getString(R.string.drummer_settings),c.getString(R.string.open),"",R.drawable.drummer_settings);
-        prepareOption("autoscroll",c.getString(R.string.autoscroll),c.getString(R.string.start) + " / " + c.getString(R.string.stop),c.getString(R.string.settings),R.drawable.autoscroll);
+         prepareOption("autoscroll",c.getString(R.string.autoscroll),c.getString(R.string.start) + " / " + c.getString(R.string.stop),c.getString(R.string.settings),R.drawable.autoscroll);
         prepareOption("pad_autoscroll",c.getString(R.string.pad) + " / " + c.getString(R.string.autoscroll),c.getString(R.string.start)+" / "+c.getString(R.string.stop),"",R.drawable.autoscroll_pad);
         prepareOption("pad_metronome",c.getString(R.string.pad) + " / " + c.getString(R.string.metronome),c.getString(R.string.start)+" / "+c.getString(R.string.stop),"",R.drawable.metronome_pad);
         prepareOption("autoscroll_metronome",c.getString(R.string.autoscroll) + " / " + c.getString(R.string.metronome),c.getString(R.string.start)+" / "+c.getString(R.string.stop),"",R.drawable.metronome_autoscroll);
@@ -249,8 +243,6 @@ public class PageButtons {
         prepareOption("curlybrackets",c.getString(R.string.curly_brackets_hide),c.getString(R.string.show) + " / " + c.getString(R.string.hide),"",R.drawable.curly_brackets);
         prepareOption("curlybracketsdevice",c.getString(R.string.curly_brackets_hide)+" ("+c.getString(R.string.device)+")",c.getString(R.string.show) + " / " + c.getString(R.string.hide),"",R.drawable.curly_brackets_device);
         prepareOption("theme",c.getString(R.string.theme_choose),c.getString(R.string.select),"",R.drawable.theme);
-        prepareOption("togglescale",c.getString(R.string.scale_auto),c.getString(R.string.scale_style),c.getString(R.string.scaling_info),R.drawable.stretch);
-        prepareOption("pdfpage",c.getString(R.string.select_page),c.getString(R.string.select),"",R.drawable.book);
         prepareOption("invertpdf",c.getString(R.string.invert_PDF),c.getString(R.string.select),"",R.drawable.invert_colors);
         prepareOption("fonts",c.getString(R.string.font_choose),c.getString(R.string.select),"",R.drawable.text);
         prepareOption("refreshsong",c.getString(R.string.refresh_song),c.getString(R.string.select),"",R.drawable.redo);
@@ -283,30 +275,7 @@ public class PageButtons {
         prepareOption("midi",c.getString(R.string.midi),c.getString(R.string.midi_send),c.getString(R.string.midi_auto)+" "+
                 c.getString(R.string.on)+" / "+c.getString(R.string.off),R.drawable.midi);
         prepareOption("midiboard",c.getString(R.string.midi_board),c.getString(R.string.select),"",R.drawable.midi_board);
-        prepareOption("beatbuddy",c.getString(R.string.beat_buddy),c.getString(R.string.settings),"",R.drawable.beatbuddy_settings);
-        prepareOption("beatbuddycontroller",c.getString(R.string.beat_buddy_control),c.getString(R.string.show) + " / " +c.getString(R.string.hide),"",R.drawable.beatbuddy_settings);
-        prepareOption("beatbuddystart",c.getString(R.string.beat_buddy)+" "+c.getString(R.string.start),c.getString(R.string.start),c.getString(R.string.stop),R.drawable.beatbuddy_start);
-        prepareOption("beatbuddystop",c.getString(R.string.beat_buddy)+" "+c.getString(R.string.stop),c.getString(R.string.stop),"",R.drawable.beatbuddy_stop);
-        prepareOption("beatbuddypause",c.getString(R.string.beat_buddy)+" "+c.getString(R.string.pause),c.getString(R.string.pause),"",R.drawable.beatbuddy_pause);
-        prepareOption("beatbuddyaccent",c.getString(R.string.beat_buddy)+" "+c.getString(R.string.accent),c.getString(R.string.accent),c.getString(R.string.fill),R.drawable.beatbuddy_accent);
-        prepareOption("beatbuddyfill",c.getString(R.string.beat_buddy)+" "+c.getString(R.string.fill),c.getString(R.string.fill),c.getString(R.string.accent),R.drawable.beatbuddy_fill);
-        prepareOption("beatbuddytrans1",c.getString(R.string.beat_buddy)+" "+c.getString(R.string.transition)+" 1",c.getString(R.string.start),c.getString(R.string.exit),R.drawable.beatbuddy_trans1);
-        prepareOption("beatbuddytrans2",c.getString(R.string.beat_buddy)+" "+c.getString(R.string.transition)+" 2",c.getString(R.string.start),c.getString(R.string.exit),R.drawable.beatbuddy_trans2);
-        prepareOption("beatbuddytrans3",c.getString(R.string.beat_buddy)+" "+c.getString(R.string.transition)+" 3",c.getString(R.string.start),c.getString(R.string.exit),R.drawable.beatbuddy_trans3);
-        prepareOption("beatbuddytransnext",c.getString(R.string.beat_buddy)+" "+c.getString(R.string.transition)+" "+c.getString(R.string.next),c.getString(R.string.start),c.getString(R.string.exit),R.drawable.beatbuddy_transnext);
-        prepareOption("beatbuddytransprev",c.getString(R.string.beat_buddy)+" "+c.getString(R.string.transition)+" "+c.getString(R.string.previous),c.getString(R.string.start),c.getString(R.string.exit),R.drawable.beatbuddy_transprev);
-        prepareOption("beatbuddyxtrans1",c.getString(R.string.beat_buddy)+" "+c.getString(R.string.exclusive)+" "+c.getString(R.string.transition)+" 1",c.getString(R.string.start),c.getString(R.string.exit),R.drawable.beatbuddy_trans1);
-        prepareOption("beatbuddyxtrans2",c.getString(R.string.beat_buddy)+" "+c.getString(R.string.exclusive)+" "+c.getString(R.string.transition)+" 2",c.getString(R.string.start),c.getString(R.string.exit),R.drawable.beatbuddy_trans2);
-        prepareOption("beatbuddyxtrans3",c.getString(R.string.beat_buddy)+" "+c.getString(R.string.exclusive)+" "+c.getString(R.string.transition)+" 3",c.getString(R.string.start),c.getString(R.string.exit),R.drawable.beatbuddy_trans3);
-        prepareOption("beatbuddyxtransnext",c.getString(R.string.beat_buddy)+" "+c.getString(R.string.exclusive)+" "+c.getString(R.string.transition)+" "+c.getString(R.string.next),c.getString(R.string.start),c.getString(R.string.exit),R.drawable.beatbuddy_transnext);
-        prepareOption("beatbuddyxtransprev",c.getString(R.string.beat_buddy)+" "+c.getString(R.string.exclusive)+" "+c.getString(R.string.transition)+" "+c.getString(R.string.previous),c.getString(R.string.start),c.getString(R.string.exit),R.drawable.beatbuddy_transprev);
-        prepareOption("beatbuddyhalf",c.getString(R.string.beat_buddy)+" "+c.getString(R.string.half_time),c.getString(R.string.start),c.getString(R.string.exit),R.drawable.beatbuddy_halftime);
-        prepareOption("beatbuddydouble",c.getString(R.string.beat_buddy)+" "+c.getString(R.string.double_time),c.getString(R.string.start),c.getString(R.string.exit),R.drawable.beatbuddy_doubletime);
-        prepareOption("beatbuddyvolup",c.getString(R.string.beat_buddy)+ " " + c.getString(R.string.volume) + " +",c.getString(R.string.select),"",R.drawable.beatbuddy_volhp_up);
-        prepareOption("beatbuddyvoldown",c.getString(R.string.beat_buddy)+ " " + c.getString(R.string.volume) + " -",c.getString(R.string.select),"",R.drawable.beatbuddy_vol_down);
-        prepareOption("beatbuddyvolhpup",c.getString(R.string.beat_buddy)+ " " + c.getString(R.string.volume_headphone) + " +",c.getString(R.string.select),"",R.drawable.beatbuddy_volhp_up);
-        prepareOption("beatbuddyvolhpdown",c.getString(R.string.beat_buddy)+ " " + c.getString(R.string.volume_headphone) + " -",c.getString(R.string.select),"",R.drawable.beatbuddy_volhp_down);
-        prepareOption("midiaction1",c.getString(R.string.midi_action)+" "+1,c.getString(R.string.select),"",R.drawable.midi1);
+         prepareOption("midiaction1",c.getString(R.string.midi_action)+" "+1,c.getString(R.string.select),"",R.drawable.midi1);
         prepareOption("midiaction2",c.getString(R.string.midi_action)+" "+2,c.getString(R.string.select),"",R.drawable.midi2);
         prepareOption("midiaction3",c.getString(R.string.midi_action)+" "+3,c.getString(R.string.select),"",R.drawable.midi3);
         prepareOption("midiaction4",c.getString(R.string.midi_action)+" "+4,c.getString(R.string.select),"",R.drawable.midi4);
@@ -326,7 +295,6 @@ public class PageButtons {
         prepareOption("soundlevel",c.getString(R.string.sound_level_meter),c.getString(R.string.show) + " / " + c.getString(R.string.hide),"",R.drawable.sound_level);
         prepareOption("tuner",c.getString(R.string.tuner),c.getString(R.string.select),"",R.drawable.tuner);
         prepareOption("chorddetection",c.getString(R.string.chord_detection),c.getString(R.string.show)+" / "+c.getString(R.string.hide),"",R.drawable.chord_detection);
-        prepareOption("bible",c.getString(R.string.bible_verse),c.getString(R.string.search),"",R.drawable.bible);
         prepareOption("audiorecorder",c.getString(R.string.audio_recorder),c.getString(R.string.select),"",R.drawable.microphone);
         prepareOption("audioplayer",c.getString(R.string.audio_player),c.getString(R.string.select),"",R.drawable.audio_player);
         prepareOption("audioplayerpopup",c.getString(R.string.audio_player)+" ("+c.getString(R.string.popup)+")",c.getString(R.string.select),"",R.drawable.audio_player);
