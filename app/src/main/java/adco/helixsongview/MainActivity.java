@@ -279,13 +279,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private WebDownload webDownload;
     private WebServer webServer;
 
-    // The audio recorder permissions
-    private ActivityResultLauncher<String> audioPermissionLauncher;
     private ActivityResultLauncher<Intent> selectFileLauncher;
     private ActivityResultLauncher<Intent> selectFolderLauncher;
 
 
-    private ActivityResultLauncher<Intent> mediaProjectionLauncher;
     private Consumer<MediaProjection> onMediaProjectionReady;
 
     // The navigation controls
@@ -308,7 +305,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private boolean waitingOnBootUpFragment = false;
     private ViewPager2 viewPager;
     private AppBarConfiguration appBarConfiguration;
-    private Display[] connectedDisplays;
     private int prevNumConnectedDisplays = 0;
     private final Handler mainLooper = new Handler(Looper.getMainLooper());
     private final Handler updatingToolbarHandler = new Handler(Looper.getMainLooper());
@@ -376,7 +372,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         EdgeToEdge.enable(this);
 
         // Set up the audioPermission launcher
-        audioPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+        // Navigate home (performance/presenter) and then this fragment will attempt to show the popup
+        // notify user
+        // The audio recorder permissions
+        ActivityResultLauncher<String> audioPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
             if (isGranted) {
                 // Navigate home (performance/presenter) and then this fragment will attempt to show the popup
                 navHome();
@@ -423,7 +422,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 });
 
         // The MediaProjection launcher
-        mediaProjectionLauncher = registerForActivityResult(
+        ActivityResultLauncher<Intent> mediaProjectionLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
@@ -3438,7 +3437,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     isPlaying = false;
                     transportClickCount = 0;
                     getMainHandler().post(() -> {
-                        if (myView != null && myView.myToolbar != null) {
+                        if (myView != null) {
                             myView.myToolbar.updatePlayButton(false);
                         }
                     });
@@ -3452,7 +3451,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                         transportClickCount = 1;
                     }
                     getMainHandler().post(() -> {
-                        if (myView != null && myView.myToolbar != null) {
+                        if (myView != null) {
                             myView.myToolbar.updatePlayButton(isPlaying);
                         }
                     });
@@ -3467,7 +3466,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 isPlaying = false;
                 transportClickCount = 0;
                 getMainHandler().post(() -> {
-                    if (myView != null && myView.myToolbar != null) {
+                    if (myView != null) {
                         myView.myToolbar.updatePlayButton(false);
                     }
                 });
@@ -3497,7 +3496,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     transportClickCount = 0;
                     isPlaying = false;
                     getMainHandler().post(() -> {
-                        if (myView != null && myView.myToolbar != null) {
+                        if (myView != null) {
                             myView.myToolbar.updatePlayButton(false);
                         }
                     });
@@ -3662,7 +3661,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         if (playMode.equals("Play")) {
             // Modo Play: Carga y TOCA en un solo pulso
             isPlaying = !isPlaying;
-            if (myView != null && myView.myToolbar != null) {
+            if (myView != null) {
                 myView.myToolbar.updatePlayButton(isPlaying);
             }
             int val = isPlaying ? 127 : 0;
@@ -3676,7 +3675,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             if (transportClickCount == 0) {
                 transportClickCount = 1;
                 isPlaying = false;
-                if (myView != null && myView.myToolbar != null) {
+                if (myView != null) {
                     myView.myToolbar.updatePlayButton(false);
                 }
                 String msg = "MIDI" + channel + ":CC51:127";
@@ -3684,7 +3683,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             } else if (transportClickCount == 1) {
                 transportClickCount = 2;
                 isPlaying = true;
-                if (myView != null && myView.myToolbar != null) {
+                if (myView != null) {
                     myView.myToolbar.updatePlayButton(true);
                 }
                 String msg = "MIDI" + channel + ":CC51:127";
@@ -3692,7 +3691,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             } else {
                 // Ya reproduciendo: toggle play/pause
                 isPlaying = !isPlaying;
-                if (myView != null && myView.myToolbar != null) {
+                if (myView != null) {
                     myView.myToolbar.updatePlayButton(isPlaying);
                 }
                 int val = isPlaying ? 127 : 0;
@@ -5035,6 +5034,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     public void checkDisplays() {
         // This checks for connected displays and adjusts the menu item if connected
         DisplayManager displayManager = (DisplayManager) getSystemService(DISPLAY_SERVICE);
+        Display[] connectedDisplays;
         if (bootUpCompleted && displayManager != null) {
             connectedDisplays = displayManager.getDisplays(DisplayManager.DISPLAY_CATEGORY_PRESENTATION);
 
