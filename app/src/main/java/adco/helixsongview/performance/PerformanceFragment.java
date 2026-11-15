@@ -23,7 +23,6 @@ import android.view.animation.AnimationUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -321,7 +320,7 @@ public class PerformanceFragment extends Fragment {
                 myView.imageView.setImageDrawable(null);
                 mainActivityInterface.setSectionViews(null);
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "PerformanceFragment error", e);
             }
         }
     }
@@ -374,7 +373,7 @@ public class PerformanceFragment extends Fragment {
             try {
                 myView.inlineSetList.notifyInlineSetMove(from, to);
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "PerformanceFragment error", e);
             }
         }
     }
@@ -398,7 +397,7 @@ public class PerformanceFragment extends Fragment {
             try {
                 myView.inlineSetList.notifyInlineSetHighlight();
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "PerformanceFragment error", e);
             }
         }
     }
@@ -429,7 +428,7 @@ public class PerformanceFragment extends Fragment {
                     }
                 });
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "PerformanceFragment error", e);
             }
         }
     }
@@ -750,7 +749,7 @@ public class PerformanceFragment extends Fragment {
                 try {
                     ((LinearLayoutManager) myView.recyclerView.getLayoutManager()).scrollToPositionWithOffset(0, 0);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "PerformanceFragment error", e);
                 }
             }
 
@@ -884,7 +883,7 @@ public class PerformanceFragment extends Fragment {
 //            try {
 //                imageSlideAdapter.setInlineSetWidth(myView.inlineSetList.getInlineSetWidth());
 //            } catch (Exception e) {
-//                e.printStackTrace();
+//                Log.e(TAG, "PerformanceFragment error", e);
 //            }
 //        }
 
@@ -973,7 +972,7 @@ public class PerformanceFragment extends Fragment {
                         try {
                             setUpTestViewListener();
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            Log.e(TAG, "PerformanceFragment error", e);
                             mainActivityInterface.getStorageAccess().updateCrashLog(e.toString());
                         }
                     }
@@ -983,7 +982,7 @@ public class PerformanceFragment extends Fragment {
                         myView.testPaneHeader.addView(mainActivityInterface.getSongSheetTitleLayout());
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "PerformanceFragment error", e);
                     mainActivityInterface.getStorageAccess().updateCrashLog(e.toString());
                     setUpTestViewListener();
                 }
@@ -993,7 +992,7 @@ public class PerformanceFragment extends Fragment {
                 setUpTestViewListener();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "PerformanceFragment error", e);
             mainActivityInterface.getStorageAccess().updateCrashLog(e.toString());
             // Error, so skip
             setUpTestViewListener();
@@ -1224,14 +1223,14 @@ public class PerformanceFragment extends Fragment {
                             }
                         } catch (Exception e) {
                             mainActivityInterface.getStorageAccess().updateCrashLog(e.toString());
-                            e.printStackTrace();
+                            Log.e(TAG, "PerformanceFragment error", e);
                         }
                     }, Math.max(0, QOSAdjustment));
                 }
 
             } catch (Exception e) {
                 mainActivityInterface.getStorageAccess().updateCrashLog(e.toString());
-                e.printStackTrace();
+                Log.e(TAG, "PerformanceFragment error", e);
             }
         }
     }
@@ -1338,14 +1337,14 @@ public class PerformanceFragment extends Fragment {
                                                 inline_set_string, true, "inline_set");
                                     } catch (Exception e) {
                                         mainActivityInterface.getStorageAccess().updateCrashLog(e.toString());
-                                        e.printStackTrace();
+                                        Log.e(TAG, "PerformanceFragment error", e);
                                     }
                                 }
                             },800);
                         }
                     } catch (Exception e) {
                         mainActivityInterface.getStorageAccess().updateCrashLog(e.toString());
-                        e.printStackTrace();
+                        Log.e(TAG, "PerformanceFragment error", e);
                     }
                 }
             }
@@ -1484,7 +1483,7 @@ public class PerformanceFragment extends Fragment {
                                                         myView.highlighterView.setVisibility(View.GONE);
                                                     } catch (Exception e) {
                                                         mainActivityInterface.getStorageAccess().updateCrashLog(e.toString());
-                                                        e.printStackTrace();
+                                                        Log.e(TAG, "PerformanceFragment error", e);
                                                     }
                                                 }
                                             });
@@ -1493,7 +1492,7 @@ public class PerformanceFragment extends Fragment {
                                 }
                             } catch (Exception e) {
                                 mainActivityInterface.getStorageAccess().updateCrashLog(e.toString());
-                                e.printStackTrace();
+                                Log.e(TAG, "PerformanceFragment error", e);
                             }
                         }
                     });
@@ -1503,7 +1502,7 @@ public class PerformanceFragment extends Fragment {
                                 myView.highlighterView.requestLayout();
                             } catch (Exception e) {
                                 mainActivityInterface.getStorageAccess().updateCrashLog(e.toString());
-                                e.printStackTrace();
+                                Log.e(TAG, "PerformanceFragment error", e);
                             }
                         }
                     });
@@ -1517,7 +1516,7 @@ public class PerformanceFragment extends Fragment {
                                 myView.highlighterView.setVisibility(View.GONE);
                             } catch (Exception e) {
                                 mainActivityInterface.getStorageAccess().updateCrashLog(e.toString());
-                                e.printStackTrace();
+                                Log.e(TAG, "PerformanceFragment error", e);
                             }
                         }
                     });
@@ -1525,7 +1524,7 @@ public class PerformanceFragment extends Fragment {
             }
         } catch (Exception e) {
             mainActivityInterface.getStorageAccess().updateCrashLog(e.toString());
-            e.printStackTrace();
+            Log.e(TAG, "PerformanceFragment error", e);
         }
     }
     private void getScreenshot(int w, int h, int topPadding) {
@@ -1547,14 +1546,14 @@ public class PerformanceFragment extends Fragment {
                 }
             } catch (OutOfMemoryError e) {
                 Log.d(TAG,"Out of memory:");
-                e.printStackTrace();
+                Log.e(TAG, "PerformanceFragment error", e);
                 // Change the resolution of the bitmap to a lower option
                 bmpFormat = Bitmap.Config.RGB_565;
                 mainActivityInterface.setScreenshotFile(null);
                 mainActivityInterface.getStorageAccess().updateCrashLog(e.toString());
 
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "PerformanceFragment error", e);
                 mainActivityInterface.setScreenshotFile(null);
                 mainActivityInterface.getStorageAccess().updateCrashLog(e.toString());
 
