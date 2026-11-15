@@ -1,4 +1,4 @@
-package adco.helixsongview.pads;
+package adco.helixsongview.backingtracks;
 
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
@@ -22,14 +22,14 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class Pad {
+public class backingTrack {
     public boolean orientationChanged;
     public boolean pad1Pause, pad2Pause;
     public int padInQuickFade;
     private final Context c;
     private final MainActivityInterface mainActivityInterface;
     @SuppressWarnings({"unused","FieldCanBeLocal"})
-    private final String TAG = "Pad";
+    private final String TAG = "BackingTrack";
     private final MediaPlayer pad1 = new MediaPlayer();
     private final MediaPlayer pad2 = new MediaPlayer();
     private int currentOrientation;
@@ -57,7 +57,7 @@ public class Pad {
     private final Drawable pauseDrawable;
     private int padUsing = 1;
 
-    public Pad(Context c, LinearLayout pad) {
+    public backingTrack(Context c, LinearLayout pad) {
         this.c = c;
         mainActivityInterface = (MainActivityInterface) c;
         this.pad = pad;

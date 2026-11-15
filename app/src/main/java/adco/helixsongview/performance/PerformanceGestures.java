@@ -8,7 +8,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.DocumentsContract;
-import android.util.Log;
 import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,10 +23,7 @@ import adco.helixsongview.interfaces.DisplayInterface;
 import adco.helixsongview.interfaces.MainActivityInterface;
 import adco.helixsongview.midi.MidiBoardBottomSheet;
 import adco.helixsongview.midi.MidiSongBottomSheet;
-import adco.helixsongview.pads.PadsBottomSheet;
-import adco.helixsongview.pdf.PDFPageAdapter;
-import adco.helixsongview.pdf.PDFPageBottomSheet;
-import adco.helixsongview.songmenu.RandomSongBottomSheet;
+import adco.helixsongview.backingtracks.PadsBottomSheet;
 
 import java.util.ArrayList;
 import java.util.Locale;

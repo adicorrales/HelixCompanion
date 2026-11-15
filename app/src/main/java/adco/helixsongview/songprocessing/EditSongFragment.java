@@ -30,12 +30,20 @@ public class EditSongFragment extends Fragment implements EditSongFragmentInterf
     private ViewPager2.OnPageChangeCallback callback;
     @SuppressWarnings("unused")
     private final String TAG = "EditSongFragment";
-    private String edit_string="", website_edit_song_string="", information_string="", okay_string="",
-            edit_song_variation_temp_string="", edit_song_variation_string="",
-            website_edit_song_main_string="", website_edit_song_features_string="",
-            website_edit_song_tag_string="", lyrics_string="", mainfoldername_string="",
-            song_features_string="", tag_string="", not_saved_filename_string="",
-            not_saved_folder_string="", not_saved_string="";
+    private String edit_string="";
+    private String website_edit_song_string="";
+    private String information_string="";
+    private String okay_string="";
+    private String edit_song_variation_temp_string="";
+    private String edit_song_variation_string="";
+    private String website_edit_song_main_string="";
+    private String website_edit_song_features_string="";
+    private String lyrics_string="";
+    private String mainfoldername_string="";
+    private String song_features_string="";
+    private String not_saved_filename_string="";
+    private String not_saved_folder_string="";
+    private String not_saved_string="";
     private String webAddress;
 
     @Override
@@ -143,11 +151,10 @@ public class EditSongFragment extends Fragment implements EditSongFragmentInterf
             edit_song_variation_string = getString(R.string.edit_song_variation);
             website_edit_song_main_string = getString(R.string.website_edit_song_main);
             website_edit_song_features_string = getString(R.string.website_edit_song_features);
-            website_edit_song_tag_string = getString(R.string.website_edit_song_tag);
+            getString(R.string.website_edit_song_tag);
             lyrics_string = getString(R.string.lyrics);
             mainfoldername_string = getString(R.string.mainfoldername);
             song_features_string = getString(R.string.song_features);
-            tag_string = getString(R.string.tag);
             not_saved_filename_string = getString(R.string.not_saved_filename);
             not_saved_folder_string = getString(R.string.not_saved_folder);
             not_saved_string = getString(R.string.not_saved);
@@ -179,9 +186,6 @@ public class EditSongFragment extends Fragment implements EditSongFragmentInterf
                                     case 2:
                                         webAddress = website_edit_song_features_string;
                                         break;
-                                    case 3:
-                                        webAddress = website_edit_song_tag_string;
-                                        break;
                                 }
                                 mainActivityInterface.updateToolbarHelp(webAddress);
                                 mainActivityInterface.getWindowFlags().hideKeyboard();
@@ -207,9 +211,6 @@ public class EditSongFragment extends Fragment implements EditSongFragmentInterf
                                             break;
                                         case 2:
                                             tab.setText(song_features_string);
-                                            break;
-                                        case 3:
-                                            tab.setText(tag_string);
                                             break;
                                         case 0:
                                         default:

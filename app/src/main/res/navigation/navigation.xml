@@ -691,7 +691,7 @@
                 app:startDestination="@id/padSettingsFragment">
                 <fragment
                     android:id="@+id/padSettingsFragment"
-                    android:name="adco.helixsongview.pads.PadSettingsFragment"
+                    android:name="adco.helixsongview.backingtracks.PadSettingsFragment"
                     android:label="PadSettingsFragment"
                     tools:layout="@layout/settings_pads">
                     <action
@@ -706,12 +706,12 @@
                 </fragment>
                 <fragment
                     android:id="@+id/customPadsFragment"
-                    android:name="adco.helixsongview.pads.CustomPadsFragment"
+                    android:name="adco.helixsongview.backingtracks.CustomPadsFragment"
                     android:label="CustomPadsFragment"
                     tools:layout="@layout/settings_pads_custom"/>
                 <fragment
                     android:id="@+id/padDefaultsFragment"
-                    android:name="adco.helixsongview.pads.PadDefaultsFragment"
+                    android:name="adco.helixsongview.backingtracks.PadDefaultsFragment"
                     android:label="PadDefaultsFragment"
                     tools:layout="@layout/settings_pads_defaults"/>
             </navigation>
@@ -988,9 +988,6 @@
             <action
                 android:id="@+id/action_editSongFragment_to_editsongFeatures"
                 app:destination="@id/editsongFeatures" />
-            <action
-                android:id="@+id/action_editSongFragment_to_editSongTags"
-                app:destination="@id/editSongTags" />
             <deepLink
                 android:id="@+id/deepLinkEdit"
                 app:uri="@string/deeplink_edit" />

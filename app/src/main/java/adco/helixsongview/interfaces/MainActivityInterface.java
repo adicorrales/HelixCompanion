@@ -48,7 +48,7 @@ import adco.helixsongview.midi.Midi;
 import adco.helixsongview.midi.MidiFragment;
 import adco.helixsongview.nearby.NearbyActions;
 import adco.helixsongview.openchords.OpenChordsAPI;
-import adco.helixsongview.pads.Pad;
+import adco.helixsongview.backingtracks.backingTrack;
 import adco.helixsongview.pdf.MakePDF;
 
 import adco.helixsongview.performance.DisplayPrevNext;
@@ -137,7 +137,7 @@ public interface MainActivityInterface {
     void dealWithCapo();
 
     // Pads
-    Pad getPad();
+    backingTrack getPad();
     boolean playPad();
 
     // Autoscroll

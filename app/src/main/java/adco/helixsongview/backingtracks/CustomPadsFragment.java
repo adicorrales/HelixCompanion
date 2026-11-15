@@ -1,4 +1,4 @@
-package adco.helixsongview.pads;
+package adco.helixsongview.backingtracks;
 
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;

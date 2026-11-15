@@ -129,7 +129,7 @@ import adco.helixsongview.nearby.NearbyConnectionsFragment;
 import adco.helixsongview.nearby.SyncNearbyFragment;
 import adco.helixsongview.openchords.OpenChordsAPI;
 import adco.helixsongview.openchords.OpenChordsFragment;
-import adco.helixsongview.pads.Pad;
+import adco.helixsongview.backingtracks.backingTrack;
 import adco.helixsongview.pdf.MakePDF;
 import adco.helixsongview.performance.DisplayPrevNext;
 import adco.helixsongview.performance.PerformanceFragment;
@@ -250,7 +250,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
     private OpenChordsAPI openChordsAPI;
     private OpenSongSetBundle openSongSetBundle;
-    private Pad pad;
+    private backingTrack backingTrack;
     private PageButtons pageButtons;
     private Palette palette;
     private PedalActions pedalActions;
@@ -885,7 +885,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         midi = getMidi();
 //        voiceLive = getVoiceLive();
         pedalActions = getPedalActions();
-        pad = getPad();
+        backingTrack = getPad();
         autoscroll = getAutoscroll();
         gestures = getGestures();
         swipes = getSwipes();
@@ -4034,21 +4034,21 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     public void stopDeviceAudioCapture() {}
 
     @Override
-    public Pad getPad() {
-        if (pad == null) {
-            pad = new Pad(this, myView.onScreenInfo.getPad());
+    public backingTrack getPad() {
+        if (backingTrack == null) {
+            backingTrack = new backingTrack(this, myView.onScreenInfo.getPad());
         }
-        return pad;
+        return backingTrack;
     }
 
     @Override
     public boolean playPad() {
         // If the pad is playing, stop else start
-        if (pad.isPadPlaying()) {
-            pad.stopPad();
+        if (backingTrack.isPadPlaying()) {
+            backingTrack.stopPad();
             return false;
         } else {
-            pad.startPad();
+            backingTrack.startPad();
             // Showcase if required
             showCase.singleShowCase(this, myView.onScreenInfo.getPad(), okay, pad_playback_info, true, "padPlayback");
             return true;
@@ -4797,12 +4797,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
                 // Save a variable that we have rotated the screen.
                 // The media player will look for this.  If found, it won't restart when the song loads
-                pad.setOrientationChanged(pad.getCurrentOrientation() != newConfig.orientation);
+                backingTrack.setOrientationChanged(backingTrack.getCurrentOrientation() != newConfig.orientation);
                 // If orientation has changed, we need to reload the song to get it resized.
                 // Only do this if we are not in a settings menu though!
-                if (!settingsOpen && pad.getOrientationChanged()) {
+                if (!settingsOpen && backingTrack.getOrientationChanged()) {
                     // Set the current orientation
-                    pad.setCurrentOrientation(newConfig.orientation);
+                    backingTrack.setCurrentOrientation(newConfig.orientation);
                     pageButtons.requestLayout();
                     // IV - After a short delay - to allow screen layout to stabilize
                     mainLooper.postDelayed(() -> {
@@ -4913,8 +4913,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     @Override
     protected void onStop() {
         // Stop pad timers
-        if (pad != null) {
-            pad.stopPad();
+        if (backingTrack != null) {
+            backingTrack.stopPad();
         }
         // Stop metronome, drummer and timers
         // Stop autoscroll timers
