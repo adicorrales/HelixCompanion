@@ -94,8 +94,6 @@ import adco.helixsongview.controls.PedalActions;
 import adco.helixsongview.controls.PedalsFragment;
 import adco.helixsongview.controls.SwipeFragment;
 import adco.helixsongview.controls.Swipes;
-import adco.helixsongview.customslides.CustomSlide;
-import adco.helixsongview.customslides.CustomSlideFragment;
 import adco.helixsongview.customviews.ExposedDropDown;
 import adco.helixsongview.customviews.MyExtendedFloatingActionButton;
 import adco.helixsongview.customviews.MyMaterialButton;
@@ -172,7 +170,6 @@ import adco.helixsongview.sqlite.AnalyticsSQLiteHelper;
 import adco.helixsongview.sqlite.CommonSQL;
 import adco.helixsongview.sqlite.NonOpenSongSQLiteHelper;
 import adco.helixsongview.sqlite.SQLiteHelper;
-import adco.helixsongview.tags.BulkTagAssignFragment;
 import adco.helixsongview.variations.Variations;
 import adco.helixsongview.webserver.LocalWiFiHost;
 import adco.helixsongview.webserver.WebServer;
@@ -238,7 +235,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private ConvertWord convertWord;
     private CurrentSet currentSet;
     private CustomAnimation customAnimation;
-    private CustomSlide customSlide;
     private DisplayPrevNext displayPrevNext;
     private ExportActions exportActions;
     private FixLocale fixLocale;
@@ -905,7 +901,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
         // Other file actions
         exportActions = getExportActions();
-        customSlide = getCustomSlide();
         abcNotation = getAbcNotation();
 
         // Webserver (for displaying song over html server)
@@ -1252,11 +1247,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 // Hide the keyboard
                 windowFlags.hideKeyboard();
 
-                // Hide the abc notes if required
-                showAbc(false, true);
 
-                // Hide the sticky notes if required
-                showSticky(false, true);
             }
 
             @Override
@@ -1272,11 +1263,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 if (performanceValid() && getAbcNotation().getAutoshowMusicScore() &&
                         getSong().getAbc() != null && !getSong().getAbc().isEmpty()) {
                     showAbc(true, false);
-                }
-
-                // Show the sticky notes if required
-                if (performanceValid()) {
-                    showSticky(false, false);
                 }
             }
 
@@ -1929,24 +1915,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             }
         }
     }
-
-    @Override
-    public void updateConnectionsLog() {
-        // Send the command to the Nearby Connections fragment (if it exists!)
-        try {
-            if (nearbyConnectionsFragment != null &&
-                    nearbyActions.getNearbyConnectionManagement().getConnectionsOpen()) {
-                try {
-                    nearbyConnectionsFragment.updateConnectionsLog();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
 
     // Instructions sent from fragments for MainActivity to deal with
     @Override
@@ -3006,21 +2974,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         }
     }
 
-    @Override
-    public void showSticky(boolean forceShow, boolean hide) {}
-
-    @Override
-    public void toggleHighlighter() {}
-
-    @Override
-    public void drummerToggle() {}
-
-//    @Override
-//    public StickyNoteUtils getStickyNoteUtils() {
-//        return new StickyNoteUtils(this);
-//    }
-
-
     // Capo
     @Override
     public void dealWithCapo() {
@@ -3371,13 +3324,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
 
 
-    @Override
-    public CustomSlide getCustomSlide() {
-        if (customSlide == null) {
-            customSlide = new CustomSlide(this);
-        }
-        return customSlide;
-    }
+
 
     @Override
     public void doSongLoad(String folder, String filename, boolean closeDrawer) {
@@ -4501,13 +4448,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         return screenshotFile;
     }
 
-    @Override
-    public boolean validScreenShotFile() {
-        if (screenshotFile == null) {
-            getScreenshotFile();
-        }
-        return screenshotFile.exists() && screenshotFile.length() > 0;
-    }
 
     @Override
     public ABCNotation getAbcNotation() {
@@ -4796,20 +4736,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     }
 
     @Override
-    public void selectSection(int i) {
-        // Only do this if we are not in a settings fragment
-        if (!settingsOpen) {
-            if (performanceValid()) {
-                performanceFragment.selectSection(i);
-                performanceShowSection(i);
-            }
-            updateDisplay("showSection");
-        } else {
-            getNearbyActions().getNearbyReceivePayloads().setPendingSection(i);
-        }
-    }
-
-    @Override
     public void loadSong(boolean updateSongMenu) {
         // If we are not in a settings window, load the song
         // Otherwise it will happen when the user closes the settings fragments
@@ -4847,9 +4773,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     case "songActionsMenuFragment":
                         ((SongActionsMenuFragment) fragment).doDuplicate(value);
                         break;
-                    case "CustomSlideFragment":
-                        ((CustomSlideFragment) fragment).getReusable(value);
-                        break;
                     case "StorageManagementFragment":
                         if (whattodo.equals("newfolder")) {
                             ((StorageManagementFragment) fragment).createNewFolder(value);
@@ -4857,13 +4780,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                             ((StorageManagementFragment) fragment).renameFolder(value);
                         }
                         break;
-                    case "BulkTagAssignFragment":
-                        ((BulkTagAssignFragment) fragment).addNewTag(value);
-                        break;
-                    case "BulkTagAssignFragmentRename":
-                        ((BulkTagAssignFragment) fragment).renameTag(value);
-                        break;
-
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -5197,16 +5113,5 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             performanceFragment.performanceShowSection(position);
         }
     }
-
-    @Override
-    public void toggleBeatBuddyControlPopUp() {}
-
-    @Override
-    public void forceCloseBeatBuddyControlPopUp() {}
-
-    @Override
-    public void updateBeatBuddyControlPopUp() {}
-
-
 
 }

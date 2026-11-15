@@ -28,8 +28,6 @@ import adco.helixsongview.pads.PadsBottomSheet;
 import adco.helixsongview.pdf.PDFPageAdapter;
 import adco.helixsongview.pdf.PDFPageBottomSheet;
 import adco.helixsongview.songmenu.RandomSongBottomSheet;
-import adco.helixsongview.stage.StageSectionAdapter;
-
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -205,9 +203,6 @@ public class PerformanceGestures {
             case "previous":
                 prevSong();
                 break;
-            case "randomsong":
-                randomSong();
-                break;
             case "scrollmenuup":
                 mainActivityInterface.scrollOpenMenu(false);
                 break;
@@ -277,12 +272,6 @@ public class PerformanceGestures {
                 break;
             case "autoscalesettings":
                 editAutoscale();
-                break;
-            case "pdfpage":
-                pdfPage();
-                break;
-            case "invertpdf":
-                invertPDF();
                 break;
             case "fonts":
                 editFonts();
@@ -666,27 +655,6 @@ public class PerformanceGestures {
                 recyclerView != null && recyclerView.getVisibility() == View.VISIBLE) {
             int newPosition = getPosition(scrollDown);
 
-            if (mainActivityInterface.getSong().getFiletype().equals("PDF")) {
-                mainActivityInterface.getSong().setPdfPageCurrent(newPosition);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
-                        recyclerView.getAdapter() != null) {
-                    try {
-                        ((PDFPageAdapter) recyclerView.getAdapter()).clickOnSection(newPosition);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            } else {
-                mainActivityInterface.getSong().setCurrentSection(newPosition);
-                if (recyclerView.getAdapter() != null) {
-                    try {
-                        ((StageSectionAdapter) recyclerView.getAdapter()).clickOnSection(newPosition);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
 
         } else if ((mainActivityInterface.getMode().equals(c.getString(R.string.mode_performance)) ||
                 mainActivityInterface.getMode().equals(c.getString(R.string.mode_hybrid))) &&
@@ -732,10 +700,6 @@ public class PerformanceGestures {
             mainActivityInterface.getSong().setFiletype(mainActivityInterface.getStorageAccess().tryToFixFileTypeFromNull(mainActivityInterface.getSong().getFilename()));
         }
 
-        if (mainActivityInterface.getSong().getFiletype().equals("PDF")) {
-            currentPosition = mainActivityInterface.getSong().getPdfPageCurrent();
-            finalPosition = mainActivityInterface.getSong().getPdfPageCount() - 1;
-        }
         return getNewPosition(scrollDown, currentPosition, finalPosition);
     }
 
@@ -756,17 +720,6 @@ public class PerformanceGestures {
             }
         }
         return newPosition;
-    }
-
-    // Find a random song
-    public void randomSong() {
-        RandomSongBottomSheet randomSongBottomSheet;
-        if (mainActivityInterface.getShowSetMenu()) {
-            randomSongBottomSheet = new RandomSongBottomSheet("set");
-        } else {
-            randomSongBottomSheet = new RandomSongBottomSheet("song");
-        }
-        randomSongBottomSheet.show(mainActivityInterface.getMyFragmentManager(), "randomSongBottomSheet");
     }
 
     // Transpose the chords
@@ -885,48 +838,9 @@ public class PerformanceGestures {
         mainActivityInterface.selectFile(intent);
     }
 
-    // Show the multitrack player
-
-    // Show the webServerMessages
+     // Show the webServerMessages
     public void webServerMessages() {
         mainActivityInterface.openWebServerMessages();
-    }
-
-    // Show the abc notation
-    public void showABCNotation() {
-        actionInterface.showAbc(true, false);
-    }
-
-    // Abc notation settings
-    public void abcEdit() {
-        mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_abc),0);
-    }
-
-    // Show the highlighter notes
-    public void showHighlight() {
-        actionInterface.toggleHighlighter();
-    }
-
-    // Highlighter edit
-    public void highlighterEdit() {
-        if (mainActivityInterface.getSong().getFiletype()==null) {
-            mainActivityInterface.getSong().setFiletype(mainActivityInterface.getStorageAccess().tryToFixFileTypeFromNull(mainActivityInterface.getSong().getFilename()));
-        }
-
-        if (ifPDFAndAllowed() || !mainActivityInterface.getSong().getFiletype().equals("PDF")) {
-            actionInterface.navigateToFragment(c.getString(R.string.deeplink_highlighter), 0);
-        }
-    }
-
-    // Show the song sticky notes
-    public void showSticky() {
-        // Toggle the force show (hide is for moving away from performace/stage mode)
-        actionInterface.showSticky(true,false);
-    }
-
-    // Sticky notes settings
-    public void stickySettings() {
-        actionInterface.navigateToFragment(c.getString(R.string.deeplink_sticky_notes),0);
     }
 
     // Curly brackets
@@ -992,14 +906,6 @@ public class PerformanceGestures {
 
         // Temp discovery will run for 10 secs after showing a warning/popup the first time
         mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().doTempDiscover();
-    }
-
-    // PDF page chooser
-    public void pdfPage() {
-        if (ifPDFAndAllowed()) {
-            PDFPageBottomSheet pdfPageBottomSheet = new PDFPageBottomSheet();
-            pdfPageBottomSheet.show(actionInterface.getMyFragmentManager(),"PDFPageBottomSheet");
-        }
     }
 
     // Open the theme chooser
@@ -1086,12 +992,6 @@ public class PerformanceGestures {
         mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_import),0);
     }
 
-    public void invertPDF() {
-        if (ifPDFAllowed()) {
-            mainActivityInterface.getMyThemeColors().setInvertPDF(!mainActivityInterface.getMyThemeColors().getInvertPDF());
-            mainActivityInterface.navHome();
-        }
-    }
 
     public void shareSong() {
         mainActivityInterface.setWhattodo("exportSong");
@@ -1260,26 +1160,6 @@ public class PerformanceGestures {
     private void updatePresenterSettings(boolean setLogoOn, boolean setBlackscreenOn, boolean setBlankscreenOn) {}
 
     // The checks
-    private boolean ifPDFAndAllowed() {
-        if (mainActivityInterface.getSong().getFiletype()==null) {
-            mainActivityInterface.getSong().setFiletype(mainActivityInterface.getStorageAccess().tryToFixFileTypeFromNull(mainActivityInterface.getSong().getFilename()));
-        }
-
-        if (mainActivityInterface.getSong().getFiletype().equals("PDF")) {
-            if (ifPDFAllowed()) {
-                return true;
-            } else {
-                mainActivityInterface.getShowToast().doIt(c.getString(R.string.not_allowed));
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
-
-    private boolean ifPDFAllowed() {
-        return Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP;
-    }
     private boolean isMidiAllowed() {
         return Build.VERSION.SDK_INT>=Build.VERSION_CODES.M;
     }

@@ -12,8 +12,6 @@ public class NearbyActions {
     private NearbyReceivePayloads nearbyReceivePayloads;
     private NearbyTransferRecords nearbyTransferRecords;
     private SyncNearbyFragment syncNearbyFragment = null;
-    private NearbyLogs nearbyLogs;
-
     private final Activity activity;
     private final Context c;
 
@@ -65,16 +63,10 @@ public class NearbyActions {
         getNearbyConnectionManagement();
         getNearbySendPayloads();
         getNearbyReceivePayloads();
-        getNearbyLogs();
         getNearbyTransferRecords();
     }
 
-    public NearbyLogs getNearbyLogs() {
-        if (nearbyLogs == null) {
-            nearbyLogs = new NearbyLogs(c);
-        }
-        return nearbyLogs;
-    }
+
     public NearbyConnectionManager getNearbyConnectionManagement() {
         if (nearbyConnectionManager == null) {
             nearbyConnectionManager = new NearbyConnectionManager(activity, c, this);

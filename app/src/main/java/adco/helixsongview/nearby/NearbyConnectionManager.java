@@ -208,8 +208,7 @@ public class NearbyConnectionManager implements NearbyConnectionsManagementInter
                         Log.d(TAG, "connections status either ok or already connected");
                         updateConnectedEndpoints(endpointId, endpointName, true);
                         updateDiscoveredEndpoints(endpointId, endpointName, true);
-                        nearbyActions.getNearbyLogs().updateConnectionLog(c.getString(R.string.connections_connected) + " " + endpointId + " (" + endpointName + ")");
-                        nearbyActions.getNearbyReceivePayloads().setForceReload(true);
+                       nearbyActions.getNearbyReceivePayloads().setForceReload(true);
                         if (isHost) {
                             nearbyActions.getNearbySendPayloads().sendSongPayload();
                         }
@@ -218,12 +217,9 @@ public class NearbyConnectionManager implements NearbyConnectionsManagementInter
                         Log.d(TAG, "Rejected");
                         updateConnectedEndpoints(endpointId, endpointName, false);
                         updateDiscoveredEndpoints(endpointId, endpointName, false);
-                        nearbyActions.getNearbyLogs().updateConnectionLog(c.getString(R.string.cancel));
-                        break;
+                       break;
                     case ConnectionsStatusCodes.STATUS_ERROR:
                         Log.d(TAG, "Error status code");
-                        nearbyActions.getNearbyLogs().updateConnectionLog(c.getString(R.string.connections_failure) + " " + getUserNickname() +
-                                " <-> " + endpointName);
                         updateDiscoveredEndpoints(endpointId, endpointName, false);
                         updateConnectedEndpoints(endpointId, endpointName, false);
                         break;
@@ -238,7 +234,6 @@ public class NearbyConnectionManager implements NearbyConnectionsManagementInter
                 Log.d(TAG, "onDisconnected: " + endpointId);
                 String endpointName = getNameMatchingId(endpointId);
                 updateConnectedEndpoints(endpointId, endpointName, false);
-                nearbyActions.getNearbyLogs().updateConnectionLog(c.getResources().getString(R.string.connections_disconnect) + " " + endpointName);
 
                 Handler h = mainActivityInterface.getMainHandler();
                 if (!isHost) {
@@ -268,7 +263,7 @@ public class NearbyConnectionManager implements NearbyConnectionsManagementInter
                             .requestConnection(getUserNickname(), endpointId, connectionLifecycleCallback, connectionOptions)
                             .addOnSuccessListener((Void unused) -> {
                                 Log.d(TAG, "On success.  Trying to connect to host : " + endpointId + " (" + endpointName + ")");
-                                nearbyActions.getNearbyLogs().updateConnectionLog(c.getString(R.string.connections_searching));
+
                             })
                             .addOnFailureListener((Exception e) -> {
                                 Log.d(TAG, "On failure: " + (((ApiException) e).getStatus().getStatusMessage()));
@@ -276,12 +271,10 @@ public class NearbyConnectionManager implements NearbyConnectionsManagementInter
                                     Log.d(TAG, endpointId + " (" + endpointName + ") was already connected");
                                     updateConnectedEndpoints(endpointId, endpointName, true);
                                     updateDiscoveredEndpoints(endpointId, endpointName, true);
-                                    nearbyActions.getNearbyLogs().updateConnectionLog(c.getString(R.string.connections_connected) + " " + endpointName);
-                                    nearbyActions.getNearbyReceivePayloads().loadLastSong();
+                                  nearbyActions.getNearbyReceivePayloads().loadLastSong();
                                     stopDiscovery();
                                 } else {
                                     Log.d(TAG, "A general error");
-                                    nearbyActions.getNearbyLogs().updateConnectionLog(c.getString(R.string.connections_failure) + " " + endpointName);
                                 }
                             });
                 } else {
@@ -295,7 +288,6 @@ public class NearbyConnectionManager implements NearbyConnectionsManagementInter
                 String endpointName = getNameMatchingId(endpointId);
                 Log.d(TAG, "onEndpointLost: " + endpointId + " (" + endpointName + ")");
                 updateConnectedEndpoints(endpointId, endpointName, false);
-                nearbyActions.getNearbyLogs().updateConnectionLog(c.getString(R.string.connections_disconnect) + " " + endpointName);
                 if (!isHost) {
                     Handler h = mainActivityInterface.getMainHandler();
                     h.postDelayed(() -> {
@@ -323,13 +315,7 @@ public class NearbyConnectionManager implements NearbyConnectionsManagementInter
             connectionOptions = new ConnectionOptions.Builder().build();
         }
         discoveryOptions = new DiscoveryOptions.Builder().setStrategy(nearbyStrategy).build();
-        if (nearbyStrategy.equals(Strategy.P2P_CLUSTER)) {
-            nearbyActions.getNearbyLogs().updateConnectionLog(c.getString(R.string.connections_mode) + ": " + c.getString(R.string.connections_mode_cluster));
-        } else if (nearbyStrategy.equals(Strategy.P2P_STAR)) {
-            nearbyActions.getNearbyLogs().updateConnectionLog(c.getString(R.string.connections_mode) + ": " + c.getString(R.string.connections_mode_star));
-        } else {
-            nearbyActions.getNearbyLogs().updateConnectionLog(c.getString(R.string.connections_mode) + ": " + c.getString(R.string.connections_mode_single));
-        }
+
     }
 
 
@@ -451,8 +437,7 @@ public class NearbyConnectionManager implements NearbyConnectionsManagementInter
                         .addOnSuccessListener(
                                 (Void unused) -> {
                                     // We're discovering!
-                                    nearbyActions.getNearbyLogs().updateConnectionLog(c.getResources().getString(R.string.connections_discover));
-                                    isDiscovering = true;
+                                  isDiscovering = true;
                                 })
                         .addOnFailureListener(
                                 (Exception e) -> {
@@ -473,7 +458,6 @@ public class NearbyConnectionManager implements NearbyConnectionsManagementInter
             }
             try {
                 Nearby.getConnectionsClient(activity).stopDiscovery();
-                nearbyActions.getNearbyLogs().updateConnectionLog(c.getString(R.string.connections_discover_stop));
             } catch (Exception e) {
                 Log.d(TAG, "stopDiscovery() - failure: " + e);
             }
@@ -543,14 +527,12 @@ public class NearbyConnectionManager implements NearbyConnectionsManagementInter
                     .addOnSuccessListener(
                             (Void unused) -> {
                                 // We're advertising!
-                                nearbyActions.getNearbyLogs().updateConnectionLog(c.getString(R.string.connections_advertise_name) + " " + getUserNickname());
                                 isAdvertising = true;
                             })
                     .addOnFailureListener(
                             (Exception e) -> {
                                 // We were unable to start advertising.
-                                nearbyActions.getNearbyLogs().updateConnectionLog(c.getString(R.string.connections_advertising) + " " + c.getString(R.string.error));
-                                Log.d(TAG, "startAdvertising() - failure: " + e);
+                               Log.d(TAG, "startAdvertising() - failure: " + e);
                             });
         }
     }
@@ -602,7 +584,6 @@ public class NearbyConnectionManager implements NearbyConnectionsManagementInter
             isAdvertising = false;
             try {
                 Nearby.getConnectionsClient(activity).stopAdvertising();
-                nearbyActions.getNearbyLogs().updateConnectionLog(c.getString(R.string.connections_service_stop));
             } catch (Exception e) {
                 Log.d(TAG, "stopAdvertising() - failure: " + e);
             }

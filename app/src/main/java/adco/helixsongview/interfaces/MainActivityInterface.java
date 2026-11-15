@@ -34,8 +34,6 @@ import adco.helixsongview.controls.HotZones;
 import adco.helixsongview.controls.PageButtons;
 import adco.helixsongview.controls.PedalActions;
 import adco.helixsongview.controls.Swipes;
-import adco.helixsongview.customslides.CustomSlide;
-import adco.helixsongview.customviews.DrawNotes;
 import adco.helixsongview.customviews.MyToolbar;
 import adco.helixsongview.export.ExportActions;
 import adco.helixsongview.export.OpenSongSetBundle;
@@ -267,7 +265,6 @@ public interface MainActivityInterface {
 
     // Nearby connections
     NearbyActions getNearbyActions();
-    void updateConnectionsLog();
 
 
     // Midi
@@ -282,9 +279,6 @@ public interface MainActivityInterface {
     void sendHelixSetMidi(int setIdx);
     void sendHelixMidiSetAndSong(int setIdx, int songPosition);
     void resetLastSentMidiSetIdx();
-    void toggleBeatBuddyControlPopUp();
-    void forceCloseBeatBuddyControlPopUp();
-    void updateBeatBuddyControlPopUp();
 
     // Database
     SQLiteHelper getSQLiteHelper();
@@ -323,15 +317,12 @@ public interface MainActivityInterface {
     void tintBackgroundToTheme();
     Activity getMyActivity();
 
-    // Custom slides
-    CustomSlide getCustomSlide();
 
     // ABC Notation
     ABCNotation getAbcNotation();
 
     File getScreenshotFile();
-    boolean validScreenShotFile();
-    void setScreenshotFile(Bitmap bitmap);
+      void setScreenshotFile(Bitmap bitmap);
 
 
     MakePDF getMakePDF();

@@ -191,8 +191,7 @@ public class NearbyConnectionsFragment extends Fragment {
 
 
         myView.bottomSheet.nearbyMessageSticky.setChecked(mainActivityInterface.getNearbyActions().getNearbyReceivePayloads().getNearbyMessageSticky());
-        // Show any connection log
-        updateConnectionsLog();
+
     }
 
     private void updateStrategyButtons() {
@@ -365,13 +364,6 @@ public class NearbyConnectionsFragment extends Fragment {
         mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().setConnectionsOpen(false);
     }
 
-    public void updateConnectionsLog() {
-        if (mainActivityInterface.getNearbyActions().getNearbyLogs().getConnectionLog() == null) {
-            mainActivityInterface.getNearbyActions().getNearbyLogs().setConnectionLog("");
-        }
-        myView.bottomSheet.connectionsLog.setHint(mainActivityInterface.getNearbyActions().getNearbyLogs().getConnectionLog());
-        myView.connectedTo.setHint(mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().getConnectedDevicesAsString());
-    }
 
     public void setListeners() {
         // The deviceId
@@ -463,11 +455,7 @@ public class NearbyConnectionsFragment extends Fragment {
         // Close the bottom sheet
         myView.dimBackground.setOnClickListener(v -> myView.bottomSheet.bottomSheetTab.performClick());
 
-        // Clear the log
-        myView.bottomSheet.connectionsLog.setOnClickListener(v -> {
-            mainActivityInterface.getNearbyActions().getNearbyLogs().setConnectionLog("");
-            updateConnectionsLog();
-        });
+
 
         // The nearby messages
         myView.bottomSheet.nearbyMessageSticky.setOnCheckedChangeListener((compoundButton, b) ->
