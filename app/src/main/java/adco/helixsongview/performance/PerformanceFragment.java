@@ -32,7 +32,6 @@ import com.bumptech.glide.request.RequestOptions;
 import adco.helixsongview.R;
 import adco.helixsongview.appdata.AlertInfoBottomSheet;
 import adco.helixsongview.controls.GestureListener;
-//import adco.helixsongview.customslides.ImageSlideAdapter;
 import adco.helixsongview.customviews.RecyclerLayoutManager;
 import adco.helixsongview.databinding.ModePerformanceBinding;
 import adco.helixsongview.interfaces.DisplayInterface;
@@ -70,13 +69,18 @@ public class PerformanceFragment extends Fragment {
     private ModePerformanceBinding myView;
     private Animation animSlideIn, animSlideOut;
     private GestureDetector gestureDetector;
-//    private ImageSlideAdapter imageSlideAdapter;
 
     private RecyclerLayoutManager recyclerLayoutManager;
     private final Handler dealWithExtraStuffOnceSettledHandler = new Handler(Looper.getMainLooper());
     private final Runnable dealWithExtraStuffOnceSettledRunnable = this::dealWithExtraStuffOnceSettled;
-    private String mainfoldername="", mode_performance="", mode_presenter="", mode_stage="", mode_hybrid="",
-            not_allowed="", image_string="", nearby_large_file_string="", inline_set_string="";
+    private String mainfoldername="";
+    private String mode_performance="";
+    private String mode_presenter="";
+    private String mode_stage="";
+    private String mode_hybrid="";
+    private String image_string="";
+    private String nearby_large_file_string="";
+    private String inline_set_string="";
     private int sendSongDelay = 0;
     @SuppressWarnings("FieldCanBeLocal")
     // GE - hidden this option, but reserving the right to reinstate even just for me
@@ -148,8 +152,6 @@ public class PerformanceFragment extends Fragment {
     }
     @Override
     public void onDestroyView() {
-        if (mainActivityInterface!=null) {
-        }
         myView = null;
         super.onDestroyView();
     }
@@ -262,7 +264,7 @@ public class PerformanceFragment extends Fragment {
             mode_presenter = getString(R.string.mode_presenter);
             mode_stage = getString(R.string.mode_stage);
             mode_hybrid = getContext().getString(R.string.mode_hybrid);
-            not_allowed = getString(R.string.not_allowed);
+            String not_allowed = getString(R.string.not_allowed);
             image_string= getString(R.string.image);
             nearby_large_file_string = getString(R.string.nearby_large_file);
             inline_set_string = getString(R.string.set_inline_showcase);
@@ -438,7 +440,7 @@ public class PerformanceFragment extends Fragment {
         // Reset autoscale when loading a new song (especially first song after set change)
         scaleFactor = 1.0f;
         try {
-            if (myView != null && myView.zoomLayout != null) {
+            if (myView != null) {
                 myView.zoomLayout.resetLayout();
             }
         } catch (Exception ignored) {}
@@ -488,9 +490,7 @@ public class PerformanceFragment extends Fragment {
         songChange = true;
 
         // We only load a song if there is a change of song file, or we manually force it, or receive from the host
-        if (myView!=null && !processingTestView && (songChange || myView.inlineSetList.getForceReload()
-                || mainActivityInterface.getTranspose().getForceReload() ||
-            mainActivityInterface.getNearbyActions().getNearbyReceivePayloads().getForceReload()) || mainActivityInterface.getForceReload()) {
+        if (myView != null && !processingTestView || mainActivityInterface.getForceReload()) {
 
             // Clear any force reload flags
             firstSongLoad = false;
@@ -1409,15 +1409,10 @@ public class PerformanceFragment extends Fragment {
         }
     }
     public void dealWithAbc(boolean forceShow, boolean hide) {
-        if (hide) {
-
-        } else {
-            if ((mainActivityInterface != null && mainActivityInterface.getSong() != null &&
-                    mainActivityInterface.getSong().getAbc() != null &&
-                    !mainActivityInterface.getSong().getAbc().trim().isEmpty() &&
-                    (mainActivityInterface.getPreferences().
-                            getMyPreferenceBoolean("abcAuto", false)) || forceShow)) {
-
+        if (!hide) {
+            if (mainActivityInterface != null && mainActivityInterface.getSong() != null && mainActivityInterface.getSong().getAbc() != null && !mainActivityInterface.getSong().getAbc().trim().isEmpty()) {
+                mainActivityInterface.getPreferences().
+                        getMyPreferenceBoolean("abcAuto", false);
             }
         }
     }
@@ -1539,20 +1534,16 @@ public class PerformanceFragment extends Fragment {
                 && w!=0 && h!=0) {
             try {
                 Bitmap bitmap = Bitmap.createBitmap(w, h + topPadding, bmpFormat);
-                if (bitmap!=null) {
-                    Canvas canvas = new Canvas(bitmap);
-                    if (myView != null) {
-                        myView.songView.layout(0, topPadding, w, h + topPadding);
-                        myView.songView.draw(canvas);
-                        Bitmap croppedBitmap = Bitmap.createBitmap(bitmap, 0, topPadding, w, h);
-                        bitmap.recycle();
-                        if (croppedBitmap!=null) {
-                            mainActivityInterface.getThreadPoolExecutor().execute(() -> {
-                                mainActivityInterface.setScreenshotFile(croppedBitmap);
-                                croppedBitmap.recycle();
-                            });
-                        }
-                    }
+                Canvas canvas = new Canvas(bitmap);
+                if (myView != null) {
+                    myView.songView.layout(0, topPadding, w, h + topPadding);
+                    myView.songView.draw(canvas);
+                    Bitmap croppedBitmap = Bitmap.createBitmap(bitmap, 0, topPadding, w, h);
+                    bitmap.recycle();
+                    mainActivityInterface.getThreadPoolExecutor().execute(() -> {
+                        mainActivityInterface.setScreenshotFile(croppedBitmap);
+                        croppedBitmap.recycle();
+                    });
                 }
             } catch (OutOfMemoryError e) {
                 Log.d(TAG,"Out of memory:");
