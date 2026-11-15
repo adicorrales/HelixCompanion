@@ -887,31 +887,24 @@ public class SetActions {
                                         e.printStackTrace();
                                     }
                                     break;
-                                case "scripture":
-                                    // Get Scripture
-                                    try {
-                                        getScripture(xpp,currentSet,asExport);
-                                    } catch (Exception e) {
-                                        Log.d(TAG, "Couldn't get scripture from set");
-                                        e.printStackTrace();
-                                    }
-                                    break;
-                                case "custom":
-                                    // Get Custom (Note or slide or variation)
-                                    try {
-                                        getCustom(xpp,currentSet,asExport);
-                                    } catch (Exception e) {
-                                        Log.d(TAG, "Couldn't get custom from set");
-                                        e.printStackTrace();
-                                    }
-                                    break;
-                                case "image":
-                                    // Get the Image(s)
-                                    try {
-                                        getImage(xpp,currentSet,asExport);
-                                    } catch (Exception e) {
-                                        Log.d(TAG, "Couldn't get image from set");
-                                        e.printStackTrace();
+                                default:
+                                    // Defeaturing: app is now song-only. Skip non-song slide groups
+                                    // (scripture, custom slides/notes/variations, images) when loading
+                                    // a set into the app. Still process them during export so the
+                                    // set file keeps all its entries.
+                                    if (asExport) {
+                                        String t = xpp.getAttributeValue(null, "type");
+                                        if ("scripture".equals(t)) {
+                                            try { getScripture(xpp,currentSet,asExport); } catch (Exception e) { e.printStackTrace(); }
+                                        } else if ("custom".equals(t)) {
+                                            try { getCustom(xpp,currentSet,asExport); } catch (Exception e) { e.printStackTrace(); }
+                                        } else if ("image".equals(t)) {
+                                            try { getImage(xpp,currentSet,asExport); } catch (Exception e) { e.printStackTrace(); }
+                                        } else {
+                                            skipSlideGroup(xpp);
+                                        }
+                                    } else {
+                                        skipSlideGroup(xpp);
                                     }
                                     break;
                             }
@@ -921,6 +914,23 @@ public class SetActions {
                 }
             }
         } catch (Throwable e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Skip a slide_group element entirely (used when loading song-only sets)
+    private void skipSlideGroup(XmlPullParser xpp) {
+        try {
+            // Advance until the matching end tag of this slide_group
+            while (!(xpp.getEventType() == XmlPullParser.END_TAG && "slide_group".equals(xpp.getName()))) {
+                int ev = xpp.next();
+                if (ev == XmlPullParser.END_DOCUMENT) {
+                    return;
+                }
+            }
+            // Move past the end tag
+            xpp.next();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
