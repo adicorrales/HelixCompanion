@@ -411,7 +411,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                         getShowToast().error();
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "MainActivity error", e);
                     getShowToast().error();
                 }
             }
@@ -461,7 +461,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 // Tint the background to the theme
                 tintBackgroundToTheme();
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "MainActivity error", e);
             }
 
             // Try to deal with window focus
@@ -478,7 +478,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                                     myView.mainPageFrame.getFocusDummy().requestFocusFromTouch();
                                 });
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        Log.e(TAG, "MainActivity error", e);
                     }
                 }
             });
@@ -568,7 +568,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                             hideActionBar();
                             bootUpFragment.startOrSetUp();
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            Log.e(TAG, "MainActivity error", e);
                         }
                     }
                 }
@@ -636,7 +636,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                             WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "MainActivity error", e);
             }
         } else {
             if (getWindow() != null) {
@@ -656,7 +656,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "MainActivity error", e);
         }
         this.recreate();
     }
@@ -779,7 +779,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     getMainHandler().post(() -> navigateToFragment(getString(R.string.deeplink_openchords), 0));
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "MainActivity error", e);
                 }
 
             } else if (!dealtWith && fileOpenIntent != null && (fileOpenIntent.getDataString() != null || fileOpenIntent.getData() != null)) {
@@ -803,7 +803,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                             openFragmentBasedOnFileImport();
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        Log.e(TAG, "MainActivity error", e);
                     }
                 }
             }
@@ -812,7 +812,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             try {
                 getIntent().setData(null);
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "MainActivity error", e);
             }
 
         });
@@ -1426,7 +1426,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
                 NavigationUI.setupWithNavController(myView.myToolbar, navController, appBarConfiguration);
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "MainActivity error", e);
             }
 
             try {
@@ -1439,7 +1439,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "MainActivity error", e);
             }
 
             navController.addOnDestinationChangedListener((navController, navDestination, bundle) -> {
@@ -1571,7 +1571,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     super.onPostResume();
                 }
             } catch (Throwable t) {
-                t.printStackTrace();
+                Log.e(TAG, "MainActivity error", t);
             }
 
             // Either sent a deeplink string, or a fragment id
@@ -1610,7 +1610,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                             navController.navigate(id);
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        Log.e(TAG, "MainActivity error", e);
                     }
                 });
             }
@@ -1675,7 +1675,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                             try {
                                 setMenuFragment.notifyItemRangeChanged(0, getCurrentSet().getCurrentSetSize());
                             } catch (Exception e) {
-                                e.printStackTrace();
+                                Log.e(TAG, "MainActivity error", e);
                             }
 
                         }
@@ -1708,7 +1708,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                         try {
                             ((LinksFragment) callingFragment).setupViews();
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            Log.e(TAG, "MainActivity error", e);
                         }
                     }
                     break;
@@ -1773,7 +1773,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     setupActionbar();
                     setupNavigation();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "MainActivity error", e);
                 }
             }
 
@@ -1818,7 +1818,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
             } catch (Exception e) {
                 getStorageAccess().updateCrashLog("Unable to navHome(): " + e);
-                e.printStackTrace();
+                Log.e(TAG, "MainActivity error", e);
             }
         });
     }
@@ -1849,7 +1849,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             try {
                 getSupportFragmentManager().executePendingTransactions();
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "MainActivity error", e);
             }
         });
 
@@ -1887,7 +1887,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             try {
                 nearbyConnectionsFragment.enableConnectionButtons();
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "MainActivity error", e);
             }
         }
     }
@@ -1899,7 +1899,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             try {
                 nearbyConnectionsFragment.updateCountdownText(advertise, materialButton);
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "MainActivity error", e);
             }
         }
     }
@@ -1914,7 +1914,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                         try {
                             myView.actionFAB.removeCallbacks(hideActionButtonRunnable);
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            Log.e(TAG, "MainActivity error", e);
                         }
                     }
                 }
@@ -1950,7 +1950,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     try {
                         getCustomAnimation().fadeActionButton(myView.actionFAB, getMyThemeColors().getPageButtonAlpha());
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        Log.e(TAG, "MainActivity error", e);
                     }
                 }
             }
@@ -2312,7 +2312,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "MainActivity error", e);
             return false;
         }
     }
@@ -2507,7 +2507,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             RepairSongsBottomSheet repairSongsBottomSheet = new RepairSongsBottomSheet();
             repairSongsBottomSheet.show(getMyFragmentManager(),"RepairSongs");
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "MainActivity error", e);
         }
     }
     @Override
@@ -2532,7 +2532,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     }, 1000);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "MainActivity error", e);
             }
             mainLooper.post(() -> {
                 try {
@@ -2546,7 +2546,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     updateSongMenu(song);
                     updateFragment("set_updateKeys", null, null);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "MainActivity error", e);
                 }
             });
         });
@@ -2567,7 +2567,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             try {
                 songMenuFragment.moveToSongInMenu(song);
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "MainActivity error", e);
             }
         }
     }
@@ -2957,7 +2957,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             try {
                 performanceFragment.dealWithAbc(forceShow, hide);
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "MainActivity error", e);
             }
         }
     }
@@ -3125,7 +3125,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                         getShowToast().doIt(unknown);
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "MainActivity error", e);
                 }
             }
             if (dealingWithIntent != null && !dealingWithIntent.isEmpty()) {
@@ -3945,7 +3945,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                         try {
                             ((OpenChordsFragment) callingFragment).doForceChanges(what);
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            Log.e(TAG, "MainActivity error", e);
                         }
                     }
                     allowToast = false;
@@ -3957,7 +3957,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                             songMenuFragment.addAllSongsToSet();
                             result = true;
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            Log.e(TAG, "MainActivity error", e);
                         }
                     }
             }
@@ -3984,7 +3984,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 songMenuFragment.setFolders();
                 songMenuFragment.refreshSongList();
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "MainActivity error", e);
             }
         }
     }
@@ -4066,7 +4066,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     try {
                         songMenuFragment.updateSongMenu();
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        Log.e(TAG, "MainActivity error", e);
                     }
                 }
                 mainLooper.post(() -> {
@@ -4086,7 +4086,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             try {
                 songIds = getStorageAccess().listSongs(false);
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "MainActivity error", e);
             }
             // Write a crude text file (line separated) with the song Ids (folder/file)
             getStorageAccess().writeSongIDFile(songIds);
@@ -4220,7 +4220,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 importOnlineFragment.setClipboardText(songText);
                 importOnlineFragment.doShowSaveButton(!songText.isEmpty());
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "MainActivity error", e);
             }
         }
     }
@@ -4423,7 +4423,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 out.flush();
                 out.close();
             } catch (OutOfMemoryError | Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "MainActivity error", e);
             }
         }
     }
@@ -4484,7 +4484,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     ((ImportOptionsFragment) fragment).isConnected(isConnected);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "MainActivity error", e);
             }
         }
     }
@@ -4495,7 +4495,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             try {
                 ((ImportOnlineFragment) fragment).finishedDownload(uri, filename);
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "MainActivity error", e);
             }
         }
     }
@@ -4587,11 +4587,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             } catch (ActivityNotFoundException nf) {
                 // No suitable application to open the document
                 getShowToast().doIt(no_suitable_application);
-                nf.printStackTrace();
+                Log.e(TAG, "MainActivity error", nf);
 
             } catch (Exception e) {
                 // Probably no browser installed or no internet permission given.
-                e.printStackTrace();
+                Log.e(TAG, "MainActivity error", e);
             }
         }
     }
@@ -4701,7 +4701,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     try {
                         return songMenuFragment.getSongsFound();
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        Log.e(TAG, "MainActivity error", e);
                     }
                 }
                 break;
@@ -4709,7 +4709,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 try {
                     return currentSet.getSetSongObject();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "MainActivity error", e);
                 }
                 break;
         }
@@ -4770,7 +4770,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                         break;
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "MainActivity error", e);
             }
         }
     }
@@ -4781,7 +4781,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             try {
                 ((SwipeFragment) getCurrentFragment()).getSwipeValues(minDistance, minHeight, minTime);
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "MainActivity error", e);
             }
         }
     }
@@ -4819,7 +4819,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 }
                 windowFlags.setCurrentRotation(this.getWindow().getDecorView().getDisplay().getRotation());
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "MainActivity error", e);
             }
             closeDrawer(true);
             // IV - Following testing - Margins update requires 2 calls on orientation change!
@@ -4832,7 +4832,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         try {
             return getResources().getConfiguration().orientation;
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "MainActivity error", e);
             return Configuration.ORIENTATION_PORTRAIT;
         }
     }
@@ -4895,7 +4895,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             // If the user changed language, the strings need updated
             prepareStrings();
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "MainActivity error", e);
         }
     }
 
@@ -4960,7 +4960,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         try {
             getPreferences().setMyPreferenceBoolean("intentAlreadyDealtWith", false);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "MainActivity error", e);
         }
 
         // If we had a bluetooth MIDI device, cancel the connection and unpair
@@ -4983,7 +4983,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             try {
                 executor.shutdownNow();
             } catch (Throwable t) {
-                t.printStackTrace();
+                Log.e(TAG, "MainActivity error", t);
             }
         }
 
