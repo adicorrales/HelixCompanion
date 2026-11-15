@@ -43,12 +43,14 @@ public class SetAdapter extends RecyclerView.Adapter<SetListItemViewHolder> impl
     private boolean highlightChangeAllowed =true;
     private final String divider_string;
     private final Context c;
+    private final boolean isHelixSetMode;
 
     //Initialise the class
-    public SetAdapter(Context c, RecyclerView recyclerView) {
+    public SetAdapter(Context c, RecyclerView recyclerView, boolean isHelixSetMode) {
         mainActivityInterface = (MainActivityInterface) c;
         this.c = c;
         this.recyclerView = recyclerView;
+        this.isHelixSetMode = isHelixSetMode;
         // Get the size of the text to use
         getUpdatedPreferences();
         divider_string = c.getString(R.string.divider);
@@ -283,6 +285,9 @@ public class SetAdapter extends RecyclerView.Adapter<SetListItemViewHolder> impl
 
     @Override
     public int getItemCount() {
+        if (mainActivityInterface.isHelixSet() != isHelixSetMode) {
+            return 0;
+        }
         return mainActivityInterface.getCurrentSet().getCurrentSetSize();
     }
 

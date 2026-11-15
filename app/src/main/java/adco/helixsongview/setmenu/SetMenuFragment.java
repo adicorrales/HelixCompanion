@@ -129,7 +129,7 @@ public class SetMenuFragment extends Fragment {
                 myView.setsRecyclerView.setItemAnimator(null);
             });
 
-            setAdapter = new SetAdapter(getContext(), myView.myRecyclerView);
+            setAdapter = new SetAdapter(getContext(), myView.myRecyclerView, isHelixSetMode());
             myView.myRecyclerView.post(() -> {
                 llm = new LinearLayoutManager(getContext());
                 llm.setOrientation(RecyclerView.VERTICAL);
@@ -146,6 +146,19 @@ public class SetMenuFragment extends Fragment {
     public void refreshSelectSetAdapter() {
         if (selectSetAdapter != null && mainActivityInterface != null) {
             mainActivityInterface.getMainHandler().post(() -> selectSetAdapter.notifyDataSetChanged());
+        }
+    }
+
+    public void refreshAdapters() {
+        if (mainActivityInterface != null) {
+            mainActivityInterface.getMainHandler().post(() -> {
+                if (setAdapter != null) {
+                    setAdapter.notifyDataSetChanged();
+                }
+                if (selectSetAdapter != null) {
+                    selectSetAdapter.notifyDataSetChanged();
+                }
+            });
         }
     }
 

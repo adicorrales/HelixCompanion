@@ -2453,6 +2453,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     } else if (position == 2) {
                         setHelixSet(false);
                     }
+                    if (setMenuFragment != null) {
+                        setMenuFragment.refreshAdapters();
+                    }
+                    if (selectSetFragment != null) {
+                        selectSetFragment.refreshAdapters();
+                    }
                     super.onPageSelected(position);
                 }
             });

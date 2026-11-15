@@ -188,7 +188,11 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
                     return;
                 }
             }
-            String niceName = mainActivityInterface.getSetActions().getNiceSetNameFromFile(filename);
+            String niceName = filename;
+            if (filename.contains("__")) {
+                String[] bits = filename.split("__");
+                niceName = bits[bits.length - 1];
+            }
             holder.titleView.setText(niceName);
         }
     }
@@ -218,10 +222,10 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
 
         notifyDataSetChanged();
         if (mainActivityInterface.getSetMenuFragment() != null) {
-            mainActivityInterface.getSetMenuFragment().refreshSelectSetAdapter();
+            mainActivityInterface.getSetMenuFragment().refreshAdapters();
         }
         if (mainActivityInterface.getSelectSetFragment() != null) {
-            mainActivityInterface.getSelectSetFragment().refreshSelectSetAdapter();
+            mainActivityInterface.getSelectSetFragment().refreshAdapters();
         }
 
         loadSelectedSet(selectedPosition);
@@ -274,7 +278,7 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
                     onSetSelectedListener.onSetSelected(position, loadedFilename);
                 }
                 if (mainActivityInterface.getSetMenuFragment() != null) {
-                    mainActivityInterface.getSetMenuFragment().refreshSelectSetAdapter();
+                    mainActivityInterface.getSetMenuFragment().refreshAdapters();
                 }
                 if (mainActivityInterface.getSelectSetFragment() != null) {
                     mainActivityInterface.getSelectSetFragment().refreshSelectSetAdapter();
