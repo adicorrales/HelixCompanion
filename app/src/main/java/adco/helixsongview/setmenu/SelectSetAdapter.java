@@ -45,17 +45,25 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
 
     public void prepareSets() {
         mainActivityInterface.getThreadPoolExecutor().execute(() -> {
+            mainActivityInterface.getSetActions().migrateSetsToHelixAndLocal();
             ArrayList<String> rawSets = mainActivityInterface.getSetActions().getAllSets();
             if (rawSets == null) {
                 rawSets = new ArrayList<>();
             }
 
-            // Filter out "Song Library" file so it is only displayed at slot 0
-            ArrayList<String> allSets = new ArrayList<>();
+            ArrayList<String> filteredSets = new ArrayList<>();
             for (String setFile : rawSets) {
-                String niceName = mainActivityInterface.getSetActions().getNiceSetNameFromFile(setFile);
-                if (!niceName.equalsIgnoreCase("Song Library") && !setFile.equalsIgnoreCase("Song Library") && !setFile.equalsIgnoreCase("Song Library.ost")) {
-                    allSets.add(setFile);
+                if (setFile.equalsIgnoreCase("Song Library") || setFile.equalsIgnoreCase("Song Library.ost") || setFile.equalsIgnoreCase("Helix__Song Library")) {
+                    continue; // Handled at slot 0 for Helix Sets tab
+                }
+
+                boolean isHelix = setFile.startsWith("Helix__");
+                boolean isLocal = setFile.startsWith("Local__");
+
+                if (isHelixSetMode && isHelix) {
+                    filteredSets.add(setFile);
+                } else if (!isHelixSetMode && isLocal) {
+                    filteredSets.add(setFile);
                 }
             }
 
@@ -66,14 +74,13 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
             if (!savedOrder.isEmpty()) {
                 String[] parts = savedOrder.split(",");
                 for (String part : parts) {
-                    if (allSets.contains(part)) {
+                    if (filteredSets.contains(part)) {
                         orderedSets.add(part);
                     }
                 }
             }
 
-            // Add any new sets not present in saved order
-            for (String set : allSets) {
+            for (String set : filteredSets) {
                 if (!orderedSets.contains(set)) {
                     orderedSets.add(set);
                 }
@@ -105,7 +112,11 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
     @Override
     public int getItemCount() {
         synchronized (lock) {
-            return setFilenames.size() + 1;
+            if (isHelixSetMode) {
+                return setFilenames.size() + 1; // +1 for Song Library at index 0
+            } else {
+                return setFilenames.size();
+            }
         }
     }
 
@@ -127,7 +138,6 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
         int textColor = mainActivityInterface.getPalette().textColor;
         holder.numberView.setTextColor(textColor);
         holder.titleView.setTextColor(textColor);
-        holder.folderView.setTextColor(textColor);
 
         int inactiveColor = mainActivityInterface.getMyThemeColors().getSetInactiveColor();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -139,9 +149,21 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
             holder.cardView.setBackgroundColor(inactiveColor);
         }
 
-        boolean isCurrentlyActiveMode = (mainActivityInterface.isHelixSet() == isHelixSetMode);
-        int activePosition = mainActivityInterface.getPreferences().getMyPreferenceInt("selectedSelectSetPosition", 0);
-        boolean isChecked = isCurrentlyActiveMode && (actualPosition == activePosition);
+        boolean isHelixActive = mainActivityInterface.isHelixSet();
+        String activeFilename = mainActivityInterface.getPreferences().getMyPreferenceString("selectedActiveSetFilename", "Song Library");
+
+        boolean isChecked = false;
+        if (isHelixSetMode && isHelixActive) {
+            if (actualPosition == 0 && (activeFilename.equalsIgnoreCase("Song Library") || activeFilename.equalsIgnoreCase("Song Library.ost") || activeFilename.equalsIgnoreCase("Helix__Song Library"))) {
+                isChecked = true;
+            } else if (actualPosition > 0 && (actualPosition - 1) < setFilenames.size()) {
+                isChecked = setFilenames.get(actualPosition - 1).equalsIgnoreCase(activeFilename);
+            }
+        } else if (!isHelixSetMode && !isHelixActive) {
+            if (actualPosition >= 0 && actualPosition < setFilenames.size()) {
+                isChecked = setFilenames.get(actualPosition).equalsIgnoreCase(activeFilename);
+            }
+        }
 
         holder.checkBox.setOnCheckedChangeListener(null);
         holder.checkBox.setChecked(isChecked);
@@ -154,23 +176,20 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
         holder.checkBox.setOnClickListener(clickListener);
         holder.itemView.setOnClickListener(clickListener);
 
-        if (actualPosition == 0) {
+        if (isHelixSetMode && actualPosition == 0) {
             holder.titleView.setText("Song Library");
-            holder.folderView.setText("");
         } else {
-            int setIndex = actualPosition - 1;
+            int setIndex = isHelixSetMode ? (actualPosition - 1) : actualPosition;
             String filename;
             synchronized (lock) {
-                if (setIndex < setFilenames.size()) {
+                if (setIndex >= 0 && setIndex < setFilenames.size()) {
                     filename = setFilenames.get(setIndex);
                 } else {
                     return;
                 }
             }
             String niceName = mainActivityInterface.getSetActions().getNiceSetNameFromFile(filename);
-            String[] bits = mainActivityInterface.getSetActions().getSetCategoryAndName(filename);
             holder.titleView.setText(niceName);
-            holder.folderView.setText(bits[0]);
         }
     }
 
@@ -179,11 +198,24 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
             return;
         }
 
-        selectedPosition = position;
-        mainActivityInterface.setHelixSet(isHelixSetMode);
-        mainActivityInterface.getPreferences().setMyPreferenceInt("selectedSelectSetPosition", position);
+        String filename = "Song Library";
+        if (isHelixSetMode && position == 0) {
+            selectedPosition = 0;
+            filename = "Song Library";
+        } else {
+            int setIndex = isHelixSetMode ? (position - 1) : position;
+            synchronized (lock) {
+                if (setIndex >= 0 && setIndex < setFilenames.size()) {
+                    filename = setFilenames.get(setIndex);
+                }
+            }
+            selectedPosition = position;
+        }
 
-        // Update checkboxes IMMEDIATELY on UI thread so checkmark moves instantly without any visual delay/glitch
+        mainActivityInterface.setHelixSet(isHelixSetMode);
+        mainActivityInterface.getPreferences().setMyPreferenceString("selectedActiveSetFilename", filename);
+        mainActivityInterface.getPreferences().setMyPreferenceInt("selectedSelectSetPosition", selectedPosition);
+
         notifyDataSetChanged();
         if (mainActivityInterface.getSetMenuFragment() != null) {
             mainActivityInterface.getSetMenuFragment().refreshSelectSetAdapter();
@@ -192,22 +224,19 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
             mainActivityInterface.getSelectSetFragment().refreshSelectSetAdapter();
         }
 
-        // Now load set songs in background
-        loadSelectedSet(position);
+        loadSelectedSet(selectedPosition);
     }
 
     public void loadSelectedSet(int position) {
-        // Reset lastSentMidiSetIdx so sendHelixMidiSetAndSong correctly waits for playlist loading on Helix
         mainActivityInterface.resetLastSentMidiSetIdx();
 
         mainActivityInterface.getThreadPoolExecutor().execute(() -> {
-            // ALWAYS initialize/clear current set
             mainActivityInterface.getCurrentSet().initialiseTheSet();
             mainActivityInterface.getCurrentSet().setSetCurrent("");
             mainActivityInterface.getCurrentSet().setSetCurrentBeforeEdits("");
 
             String filename = "Song Library";
-            if (position == 0) {
+            if (isHelixSetMode && position == 0) {
                 android.net.Uri uri = mainActivityInterface.getStorageAccess().getUriForItem("Sets", "", filename);
                 if (mainActivityInterface.getStorageAccess().uriExists(uri)) {
                     ArrayList<android.net.Uri> setUris = new ArrayList<>();
@@ -217,9 +246,9 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
                     mainActivityInterface.getCurrentSet().setSetCurrentLastName(filename);
                 }
             } else {
-                int setIndex = position - 1;
+                int setIndex = isHelixSetMode ? (position - 1) : position;
                 synchronized (lock) {
-                    if (setIndex < setFilenames.size()) {
+                    if (setIndex >= 0 && setIndex < setFilenames.size()) {
                         filename = setFilenames.get(setIndex);
                     } else {
                         return;
@@ -235,6 +264,7 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
             final String loadedFilename = filename;
             mainActivityInterface.getMainHandler().post(() -> {
                 mainActivityInterface.setHelixSet(isHelixSetMode);
+                mainActivityInterface.getPreferences().setMyPreferenceString("selectedActiveSetFilename", loadedFilename);
                 mainActivityInterface.getPreferences().setMyPreferenceInt("selectedSelectSetPosition", position);
                 if (isHelixSetMode) {
                     mainActivityInterface.sendHelixSetMidi(position);
@@ -243,6 +273,12 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
                 if (onSetSelectedListener != null) {
                     onSetSelectedListener.onSetSelected(position, loadedFilename);
                 }
+                if (mainActivityInterface.getSetMenuFragment() != null) {
+                    mainActivityInterface.getSetMenuFragment().refreshSelectSetAdapter();
+                }
+                if (mainActivityInterface.getSelectSetFragment() != null) {
+                    mainActivityInterface.getSelectSetFragment().refreshSelectSetAdapter();
+                }
                 mainActivityInterface.getMainHandler().postDelayed(mainActivityInterface::updateSetList, 1000);
             });
         });
@@ -250,12 +286,12 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
 
     @Override
     public void onItemMoved(int fromPosition, int toPosition) {
-        if (fromPosition == 0 || toPosition == 0) {
-            return;
+        if (isHelixSetMode && (fromPosition == 0 || toPosition == 0)) {
+            return; // Song library cannot be moved
         }
 
-        int fromIndex = fromPosition - 1;
-        int toIndex = toPosition - 1;
+        int fromIndex = isHelixSetMode ? (fromPosition - 1) : fromPosition;
+        int toIndex = isHelixSetMode ? (toPosition - 1) : toPosition;
 
         synchronized (lock) {
             if (fromIndex >= 0 && fromIndex < setFilenames.size() && toIndex >= 0 && toIndex < setFilenames.size()) {

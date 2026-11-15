@@ -1,7 +1,6 @@
 package adco.helixsongview.customviews;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Handler;
 import android.util.AttributeSet;
@@ -17,7 +16,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
 import adco.helixsongview.MainActivity;
 import adco.helixsongview.R;
@@ -182,6 +180,17 @@ public class MyToolbar extends Toolbar {
                 if (mainActivityInterface != null && mainActivityInterface.getPalette() != null) {
                     playPauseIndicator.setColorFilter(mainActivityInterface.getPalette().textColor);
                 }
+            }
+        }
+        if (btnTransportPlayContainer != null && mainActivityInterface != null) {
+            boolean isHelixActiveSet = mainActivityInterface.isHelixSet();
+            boolean isSongInCurrentSet = mainActivityInterface.getCurrentSet().getIndexSongInSet() >= 0
+                    || mainActivityInterface.getSetActions().indexSongInSet(mainActivityInterface.getSong()) >= 0;
+
+            if (isHelixActiveSet && isSongInCurrentSet) {
+                btnTransportPlayContainer.setBackgroundColor(android.graphics.Color.parseColor("#334CAF50"));
+            } else {
+                btnTransportPlayContainer.setBackgroundResource(R.drawable.transport_btn_bg);
             }
         }
     }
@@ -448,6 +457,17 @@ public class MyToolbar extends Toolbar {
             if (setPosition < 0) {
                 setPosition = mainActivityInterface.getSetActions().indexSongInSet(mainActivityInterface.getSong());
             }
+
+            if (setPosition < 0) {
+                if (btnTransportPrevContainer != null) {
+                    btnTransportPrevContainer.setVisibility(View.GONE);
+                }
+                if (btnTransportNextContainer != null) {
+                    btnTransportNextContainer.setVisibility(View.GONE);
+                }
+                return;
+            }
+
             int prevIndex = -1;
             int currentPos = setPosition;
             while (currentPos > 0) {

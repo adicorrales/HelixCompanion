@@ -2424,7 +2424,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                         tab.setIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.list_number, null));
                         break;
                     case 2:
-                        tab.setText(getString(R.string.app_sets));
+                        tab.setText(getString(R.string.local_sets));
                         tab.setIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.inline_set, null));
                         break;
                 }

@@ -21,7 +21,7 @@ public class SelectSetViewHolder extends RecyclerView.ViewHolder implements View
         GestureDetector.OnGestureListener {
 
     final MaterialCardView cardView;
-    final MyMaterialSimpleTextView numberView, titleView, folderView;
+    final MyMaterialSimpleTextView numberView, titleView;
     final MyMaterialCheckbox checkBox;
     private final ItemTouchHelper itemTouchHelper;
     private final SetItemTouchInterface setItemTouchInterface;
@@ -34,7 +34,6 @@ public class SelectSetViewHolder extends RecyclerView.ViewHolder implements View
         cardView = itemView.findViewById(R.id.select_set_card);
         numberView = itemView.findViewById(R.id.select_set_number);
         titleView = itemView.findViewById(R.id.select_set_title);
-        folderView = itemView.findViewById(R.id.select_set_folder);
         checkBox = itemView.findViewById(R.id.select_set_checkbox);
 
         cardView.setOnTouchListener(this);

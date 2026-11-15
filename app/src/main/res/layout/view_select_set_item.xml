@@ -1,81 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/select_set_card"
+    style="@style/setItem"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:gravity="center_vertical"
-    android:paddingStart="8dp"
-    android:paddingEnd="8dp"
-    android:paddingTop="2dp"
-    android:paddingBottom="2dp">
+    android:layout_margin="2dp">
 
-    <!-- Set number column -->
-    <adco.helixsongview.customviews.MyMaterialSimpleTextView
-        android:id="@+id/select_set_number"
-        android:layout_width="48dp"
+    <RelativeLayout
+        android:id="@+id/select_set_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        android:text="0:"
-        android:textColor="?attr/colorOnPrimary" />
+        android:minHeight="48dp"
+        android:gravity="center_vertical"
+        android:padding="4dp">
 
-    <!-- Card containing set name and checkbox -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/select_set_card"
-        style="@style/setItem"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp">
+        <!-- Set number -->
+        <adco.helixsongview.customviews.MyMaterialSimpleTextView
+            android:id="@+id/select_set_number"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:text="0:"
+            android:textColor="?attr/colorOnPrimary" />
 
-        <RelativeLayout
-            android:id="@+id/select_set_layout"
+        <!-- Checkbox on the right -->
+        <adco.helixsongview.customviews.MyMaterialCheckbox
+            android:id="@+id/select_set_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:clickable="false"
+            android:focusable="false"
+            android:padding="8dp" />
+
+        <!-- Set title centered vertically, single line truncated -->
+        <adco.helixsongview.customviews.MyMaterialSimpleTextView
+            android:id="@+id/select_set_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="6dp">
+            android:layout_toEndOf="@+id/select_set_number"
+            android:layout_toStartOf="@+id/select_set_checkbox"
+            android:layout_centerVertical="true"
+            android:gravity="center_vertical"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:text="Title"
+            android:textSize="14sp"
+            android:textColor="?attr/colorOnPrimary" />
 
-            <adco.helixsongview.customviews.MyMaterialCheckbox
-                android:id="@+id/select_set_checkbox"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:padding="8dp" />
-
-            <adco.helixsongview.customviews.MyMaterialSimpleTextView
-                android:id="@+id/select_set_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_toStartOf="@+id/select_set_checkbox"
-                android:layout_alignParentStart="true"
-                android:gravity="center_vertical"
-                android:paddingStart="4dp"
-                android:paddingTop="2dp"
-                android:paddingEnd="4dp"
-                android:paddingBottom="0dp"
-                android:text="Title"
-                android:textSize="14sp"
-                android:textColor="?attr/colorOnPrimary"
-                android:visibility="visible"/>
-
-            <adco.helixsongview.customviews.MyMaterialSimpleTextView
-                android:id="@+id/select_set_folder"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_toStartOf="@+id/select_set_checkbox"
-                android:layout_below="@+id/select_set_title"
-                android:layout_alignParentStart="true"
-                android:gravity="center_vertical"
-                android:paddingStart="4dp"
-                android:paddingTop="0dp"
-                android:paddingEnd="4dp"
-                android:paddingBottom="2dp"
-                android:text="Folder"
-                android:textSize="11sp"
-                android:textColor="?attr/hintTextColor" />
-
-        </RelativeLayout>
-    </com.google.android.material.card.MaterialCardView>
-
-</LinearLayout>
+    </RelativeLayout>
+</com.google.android.material.card.MaterialCardView>

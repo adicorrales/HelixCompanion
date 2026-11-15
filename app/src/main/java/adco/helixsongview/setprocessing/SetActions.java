@@ -440,6 +440,38 @@ public class SetActions {
     public ArrayList<String> getAllSets() {
         return mainActivityInterface.getStorageAccess().listFilesInFolder("Sets", "");
     }
+
+    public void migrateSetsToHelixAndLocal() {
+        try {
+            ArrayList<String> allFiles = mainActivityInterface.getStorageAccess().listFilesInFolder("Sets", "");
+            if (allFiles == null) return;
+            for (String filename : allFiles) {
+                if (filename.equalsIgnoreCase("Song Library") || filename.equalsIgnoreCase("Song Library.ost") || filename.equalsIgnoreCase("Helix__Song Library")) {
+                    if (!filename.equals("Helix__Song Library") && !filename.equals("Song Library")) {
+                        android.net.Uri oldUri = mainActivityInterface.getStorageAccess().getUriForItem("Sets", "", filename);
+                        android.net.Uri newUri = mainActivityInterface.getStorageAccess().getUriForItem("Sets", "", "Helix__Song Library");
+                        mainActivityInterface.getStorageAccess().renameFileFromUri(oldUri, newUri, "Sets", "", "Helix__Song Library");
+                    }
+                    continue;
+                }
+                if (filename.startsWith("Helix__") || filename.startsWith("Local__")) {
+                    continue;
+                }
+                String cleanName = filename;
+                if (filename.contains("__")) {
+                    cleanName = filename.substring(filename.indexOf("__") + 2);
+                }
+                String newFilename = "Local__" + cleanName;
+                if (!filename.equals(newFilename)) {
+                    android.net.Uri oldUri = mainActivityInterface.getStorageAccess().getUriForItem("Sets", "", filename);
+                    android.net.Uri newUri = mainActivityInterface.getStorageAccess().getUriForItem("Sets", "", newFilename);
+                    mainActivityInterface.getStorageAccess().renameFileFromUri(oldUri, newUri, "Sets", "", newFilename);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     public ArrayList<String> getRequiredSets(boolean all) {
         // If we want all of them, we simply want all the filenames
         if (all) {

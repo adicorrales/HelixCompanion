@@ -908,6 +908,7 @@
     <string name="menu_set_info">Use this button to view and manage your sets</string>
     <string name="helix_sets" translatable="false">HELIX SETS</string>
     <string name="app_sets" translatable="false">APP SETS</string>
+    <string name="local_sets" translatable="false">LOCAL SETS</string>
     <string name="sets_header" translatable="false">SETS</string>
     <string name="songs_in_set_header" translatable="false">SONGS IN SET</string>
     <string name="menu_settings">Menu settings</string>
