@@ -11,13 +11,13 @@
         android:gravity="center_vertical"
         android:minHeight="72dp"
         android:orientation="horizontal">
-    <adco.helixsongview.customviews.MyMaterialTextView
-        android:id="@+id/setTitle"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:padding="16dp" />
+        <adco.helixsongview.customviews.MyMaterialTextView
+            android:id="@+id/setTitle"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:padding="16dp" />
         <adco.helixsongview.customviews.MyExtendedFloatingActionButton
             android:id="@+id/saveSetButton"
             android:layout_width="wrap_content"
@@ -28,38 +28,98 @@
             android:layout_margin="8dp"/>
     </LinearLayout>
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:id="@+id/coordinatorLayout"
+    <LinearLayout
+        android:id="@+id/columnsLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/titleLayout"
-        android:importantForAccessibility="no">
+        android:orientation="horizontal">
 
-        <!--<FrameLayout
-            android:layout_width="match_parent"
+        <!-- Left Column: Sets List (Playlists) -->
+        <RelativeLayout
+            android:id="@+id/setsColumnLayout"
+            android:layout_width="0dp"
+            android:layout_weight="0.4"
             android:layout_height="match_parent">
--->
+
+            <adco.helixsongview.customviews.MyMaterialTextView
+                android:id="@+id/setsColumnHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/sets_header"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:paddingStart="12dp"
+                android:paddingTop="6dp"
+                android:paddingBottom="4dp"/>
+
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/my_recycler_view"
+                android:id="@+id/sets_recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_below="@+id/setsColumnHeader"
                 android:clipToPadding="false"
-                android:layout_margin="0dp"
-                android:paddingTop="0dp"
                 android:paddingBottom="64dp"
                 android:orientation="vertical"/>
+        </RelativeLayout>
 
-        <adco.helixsongview.customviews.MyFloatingActionButton
-            android:id="@+id/setMasterFAB"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            app:addTouchPadding="true"
-            android:contentDescription="@string/action"
-            android:src="@drawable/plus"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent" />
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+        <!-- Vertical Column Divider -->
+        <View
+            android:id="@+id/columnDivider"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="#33888888" />
+
+        <!-- Right Column: Songs in Selected Set -->
+        <RelativeLayout
+            android:id="@+id/songsColumnLayout"
+            android:layout_width="0dp"
+            android:layout_weight="0.6"
+            android:layout_height="match_parent">
+
+            <adco.helixsongview.customviews.MyMaterialTextView
+                android:id="@+id/songsColumnHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/songs_in_set_header"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:paddingStart="12dp"
+                android:paddingTop="6dp"
+                android:paddingBottom="4dp"/>
+
+            <androidx.coordinatorlayout.widget.CoordinatorLayout
+                android:id="@+id/coordinatorLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/songsColumnHeader"
+                android:importantForAccessibility="no">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/my_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clipToPadding="false"
+                    android:layout_margin="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingBottom="64dp"
+                    android:orientation="vertical"/>
+
+            </androidx.coordinatorlayout.widget.CoordinatorLayout>
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <adco.helixsongview.customviews.MyFloatingActionButton
+        android:id="@+id/setMasterFAB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="16dp"
+        app:addTouchPadding="true"
+        android:contentDescription="@string/action"
+        android:src="@drawable/plus" />
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -69,4 +129,5 @@
         android:indeterminate="true"
         android:visibility="gone"
         app:elevation="24dp" />
+
 </RelativeLayout>

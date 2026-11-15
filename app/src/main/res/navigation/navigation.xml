@@ -268,9 +268,6 @@
                     android:id="@+id/action_displayMenuFragment_to_displayScalingFragment"
                     app:destination="@id/displayScalingFragment" />
                 <action
-                    android:id="@+id/action_displayMenuFragment_to_connectedDisplayFragment"
-                    app:destination="@id/connectedDisplayFragment" />
-                <action
                     android:id="@+id/action_displayMenuFragment_to_inlineSetFragment"
                     app:destination="@id/inlineSetFragment" />
                 <action
@@ -353,16 +350,8 @@
                     app:uri="@string/deeplink_scaling" />
             </fragment>
 
-            <!-- Connected display -->
-            <fragment
-                android:id="@+id/connectedDisplayFragment"
-                android:name="adco.helixsongview.secondarydisplay.SecondaryDisplaySettingsFragment"
-                android:label="settings_connected_display"
-                tools:layout="@layout/settings_display_connected">
-                <deepLink
-                    android:id="@+id/deepLinkConnectedDisplay"
-                    app:uri="@string/deeplink_connected_display" />
-            </fragment>
+
+
             <fragment
                 android:id="@+id/inlineSetFragment"
                 android:name="adco.helixsongview.setmenu.InlineSetFragment"
@@ -497,9 +486,7 @@
                 <action
                     android:id="@+id/action_aboutAppFragment_to_shareLogsFragment"
                     app:destination="@id/shareLogsFragment" />
-                <action
-                    android:id="@+id/action_aboutAppFragment_to_forumFragment"
-                    app:destination="@id/forumFragment" />
+
             </fragment>
 
             <!-- Language -->
@@ -525,16 +512,7 @@
                     app:uri="@string/deeplink_logs" />
             </fragment>
 
-            <!-- Forum -->
-            <fragment
-                android:id="@+id/forumFragment"
-                android:name="adco.helixsongview.utilities.ForumFragment"
-                android:label="ForumFragment"
-                tools:layout="@layout/settings_forum_webview">
-                <deepLink
-                    android:id="@+id/deepLinkForum"
-                    app:uri="@string/deeplink_forum" />
-            </fragment>
+
 
         </navigation>
         <deepLink
@@ -554,15 +532,7 @@
                 <action
                     android:id="@+id/action_songActionsMenuFragment_to_editSongFragment"
                     app:destination="@+id/editsong_graph" />
-                <action
-                    android:id="@+id/action_songActionsMenuFragment_to_highlighterFragment"
-                    app:destination="@id/highlighterFragment" />
-                <action
-                    android:id="@+id/action_songActionsMenuFragment_to_musicScoreFragment"
-                    app:destination="@id/musicScoreFragment" />
-                <action
-                    android:id="@+id/action_songActionsMenuFragment_to_stickyNotesFragment"
-                    app:destination="@id/stickyNotesFragment" />
+
                 <deepLink
                     android:id="@+id/deepLinkSongActions"
                     app:uri="@string/deeplink_song_actions" />
@@ -584,46 +554,12 @@
                 <action
                     android:id="@+id/action_songActionsMenuFragment_to_autoscrollSettingsFragment"
                     app:destination="@id/autoscrollSettingsFragment" />
-                <action
-                    android:id="@+id/action_songActionsMenuFragment_to_bulkTagAssignFragment"
-                    app:destination="@id/bulkTagAssignFragment" />
+
            </fragment>
-            <fragment
-                android:id="@+id/highlighterFragment"
-                android:name="adco.helixsongview.highlighter.HighlighterFragment"
-                android:label="HighlighterFragment"
-                tools:layout="@layout/settings_highlighter">
-                <action
-                    android:id="@+id/action_highlighterFragment_to_highlighterEditFragment"
-                    app:destination="@id/highlighterEditFragment" />
-            </fragment>
-            <fragment
-                android:id="@+id/highlighterEditFragment"
-                android:name="adco.helixsongview.highlighter.HighlighterEditFragment"
-                android:label="HighlighterEditFragment"
-                tools:layout="@layout/settings_highlighter_edit">
-                <deepLink
-                    android:id="@+id/deepLinkHighlighter"
-                    app:uri="@string/deeplink_highlighter" />
-            </fragment>
-            <fragment
-                android:id="@+id/musicScoreFragment"
-                android:name="adco.helixsongview.abcnotation.MusicScoreFragment"
-                android:label="MusicScoreFragment"
-                tools:layout="@layout/settings_abcnotation">
-                <deepLink
-                    android:id="@+id/deepLinkABC"
-                    app:uri="@string/deeplink_abc" />
-            </fragment>
-            <fragment
-                android:id="@+id/stickyNotesFragment"
-                android:name="adco.helixsongview.stickynotes.StickyNotesFragment"
-                android:label="StickyNotesFragment"
-                tools:layout="@layout/settings_stickynotes">
-                <deepLink
-                    android:id="@+id/deepLinkStickyNotes"
-                    app:uri="@string/deeplink_sticky_notes" />
-            </fragment>
+
+
+
+
             <fragment
                 android:id="@+id/exportFragment"
                 android:name="adco.helixsongview.export.ExportFragment"
@@ -807,14 +743,6 @@
                 <deepLink android:id="@+id/deepLinkAutoscroll"
                     app:uri="@string/deeplink_autoscroll_settings"/>
             </fragment>
-            <fragment
-                android:id="@+id/bulkTagAssignFragment"
-                android:name="adco.helixsongview.tags.BulkTagAssignFragment"
-                android:label="BulkTagAssignFragment"
-                tools:layout="@layout/settings_tag_manage">
-                <deepLink android:id="@+id/bulkTagAssignFragment"
-                    app:uri="@string/deeplink_tags"/>
-            </fragment>
 
         </navigation>
 
@@ -841,9 +769,6 @@
                 <action
                     android:id="@+id/action_setActionsFragment_to_setManageFragment"
                     app:destination="@id/setManageFragment" />
-                <action
-                    android:id="@+id/action_setActionsFragment_to_customSlideFragment"
-                    app:destination="@id/customSlideFragment" />
                 <action
                     android:id="@+id/action_setActionsFragment_to_backupRestoreSetsFragment"
                     app:destination="@id/backupRestoreSetsFragment" />
@@ -872,15 +797,7 @@
                     app:uri="@string/deeplink_set_bundle" />
             </fragment>
 
-            <fragment
-                android:id="@+id/customSlideFragment"
-                android:name="adco.helixsongview.customslides.CustomSlideFragment"
-                android:label="CustomSlideFragment"
-                tools:layout="@layout/settings_custom_slide">
-                <deepLink
-                    android:id="@+id/deepLinkCustomSlide"
-                    app:uri="@string/deeplink_custom_slide" />
-            </fragment>
+
             <fragment
                 android:id="@+id/backupRestoreSetsFragment"
                 android:name="adco.helixsongview.setprocessing.BackupRestoreSetsFragment"
@@ -923,15 +840,7 @@
                     android:id="@+id/deepLinkMidi"
                     app:uri="@string/deeplink_midi" />
             </fragment>
-            <fragment
-                android:id="@+id/midiClock"
-                android:name="adco.helixsongview.midi.MidiClockFragment"
-                android:label="settings_midi_clock"
-                tools:layout="@layout/settings_midi_clock">
-                <deepLink
-                    android:id="@+id/deepLinkMidiClock"
-                    app:uri="@string/deeplink_midi_clock" />
-            </fragment>
+
             <fragment
                 android:id="@+id/midiOptionsFragment"
                 android:name="adco.helixsongview.midi.MidiOptionsFragment"

@@ -2420,11 +2420,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                         tab.setIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.music_note, null));
                         break;
                     case 1:
-                        tab.setText(set_string);
+                        tab.setText(getString(R.string.helix_sets));
                         tab.setIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.list_number, null));
                         break;
                     case 2:
-                        tab.setText("SELECT SET");
+                        tab.setText(getString(R.string.app_sets));
                         tab.setIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.inline_set, null));
                         break;
                 }
@@ -2448,6 +2448,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 @Override
                 public void onPageSelected(int position) {
                     showSetMenu = position != 0;
+                    if (position == 1) {
+                        setHelixSet(true);
+                    } else if (position == 2) {
+                        setHelixSet(false);
+                    }
                     super.onPageSelected(position);
                 }
             });
@@ -2710,8 +2715,32 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     }
 
     @Override
+    public boolean isHelixSet() {
+        return getPreferences().getMyPreferenceBoolean("isHelixSet", true);
+    }
+
+    @Override
+    public void setHelixSet(boolean helixSet) {
+        getPreferences().setMyPreferenceBoolean("isHelixSet", helixSet);
+    }
+
+    @Override
     public SetMenuFragment getSetMenuFragment() {
+        if (viewPager != null && viewPager.getCurrentItem() == 2 && selectSetFragment != null) {
+            return selectSetFragment;
+        }
+        if (setMenuFragment == null && viewPagerAdapter != null) {
+            setMenuFragment = (SetMenuFragment) viewPagerAdapter.createFragment(1);
+        }
         return setMenuFragment;
+    }
+
+    @Override
+    public SelectSetFragment getSelectSetFragment() {
+        if (selectSetFragment == null && viewPagerAdapter != null) {
+            selectSetFragment = (SelectSetFragment) viewPagerAdapter.createFragment(2);
+        }
+        return selectSetFragment;
     }
 
     @Override
@@ -3351,6 +3380,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
     @Override
     public void sendHelixSetMidi(int setIdx) {
+        if (!isHelixSet()) {
+            return;
+        }
         int ch = getPreferences().getMyPreferenceInt("helixGlobalMidiChannel", 1);
         if (ch < 1) {
             ch = 1;
@@ -3368,6 +3400,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
     @Override
     public void sendHelixMidiSetAndSong(int setIdx, int songPosition) {
+        if (!isHelixSet()) {
+            return;
+        }
         int ch = getPreferences().getMyPreferenceInt("helixGlobalMidiChannel", 1);
         if (ch < 1) {
             ch = 1;
@@ -3638,18 +3673,22 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         if (currentPos > 0) {
             loadSongFromSet(currentPos - 1);
         }
-        int channel = getPreferences().getMyPreferenceInt("helixGlobalMidiChannel", 1);
-        if (channel < 1) channel = 1;
-        String msg = "MIDI" + channel + ":CC49:0"; // Previous Song (0-63)
-        getMidi().sendMidiHexSequence(msg);
+        if (isHelixSet()) {
+            int channel = getPreferences().getMyPreferenceInt("helixGlobalMidiChannel", 1);
+            if (channel < 1) channel = 1;
+            String msg = "MIDI" + channel + ":CC49:0"; // Previous Song (0-63)
+            getMidi().sendMidiHexSequence(msg);
+        }
     }
 
     @Override
     public void onTransportRt0() {
-        int channel = getPreferences().getMyPreferenceInt("helixGlobalMidiChannel", 1);
-        if (channel < 1) channel = 1;
-        String msg = "MIDI" + channel + ":CC47:0"; // Return to Zero
-        getMidi().sendMidiHexSequence(msg);
+        if (isHelixSet()) {
+            int channel = getPreferences().getMyPreferenceInt("helixGlobalMidiChannel", 1);
+            if (channel < 1) channel = 1;
+            String msg = "MIDI" + channel + ":CC47:0"; // Return to Zero
+            getMidi().sendMidiHexSequence(msg);
+        }
     }
 
     @Override
@@ -3664,9 +3703,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             if (myView != null) {
                 myView.myToolbar.updatePlayButton(isPlaying);
             }
-            int val = isPlaying ? 127 : 0;
-            String msg = "MIDI" + channel + ":CC51:" + val;
-            getMidi().sendMidiHexSequence(msg);
+            if (isHelixSet()) {
+                int val = isPlaying ? 127 : 0;
+                String msg = "MIDI" + channel + ":CC51:" + val;
+                getMidi().sendMidiHexSequence(msg);
+            }
             transportClickCount = isPlaying ? 2 : 0;
         } else {
             // Modo Load / Load + Preset:
@@ -3678,25 +3719,31 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 if (myView != null) {
                     myView.myToolbar.updatePlayButton(false);
                 }
-                String msg = "MIDI" + channel + ":CC51:127";
-                getMidi().sendMidiHexSequence(msg);
+                if (isHelixSet()) {
+                    String msg = "MIDI" + channel + ":CC51:127";
+                    getMidi().sendMidiHexSequence(msg);
+                }
             } else if (transportClickCount == 1) {
                 transportClickCount = 2;
                 isPlaying = true;
                 if (myView != null) {
                     myView.myToolbar.updatePlayButton(true);
                 }
-                String msg = "MIDI" + channel + ":CC51:127";
-                getMidi().sendMidiHexSequence(msg);
+                if (isHelixSet()) {
+                    String msg = "MIDI" + channel + ":CC51:127";
+                    getMidi().sendMidiHexSequence(msg);
+                }
             } else {
                 // Ya reproduciendo: toggle play/pause
                 isPlaying = !isPlaying;
                 if (myView != null) {
                     myView.myToolbar.updatePlayButton(isPlaying);
                 }
-                int val = isPlaying ? 127 : 0;
-                String msg = "MIDI" + channel + ":CC51:" + val;
-                getMidi().sendMidiHexSequence(msg);
+                if (isHelixSet()) {
+                    int val = isPlaying ? 127 : 0;
+                    String msg = "MIDI" + channel + ":CC51:" + val;
+                    getMidi().sendMidiHexSequence(msg);
+                }
                 transportClickCount = isPlaying ? 2 : 0;
             }
         }
@@ -3708,10 +3755,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         if (currentPos < currentSet.getCurrentSetSize() - 1) {
             loadSongFromSet(currentPos + 1);
         }
-        int channel = getPreferences().getMyPreferenceInt("helixGlobalMidiChannel", 1);
-        if (channel < 1) channel = 1;
-        String msg = "MIDI" + channel + ":CC49:127"; // Next Song (64-127)
-        getMidi().sendMidiHexSequence(msg);
+        if (isHelixSet()) {
+            int channel = getPreferences().getMyPreferenceInt("helixGlobalMidiChannel", 1);
+            if (channel < 1) channel = 1;
+            String msg = "MIDI" + channel + ":CC49:127"; // Next Song (64-127)
+            getMidi().sendMidiHexSequence(msg);
+        }
     }
 
     @Override

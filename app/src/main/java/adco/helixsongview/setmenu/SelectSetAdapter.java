@@ -19,16 +19,22 @@ import java.util.ArrayList;
 
 public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> implements SetItemTouchInterface {
 
+    public interface OnSetSelectedListener {
+        void onSetSelected(int position, String filename);
+    }
+
     private final MainActivityInterface mainActivityInterface;
-    private final SelectSetFragment selectSetFragment;
+    private final boolean isHelixSetMode;
+    private final OnSetSelectedListener onSetSelectedListener;
     private final ArrayList<String> setFilenames = new ArrayList<>();
     private ItemTouchHelper touchHelper;
     private final Object lock = new Object();
     private int selectedPosition = 0;
 
-    public SelectSetAdapter(Context context, RecyclerView recyclerView, SelectSetFragment selectSetFragment) {
+    public SelectSetAdapter(Context context, RecyclerView recyclerView, boolean isHelixSetMode, OnSetSelectedListener listener) {
         this.mainActivityInterface = (MainActivityInterface) context;
-        this.selectSetFragment = selectSetFragment;
+        this.isHelixSetMode = isHelixSetMode;
+        this.onSetSelectedListener = listener;
         this.selectedPosition = mainActivityInterface.getPreferences().getMyPreferenceInt("selectedSelectSetPosition", 0);
         prepareSets();
     }
@@ -54,7 +60,8 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
             }
 
             // Retrieve saved order from preferences
-            String savedOrder = mainActivityInterface.getPreferences().getMyPreferenceString("selectSetOrder", "");
+            String orderPrefKey = isHelixSetMode ? "selectSetOrderHelix" : "selectSetOrderApp";
+            String savedOrder = mainActivityInterface.getPreferences().getMyPreferenceString(orderPrefKey, "");
             ArrayList<String> orderedSets = new ArrayList<>();
             if (!savedOrder.isEmpty()) {
                 String[] parts = savedOrder.split(",");
@@ -91,7 +98,8 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
                 }
             }
         }
-        mainActivityInterface.getPreferences().setMyPreferenceString("selectSetOrder", sb.toString());
+        String orderPrefKey = isHelixSetMode ? "selectSetOrderHelix" : "selectSetOrderApp";
+        mainActivityInterface.getPreferences().setMyPreferenceString(orderPrefKey, sb.toString());
     }
 
     @Override
@@ -131,15 +139,20 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
             holder.cardView.setBackgroundColor(inactiveColor);
         }
 
-        holder.checkBox.setChecked(actualPosition == selectedPosition);
+        boolean isCurrentlyActiveMode = (mainActivityInterface.isHelixSet() == isHelixSetMode);
+        int activePosition = mainActivityInterface.getPreferences().getMyPreferenceInt("selectedSelectSetPosition", 0);
+        boolean isChecked = isCurrentlyActiveMode && (actualPosition == activePosition);
+
+        holder.checkBox.setOnCheckedChangeListener(null);
+        holder.checkBox.setChecked(isChecked);
+        holder.checkBox.setClickable(false);
+        holder.checkBox.setFocusable(false);
 
         int finalActualPosition = actualPosition;
-        holder.checkBox.setOnClickListener(v -> {
-            selectedPosition = finalActualPosition;
-            mainActivityInterface.getPreferences().setMyPreferenceInt("selectedSelectSetPosition", selectedPosition);
-            notifyDataSetChanged();
-            loadSelectedSet(selectedPosition);
-        });
+        View.OnClickListener clickListener = v -> onSetItemClicked(finalActualPosition);
+        holder.cardView.setOnClickListener(clickListener);
+        holder.checkBox.setOnClickListener(clickListener);
+        holder.itemView.setOnClickListener(clickListener);
 
         if (actualPosition == 0) {
             holder.titleView.setText("Song Library");
@@ -161,29 +174,50 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
         }
     }
 
-    private void loadSelectedSet(int position) {
-        // Reset lastSentMidiSetIdx so sendHelixMidiSetAndSong correctly waits 300ms for playlist loading on Helix
+    private void onSetItemClicked(int position) {
+        if (position == RecyclerView.NO_POSITION) {
+            return;
+        }
+
+        selectedPosition = position;
+        mainActivityInterface.setHelixSet(isHelixSetMode);
+        mainActivityInterface.getPreferences().setMyPreferenceInt("selectedSelectSetPosition", position);
+
+        // Update checkboxes IMMEDIATELY on UI thread so checkmark moves instantly without any visual delay/glitch
+        notifyDataSetChanged();
+        if (mainActivityInterface.getSetMenuFragment() != null) {
+            mainActivityInterface.getSetMenuFragment().refreshSelectSetAdapter();
+        }
+        if (mainActivityInterface.getSelectSetFragment() != null) {
+            mainActivityInterface.getSelectSetFragment().refreshSelectSetAdapter();
+        }
+
+        // Now load set songs in background
+        loadSelectedSet(position);
+    }
+
+    public void loadSelectedSet(int position) {
+        // Reset lastSentMidiSetIdx so sendHelixMidiSetAndSong correctly waits for playlist loading on Helix
         mainActivityInterface.resetLastSentMidiSetIdx();
 
         mainActivityInterface.getThreadPoolExecutor().execute(() -> {
-            // First, ALWAYS initialize/clear the current set to prevent duplicates!
+            // ALWAYS initialize/clear current set
             mainActivityInterface.getCurrentSet().initialiseTheSet();
             mainActivityInterface.getCurrentSet().setSetCurrent("");
             mainActivityInterface.getCurrentSet().setSetCurrentBeforeEdits("");
 
+            String filename = "Song Library";
             if (position == 0) {
-                String songLibFilename = "Song Library";
-                android.net.Uri uri = mainActivityInterface.getStorageAccess().getUriForItem("Sets", "", songLibFilename);
+                android.net.Uri uri = mainActivityInterface.getStorageAccess().getUriForItem("Sets", "", filename);
                 if (mainActivityInterface.getStorageAccess().uriExists(uri)) {
                     ArrayList<android.net.Uri> setUris = new ArrayList<>();
                     setUris.add(uri);
-                    mainActivityInterface.getSetActions().loadSets(setUris, mainActivityInterface.getCurrentSet(), songLibFilename);
+                    mainActivityInterface.getSetActions().loadSets(setUris, mainActivityInterface.getCurrentSet(), filename);
                 } else {
-                    mainActivityInterface.getCurrentSet().setSetCurrentLastName(songLibFilename);
+                    mainActivityInterface.getCurrentSet().setSetCurrentLastName(filename);
                 }
             } else {
                 int setIndex = position - 1;
-                String filename;
                 synchronized (lock) {
                     if (setIndex < setFilenames.size()) {
                         filename = setFilenames.get(setIndex);
@@ -198,22 +232,18 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
                 mainActivityInterface.getSetActions().loadSets(setUris, mainActivityInterface.getCurrentSet(), filename);
             }
 
+            final String loadedFilename = filename;
             mainActivityInterface.getMainHandler().post(() -> {
-                if (mainActivityInterface.getCurrentSet().getCurrentSetSize() > 0) {
-                    if (mainActivityInterface.getPerformanceValid()) {
-                        // Fragment already exists: load directly, no double onCreateView
-                        mainActivityInterface.loadSongFromSet(0);
-                    } else {
-                        // Fragment will be created: let onCreateView handle the load
-                        mainActivityInterface.setWhattodo("pendingLoadSet");
-                    }
-                    mainActivityInterface.navigateToFragment(null, R.id.performanceFragment);
-                } else {
-                    mainActivityInterface.chooseMenu(true);
+                mainActivityInterface.setHelixSet(isHelixSetMode);
+                mainActivityInterface.getPreferences().setMyPreferenceInt("selectedSelectSetPosition", position);
+                if (isHelixSetMode) {
                     mainActivityInterface.sendHelixSetMidi(position);
                 }
-                // Defer set-list refresh so it doesn't block first-song display
-                mainActivityInterface.getMainHandler().postDelayed(mainActivityInterface::updateSetList, 3000);
+                mainActivityInterface.getCurrentSet().updateSetTitleView();
+                if (onSetSelectedListener != null) {
+                    onSetSelectedListener.onSetSelected(position, loadedFilename);
+                }
+                mainActivityInterface.getMainHandler().postDelayed(mainActivityInterface::updateSetList, 1000);
             });
         });
     }
@@ -234,7 +264,6 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
             }
         }
 
-        // Update selectedPosition if it was moved
         if (selectedPosition == fromPosition) {
             selectedPosition = toPosition;
         } else if (fromPosition < selectedPosition && toPosition >= selectedPosition) {
@@ -255,15 +284,11 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
     @Override
     public void onItemClicked(MainActivityInterface mainActivityInterface, int position) {
         if (position != RecyclerView.NO_POSITION) {
-            selectedPosition = position;
-            mainActivityInterface.getPreferences().setMyPreferenceInt("selectedSelectSetPosition", selectedPosition);
-            notifyDataSetChanged();
-            loadSelectedSet(position);
+            onSetItemClicked(position);
         }
     }
 
     @Override
     public void onRowSelected(SetListItemViewHolder myViewHolder) {
-        // Not used with SelectSetViewHolder
     }
 }

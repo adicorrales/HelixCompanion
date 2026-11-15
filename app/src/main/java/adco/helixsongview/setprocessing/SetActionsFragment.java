@@ -107,7 +107,6 @@ public class SetActionsFragment extends Fragment {
                 mainActivityInterface.navigateToFragment(null, R.id.setManageFragment);
             });
 
-            myView.slideButton.setOnClickListener(v -> mainActivityInterface.navigateToFragment(null, R.id.customSlideFragment));
             myView.exportSet.setOnClickListener(v -> {
                 mainActivityInterface.setWhattodo("exportset");
                 mainActivityInterface.navigateToFragment(null, R.id.setManageFragment);

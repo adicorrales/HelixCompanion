@@ -1,88 +1,14 @@
 package adco.helixsongview.setmenu;
 
-import android.content.Context;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import adco.helixsongview.databinding.MenuSetsBinding;
-import adco.helixsongview.interfaces.MainActivityInterface;
-
-public class SelectSetFragment extends Fragment {
-
-    private MenuSetsBinding myView;
-    private MainActivityInterface mainActivityInterface;
-    private SelectSetAdapter selectSetAdapter;
+public class SelectSetFragment extends SetMenuFragment {
 
     @Override
-    public void onAttach(@NonNull Context context) {
-        mainActivityInterface = (MainActivityInterface) context;
-        super.onAttach(context);
+    protected boolean isHelixSetMode() {
+        return false;
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        if (selectSetAdapter != null) {
-            selectSetAdapter.prepareSets();
-        }
-    }
-
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        myView = MenuSetsBinding.inflate(inflater, container, false);
-        myView.getRoot().setBackgroundColor(mainActivityInterface.getPalette().background);
-        mainActivityInterface.getMyThemeColors().tintProgressBar(myView.progressBar);
-
-        if (getContext() != null) {
-            mainActivityInterface = (MainActivityInterface) getContext();
-            mainActivityInterface.registerFragment(this, "SelectSetFragment");
-        }
-
-        setupAdapter();
-        setListeners();
-
-        myView.setTitle.setText("Select Set");
-        myView.saveSetButton.setVisibility(View.GONE);
-
-        return myView.getRoot();
-    }
-
-    private void setupAdapter() {
-        if (getContext() != null && myView != null) {
-            selectSetAdapter = new SelectSetAdapter(getContext(), myView.myRecyclerView, this);
-            myView.myRecyclerView.post(() -> {
-                LinearLayoutManager llm = new LinearLayoutManager(getContext());
-                llm.setOrientation(RecyclerView.VERTICAL);
-                myView.myRecyclerView.setLayoutManager(llm);
-                enableDragAndDrop();
-                myView.myRecyclerView.setAdapter(selectSetAdapter);
-                myView.myRecyclerView.setItemAnimator(null);
-            });
-        }
-    }
-
-    private void enableDragAndDrop() {
-        SelectSetItemCallback callback = new SelectSetItemCallback(getContext(), selectSetAdapter);
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
-        selectSetAdapter.setTouchHelper(itemTouchHelper);
-        itemTouchHelper.attachToRecyclerView(myView.myRecyclerView);
-    }
-
-    private void setListeners() {
-        myView.setMasterFAB.post(() -> myView.setMasterFAB.setOnClickListener(v -> {
-            if (getActivity() != null) {
-                SetMenuBottomSheet setMenuBottomSheet = new SetMenuBottomSheet();
-                setMenuBottomSheet.show(getActivity().getSupportFragmentManager(), "setMenuBottomSheet");
-            }
-        }));
+    protected String getFragmentName() {
+        return "SelectSetFragment";
     }
 }

@@ -906,6 +906,10 @@
     <string name="media_selected">Media loaded</string>
     <string name="menu">Menu</string>
     <string name="menu_set_info">Use this button to view and manage your sets</string>
+    <string name="helix_sets" translatable="false">HELIX SETS</string>
+    <string name="app_sets" translatable="false">APP SETS</string>
+    <string name="sets_header" translatable="false">SETS</string>
+    <string name="songs_in_set_header" translatable="false">SONGS IN SET</string>
     <string name="menu_settings">Menu settings</string>
     <string name="menu_settings_description">Change settings for the song/set menu</string>
     <string name="menu_showcase_info">Open the menu to view and manage your songs and sets</string>

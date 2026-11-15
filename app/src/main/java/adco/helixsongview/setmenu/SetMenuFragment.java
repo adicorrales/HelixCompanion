@@ -23,13 +23,22 @@ public class SetMenuFragment extends Fragment {
 
     @SuppressWarnings({"unused","FieldCanBeLocal"})
     private final String TAG = "SetMenuFragment";
-    private MenuSetsBinding myView;
-    private LinearLayoutManager llm;
+    protected MenuSetsBinding myView;
+    protected LinearLayoutManager llm;
     private String deeplink_sets_manage_string="", save_changes_string="", overwrite_string="",
             set_manage_click_string="", set_help_string="", set_manage_swipe_string="",
             set_item_removed_string="", undo_string="";
-    private MainActivityInterface mainActivityInterface;
-    private SetAdapter setAdapter;
+    protected MainActivityInterface mainActivityInterface;
+    protected SetAdapter setAdapter;
+    protected SelectSetAdapter selectSetAdapter;
+
+    protected boolean isHelixSetMode() {
+        return true;
+    }
+
+    protected String getFragmentName() {
+        return "SetMenuFragment";
+    }
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -43,10 +52,14 @@ public class SetMenuFragment extends Fragment {
         prepareStrings();
         setListeners();
         runSetShowcase();
+        if (selectSetAdapter != null) {
+            selectSetAdapter.prepareSets();
+        }
+        if (setAdapter != null) {
+            setAdapter.notifyDataSetChanged();
+        }
     }
 
-
-    // Don't process the set yet, just get the fragment ready
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -59,14 +72,21 @@ public class SetMenuFragment extends Fragment {
 
         if (getContext()!=null) {
             mainActivityInterface = (MainActivityInterface) getContext();
-            mainActivityInterface.registerFragment(this,"SetMenuFragment");
+            mainActivityInterface.registerFragment(this, getFragmentName());
+        }
+
+        // Set column header label according to mode
+        if (isHelixSetMode()) {
+            myView.setsColumnHeader.setText(getString(R.string.helix_sets));
+        } else {
+            myView.setsColumnHeader.setText(getString(R.string.app_sets));
         }
 
         // Prepare the strings
         prepareStrings();
 
-        // Set up the adapter
-        setupAdapter();
+        // Set up the adapters for left and right columns
+        setupAdapters();
 
         // Set up listeners
         setListeners();
@@ -76,7 +96,6 @@ public class SetMenuFragment extends Fragment {
 
         return myView.getRoot();
     }
-
 
     private void prepareStrings() {
         if (getContext()!=null) {
@@ -91,8 +110,25 @@ public class SetMenuFragment extends Fragment {
         }
     }
 
-    private void setupAdapter() {
+    private void setupAdapters() {
         if (getContext()!=null && myView!=null) {
+            selectSetAdapter = new SelectSetAdapter(getContext(), myView.setsRecyclerView, isHelixSetMode(), (position, filename) -> {
+                if (setAdapter != null) {
+                    setAdapter.notifyDataSetChanged();
+                    updateKeys();
+                    updateHighlight();
+                }
+            });
+
+            myView.setsRecyclerView.post(() -> {
+                LinearLayoutManager llmSets = new LinearLayoutManager(getContext());
+                llmSets.setOrientation(RecyclerView.VERTICAL);
+                myView.setsRecyclerView.setLayoutManager(llmSets);
+                enableSetDragAndDrop();
+                myView.setsRecyclerView.setAdapter(selectSetAdapter);
+                myView.setsRecyclerView.setItemAnimator(null);
+            });
+
             setAdapter = new SetAdapter(getContext(), myView.myRecyclerView);
             myView.myRecyclerView.post(() -> {
                 llm = new LinearLayoutManager(getContext());
@@ -102,8 +138,22 @@ public class SetMenuFragment extends Fragment {
                 myView.myRecyclerView.setAdapter(setAdapter);
                 myView.myRecyclerView.setItemAnimator(null);
             });
+
             mainActivityInterface.getCurrentSet().updateSetTitleView();
         }
+    }
+
+    public void refreshSelectSetAdapter() {
+        if (selectSetAdapter != null && mainActivityInterface != null) {
+            mainActivityInterface.getMainHandler().post(() -> selectSetAdapter.notifyDataSetChanged());
+        }
+    }
+
+    private void enableSetDragAndDrop() {
+        SelectSetItemCallback callback = new SelectSetItemCallback(getContext(), selectSetAdapter);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
+        selectSetAdapter.setTouchHelper(itemTouchHelper);
+        itemTouchHelper.attachToRecyclerView(myView.setsRecyclerView);
     }
 
     private void enableSwipeToDeleteAndUndo() {
@@ -125,7 +175,6 @@ public class SetMenuFragment extends Fragment {
 
                 if (getContext()!=null) {
                     try {
-                        //snackbar.setBackgroundTintList(ColorStateList.valueOf(mainActivityInterface.getPalette().secondary));
                         snackbar.setBackgroundTintList(new ColorStateList(
                                 new int[][]{new int[0]},
                                 new int[]{mainActivityInterface.getPalette().secondary}
@@ -150,14 +199,12 @@ public class SetMenuFragment extends Fragment {
         myView.saveSetButton.post(() -> myView.saveSetButton.setOnClickListener(v -> {
             String currentSetName = mainActivityInterface.getCurrentSet().getSetCurrentLastName();
             if (currentSetName==null || currentSetName.isEmpty()) {
-                // We need the user to give the set a name
                 mainActivityInterface.setWhattodo("saveset");
                 mainActivityInterface.navigateToFragment(deeplink_sets_manage_string,0);
             } else {
-                // Prompt the user to confirm overwriting the original
                 String message = save_changes_string + ": " + currentSetName + "\n\n" + overwrite_string;
                 AreYouSureBottomSheet areYouSureBottomSheet = new AreYouSureBottomSheet("saveset",
-                        message,null,"SetMenuFragment",
+                        message,null, getFragmentName(),
                         SetMenuFragment.this,null);
                 areYouSureBottomSheet.show(mainActivityInterface.getMyFragmentManager(),"areYouSure");
             }
@@ -181,7 +228,6 @@ public class SetMenuFragment extends Fragment {
         }));
     }
 
-    // Show the set showcase
     public void runSetShowcase() {
         if (getActivity()!=null) {
             try {
@@ -202,7 +248,6 @@ public class SetMenuFragment extends Fragment {
         }
     }
 
-    // Scroll to the item in the set list menu
     public void scrollToItem() {
         if (mainActivityInterface!=null && mainActivityInterface.getCurrentSet().getIndexSongInSet()>-1 &&
                 mainActivityInterface.getCurrentSet().getIndexSongInSet() < mainActivityInterface.getCurrentSet().getCurrentSetSize()) {
@@ -213,13 +258,10 @@ public class SetMenuFragment extends Fragment {
                 }
                 if (llm!=null && position>=0) {
                     try {
-                        // 1. Get the first and last fully or partially visible item positions
                         int firstVisible = llm.findFirstVisibleItemPosition();
                         int lastVisible = llm.findLastVisibleItemPosition();
 
-                        // 2. Check if the target position is outside the current visible range
                         if (position < firstVisible || position > lastVisible) {
-                            // It's not visible, so scroll to it
                             llm.scrollToPositionWithOffset(position, 0);
                         }
                         mainActivityInterface.notifyInlineSetScrollToItem();
@@ -231,7 +273,6 @@ public class SetMenuFragment extends Fragment {
         }
     }
 
-    // Scroll the menu using a pedal
     public void scrollMenu(int height) {
         try {
             myView.myRecyclerView.smoothScrollBy(0, height);
@@ -240,10 +281,7 @@ public class SetMenuFragment extends Fragment {
         }
     }
 
-    // Called after songs have been indexed for items that have key set
-    // We need to check the original key for the song
     public void updateKeys() {
-        // If the key has changed on some items, update them
         if (mainActivityInterface.getSetActions().getMissingKeyPositions()!=null &&
                 setAdapter!=null &&
                 mainActivityInterface.getCurrentSet().getSetItemInfos()!=null &&
@@ -252,55 +290,48 @@ public class SetMenuFragment extends Fragment {
         }
     }
 
-    // Called when clicking on clear set/create new set or sorting/shuffling
     public void notifyItemRangeRemoved(int from, int count) {
         if (setAdapter!=null && mainActivityInterface!=null) {
             mainActivityInterface.getMainHandler().post(() -> setAdapter.notifyItemRangeRemoved(from, count));
         }
     }
 
-    // Called when sorting or shuffling the set
     public void notifyItemRangeChanged(int from, int count) {
         if (setAdapter!=null && mainActivityInterface!=null) {
             mainActivityInterface.getMainHandler().post(() -> setAdapter.notifyItemRangeChanged(from, count));
         }
     }
-    // Called when editing a set item
+
     public void notifyItemChanged(int position) {
         if (setAdapter!=null && mainActivityInterface!=null) {
             mainActivityInterface.getMainHandler().post(() -> {
                 setAdapter.notifyItemChanged(position);
                 mainActivityInterface.notifyInlineSetChanged(position);
             });
-
         }
     }
 
-    // Called when adding a song to the end of the set
     public void notifyItemInserted() {
-        // The item was added to the set already by the calling method (song menu or action)
         if (setAdapter!=null && mainActivityInterface.getCurrentSet().getCurrentSetSize()>0) {
             mainActivityInterface.getMainHandler().post(() -> setAdapter.insertItem());
         }
     }
-    // Notify when adding a song to cue next (adding after current index)
+
     public void notifyItemCueNext() {
-        // The item was moved in the currentSetList already, just update the adapter
         if (setAdapter!=null && mainActivityInterface.getCurrentSet().getCurrentSetSize()>0) {
             mainActivityInterface.getMainHandler().post(() -> setAdapter.notifyInlineSetCueItem());
         }
     }
+
     public void notifyItemRemoved(int position) {
         if (setAdapter!=null && mainActivityInterface.getCurrentSet().getCurrentSetSize()>position) {
             mainActivityInterface.getMainHandler().post(() -> setAdapter.removeItem(position,false));
         }
     }
 
-    // Called when we edit a set item from the bottom sheet
     public void updateItem(int position) {
         if (setAdapter!=null) {
             setAdapter.updateItem(position);
-            // Save the currentSet
             mainActivityInterface.getCurrentSet().setSetCurrent(mainActivityInterface.getSetActions().getSetAsPreferenceString());
         }
     }
@@ -312,8 +343,6 @@ public class SetMenuFragment extends Fragment {
     }
 
     public void updateHighlight() {
-        // Highlight the current set item after checking the positions
-        // Only do this if we aren't in the middle of doing it already
         if (setAdapter!=null && mainActivityInterface.getSong()!=null &&
                 !setAdapter.getUpdatingHighlight() && setAdapter.getHighlightChangeAllowed()) {
             int selectedPosition = mainActivityInterface.getCurrentSet().getIndexSongInSet();
@@ -324,7 +353,6 @@ public class SetMenuFragment extends Fragment {
             }
             if (selectedPosition>-1) {
                 mainActivityInterface.getMainHandler().postDelayed(() -> setAdapter.updateHighlight(selectedPosition),500);
-                //setAdapter.updateHighlight(selectedPosition);
             }
         }
     }
@@ -332,7 +360,6 @@ public class SetMenuFragment extends Fragment {
     public void removeHighlight() {
         if (setAdapter!=null && mainActivityInterface.getCurrentSet().getPrevIndexSongInSet()>-1 &&
                 !setAdapter.getRemovingHighlight() && setAdapter.getHighlightChangeAllowed()) {
-            // Remove the highlight from the last selected item
             setAdapter.removeHighlight(mainActivityInterface.getCurrentSet().getPrevIndexSongInSet());
         }
     }
