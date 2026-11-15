@@ -8,14 +8,9 @@ public class InlineAbcWebViewTagObject {
     public void setObjectNumber(int objectNumber) {
         this.objectNumber = objectNumber;
     }
-    public int getObjectNumber() {
-        return objectNumber;
-    }
 
     public void setContainingViewNumber(int containingViewNumber) {
         this.containingViewNumber = containingViewNumber;
     }
-    public int getContainingViewNumber() {
-        return containingViewNumber;
-    }
+
 }
