@@ -26,8 +26,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
+
 import adco.helixsongview.R;
 import adco.helixsongview.appdata.AlertInfoBottomSheet;
 import adco.helixsongview.controls.GestureListener;
@@ -853,9 +852,8 @@ public class PerformanceFragment extends Fragment {
         myView.imageView.getLayoutParams().width = widthAfterScale;
         myView.imageView.getLayoutParams().height = heightAfterScale;
 
-        RequestOptions requestOptions = new RequestOptions().override(widthAfterScale,heightAfterScale);
-        if (getContext()!=null) {
-            Glide.with(getContext()).load(bmp).apply(requestOptions).into(myView.imageView);
+        if (getContext() != null) {
+            myView.imageView.setImageBitmap(bmp);
         }
         myView.zoomLayout.setSongSize(widthAfterScale, heightAfterScale + (int)(mainActivityInterface.getSongSheetTitleLayout().getHeight()*scaleFactor));
 
@@ -1449,7 +1447,7 @@ public class PerformanceFragment extends Fragment {
 
                                         if (highlighterBitmap == null) {
                                             // Clear the previous highlighter image
-                                            Glide.with(getContext()).clear(myView.highlighterView);
+                                            myView.highlighterView.setImageDrawable(null);
                                         } else if (mainActivityInterface.getPreferences().getMyPreferenceBoolean("drawingAutoDisplay", true)) {
 
                                             // If the bitmap doesn't match the view, scale it
@@ -1462,10 +1460,7 @@ public class PerformanceFragment extends Fragment {
                                             rlp.height = (int) ((float) h * bmpYScale);
 
                                             myView.highlighterView.setLayoutParams(rlp);
-                                            RequestOptions requestOptions = new RequestOptions().centerInside().override(rlp.width, rlp.height);
-                                            Glide.with(getContext()).load(highlighterBitmap).
-                                                    apply(requestOptions).
-                                                    into(myView.highlighterView);
+                                            myView.highlighterView.setImageBitmap(highlighterBitmap);
 
                                             myView.highlighterView.setPivotX(0f);
                                             myView.highlighterView.setPivotY(0f);
@@ -1511,7 +1506,7 @@ public class PerformanceFragment extends Fragment {
                         if (myView!=null && getContext()!=null) {
                             try {
                                 // Clear the previous highlighter image
-                                Glide.with(getContext()).clear(myView.highlighterView);
+                                myView.highlighterView.setImageDrawable(null);
 
                                 myView.highlighterView.setVisibility(View.GONE);
                             } catch (Exception e) {
