@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   sodipodi:docname="bootup_logo.svg">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="3.959798"
+     inkscape:cx="114.22501"
+     inkscape:cy="125.9132"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     inkscape:snap-grids="true"
+     inkscape:snap-others="true"
+     inkscape:snap-bbox="true"
+     inkscape:snap-text-baseline="true"
+     inkscape:window-width="3840"
+     inkscape:window-height="2001"
+     inkscape:window-x="-14"
+     inkscape:window-y="-14"
+     inkscape:window-maximized="1">
+    <inkscape:grid
+       type="xygrid"
+       id="grid823" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g828"
+       transform="translate(6.7916665,73.906242)">
+      <rect
+         y="175.29167"
+         x="-5.2916665"
+         height="46.302086"
+         width="130.96875"
+         id="rect1391"
+         style="fill:#ffffff;fill-opacity:1;stroke:#001360;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <text
+         id="text817"
+         y="194.34166"
+         x="0"
+         style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+         xml:space="preserve"><tspan
+           style="stroke-width:0.26458332"
+           y="194.34166"
+           x="0"
+           id="tspan815"
+           sodipodi:role="line">Helix Song View</tspan></text>
+      <text
+         id="text821"
+         y="201.75"
+         x="0"
+         style="font-style:normal;font-weight:normal;font-size:7.76111126px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+         xml:space="preserve"><tspan
+           style="font-size:7.76111126px;stroke-width:0.26458332"
+           y="201.75"
+           x="0"
+           id="tspan819"
+           sodipodi:role="line">Showcase Companion</tspan></text>
+      <path
+         sodipodi:nodetypes="cccssaacccssaacc"
+         inkscape:connector-curvature="0"
+         id="path830"
+         d="m 95.308307,206.18895 -0.05258,-23.00152 23.843653,-3.2107 c 0,0 0.24661,20.14163 0.36844,30.21246 0.0232,1.91767 -2.6224,5.19013 -6.26357,5.2109 -2.37266,0.0134 -5.21865,-1.92675 -5.80527,-4.25265 -0.57256,-2.27014 1.0952,-5.00822 3.0198,-6.34132 1.64905,-1.14225 3.99747,-1.2418 5.9962,-0.51219 v -17.05375 l -17.19623,2.60355 -0.12071,21.60856 c -0.012,2.17367 -2.665871,5.28576 -6.050383,5.95414 -2.462203,0.48621 -5.643297,-1.0726 -6.756894,-3.32176 -0.935223,-1.88892 -0.254357,-4.69941 1.221632,-6.20408 1.862085,-1.89832 5.677792,-1.87693 7.795905,-1.69164 z"
+         style="fill:#37c871;fill-opacity:1;stroke:#000000;stroke-width:0.26458329px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    </g>
+  </g>
+</svg>

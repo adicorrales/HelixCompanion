@@ -5,9 +5,12 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.graphics.drawable.PictureDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.caverock.androidsvg.SVG;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -58,6 +61,7 @@ public class BootUpFragment extends Fragment {
         myView = BootupLogoBinding.inflate(inflater, container, false);
 
         myView.getRoot().setBackgroundColor(mainActivityInterface.getPalette().background);
+        loadBootLogo();
         prepareStrings();
 
         mainActivityInterface.setMode(mainActivityInterface.getPreferences().getMyPreferenceString("whichMode", mode_performance));
@@ -102,6 +106,20 @@ public class BootUpFragment extends Fragment {
             initialising = getString(R.string.initialising);
         }
     }
+    private void loadBootLogo() {
+        if (myView == null || getContext() == null) {
+            return;
+        }
+        try {
+            myView.splashlogo.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+            SVG svg = SVG.getFromInputStream(getResources().openRawResource(R.raw.bootup_logo));
+            PictureDrawable drawable = new PictureDrawable(svg.renderToPicture());
+            myView.splashlogo.setImageDrawable(drawable);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to load boot_logo.svg from raw", e);
+        }
+    }
+
     private void hideMenus() {
         mainActivityInterface.hideActionButton(true);
         mainActivityInterface.lockDrawer(true);

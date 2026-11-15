@@ -16,8 +16,7 @@
         android:contentDescription="@string/app_name"
         android:padding="64dp"
         android:scaleType="fitCenter"
-        android:visibility="visible"
-        app:srcCompat="@drawable/splash_logo" />
+        android:visibility="visible" />
 
     <adco.helixsongview.customviews.MyMaterialSimpleTextView
         android:id="@+id/currentAction"
