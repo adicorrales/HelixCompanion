@@ -943,7 +943,7 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
         song.setLastModified(lastModified);
         song.setUuid(openChordsSong.getId());
         song.setAuthor(openChordsSong.getArtist());
-        song.setLyrics(mainActivityInterface.getConvertJustChords().getOpenSongLyrics(openChordsSong.getRawData()));
+        song.setLyrics(openChordsSong.getRawData());
         song.setLyrics(song.getLyrics().replace("Pre-[C]","P"));
         song.setAutoscrolllength(getEmptyForZero(mainActivityInterface.getTimeTools().getTotalSecsFromColonTimes(openChordsSong.getDuration())));
         song.setTimesig(openChordsSong.getTimeSignature());
@@ -1176,7 +1176,7 @@ public class OpenChordsAPI implements Callback<OpenChordsFolderObject> {
         }
         openChordsSong.setId(openSongSong.getUuid());
         openChordsSong.setTitle(jsonNullIfEmpty(openSongSong.getFilename()));
-        openChordsSong.setRawData(jsonNullIfEmpty(mainActivityInterface.getConvertJustChords().getJustChordsLyrics(openSongSong)));
+        openChordsSong.setRawData(jsonNullIfEmpty(openSongSong.getLyrics()));
         openChordsSong.setArtist(jsonNullIfEmpty(openSongSong.getAuthor()));
         openChordsSong.setDuration(jsonNullIfEmpty(openSongSong.getAutoscrolllength()));
 

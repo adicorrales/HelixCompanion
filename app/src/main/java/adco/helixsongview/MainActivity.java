@@ -119,14 +119,13 @@ import adco.helixsongview.interfaces.EditSongFragmentInterface;
 import adco.helixsongview.interfaces.MainActivityInterface;
 import adco.helixsongview.interfaces.NearbyReturnActionsInterface;
 import adco.helixsongview.interfaces.SwipeDrawingInterface;
-import adco.helixsongview.justchords.ConvertJustChords;
-import adco.helixsongview.justchords.JustChordsObject;
 import adco.helixsongview.links.LinksFragment;
 import adco.helixsongview.midi.Midi;
 import adco.helixsongview.midi.MidiFragment;
 import adco.helixsongview.nearby.NearbyActions;
 import adco.helixsongview.nearby.NearbyConnectionsFragment;
 import adco.helixsongview.nearby.SyncNearbyFragment;
+import adco.helixsongview.justchords.ConvertJustChords;
 import adco.helixsongview.openchords.OpenChordsAPI;
 import adco.helixsongview.openchords.OpenChordsFragment;
 import adco.helixsongview.backingtracks.backingTrack;
@@ -857,7 +856,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         // Converting song formats and processing song content
         chordDisplayProcessing = getChordDisplayProcessing();
         chordDirectory = getChordDirectory();
-        convertJustChords = getConvertJustChords();
         convertChoPro = getConvertChoPro();
         convertOnSong = getConvertOnSong();
         convertTextSong = getConvertTextSong();
@@ -3101,22 +3099,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 // OpenSongApp set bundle
                 setWhattodo("ossb");
                 dealingWithIntent = deeplink_set_bundle;
-            } else if (importFilename.toLowerCase(Locale.ROOT).endsWith(".justchords")) {
-                JustChordsObject justChordsObject = getConvertJustChords().getJustChordsObjectFromImportUri();
-                if (justChordsObject != null && justChordsObject.getSongs() != null) {
-                    if (justChordsObject.getSongs().length > 1) {
-                        // This is a set/bundle
-                        setWhattodo("justchordsset");
-                        dealingWithIntent = deeplink_set_bundle;
-                    } else if (justChordsObject.getSongs().length == 1) {
-                        // This is a song file
-                        setWhattodo("justchordssong");
-                        dealingWithIntent = deeplink_import_file;
-                    }
-                } else {
-                    dealingWithIntent = "";
-                    setWhattodo("");
-                }
             } else if (getStorageAccess().isSpecificFileExtension("imageorpdf", importFilename) ||
                     getStorageAccess().isSpecificFileExtension("chordpro", importFilename) ||
                     getStorageAccess().isSpecificFileExtension("text", importFilename) ||
@@ -3247,14 +3229,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     }
 
     @Override
-    public ConvertJustChords getConvertJustChords() {
-        if (convertJustChords == null) {
-            convertJustChords = new ConvertJustChords(this);
-        }
-        return convertJustChords;
-    }
-
-    @Override
     public ConvertOnSong getConvertOnSong() {
         if (convertOnSong == null) {
             convertOnSong = new ConvertOnSong(this);
@@ -3277,6 +3251,14 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             convertTextSong = new ConvertTextSong(this);
         }
         return convertTextSong;
+    }
+
+    @Override
+    public ConvertJustChords getConvertJustChords() {
+        if (convertJustChords == null) {
+            convertJustChords = new ConvertJustChords(this);
+        }
+        return convertJustChords;
     }
 
     @Override

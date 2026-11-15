@@ -2631,28 +2631,6 @@ public class ProcessSong {
     }
 
     private String removeJustChordsFormatting(String line) {
-        // When synchronising via OpenChords, we may receive text formatting from justchords songs
-        // OpenSongApp doesn't like this, so we hide it during rendering to the screen
-        // Colors can look like <yellow>....<     or <@yellow>....<
-        // The < and > will likely already be encoded as &lt; and &gt;
-        String[] colorsRecognised = new String[]{"black", "blue", "brown", "cyan", "darkGray", "gray",
-                "green", "lightGray", "magenta", "orange", "purple", "red", "white", "yellow" };
-
-        if (line.contains("<") || line.contains("&lt;")) {
-            String originalline = line;
-            for (String color : colorsRecognised) {
-                line = line.replace("<" + color + ">", "");
-                line = line.replace("<@" + color + ">", "");
-                line = line.replace("&lt;" + color + "&gt;", "");
-                line = line.replace("&lt;@" + color + "&gt;", "");
-            }
-            if (!originalline.equals(line)) {
-                // We have fixed color tags, so remove the final <
-                line = line.replace("<", "");
-                line = line.replace("&lt;", "");
-            }
-        }
-
         return line;
     }
 

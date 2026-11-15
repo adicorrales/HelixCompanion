@@ -1164,10 +1164,6 @@ public class StorageAccess {
             case "word":
                 toCheck = ".docx";
                 break;
-            case "justchords":
-            case "justchord":
-                toCheck = ".justchords";
-                break;
             case "html":
                 toCheck = ".html";
                 break;

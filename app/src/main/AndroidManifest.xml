@@ -238,8 +238,6 @@
                 <data android:pathSuffix=".cho" />
                 <data android:pathPattern=".*\.pro"/>
                 <data android:pathSuffix=".pro" />
-                <data android:pathPattern=".*\.justchords"/>
-                <data android:pathSuffix=".justchords" />
             </intent-filter>
 
             <!--
@@ -317,11 +315,6 @@
                 <data android:pathPattern=".*\..*\..*\.pro"/>
                 <data android:pathPattern=".*\..*\..*\..*\.pro"/>
                 <data android:pathSuffix=".pro" />
-                <data android:pathPattern=".*\.justchords"/>
-                <data android:pathPattern=".*\..*\.justchords"/>
-                <data android:pathPattern=".*\..*\..*\.justchords"/>
-                <data android:pathPattern=".*\..*\..*\..*\.justchords"/>
-                <data android:pathSuffix=".justchords" />
                 <data android:pathPattern=".*"/>
             </intent-filter>
             -->

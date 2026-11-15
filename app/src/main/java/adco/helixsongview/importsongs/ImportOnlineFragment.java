@@ -85,10 +85,6 @@ public class ImportOnlineFragment extends Fragment {
     private UltimateGuitar ultimateGuitar;
     private Chordie chordie;
     private SongSelect songSelect;
-    private WorshipTogether worshipTogether;
-    private UkuTabs ukuTabs;
-    private HolyChords holyChords;
-    private Boiteachansons boiteachansons;
     private EChords eChords;
     private GuitarTabs guitarTabs;
     private Chordinator chordinator;
@@ -173,12 +169,8 @@ public class ImportOnlineFragment extends Fragment {
             guitarTabs = new GuitarTabs(getContext());
         }
         newSong = new Song();
-        worshipTogether = new WorshipTogether();
         chordie = new Chordie();
         songSelect = new SongSelect(mainActivityInterface);
-        ukuTabs = new UkuTabs();
-        holyChords = new HolyChords();
-        boiteachansons = new Boiteachansons();
         eChords = new EChords();
         chordinator = new Chordinator();
         guitarTabs = new GuitarTabs(getContext());
@@ -1016,9 +1008,6 @@ public class ImportOnlineFragment extends Fragment {
                     newSong = ultimateGuitar.extractSongFromWebview(newSong,webString);
                 }
                 break;
-            case "WorshipTogether":
-                newSong = worshipTogether.processContent(mainActivityInterface,newSong,webString);
-                break;
             case "Chordie":
                 newSong = chordie.processContent(mainActivityInterface,newSong,webString);
                 break;
@@ -1031,15 +1020,6 @@ public class ImportOnlineFragment extends Fragment {
                         songSelectAutoDownload = "chordSheetDownloadButton";
                     }
                 }
-                break;
-            case "UkuTabs":
-                newSong = ukuTabs.processContent(mainActivityInterface, newSong, webString);
-                break;
-            case "HolyChords":
-                newSong = holyChords.processContent(mainActivityInterface,newSong,webString);
-                break;
-            case "La Boîte à chansons":
-                newSong = boiteachansons.processContent(mainActivityInterface,newSong,webString);
                 break;
             case "eChords":
                 newSong = eChords.processContent(mainActivityInterface,newSong,webString);

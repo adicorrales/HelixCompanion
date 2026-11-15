@@ -1876,7 +1876,7 @@ public class SetActions {
                                 if (start<end) {
                                     Song tempSong = new Song();
                                     tempSong.setLyrics(extracted.substring(start,end));
-                                    lyrics += "\n\n" + mainActivityInterface.getConvertJustChords().getJustChordsLyrics(tempSong);
+                                    // lyrics += ...
                                 }
                             }
                         }
