@@ -221,9 +221,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private AnalyticsSQLiteHelper analyticsHelper;
     private AppPermissions appPermissions;
     private Autoscroll autoscroll;
-
     private CheckInternet checkInternet;
-
     private ChordDirectory chordDirectory;
     private ChordDisplayProcessing chordDisplayProcessing;
     private CommonControls commonControls;
