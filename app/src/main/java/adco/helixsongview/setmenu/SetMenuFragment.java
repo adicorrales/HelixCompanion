@@ -79,7 +79,10 @@ public class SetMenuFragment extends Fragment {
         if (isHelixSetMode()) {
             myView.setsColumnHeader.setText(getString(R.string.helix_sets));
         } else {
-            myView.setsColumnHeader.setText(getString(R.string.app_sets));
+            myView.setsColumnHeader.setText(getString(R.string.local_sets));
+            mainActivityInterface.getCurrentSet().initialiseTheSet();
+            mainActivityInterface.getCurrentSet().setSetCurrentLastName("");
+            mainActivityInterface.getCurrentSet().updateSetTitleView();
         }
 
         // Prepare the strings

@@ -739,7 +739,11 @@ public class MyToolbar extends Toolbar {
         capo.setTextColor(mainActivityInterface.getPalette().textColor);
         tempo.setTextColor(mainActivityInterface.getPalette().textColor);
         clock.setTextColor(mainActivityInterface.getPalette().textColor);
-        setIcon.setColorFilter(mainActivityInterface.getPalette().textColor);
+        int setIconColor = android.graphics.Color.parseColor("#4CAF50");
+        if (mainActivityInterface == null || !mainActivityInterface.hasValidMidiConnection()) {
+            setIconColor = mainActivityInterface != null && mainActivityInterface.getPalette() != null ? mainActivityInterface.getPalette().textColor : android.graphics.Color.WHITE;
+        }
+        setIcon.setColorFilter(setIconColor);
         if (btnTransportPrevArrow != null && mainActivityInterface.getPalette() != null) {
             btnTransportPrevArrow.setColorFilter(mainActivityInterface.getPalette().textColor);
         }

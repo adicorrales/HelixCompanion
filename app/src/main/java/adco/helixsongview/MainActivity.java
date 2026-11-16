@@ -496,7 +496,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 if (view.hasFocus() && !isFinishing() && !isDestroyed()) {
                     try {
                         myView.mainPageFrame.getFocusDummy().post(() -> {
-                            if (!isFinishing() && !isDestroyed() && myView != null && myView.mainPageFrame != null && myView.mainPageFrame.isAttachedToWindow()) {
+                            if (!isFinishing() && !isDestroyed() && myView != null && myView.mainPageFrame.isAttachedToWindow()) {
                                 myView.mainPageFrame.getFocusDummy().requestFocus();
                                 myView.mainPageFrame.getFocusDummy().requestFocusFromTouch();
                             }
@@ -1363,20 +1363,26 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     }
 
     private void checkMenuIconsAreNotNull() {
+        int iconColor = hasValidMidiConnection() ? android.graphics.Color.parseColor("#4CAF50") : getPalette().textColor;
+
         if (closeIcon == null) {
             Drawable tempCloseIcon = AppCompatResources.getDrawable(this, R.drawable.close);
             if (tempCloseIcon != null) {
                 closeIcon = DrawableCompat.wrap(tempCloseIcon);
-                DrawableCompat.setTint(closeIcon, getPalette().textColor);
             }
+        }
+        if (closeIcon != null) {
+            DrawableCompat.setTint(closeIcon, getPalette().textColor);
         }
 
         if (settingsIcon == null) {
             Drawable tempSettingsIcon = AppCompatResources.getDrawable(this, R.drawable.settings_outline);
             if (tempSettingsIcon != null) {
                 settingsIcon = DrawableCompat.wrap(tempSettingsIcon);
-                DrawableCompat.setTint(settingsIcon, getPalette().textColor);
             }
+        }
+        if (settingsIcon != null) {
+            DrawableCompat.setTint(settingsIcon, iconColor);
         }
 
         if (castIconOff == null) {
@@ -1423,8 +1429,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             Drawable tempNavIconMenu = AppCompatResources.getDrawable(this, R.drawable.menu);
             if (tempNavIconMenu != null) {
                 navIconMenu = DrawableCompat.wrap(tempNavIconMenu);
-                DrawableCompat.setTint(navIconMenu, getPalette().textColor);
             }
+        }
+        if (navIconMenu != null) {
+            DrawableCompat.setTint(navIconMenu, iconColor);
         }
     }
 
@@ -2953,6 +2961,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             midi = new Midi(this, this);
         }
         return midi;
+    }
+
+    @Override
+    public boolean hasValidMidiConnection() {
+        return getMidi() != null && getMidi().getMidiDevice() != null;
     }
 
     @Override
