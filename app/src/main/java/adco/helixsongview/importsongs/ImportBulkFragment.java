@@ -20,8 +20,6 @@ import androidx.fragment.app.Fragment;
 import adco.helixsongview.R;
 import adco.helixsongview.databinding.SettingsImportBulkBinding;
 import adco.helixsongview.interfaces.MainActivityInterface;
-import adco.helixsongview.justchords.JustChordsObject;
-import adco.helixsongview.justchords.JustChordsSongObject;
 import adco.helixsongview.songprocessing.Song;
 
 import java.io.InputStream;
@@ -258,24 +256,7 @@ public class ImportBulkFragment extends Fragment {
                         content = mainActivityInterface.getConvertWord().convertDocxToText(fileUri, filename);
                         newSong.setLyrics(content);
                         newSong.setTitle(newFilename);
-                    } else if (justchords) {
-                        // Don't use the current song object after we deal with it here
-                        goodsong = false;
-                        // Decide if this is a single song or a set
-                        updateProgress(x + 1, total, filename, success_string);
-                        JustChordsObject justChordsObject = mainActivityInterface.getConvertJustChords().getJustChordsObjectFromUri(fileUri);
-                        if (justChordsObject != null && justChordsObject.getSongs() != null) {
-                            if (justChordsObject.getSongs().length == 1) {
-                                // It's a single song
-                                importJustChordsFile(justChordsObject.getSongs()[0]);
 
-                            } else if (justChordsObject.getSongs().length > 1) {
-                                // It's a set, so import one at a time
-                                for (JustChordsSongObject justChordsSongObject : justChordsObject.getSongs()) {
-                                    importJustChordsFile(justChordsSongObject);
-                                }
-                            }
-                        }
                     } else if (maybeopensong) {
                         updateProgress(x + 1, total, filename, success_string);
                         mainActivityInterface.setImportUri(fileUri);
@@ -362,17 +343,7 @@ public class ImportBulkFragment extends Fragment {
         });
     }
 
-    private void importJustChordsFile(JustChordsSongObject justChordsSongObject) {
-        if (justChordsSongObject!=null) {
-            Song jcImport = mainActivityInterface.getConvertJustChords().getOpenSongFromJustChordsSong(justChordsSongObject);
-            jcImport.setFolder(imported_string);
-            if (mainActivityInterface.getStorageAccess().writeFileFromString("Songs",imported_string, jcImport.getFilename(), mainActivityInterface.getProcessSong().getXML(jcImport),false)) {
-                // Add the song to the database
-                mainActivityInterface.getSQLiteHelper().createSong(imported_string, jcImport.getFilename());
-                mainActivityInterface.getSQLiteHelper().updateSong(jcImport);
-            }
-        }
-    }
+
     private void updateProgress(int item, int total, String filename, String progress) {
         if (myView!=null) {
             String message = item + "/" + total + ". " + filename + ": " + progress;

@@ -142,8 +142,7 @@ public class OpenSongSetBundle {
         prepareSetBundleFolder();
         alive = true;
 
-        if (mainActivityInterface.getWhattodo().equals("justchordsset")) {
-            mainActivityInterface.getConvertJustChords().createSongsFromImportedSet();
+        if (false) {
 
         } else {
             byte[] buffer = new byte[1024];
@@ -212,7 +211,6 @@ public class OpenSongSetBundle {
     }
     public String getSetFileName() {
         return setFile.getName().replace(setExtension,"").
-                replace(mainActivityInterface.getConvertJustChords().getExtension(),"").
                 replace(bundleExtension,"");
     }
 

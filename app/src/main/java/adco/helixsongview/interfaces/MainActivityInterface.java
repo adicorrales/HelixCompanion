@@ -43,7 +43,6 @@ import adco.helixsongview.filemanagement.SaveSong;
 import adco.helixsongview.filemanagement.StorageAccess;
 import adco.helixsongview.importsongs.ImportOnlineFragment;
 import adco.helixsongview.importsongs.WebDownload;
-import adco.helixsongview.justchords.ConvertJustChords;
 import adco.helixsongview.midi.Midi;
 import adco.helixsongview.midi.MidiFragment;
 import adco.helixsongview.nearby.NearbyActions;
@@ -182,7 +181,7 @@ public interface MainActivityInterface {
     void chooseMenu(boolean showSetMenu);
     void setIndexingSong(Song indexingSong);
     Song getSongInMenu(int position);
-    boolean getShowSetMenu();
+
     void refreshMenuItems();
     ArrayList<Song> getSongsInMenu();
     ArrayList<Song> getSongsFound(String whichMenu);
@@ -353,7 +352,6 @@ public interface MainActivityInterface {
     // Song processing
     ConvertChoPro getConvertChoPro();
     ConvertOnSong getConvertOnSong();
-    ConvertJustChords getConvertJustChords();
     ConvertTextSong getConvertTextSong();
     ConvertWord getConvertWord();
     ProcessSong getProcessSong();

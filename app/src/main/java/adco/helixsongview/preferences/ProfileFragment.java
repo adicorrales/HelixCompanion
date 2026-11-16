@@ -99,7 +99,7 @@ public class ProfileFragment extends Fragment {
         // Reset the preferences and start again
         if (getContext()!=null) {
             mainActivityInterface.getProfileActions().resetPreferences();
-            System.exit(1);
+            mainActivityInterface.recreateActivity();
         }
     }
 

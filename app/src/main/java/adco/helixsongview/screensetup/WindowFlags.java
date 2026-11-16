@@ -17,6 +17,7 @@ import android.view.WindowManager;
 import android.view.WindowMetrics;
 
 import androidx.core.graphics.Insets;
+import android.util.Log;
 import androidx.core.view.DisplayCutoutCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -185,20 +186,44 @@ public class WindowFlags {
         return softKeyboardHeight;
     }
 
+    private final Handler keyboardHandler = new Handler(Looper.getMainLooper());
+    private final Runnable hideKeyboardRunnable = () -> {
+        if (WindowFlags.this.w != null && WindowFlags.this.w.peekDecorView() != null && WindowFlags.this.w.peekDecorView().getWindowToken() != null) {
+            try {
+                WindowFlags.this.windowInsetsControllerCompat.hide(typeIme);
+            } catch (Exception e) {
+                Log.e(TAG, "Error hiding keyboard", e);
+            }
+        }
+    };
+    private final Runnable showKeyboardRunnable = () -> {
+        if (WindowFlags.this.w != null && WindowFlags.this.w.peekDecorView() != null && WindowFlags.this.w.peekDecorView().getWindowToken() != null) {
+            try {
+                WindowFlags.this.windowInsetsControllerCompat.show(typeIme);
+            } catch (Exception e) {
+                Log.e(TAG, "Error showing keyboard", e);
+            }
+        }
+    };
+
     public void hideKeyboard() {
         // Delay a few millisecs and then hide
         if (insetsCompat!=null) {
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.postDelayed(() -> windowInsetsControllerCompat.hide(typeIme), 500);
+            keyboardHandler.removeCallbacks(hideKeyboardRunnable);
+            keyboardHandler.postDelayed(hideKeyboardRunnable, 500);
         }
     }
 
     public void showKeyboard() {
         // Show after a few millisecs
         if (insetsCompat!=null && !insetsCompat.isVisible(WindowInsetsCompat.Type.ime())) {
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.postDelayed(() -> windowInsetsControllerCompat.show(typeIme), 1000);
+            keyboardHandler.removeCallbacks(showKeyboardRunnable);
+            keyboardHandler.postDelayed(showKeyboardRunnable, 1000);
         }
+    }
+
+    public void cancelKeyboardTasks() {
+        keyboardHandler.removeCallbacksAndMessages(null);
     }
 
     public void adjustViewPadding(MainActivityInterface mainActivityInterface, View view) {

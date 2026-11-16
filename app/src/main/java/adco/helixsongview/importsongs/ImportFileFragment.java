@@ -23,8 +23,6 @@ import adco.helixsongview.appdata.InformationBottomSheet;
 import adco.helixsongview.customviews.ExposedDropDownArrayAdapter;
 import adco.helixsongview.databinding.SettingsImportFileBinding;
 import adco.helixsongview.interfaces.MainActivityInterface;
-import adco.helixsongview.justchords.JustChordsObject;
-import adco.helixsongview.justchords.JustChordsSongObject;
 import adco.helixsongview.preferences.AreYouSureBottomSheet;
 import adco.helixsongview.setmenu.SetItemInfo;
 import adco.helixsongview.songprocessing.Song;
@@ -315,13 +313,7 @@ public class ImportFileFragment extends Fragment {
                 newSong = mainActivityInterface.getConvertOnSong().convertTextToTags(mainActivityInterface.getImportUri(), newSong);
             } else if (isWord) {
                 newSong.setLyrics(mainActivityInterface.getConvertWord().convertDocxToText(mainActivityInterface.getImportUri(), mainActivityInterface.getImportFilename()));
-            } else if (isJustChords) {
-                JustChordsObject justChordsObject = mainActivityInterface.getConvertJustChords().getJustChordsObjectFromImportUri();
-                JustChordsSongObject justChordsSongObject = mainActivityInterface.getConvertJustChords().getJustChordsSongObject(justChordsObject, 0);
-                if (justChordsSongObject != null) {
-                    newSong = mainActivityInterface.getConvertJustChords().getOpenSongFromJustChordsSong(justChordsSongObject);
-                    basename = newSong.getTitle();
-                }
+
             } else {
                 mainActivityInterface.getLoadSong().setImportingFile(true);
                 try {

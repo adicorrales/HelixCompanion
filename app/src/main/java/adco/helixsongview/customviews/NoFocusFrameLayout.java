@@ -46,7 +46,11 @@ public class NoFocusFrameLayout extends FrameLayout {
         addView(focusDummy);
 
         // set dummy as default focus after layout is attached
-        post(() -> focusDummy.requestFocus());
+        post(() -> {
+            if (isAttachedToWindow()) {
+                focusDummy.requestFocus();
+            }
+        });
     }
 
     @Override

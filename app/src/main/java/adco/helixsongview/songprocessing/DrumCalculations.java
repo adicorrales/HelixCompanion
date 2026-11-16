@@ -11,7 +11,4 @@ public class DrumCalculations {
         return timesig.trim();
     }
 
-    public static boolean isTempoTimeSigValid(Song song, boolean checkTempo) {
-        return song != null && song.getTempo() != null && !song.getTempo().isEmpty();
-    }
 }

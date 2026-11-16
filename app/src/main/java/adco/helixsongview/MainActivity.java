@@ -125,7 +125,6 @@ import adco.helixsongview.midi.MidiFragment;
 import adco.helixsongview.nearby.NearbyActions;
 import adco.helixsongview.nearby.NearbyConnectionsFragment;
 import adco.helixsongview.nearby.SyncNearbyFragment;
-import adco.helixsongview.justchords.ConvertJustChords;
 import adco.helixsongview.openchords.OpenChordsAPI;
 import adco.helixsongview.openchords.OpenChordsFragment;
 import adco.helixsongview.backingtracks.backingTrack;
@@ -224,7 +223,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private ChordDisplayProcessing chordDisplayProcessing;
     private CommonControls commonControls;
     private CommonSQL commonSQL;
-    private ConvertJustChords convertJustChords;
     private ConvertChoPro convertChoPro;
     private ConvertOnSong convertOnSong;
     private ConvertTextSong convertTextSong;
@@ -329,18 +327,45 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private Intent fileOpenIntent;
     private int availableWidth = -1, availableHeight = -1;
 
-    private String deeplink_import_osb = "", deeplink_sets_backup_restore = "", deeplink_onsong = "",
-            deeplink_import_file = "", unknown = "", mainfoldername = "MAIN", deeplink_page_buttons = "",
-            website_menu_set = "", website_menu_song = "", exit_confirm = "", deeplink_set_bundle = "",
-            error = "", extra_settings = "",
-            action_button_info = "", song_sections = "", logo_info = "", blank_screen_info = "",
-            black_screen_info = "", project_panic = "", song_title = "", long_press = "", edit_song = "",
-            song_sections_project = "", menu_song_info = "", menu_set_info = "", add_songs = "",
-            song_actions = "", deeplink_preferences = "", song_string = "", set_string = "",
-            search_index_start = "", search_index_end = "",
-            success = "", okay = "", pad_playback_info = "",
-            no_suitable_application = "", indexing_string = "", deeplink_edit = "", cast_info_string = "",
-            menu_showcase_info = "";
+    private String deeplink_import_osb = "";
+    private String deeplink_sets_backup_restore = "";
+    private String deeplink_onsong = "";
+    private String deeplink_import_file = "";
+    private String unknown = "";
+    private String mainfoldername = "MAIN";
+    private String deeplink_page_buttons = "";
+    private String website_menu_set = "";
+    private String website_menu_song = "";
+    private String exit_confirm = "";
+    private String deeplink_set_bundle = "";
+    private String error = "";
+    private String extra_settings = "";
+    private String action_button_info = "";
+    private String song_sections = "";
+    private String logo_info = "";
+    private String blank_screen_info = "";
+    private String black_screen_info = "";
+    private String project_panic = "";
+    private String song_title = "";
+    private String long_press = "";
+    private String edit_song = "";
+    private String song_sections_project = "";
+    private String menu_song_info = "";
+    private String menu_set_info = "";
+    private String add_songs = "";
+    private String song_actions = "";
+    private String deeplink_preferences = "";
+    private String song_string = "";
+    private String search_index_start = "";
+    private String search_index_end = "";
+    private String success = "";
+    private String okay = "";
+    private String pad_playback_info = "";
+    private String no_suitable_application = "";
+    private String indexing_string = "";
+    private String deeplink_edit = "";
+    private String cast_info_string = "";
+    private String menu_showcase_info = "";
 
     private String mode_presenter, mode_performance, mode_stage;
     private MenuItem menuScreenMirror, menuScreenHelp, menuSearch, menuSettings;
@@ -468,12 +493,14 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             myView.mainPageFrame.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
 
             myView.mainPageFrame.setOnFocusChangeListener((view, b) -> {
-                if (view.hasFocus()) {
+                if (view.hasFocus() && !isFinishing() && !isDestroyed()) {
                     try {
                         myView.mainPageFrame.getFocusDummy().post(() -> {
-                                    myView.mainPageFrame.getFocusDummy().requestFocus();
-                                    myView.mainPageFrame.getFocusDummy().requestFocusFromTouch();
-                                });
+                            if (!isFinishing() && !isDestroyed() && myView != null && myView.mainPageFrame != null && myView.mainPageFrame.isAttachedToWindow()) {
+                                myView.mainPageFrame.getFocusDummy().requestFocus();
+                                myView.mainPageFrame.getFocusDummy().requestFocusFromTouch();
+                            }
+                        });
                     } catch (Exception e) {
                         Log.e(TAG, "MainActivity error", e);
                     }
@@ -645,17 +672,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
     @Override
     public void recreateActivity() {
-        navHome();
-        try {
-            for (Fragment fragment : getSupportFragmentManager().getFragments()) {
-                if (fragment != null) {
-                    getSupportFragmentManager().beginTransaction().remove(fragment).commit();
-                }
+        runOnUiThread(() -> {
+            if (!isFinishing() && !isDestroyed()) {
+                this.recreate();
             }
-        } catch (Exception e) {
-            Log.e(TAG, "MainActivity error", e);
-        }
-        this.recreate();
+        });
     }
 
     @Override
@@ -672,9 +693,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             if (event.getAction() == MotionEvent.ACTION_UP
                     && (x < 0 || x > v.getRight() - v.getLeft()
                     || y < 0 || y > v.getBottom() - v.getTop())) {
-                if (v.getOnFocusChangeListener() != null) {
-                    v.getOnFocusChangeListener().onFocusChange(v, false);
-                }
+                v.clearFocus();
             }
         }
         return super.dispatchTouchEvent(event);
@@ -731,7 +750,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             song_actions = getString(R.string.song_actions);
             deeplink_preferences = getString(R.string.deeplink_preferences);
             song_string = getString(R.string.song);
-            set_string = getString(R.string.set);
+            String set_string = getString(R.string.set);
             search_index_start = getString(R.string.index_songs_start);
             search_index_end = getString(R.string.index_songs_end);
             mode_presenter = getString(R.string.mode_presenter);
@@ -1333,6 +1352,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         }
         // 4. Final fallback
         else {
+            if (getWindowFlags() != null) {
+                getWindowFlags().cancelKeyboardTasks();
+            }
+            if (getCurrentFocus() != null) {
+                getCurrentFocus().clearFocus();
+            }
             finish();
         }
     }
@@ -2457,10 +2482,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         });
     }
 
-    @Override
-    public boolean getShowSetMenu() {
-        return showSetMenu;
-    }
 
     private boolean setSongMenuFragment() {
         runOnUiThread(() -> {
@@ -3246,13 +3267,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         return convertTextSong;
     }
 
-    @Override
-    public ConvertJustChords getConvertJustChords() {
-        if (convertJustChords == null) {
-            convertJustChords = new ConvertJustChords(this);
-        }
-        return convertJustChords;
-    }
 
     @Override
     public Variations getVariations() {
@@ -3856,6 +3870,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
                 case "exit":
                     // Close the app.
+                    if (getWindowFlags() != null) {
+                        getWindowFlags().cancelKeyboardTasks();
+                    }
+                    if (getCurrentFocus() != null) {
+                        getCurrentFocus().clearFocus();
+                    }
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         finishAndRemoveTask();
                     } else {
@@ -4902,6 +4922,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
+            finish();
+            return;
         }
 
         if (bootUpCompleted) {
@@ -4966,15 +4988,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
     @Override
     protected void onDestroy() {
-        // If we were running a local Wi-Fi host, turn it off
-        if (getLocalWiFiHost() != null) {
-            getLocalWiFiHost().stopLocalWifi();
+        if (getWindowFlags() != null) {
+            getWindowFlags().cancelKeyboardTasks();
         }
 
-        // If we were running a local webServer, turn it off
-        if (getWebServer()!=null) {
-            getWebServer().stopWebServer();
-        }
 
         // Clear any toasts
         getShowToast().kill();
@@ -5021,10 +5038,16 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (isFinishing() || isDestroyed()) {
+            if (getWindowFlags() != null) {
+                getWindowFlags().cancelKeyboardTasks();
+            }
+            return;
+        }
         if (hasFocus && getWindowFlags() != null) {
             getWindowFlags().hideKeyboard();
         }
-        super.onWindowFocusChanged(hasFocus);
 
         if (hasFocus && navController != null && navController.getCurrentDestination() != null) {
             if (Objects.requireNonNull(navController.getCurrentDestination()).getId() != R.id.setStorageLocationFragment) {

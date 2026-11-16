@@ -74,15 +74,21 @@ public class InformationBottomSheet extends BottomSheetCommon {
             switch (deepLink) {
                 case "restart":
                     myView.actionButton.setOnClickListener((view) -> {
-                        if (getActivity() != null) {
+                        android.app.Activity activity = getActivity();
+                        if (activity != null) {
                             dismiss();
-                            Intent intent = getActivity().getBaseContext().getPackageManager().getLaunchIntentForPackage(getActivity().getBaseContext().getPackageName());
-                            if (intent!=null) {
+                            Intent intent = activity.getBaseContext().getPackageManager().getLaunchIntentForPackage(activity.getBaseContext().getPackageName());
+                            if (intent != null) {
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(intent);
                             }
-                            android.os.Process.killProcess(android.os.Process.myPid());
-                            System.exit(0);
+                            if (mainActivityInterface != null && mainActivityInterface.getWindowFlags() != null) {
+                                mainActivityInterface.getWindowFlags().cancelKeyboardTasks();
+                            }
+                            if (activity.getCurrentFocus() != null) {
+                                activity.getCurrentFocus().clearFocus();
+                            }
+                            activity.finishAffinity();
                         }
                     });
                     break;

@@ -54,29 +54,37 @@ public class ExportFragment extends Fragment {
     private ArrayList<Integer> sectionViewWidthsScreenshot = new ArrayList<>(), sectionViewHeightsScreenshot = new ArrayList<>();
     private LinearLayout headerLayoutPDF;
     private int headerLayoutWidth, headerLayoutHeight, songsToAdd, songsProcessed;
-    private String setToExport = null, exportType, shareTitle, textContent, setContent, pngName,
-            export_string="", website_export_set_string="", website_export_song_string="",
-            set_string="", song_string="", app_name_string="", screenshot_string="", toolBarTitle="",
-            mode_performance_string="", merged_text_file_string="";
+    private String setToExport = null;
+    private String exportType;
+    private String shareTitle;
+    private String textContent;
+    private String setContent;
+    private String export_string="";
+    private String website_export_set_string="";
+    private String website_export_song_string="";
+    private String set_string="";
+    private String song_string="";
+    private String app_name_string="";
+    private String screenshot_string="";
+    private String toolBarTitle="";
+    private String mode_performance_string="";
+    private String merged_text_file_string="";
     private boolean openSong = false, currentFormat = false, openSongApp = false, pdf = false,
-            image = false, png = false, chordPro = false, justChords = false, onsong = false,
+            image = false, png = false, chordPro = false,  onsong = false,
             text = false, merged = false, setPDF = false, openSongSet = false, setPNG = false,
             openSongAppSet = false, includeSongs = false, textSet = false, isPrint,
-            setPDFDone = false, setPNGDone = false, screenShot = false, openSongSetBundle=true,
+            setPDFDone = false,  screenShot = false, openSongSetBundle=true,
             justChordsSetBundle=false;
     private String[] location, setData, ids, setKeys;
     private StringBuilder songsAlreadyAdded;
     private float scaleComments;
-    private Bitmap setPNGContent;
     private String webAddress;
     private String default_string="", dark_string="", light_string="",
             custom1_string="", custom2_string="", pdf_print_string="";
     private StringBuilder combinedSetText;
     private String currentSongFolder, currentSongFile;
     private Song tempSong;
-    private Song thisSong;
     private Song currentlyLoadedSong;
-    private String pdfName;
     private Future<?> future;
 
     @Override
@@ -460,7 +468,6 @@ public class ExportFragment extends Fragment {
             image = myView.image.isChecked();
             openSongApp = myView.openSongApp.isChecked();
             openSong = myView.openSong.isChecked();
-            justChords = myView.justChords.isChecked();
             onsong = myView.onSong.isChecked();
             chordPro = myView.chordPro.isChecked();
             text = myView.text.isChecked();
@@ -473,7 +480,6 @@ public class ExportFragment extends Fragment {
             image = false;
             openSongApp = false;
             openSong = false;
-            justChords = false;
             onsong = false;
             chordPro = false;
             text = false;
@@ -508,7 +514,6 @@ public class ExportFragment extends Fragment {
             // Keep all songs in a combined string for additional export
             combinedSetText = new StringBuilder();
 
-            mainActivityInterface.getConvertJustChords().resetVariables();
 
             // Load in the sets
             // First up add the simple set files that don't require drawing pdfs
@@ -701,23 +706,6 @@ public class ExportFragment extends Fragment {
                             }
                         }
 
-                        // Add justChord files
-                        if (!id.equals("ignore") && (justChords || justChordsSetBundle) && likelyXML) {
-                            // If we want the single song, add it
-                            if (justChords) {
-                                Uri uri = mainActivityInterface.getConvertJustChords().buildJustChordsSingleSong(song);
-                                if (uri!=null) {
-                                    uris.add(uri);
-                                }
-                                if (!mimeTypes.contains("text/plain")) {
-                                    mimeTypes.add("text/plain");
-                                }
-                            }
-                            // If we want a set bundle, add the song to the class - deal with it at the end
-                            if (justChordsSetBundle) {
-                                mainActivityInterface.getConvertJustChords().addOpenSongToArray(song);
-                            }
-                        }
 
                         // Add onSong files
                         if (!id.equals("ignore") && onsong && likelyXML) {
@@ -775,15 +763,7 @@ public class ExportFragment extends Fragment {
                 }
             }
 
-            if (justChordsSetBundle) {
-                Uri uri = mainActivityInterface.getConvertJustChords().buildJustChordsSet(setToExport);
-                if (uri!=null) {
-                    uris.add(uri);
-                    if (!mimeTypes.contains("text/plain")) {
-                        mimeTypes.add("text/plain");
-                    }
-                }
-            }
+
 
             if ((includeSongs && (pdf || png || image || screenShot)) || setPDF || setPNG) {
                 // We need to render PDFs which get drawn and added one at a time
@@ -825,8 +805,7 @@ public class ExportFragment extends Fragment {
 
         songsProcessed = 0;
         setPDFDone = false;
-        setPNGDone = false;
-        if (setPDF || setPNG) {
+          if (setPDF || setPNG) {
             mainActivityInterface.getMakePDF().setIsSetListPrinting(true);
             tempSong = new Song();
             tempSong.setTitle(setToExport);
@@ -938,15 +917,6 @@ public class ExportFragment extends Fragment {
                 }
             }
 
-            if (justChords && isXML) {
-                Uri uri = mainActivityInterface.getConvertJustChords().buildJustChordsSingleSong(mainActivityInterface.getSong());
-                if (uri!=null) {
-                    uris.add(uri);
-                }
-                if (!mimeTypes.contains("application/json")) {
-                    mimeTypes.add("application/json");
-                }
-            }
 
             if (onsong && isXML) {
                 String content = mainActivityInterface.getPrepareFormats().getSongAsOnSong(mainActivityInterface.getSong());
@@ -1207,8 +1177,7 @@ public class ExportFragment extends Fragment {
     public void createOnTheFlySections(Song thisSong, String pdfName) {
         // If we don't have any sections in the song, change the double line breaks into sections
         // Keep a reference of the song/pdfName
-        this.thisSong = thisSong;
-        this.pdfName = pdfName;
+        Song thisSong1 = thisSong;
 
         mainActivityInterface.getProcessSong().setPdfPrinting(true);
         mainActivityInterface.getProcessSong().setForceSinglePagePDF(myView.forceSinglePage.getChecked());
@@ -1262,118 +1231,6 @@ public class ExportFragment extends Fragment {
         }
     }
 
-    public void measureSectionsAndContinue() {
-        int maxWidth = 0;
-        for (int x=0; x<myView.hiddenSections.getChildCount(); x++) {
-            View view = myView.hiddenSections.getChildAt(x);
-            int width = view.getMeasuredWidth();
-            int height = view.getMeasuredHeight();
-            // If we have inlineAbcObjects, then fix these sections to use the ImageView version
-
-            sectionViewWidthsPDF.add(width);
-            sectionViewHeightsPDF.add(height);
-            if (width>maxWidth) {
-                maxWidth = width;
-            }
-        }
-
-        boolean isSetFile = pdfName.equals(set_string +" " +setToExport+".pdf");
-
-        // If we are exporting a setPNG and this is the set, take a bitmap!
-        if (isSetFile && setPNG && !setPNGDone) {
-            try {
-                // The header should still be in place
-                // Now take a bitmap of the layout
-                // Check how many columns are used for the bitmap
-                setPNGContent = Bitmap.createBitmap(maxWidth, myView.previewLayout.getHeight(), Bitmap.Config.ARGB_8888);
-                Canvas canvas = new Canvas(setPNGContent);
-                myView.previewLayout.draw(canvas);
-                Uri uri = mainActivityInterface.getStorageAccess().getUriForItem("Export","",pdfName.replace(".pdf",".png"));
-                mainActivityInterface.getStorageAccess().lollipopCreateFileForOutputStream(true,uri,null,"Export","",pdfName.replace(".pdf",".png"));
-                OutputStream outputStream = mainActivityInterface.getStorageAccess().getOutputStream(uri);
-                mainActivityInterface.getStorageAccess().writeImage(outputStream,setPNGContent);
-                if (uris==null) {
-                    uris = new ArrayList<>();
-                }
-                uris.add(uri);
-                // Remove the header
-                myView.hiddenHeader.removeAllViews();
-
-                // Check the bitmap is released/cleared
-                if (setPNGContent!=null) {
-                    setPNGContent.recycle();
-                }
-
-            } catch (OutOfMemoryError | Exception e) {
-                e.printStackTrace();
-            }
-            setPNGDone = true;
-        }
-
-        // Now trigger the next step of preparing the pdf from the views created on the fly
-        if (uris==null) {
-            uris = new ArrayList<>();
-        }
-        if (mimeTypes==null) {
-            mimeTypes = new ArrayList<>();
-        }
-
-        if ((png || image) && !isSetFile) {
-            // Now take a bitmap of the layout for the song
-            myView.previewLayout.setVisibility(View.VISIBLE);
-            setPNGContent = Bitmap.createBitmap(myView.previewLayout.getWidth(), myView.previewLayout.getHeight(), Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(setPNGContent);
-            myView.previewLayout.draw(canvas);
-
-            pngName = pdfName.replace(".pdf",".png");
-            Uri uri = mainActivityInterface.getStorageAccess().getUriForItem("Export", "", pngName);
-            mainActivityInterface.getStorageAccess().lollipopCreateFileForOutputStream(true, uri, null, "Export", "", pngName);
-            OutputStream outputStream = mainActivityInterface.getStorageAccess().getOutputStream(uri);
-            mainActivityInterface.getStorageAccess().writeImage(outputStream, setPNGContent);
-            uris.add(uri);
-            if (!mimeTypes.contains("image/png")) {
-                mimeTypes.add("image/png");
-            }
-            myView.previewLayout.setVisibility(View.INVISIBLE);
-            myView.hiddenHeader.removeAllViews();
-        }
-
-        // Now detach from this view (can only be shown in one layout)
-        myView.hiddenSections.removeAllViews();
-
-        // If we wanted a pdf (rather than png), add it
-
-        if ((setPDF && isSetFile && !setPDFDone) || (!isSetFile && pdf)) {
-            // Sets are always processed first, so mark as done
-            setPDFDone = true;
-            mainActivityInterface.getMakePDF().setSong(tempSong);
-            mainActivityInterface.getMakePDF().getColumns(sectionViewsPDF,sectionViewWidthsPDF,sectionViewHeightsPDF);
-            uris.add(mainActivityInterface.getMakePDF().createTextPDF(
-                    sectionViewsPDF, sectionViewWidthsPDF,
-                    sectionViewHeightsPDF, headerLayoutPDF,
-                    headerLayoutWidth, headerLayoutHeight,
-                    pdfName, null));
-
-            if ((!isSetFile && !pdf) || (isSetFile && !setPDF)) {
-                // Remove that uri as it was only created for an image screenshot
-                uris.remove(uris.size()-1);
-            } else {
-                if (!mimeTypes.contains("application/pdf")) {
-                    mimeTypes.add("application/pdf");
-                }
-            }
-        }
-        if (screenShot) {
-            mainActivityInterface.getProcessSong().setMakingImageOrScreenShot(true);
-            createOnTheFlySectionsScreenshot(thisSong,pdfName);
-            mainActivityInterface.getProcessSong().setMakingImageOrScreenShot(false);
-        } else if (isPrint) {
-            // We have exported a song as a print layout
-            doPrint(false);
-        } else {
-            renderPDFSongs();
-        }
-    }
 
     public void createOnTheFlySectionsScreenshot(Song thisSong, String pdfName) {
         // Prepare the song sheet header if required
@@ -1559,11 +1416,11 @@ public class ExportFragment extends Fragment {
                         myView.hiddenSections.removeAllViews();
                         myView.scaledPageHolder.setVisibility(View.VISIBLE);
 
-                        setPNGContent = Bitmap.createBitmap(thisWidth, thisHeight, Bitmap.Config.ARGB_8888);
+                        Bitmap setPNGContent = Bitmap.createBitmap(thisWidth, thisHeight, Bitmap.Config.ARGB_8888);
                         Canvas canvas = new Canvas(setPNGContent);
                         myView.scaledPageHolder.draw(canvas);
 
-                        pngName = pdfName.replace(".pdf","_"+screenshot_string+".png");
+                        String pngName = pdfName.replace(".pdf", "_" + screenshot_string + ".png");
                         Uri uri = mainActivityInterface.getStorageAccess().getUriForItem("Export", "", pngName);
                         mainActivityInterface.getStorageAccess().lollipopCreateFileForOutputStream(true, uri, null, "Export", "", pngName);
                         OutputStream outputStream = mainActivityInterface.getStorageAccess().getOutputStream(uri);
@@ -1769,11 +1626,4 @@ public class ExportFragment extends Fragment {
         return tempSong;
     }
 
-    public void abcFinished() {
-        // We have rendered the inline ABC notation, so can continue with measuring
-        Log.d(TAG,"abcFinished");
-        myView.previewLayout.setVisibility(View.VISIBLE);
-        myView.hiddenSections.setVisibility(View.VISIBLE);
-        measureSectionsAndContinue();
-    }
 }

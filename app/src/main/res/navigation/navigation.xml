@@ -919,12 +919,6 @@
             android:label="fragment_edit_song_2"
             tools:layout="@layout/edit_song_lyrics"/>
 
-        <!-- The song tags -->
-        <fragment
-            android:id="@+id/editSongTags"
-            android:name="adco.helixsongview.songprocessing.EditSongFragmentTags"
-            android:label="fragment_edit_song_3"
-            tools:layout="@layout/edit_song_features"/>
 
     </navigation>
     <navigation android:id="@+id/song_menu_graph"
