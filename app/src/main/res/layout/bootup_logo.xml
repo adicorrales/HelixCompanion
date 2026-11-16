@@ -9,14 +9,14 @@
 
     <ImageView
         android:id="@+id/splashlogo"
-        android:layout_width="379dp"
-        android:layout_height="173dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_above="@+id/currentAction"
         android:layout_centerVertical="true"
         android:layout_marginBottom="322dp"
         android:contentDescription="@string/app_name"
         android:padding="64dp"
-        android:scaleType="centerInside"
+        android:scaleType="fitCenter"
         android:visibility="visible" />
 
     <adco.helixsongview.customviews.MyMaterialSimpleTextView

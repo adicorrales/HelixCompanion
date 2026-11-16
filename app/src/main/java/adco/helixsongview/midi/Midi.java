@@ -417,6 +417,9 @@ public class Midi {
 
     public void setMidiDevice(MidiDevice midiDevice) {
         this.midiDevice = midiDevice;
+        if (mainActivityInterface != null) {
+            mainActivityInterface.getMainHandler().post(() -> mainActivityInterface.refreshToolbarMenu());
+        }
     }
 
     public void setMidiManager(MidiManager midiManager) {
@@ -958,6 +961,9 @@ public class Midi {
         }
         activeGattCharacteristic = null;
         useDirectGatt = false;
+        if (mainActivityInterface != null) {
+            mainActivityInterface.getMainHandler().post(() -> mainActivityInterface.refreshToolbarMenu());
+        }
     }
 
     public void tryDisconnectBluetoothLE() {

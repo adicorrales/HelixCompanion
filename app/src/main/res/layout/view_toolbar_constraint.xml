@@ -264,7 +264,7 @@
         </LinearLayout>
 
         <!-- 4. Independent Play/Pause Button (Framed, width weight = 2.0 matching title) -->
-        <FrameLayout
+        <LinearLayout
             android:id="@+id/btnTransportPlayContainer"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -273,18 +273,28 @@
             android:layout_marginEnd="2dp"
             android:layout_marginTop="4dp"
             android:layout_marginBottom="4dp"
+            android:orientation="vertical"
+            android:gravity="center"
             android:background="@drawable/transport_btn_bg"
             android:clickable="true"
             android:focusable="true">
 
             <ImageView
                 android:id="@+id/playPauseIndicator"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_gravity="center"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
                 app:srcCompat="@drawable/play"
                 android:contentDescription="Play/Pause" />
-        </FrameLayout>
+
+            <adco.helixsongview.customviews.MyMaterialSimpleTextView
+                android:id="@+id/playPauseStatusText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="9sp"
+                android:maxLines="1"
+                android:visibility="gone"
+                tools:text="On Cue" />
+        </LinearLayout>
 
         <!-- 5. Next Song Button -->
         <LinearLayout

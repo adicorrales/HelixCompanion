@@ -3380,6 +3380,47 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private volatile int lastSentMidiSetIdx = -1;
     private volatile int lastSentMidiSongPos = -1;
 
+    private volatile boolean isMidiTransportLocked = false;
+    private final Handler midiLockHandler = new Handler(Looper.getMainLooper());
+    private final Runnable midiLockReleaseRunnable = () -> isMidiTransportLocked = false;
+
+    @Override
+    public void handleMidiFeedback(int channel, int ccNumber, int ccValue) {
+        if (ccNumber == 51 || ccNumber == 49 || ccNumber == 47 || ccNumber == 10 || ccNumber == 63) {
+            isMidiTransportLocked = false;
+            midiLockHandler.removeCallbacks(midiLockReleaseRunnable);
+
+            if (ccNumber == 10) {
+                // Song cue confirmed by Helix -> Show "On Cue" in yellow on Play button
+                getMainHandler().post(() -> {
+                    if (myView != null && myView.myToolbar != null) {
+                        myView.myToolbar.setPlayStatus("On Cue", android.graphics.Color.parseColor("#FFEB3B"));
+                        myView.myToolbar.updatePlayButton(false);
+                    }
+                });
+            } else if (ccNumber == 51) {
+                String playMode = getPreferences().getMyPreferenceString("helixPlayMode", "Play");
+                if (playMode.equals("Play")) {
+                    boolean helixPlaying = ccValue > 0;
+                    if (isPlaying != helixPlaying) {
+                        isPlaying = helixPlaying;
+                        getMainHandler().post(() -> {
+                            if (myView != null && myView.myToolbar != null) {
+                                if (isPlaying) {
+                                    myView.myToolbar.updatePlayButton(true);
+                                    myView.myToolbar.setPlayStatus("Playing", android.graphics.Color.parseColor("#4CAF50"));
+                                } else {
+                                    myView.myToolbar.updatePlayButton(false);
+                                    myView.myToolbar.setPlayStatus("", 0);
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        }
+    }
+
     @Override
     public void resetLastSentMidiSetIdx() {
         lastSentMidiSetIdx = -1;
@@ -3677,6 +3718,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
     @Override
     public void onTransportPrev() {
+        if (isMidiTransportLocked) return;
+        isMidiTransportLocked = true;
+        midiLockHandler.removeCallbacks(midiLockReleaseRunnable);
+        midiLockHandler.postDelayed(midiLockReleaseRunnable, 400);
+
         int currentPos = currentSet.getIndexSongInSet();
         if (currentPos > 0) {
             loadSongFromSet(currentPos - 1);
@@ -3691,6 +3737,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
     @Override
     public void onTransportRt0() {
+        if (isMidiTransportLocked) return;
+        isMidiTransportLocked = true;
+        midiLockHandler.removeCallbacks(midiLockReleaseRunnable);
+        midiLockHandler.postDelayed(midiLockReleaseRunnable, 400);
+
         if (isHelixSet()) {
             int channel = getPreferences().getMyPreferenceInt("helixGlobalMidiChannel", 1);
             if (channel < 1) channel = 1;
@@ -3701,6 +3752,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
     @Override
     public void onTransportPlay() {
+        if (isMidiTransportLocked) return;
+        isMidiTransportLocked = true;
+        midiLockHandler.removeCallbacks(midiLockReleaseRunnable);
+        midiLockHandler.postDelayed(midiLockReleaseRunnable, 400);
+
         String playMode = getPreferences().getMyPreferenceString("helixPlayMode", "Play");
         int channel = getPreferences().getMyPreferenceInt("helixGlobalMidiChannel", 1);
         if (channel < 1) channel = 1;
@@ -3709,7 +3765,13 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             // Modo Play: Carga y TOCA en un solo pulso
             isPlaying = !isPlaying;
             if (myView != null) {
-                myView.myToolbar.updatePlayButton(isPlaying);
+                if (isPlaying) {
+                    myView.myToolbar.updatePlayButton(true);
+                    myView.myToolbar.setPlayStatus("Playing", android.graphics.Color.parseColor("#4CAF50"));
+                } else {
+                    myView.myToolbar.updatePlayButton(false);
+                    myView.myToolbar.setPlayStatus("", 0);
+                }
             }
             if (isHelixSet()) {
                 int val = isPlaying ? 127 : 0;
@@ -3719,13 +3781,15 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             transportClickCount = isPlaying ? 2 : 0;
         } else {
             // Modo Load / Load + Preset:
-            // 1er pulso: CARGA la canción en CUE y NO REPRODUCE (botón permanece en Play)
-            // 2do pulso: INICIA la reproducción (botón cambia a Pausa)
+            // 0 = On Cue -> 1st press sends CC51:127 -> status "Loaded", icon stays Play (false). Waits for 2nd press.
+            // 1 = Loaded -> 2nd press sends CC51:127 -> status "Playing", icon changes to Pause (true).
+            // 2+ = Playing/Paused toggles -> subsequent presses toggle between playing (Pause icon) and paused (Play icon).
             if (transportClickCount == 0) {
                 transportClickCount = 1;
                 isPlaying = false;
                 if (myView != null) {
-                    myView.myToolbar.updatePlayButton(false);
+                    myView.myToolbar.updatePlayButton(false); // keeps Play icon
+                    myView.myToolbar.setPlayStatus("Loaded", android.graphics.Color.parseColor("#FFEB3B"));
                 }
                 if (isHelixSet()) {
                     String msg = "MIDI" + channel + ":CC51:127";
@@ -3735,30 +3799,42 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 transportClickCount = 2;
                 isPlaying = true;
                 if (myView != null) {
-                    myView.myToolbar.updatePlayButton(true);
+                    myView.myToolbar.updatePlayButton(true); // shows Pause icon
+                    myView.myToolbar.setPlayStatus("Playing", android.graphics.Color.parseColor("#4CAF50"));
                 }
                 if (isHelixSet()) {
                     String msg = "MIDI" + channel + ":CC51:127";
                     getMidi().sendMidiHexSequence(msg);
                 }
             } else {
-                // Ya reproduciendo: toggle play/pause
+                // Subsequent presses after Loaded/Playing: toggle play/pause
                 isPlaying = !isPlaying;
                 if (myView != null) {
-                    myView.myToolbar.updatePlayButton(isPlaying);
+                    if (isPlaying) {
+                        myView.myToolbar.updatePlayButton(true); // shows Pause icon
+                        myView.myToolbar.setPlayStatus("Playing", android.graphics.Color.parseColor("#4CAF50"));
+                    } else {
+                        myView.myToolbar.updatePlayButton(false); // shows Play icon
+                        myView.myToolbar.setPlayStatus("Paused", android.graphics.Color.parseColor("#FFEB3B"));
+                    }
                 }
                 if (isHelixSet()) {
                     int val = isPlaying ? 127 : 0;
                     String msg = "MIDI" + channel + ":CC51:" + val;
                     getMidi().sendMidiHexSequence(msg);
                 }
-                transportClickCount = isPlaying ? 2 : 0;
+                transportClickCount = isPlaying ? 2 : 1;
             }
         }
     }
 
     @Override
     public void onTransportNext() {
+        if (isMidiTransportLocked) return;
+        isMidiTransportLocked = true;
+        midiLockHandler.removeCallbacks(midiLockReleaseRunnable);
+        midiLockHandler.postDelayed(midiLockReleaseRunnable, 400);
+
         int currentPos = currentSet.getIndexSongInSet();
         if (currentPos < currentSet.getCurrentSetSize() - 1) {
             loadSongFromSet(currentPos + 1);

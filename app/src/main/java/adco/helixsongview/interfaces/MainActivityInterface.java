@@ -279,6 +279,7 @@ public interface MainActivityInterface {
     void sendHelixMidiSetAndSong(int setIdx, int songPosition);
     void resetLastSentMidiSetIdx();
     boolean hasValidMidiConnection();
+    void handleMidiFeedback(int channel, int ccNumber, int ccValue);
     boolean isHelixSet();
     void setHelixSet(boolean helixSet);
     adco.helixsongview.setmenu.SelectSetFragment getSelectSetFragment();

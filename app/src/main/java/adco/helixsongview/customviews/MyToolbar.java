@@ -44,11 +44,10 @@ public class MyToolbar extends Toolbar {
     private final ImageView setIcon, batteryimage;
     private final ImageView btnTransportRt0, playPauseIndicator, btnTransportPrevArrow, btnTransportNextArrow;
     private final MyMaterialSimpleTextView btnTransportPrevTitle, btnTransportNextTitle;
-    private final LinearLayout btnTransportPrevContainer, btnTransportNextContainer, songandauthor;
-    private final FrameLayout btnTransportPlayContainer;
+    private final LinearLayout btnTransportPrevContainer, btnTransportNextContainer, songandauthor, btnTransportPlayContainer;
     private final LinearLayout metronomeLayout;
     private final ArrayList<View> beatView;
-    private final MyMaterialSimpleTextView batterycharge;
+    private final MyMaterialSimpleTextView batterycharge, playPauseStatusText;
     private Handler delayActionBarHide;
     private Runnable hideActionBarRunnable;
     private int actionBarHideTime = 1200, additionalTopPadding = 0;
@@ -142,6 +141,7 @@ public class MyToolbar extends Toolbar {
         btnTransportNextContainer = v.findViewById(R.id.btnTransportNextContainer);
         btnTransportRt0 = v.findViewById(R.id.btnTransportRt0);
         playPauseIndicator = v.findViewById(R.id.playPauseIndicator);
+        playPauseStatusText = v.findViewById(R.id.playPauseStatusText);
         btnTransportPlayContainer = v.findViewById(R.id.btnTransportPlayContainer);
         btnTransportPrevArrow = v.findViewById(R.id.btnTransportPrevArrow);
         btnTransportNextArrow = v.findViewById(R.id.btnTransportNextArrow);
@@ -764,6 +764,24 @@ public class MyToolbar extends Toolbar {
         }
 
         mainActivityInterface.refreshToolbarMenu();
+    }
+
+    public void setPlayStatus(String statusText, int color) {
+        if (color == 0 && mainActivityInterface != null && mainActivityInterface.getPalette() != null) {
+            color = mainActivityInterface.getPalette().textColor;
+        }
+        if (playPauseStatusText != null) {
+            if (statusText == null || statusText.isEmpty()) {
+                playPauseStatusText.setVisibility(View.GONE);
+            } else {
+                playPauseStatusText.setVisibility(View.VISIBLE);
+                playPauseStatusText.setText(statusText);
+                playPauseStatusText.setTextColor(color);
+            }
+        }
+        if (playPauseIndicator != null) {
+            playPauseIndicator.setColorFilter(color);
+        }
     }
 
 }

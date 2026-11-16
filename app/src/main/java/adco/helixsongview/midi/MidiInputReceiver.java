@@ -78,6 +78,13 @@ public class MidiInputReceiver extends MidiReceiver {
 
             Log.d(TAG,"messageType:"+messageType+"  midiChannel:"+midiChannel+"  data1:"+data1+"  data2:"+data2);
 
+            if (messageType.equals("CC")) {
+                // Control Change feedback echo from Helix (always process globally)
+                mainActivityInterface.getMainHandler().post(() -> {
+                    mainActivityInterface.handleMidiFeedback(midiChannel, data1, data2);
+                });
+            }
+
             String midiInfo = "MIDI IN [" + messageType + "] Ch:" + midiChannel + " Data1:" + data1 + " Data2:" + data2;
             mainActivityInterface.getMainHandler().post(() -> {
                 if (mainActivityInterface != null && mainActivityInterface.getShowToast() != null) {
@@ -167,6 +174,12 @@ public class MidiInputReceiver extends MidiReceiver {
                     songMessageHander.postDelayed(songMessageRunnable, 1000);
                     Log.d(TAG,"MSB chosen:" + data1 + "," + data2);
                     msbChosen = data2;
+
+                } else if (messageType.equals("CC")) {
+                    // Control Change feedback echo from Helix
+                    mainActivityInterface.getMainHandler().post(() -> {
+                        mainActivityInterface.handleMidiFeedback(midiChannel, data1, data2);
+                    });
 
                 } else if (messageType.equals("PC") || songSelect) {
                     // We have received the PC song number and may also have the MSB chosen - song chosen
