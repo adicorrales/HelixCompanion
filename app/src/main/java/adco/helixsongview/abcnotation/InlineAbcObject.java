@@ -53,53 +53,12 @@ public class InlineAbcObject {
     }
 
     // The setters
-    public void setAbcSvgText(String abcSvgText) {
-        this.abcSvgText = abcSvgText;
-    }
-    public void setAbcWidth(int abcWidth) {
-        this.abcWidth = abcWidth;
-    }
-    public void setAbcHeight(int abcHeight) {
-        this.abcHeight = abcHeight;
-    }
-    public void setAbcItem(int abcItem) {
-        this.abcItem = abcItem;
-    }
-    public void setAbcMeasured(boolean abcMeasured) {
-        this.abcMeasured = abcMeasured;
-    }
-    public void setAbcInlineText(String abcInlineText) {
-        this.abcInlineText = abcInlineText;
-    }
+
+
     public void setIsPDF(boolean isPDF) {
         this.isPDF = isPDF;
     }
-    public void setIsPresentation(boolean isPresentation) {
-        this.isPresentation = isPresentation;
-    }
-    public void setMainColor(String mainColor) {
-        this.mainColor = mainColor;
-    }
-    public void setChordColor(String chordColor) {
-        this.chordColor = chordColor;
-    }
 
-    // The getters
-    public int getAbcWidth() {
-        return abcWidth;
-    }
-    public int getAbcHeight() {
-        return abcHeight;
-    }
-    public int getAbcItem() {
-        return abcItem;
-    }
-    public int getAbcContainingItem() {
-        return abcContainingItem;
-    }
-    public boolean getAbcMeasured() {
-        return abcMeasured;
-    }
     public boolean getIsInline() {
         return abcInlineText!=null && false;
     }
@@ -109,10 +68,7 @@ public class InlineAbcObject {
         return Uri.encode(jsReadyAbcText, "UTF-8").replace("'", "&apos;");
     }
 
-    // This uses an XML set InlineWebView as the view for this object
-    public void setInlineAbcWebView(InlineAbcWebView inlineAbcWebView) {
-        this.inlineAbcWebView = inlineAbcWebView;
-    }
+
 
     // This returns a new WebView for the object.  Only one parent allowed
     public InlineAbcWebView getInlineAbcWebView() {
@@ -230,13 +186,6 @@ public class InlineAbcObject {
             super.onPageFinished(webView, url);
             updateContent();
         }
-    }
-
-    public void setIsPopup(boolean isPopup) {
-        this.isPopup = isPopup;
-    }
-    public boolean getIsPopup() {
-        return isPopup;
     }
 
     public void updateContent() {

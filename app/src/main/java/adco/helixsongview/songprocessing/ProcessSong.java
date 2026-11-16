@@ -2838,7 +2838,7 @@ public class ProcessSong {
                                             if (pdfPrinting) {
                                                 inlineAbcObject.setIsPDF(true);
                                             }
-                                            mainActivityInterface.getAbcNotation().addInlineAbcObject(inlineAbcObject);
+
                                             // Now we add the WebView and ImageView for the song display
                                             // Once rendering is complete, we hide the WebView and display the ImageView
                                             linearLayout.addView(inlineAbcObject.getInlineAbcWebView());
