@@ -252,6 +252,7 @@ public class PedalActions {
         addString("midiaction6",c.getString(R.string.midi_action)+" "+6);
         addString("midiaction7",c.getString(R.string.midi_action)+" "+7);
         addString("midiaction8",c.getString(R.string.midi_action)+" "+8);
+        addString("connectlastmidi", "Connect to last MIDI device");
         addString("sysexstart",c.getString(R.string.midi_sysex)+" "+c.getString(R.string.start));
         addString("sysexstop", c.getString(R.string.midi_sysex)+" "+c.getString(R.string.stop));
         addString("midiclock",c.getString(R.string.midi_clock)+startstop);

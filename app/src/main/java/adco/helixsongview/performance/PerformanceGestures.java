@@ -350,6 +350,9 @@ public class PerformanceGestures {
             case "midiaction8":
                 midiAction(8);
                 break;
+            case "connectlastmidi":
+                connectLastMidi();
+                break;
             case "sysexstart":
                 sysexStart();
                 break;
@@ -1144,6 +1147,12 @@ public class PerformanceGestures {
     public void sysexStop() {
         if (isMidiAllowed()) {
             mainActivityInterface.getMidi().sendMidiHexSequence(mainActivityInterface.getMidi().getSysexStopCode());
+        }
+    }
+
+    public void connectLastMidi() {
+        if (mainActivityInterface.getMidi() != null) {
+            mainActivityInterface.getMidi().connectToLastDevice();
         }
     }
 

@@ -201,7 +201,6 @@ public class PageButtons {
         prepareOption("scrollup",c.getString(R.string.scroll_up),c.getString(R.string.select),"",R.drawable.arrow_up);
         prepareOption("next",c.getString(R.string.next),c.getString(R.string.select),"",R.drawable.arrow_right);
         prepareOption("prev",c.getString(R.string.previous),c.getString(R.string.select),"",R.drawable.arrow_left);
-        prepareOption("randomsong",c.getString(R.string.random_song),c.getString(R.string.random_song),"",R.drawable.shuffle);
 
         prepareOption("?","","","",R.drawable.help);
 
@@ -210,9 +209,6 @@ public class PageButtons {
         prepareOption("pad",c.getString(R.string.pad),c.getString(R.string.start) + " / " + c.getString(R.string.stop),c.getString(R.string.settings),R.drawable.amplifier);
          prepareOption("autoscroll",c.getString(R.string.autoscroll),c.getString(R.string.start) + " / " + c.getString(R.string.stop),c.getString(R.string.settings),R.drawable.autoscroll);
         prepareOption("pad_autoscroll",c.getString(R.string.pad) + " / " + c.getString(R.string.autoscroll),c.getString(R.string.start)+" / "+c.getString(R.string.stop),"",R.drawable.autoscroll_pad);
-        prepareOption("pad_metronome",c.getString(R.string.pad) + " / " + c.getString(R.string.metronome),c.getString(R.string.start)+" / "+c.getString(R.string.stop),"",R.drawable.metronome_pad);
-        prepareOption("autoscroll_metronome",c.getString(R.string.autoscroll) + " / " + c.getString(R.string.metronome),c.getString(R.string.start)+" / "+c.getString(R.string.stop),"",R.drawable.metronome_autoscroll);
-        prepareOption("pad_autoscroll_metronome",c.getString(R.string.pad) + " / " + c.getString(R.string.autoscroll) + " / " + c.getString(R.string.metronome),c.getString(R.string.start)+" / "+c.getString(R.string.stop),"",R.drawable.metronome_autoscroll_pad);
         prepareOption("inc_autoscroll_speed",c.getString(R.string.inc_autoscroll_speed),c.getString(R.string.inc_autoscroll_speed),"",R.drawable.timer_plus);
         prepareOption("dec_autoscroll_speed",c.getString(R.string.dec_autoscroll_speed),c.getString(R.string.dec_autoscroll_speed),"",R.drawable.timer_minus);
         prepareOption("toggle_autoscroll_pause",c.getString(R.string.autoscroll_pause),c.getString(R.string.pause) + " / " + c.getString(R.string.resume),"",R.drawable.timer_pause);
@@ -220,9 +216,6 @@ public class PageButtons {
         prepareOption("share_song",c.getString(R.string.export)+" "+c.getString(R.string.song),c.getString(R.string.select),"",R.drawable.share);
         prepareOption("import",c.getString(R.string.import_basic),c.getString(R.string.online_services),c.getString(R.string.import_main),R.drawable.database_import);
         prepareOption("link",c.getString(R.string.link),c.getString(R.string.open),"",R.drawable.link);
-        prepareOption("stickynotes",c.getString(R.string.song_notes),c.getString(R.string.show) + " / " + c.getString(R.string.hide),c.getString(R.string.edit),R.drawable.note_text);
-        prepareOption("highlight",c.getString(R.string.highlight),c.getString(R.string.show) + " / " + c.getString(R.string.hide),c.getString(R.string.edit),R.drawable.highlighter);
-        prepareOption("abc",c.getString(R.string.music_score),c.getString(R.string.show) + " / " + c.getString(R.string.hide),c.getString(R.string.edit),R.drawable.clef);
 
         prepareOption("?","","","",R.drawable.help);
 
@@ -256,22 +249,9 @@ public class PageButtons {
 
         prepareOption("?","","","",R.drawable.help);
 
-        // Nearby
-        prepareOption("?","--- " + c.getString(R.string.nearby_devices) + " ---","","",R.drawable.help);
-        prepareOption("nearby",c.getString(R.string.connections_connect),c.getString(R.string.connections_discover),c.getString(R.string.settings),R.drawable.nearby);
-        prepareOption("nearbymessage1",c.getString(R.string.nearby_message)+" "+1,c.getString(R.string.select),"",R.drawable.message1);
-        prepareOption("nearbymessage2",c.getString(R.string.nearby_message)+" "+2,c.getString(R.string.select),"",R.drawable.message2);
-        prepareOption("nearbymessage3",c.getString(R.string.nearby_message)+" "+3,c.getString(R.string.select),"",R.drawable.message3);
-        prepareOption("nearbymessage4",c.getString(R.string.nearby_message)+" "+4,c.getString(R.string.select),"",R.drawable.message4);
-        prepareOption("nearbymessage5",c.getString(R.string.nearby_message)+" "+5,c.getString(R.string.select),"",R.drawable.message5);
-        prepareOption("nearbymessage6",c.getString(R.string.nearby_message)+" "+6,c.getString(R.string.select),"",R.drawable.message6);
-        prepareOption("nearbymessage7",c.getString(R.string.nearby_message)+" "+7,c.getString(R.string.select),"",R.drawable.message7);
-        prepareOption("nearbymessage8",c.getString(R.string.nearby_message)+" "+8,c.getString(R.string.select),"",R.drawable.message8);
-
-        prepareOption("","","","",R.drawable.help);
-
         // MIDI
         prepareOption("?","--- " + c.getString(R.string.midi) + " ---","","",R.drawable.help);
+        prepareOption("connectlastmidi", "Connect to last MIDI device", "Connect", "", R.drawable.midi_start);
         prepareOption("midi",c.getString(R.string.midi),c.getString(R.string.midi_send),c.getString(R.string.midi_auto)+" "+
                 c.getString(R.string.on)+" / "+c.getString(R.string.off),R.drawable.midi);
         prepareOption("midiboard",c.getString(R.string.midi_board),c.getString(R.string.select),"",R.drawable.midi_board);
@@ -285,29 +265,6 @@ public class PageButtons {
         prepareOption("midiaction8",c.getString(R.string.midi_action)+" "+8,c.getString(R.string.select),"",R.drawable.midi8);
         prepareOption("sysexstart",c.getString(R.string.midi_sysex)+" "+c.getString(R.string.start), c.getString(R.string.select),"",R.drawable.midi_start);
         prepareOption("sysexstop",c.getString(R.string.midi_sysex)+" "+c.getString(R.string.stop), c.getString(R.string.select),"",R.drawable.midi_stop);
-        prepareOption("midiclock",c.getString(R.string.midi_clock),c.getString(R.string.start) + " / " + c.getString(R.string.stop),c.getString(R.string.settings),R.drawable.midiclock);
-        prepareOption("midiclockburst",c.getString(R.string.midi_clock_short_burst),c.getString(R.string.on)+" / "+c.getString(R.string.off),c.getString(R.string.settings),R.drawable.midiclockburst);
-
-        prepareOption("?","","","",R.drawable.help);
-
-        // Utilities
-        prepareOption("?","--- " + c.getString(R.string.utilities) + " ---","","",R.drawable.help);
-        prepareOption("soundlevel",c.getString(R.string.sound_level_meter),c.getString(R.string.show) + " / " + c.getString(R.string.hide),"",R.drawable.sound_level);
-        prepareOption("tuner",c.getString(R.string.tuner),c.getString(R.string.select),"",R.drawable.tuner);
-        prepareOption("chorddetection",c.getString(R.string.chord_detection),c.getString(R.string.show)+" / "+c.getString(R.string.hide),"",R.drawable.chord_detection);
-        prepareOption("audiorecorder",c.getString(R.string.audio_recorder),c.getString(R.string.select),"",R.drawable.microphone);
-        prepareOption("audioplayer",c.getString(R.string.audio_player),c.getString(R.string.select),"",R.drawable.audio_player);
-        prepareOption("audioplayerpopup",c.getString(R.string.audio_player)+" ("+c.getString(R.string.popup)+")",c.getString(R.string.select),"",R.drawable.audio_player);
-        prepareOption("multitrack",c.getString(R.string.multitrack_player),c.getString(R.string.show),"",R.drawable.multitrack);
-        prepareOption("webservermessages",c.getString(R.string.webserver_messages),c.getString(R.string.show),"",R.drawable.message);
-
-        prepareOption("","","","",R.drawable.help);
-
-        // Presentation controls (second screen)
-        prepareOption("?","--- " + c.getString(R.string.connected_display) + " ---","","",R.drawable.help);
-        prepareOption("showlogo", c.getString(R.string.show_logo),c.getString(R.string.show) + " / " + c.getString(R.string.hide),"",R.drawable.logo);
-        prepareOption("blankscreen", c.getString(R.string.blank_screen),c.getString(R.string.show) + " / " + c.getString(R.string.hide),"",R.drawable.projector_blank);
-        prepareOption("blackscreen", c.getString(R.string.black_screen),c.getString(R.string.show) + " / " + c.getString(R.string.hide),"",R.drawable.projector_black);
 
         prepareOption("?","","","",R.drawable.help);
 

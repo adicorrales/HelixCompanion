@@ -1684,4 +1684,58 @@ public class Midi {
         }
     }
 
+    public void connectToLastDevice() {
+        if (getMidiDevice() != null) {
+            mainActivityInterface.getShowToast().doIt("Already connected to MIDI device.");
+            return;
+        }
+
+        String lastAddress = mainActivityInterface.getPreferences().getMyPreferenceString("lastUsedMidiDeviceAddress", "");
+        String lastName = mainActivityInterface.getPreferences().getMyPreferenceString("lastUsedMidiDeviceName", "");
+
+        if (lastAddress.isEmpty()) {
+            mainActivityInterface.getShowToast().doIt("No last MIDI device found.");
+            return;
+        }
+
+        mainActivityInterface.getShowToast().doIt("Connecting to " + (lastName.isEmpty() ? lastAddress : lastName) + "...");
+
+        if (bluetoothManager != null && bluetoothManager.getAdapter() != null) {
+            BluetoothAdapter adapter = bluetoothManager.getAdapter();
+            Set<BluetoothDevice> bondedDevices = adapter.getBondedDevices();
+            boolean found = false;
+            if (bondedDevices != null) {
+                for (BluetoothDevice device : bondedDevices) {
+                    if (device.getAddress().equalsIgnoreCase(lastAddress)) {
+                        found = true;
+                        setBluetoothDevice(device);
+                        if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
+                            executeOpenDeviceWorkflow();
+                        }
+                        break;
+                    }
+                }
+            }
+
+            if (!found) {
+                try {
+                    BluetoothDevice device = adapter.getRemoteDevice(lastAddress);
+                    if (device != null) {
+                        setBluetoothDevice(device);
+                        executeOpenDeviceWorkflow();
+                        found = true;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (!found) {
+                mainActivityInterface.getShowToast().doIt("Last MIDI device not found in bonded devices.");
+            }
+        } else {
+            mainActivityInterface.getShowToast().doIt("Bluetooth adapter not available.");
+        }
+    }
+
 }
