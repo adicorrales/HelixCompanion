@@ -83,7 +83,6 @@ public class EditSongFragmentTags extends Fragment {
                     myView.tags.setFocusable(false);
 
                     myView.aka.setText(mainActivityInterface.getTempSong().getAka());
-                    myView.ccli.setText(mainActivityInterface.getTempSong().getCcli());
                     myView.user1.setText(mainActivityInterface.getTempSong().getUser1());
                     myView.user2.setText(mainActivityInterface.getTempSong().getUser2());
                     myView.user3.setText(mainActivityInterface.getTempSong().getUser3());
@@ -120,7 +119,6 @@ public class EditSongFragmentTags extends Fragment {
         });
         myView.tags.addTextChangedListener(new MyTextWatcher("tags"));
         myView.aka.addTextChangedListener(new MyTextWatcher("aka"));
-        myView.ccli.addTextChangedListener(new MyTextWatcher("ccli"));
         myView.user1.addTextChangedListener(new MyTextWatcher("user1"));
         myView.user2.addTextChangedListener(new MyTextWatcher("user2"));
         myView.user3.addTextChangedListener(new MyTextWatcher("user3"));

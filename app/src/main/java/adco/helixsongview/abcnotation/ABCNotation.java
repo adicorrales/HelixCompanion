@@ -116,8 +116,6 @@ public class ABCNotation {
         return abcWebViewsDrawn;
     }
 
-
-
     public ExportFragment getExportFragment() {
         return exportFragment;
     }

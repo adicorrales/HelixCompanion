@@ -208,9 +208,7 @@ public class ImageSlideAdapter  extends RecyclerView.Adapter<ImageSlideViewHolde
         return (int) floatHeight;
     }
 
-    public void setInlineSetWidth(int inlineSetWidth) {
-        this.inlineSetWidth = inlineSetWidth;
-    }
+
     private void onTouchAction() {
         mainActivityInterface.getDisplayPrevNext().showAndHide();
         mainActivityInterface.updateOnScreenInfo("showhide");
@@ -249,9 +247,7 @@ public class ImageSlideAdapter  extends RecyclerView.Adapter<ImageSlideViewHolde
     public ArrayList<Float> getWidths() {
         return floatHSizes;
     }
-    public ArrayList<Float> getHeights() {
-        return floatVSizes;
-    }
+
 
     public Uri getUri(int position) {
         return slideInfos.get(position).uri;

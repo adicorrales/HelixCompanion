@@ -151,7 +151,7 @@ public class EditSongFragment extends Fragment implements EditSongFragmentInterf
             edit_song_variation_string = getString(R.string.edit_song_variation);
             website_edit_song_main_string = getString(R.string.website_edit_song_main);
             website_edit_song_features_string = getString(R.string.website_edit_song_features);
-            getString(R.string.website_edit_song_tag);
+            //getString(R.string.website_edit_song_tag);
             lyrics_string = getString(R.string.lyrics);
             mainfoldername_string = getString(R.string.mainfoldername);
             song_features_string = getString(R.string.song_features);

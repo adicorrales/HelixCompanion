@@ -159,7 +159,6 @@ import adco.helixsongview.songprocessing.ConvertTextSong;
 import adco.helixsongview.songprocessing.ConvertWord;
 import adco.helixsongview.songprocessing.EditSongFragment;
 import adco.helixsongview.songprocessing.EditSongFragmentMain;
-import adco.helixsongview.songprocessing.EditSongFragmentTags;
 import adco.helixsongview.songprocessing.ProcessSong;
 import adco.helixsongview.songprocessing.RepairSongsBottomSheet;
 import adco.helixsongview.songprocessing.Song;
@@ -1709,13 +1708,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                         }
                     }
                     break;
-                case "EditSongFragmentTags":
-                    ((EditSongFragmentTags) callingFragment).updateValue();
-                    break;
 
-                case "confirmed_EditSongFragmentTags":
-                    ((EditSongFragmentTags) callingFragment).removeTags(arguments);
-                    break;
 
                 case "themeSetupFragment":
                     ((ThemeSetupFragment) callingFragment).updateColors();

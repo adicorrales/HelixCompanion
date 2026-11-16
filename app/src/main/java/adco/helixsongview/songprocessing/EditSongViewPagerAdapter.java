@@ -18,7 +18,6 @@ public class EditSongViewPagerAdapter extends FragmentStateAdapter {
         switch (position) {
             case 1: return new EditSongFragmentMain();
             case 2: return new EditSongFragmentFeatures();
-            case 3: return new EditSongFragmentTags();
             case 0:
             default: return new EditSongFragmentLyrics();
         }
@@ -26,7 +25,7 @@ public class EditSongViewPagerAdapter extends FragmentStateAdapter {
 
     @Override
     public int getItemCount() {
-        return 4;
+        return 3;
     }
 
 }
