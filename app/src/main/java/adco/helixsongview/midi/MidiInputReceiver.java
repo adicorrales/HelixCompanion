@@ -78,6 +78,13 @@ public class MidiInputReceiver extends MidiReceiver {
 
             Log.d(TAG,"messageType:"+messageType+"  midiChannel:"+midiChannel+"  data1:"+data1+"  data2:"+data2);
 
+            String midiInfo = "MIDI IN [" + messageType + "] Ch:" + midiChannel + " Data1:" + data1 + " Data2:" + data2;
+            mainActivityInterface.getMainHandler().post(() -> {
+                if (mainActivityInterface != null && mainActivityInterface.getShowToast() != null) {
+                    mainActivityInterface.getShowToast().doIt(midiInfo);
+                }
+            });
+
             // Only do something if we are listening on these channels and the message is appropriate
             if (midiChannel == mainActivityInterface.getMidi().getMidiInputChannelPedal() &&
                     messageType.equals("NO") || messageType.equals("NX")) {

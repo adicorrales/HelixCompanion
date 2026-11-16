@@ -205,8 +205,6 @@ public class ProfileActions {
             }
             mainActivityInterface.getProcessSong().updateProcessingPreferences();
 
-
-
             // Finally update the strings in the mainActivity (performance and stage fragments sort their own)
             mainActivityInterface.prepareStrings();
         });
