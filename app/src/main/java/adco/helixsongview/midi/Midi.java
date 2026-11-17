@@ -1456,8 +1456,8 @@ public class Midi {
                     for (BluetoothDevice device : candidateDevices) {
                         if (autoConnectLast && !lastAddress.isEmpty() && device.getAddress().equalsIgnoreCase(lastAddress)) {
                             if (midiDevice == null && device.getBondState() == BluetoothDevice.BOND_BONDED) {
-                                bluetoothDevice = device;
-                                tryDisconnectBluetoothLE();
+                                setBluetoothDevice(device);
+                                executeOpenDeviceWorkflow();
                                 break;
                             }
                         } else {
@@ -1466,8 +1466,8 @@ public class Midi {
                                 for (ParcelUuid uuid : uuids) {
                                     if (uuid.toString().equalsIgnoreCase(uuidBle) && !isAirTurn(device)) {
                                         if (midiDevice == null && device.getBondState() == BluetoothDevice.BOND_BONDED) {
-                                            bluetoothDevice = device;
-                                            tryDisconnectBluetoothLE();
+                                            setBluetoothDevice(device);
+                                            executeOpenDeviceWorkflow();
                                             break;
                                         }
                                     }

@@ -969,5 +969,20 @@
         android:label="AlertInfoBottomSheet"
         tools:layout="@layout/bottom_sheet_alert_info"/>
 
+    <!-- The helix graph -->
+    <navigation
+        android:id="@+id/helix_graph"
+        app:startDestination="@id/helixSettingsFragment">
+        <fragment
+            android:id="@+id/helixSettingsFragment"
+            android:name="adco.helixsongview.preferences.HelixSettingsFragment"
+            android:label="fragment_helix_settings"
+            tools:layout="@layout/settings_helix">
+            <deepLink
+                android:id="@+id/deepLinkHelix"
+                app:uri="@string/deeplink_helix" />
+        </fragment>
+    </navigation>
+
 
 </navigation>

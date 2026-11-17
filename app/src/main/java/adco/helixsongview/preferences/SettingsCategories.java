@@ -194,6 +194,7 @@ public class SettingsCategories extends Fragment {
             // This button is only available if we are running Marshmallow or later
             mainActivityInterface.navigateToFragment(null, R.id.midi_graph);
         });
+        myView.helixButton.setOnClickListener(v -> mainActivityInterface.navigateToFragment(null, R.id.helix_graph));
         myView.profilesButton.setOnClickListener(v -> mainActivityInterface.navigateToFragment(null, R.id.profileFragment));
         myView.aboutButton.setOnClickListener(v -> mainActivityInterface.navigateToFragment(null, R.id.about_graph));
     }

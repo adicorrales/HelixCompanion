@@ -254,6 +254,7 @@ public interface MainActivityInterface {
     void doSongLoad(String folder, String filename, boolean closeDrawer);
     void refreshSong();
     void loadSongFromSet(int position);
+    void loadSongFromSet(int position, boolean sendMidi);
     ExportActions getExportActions();
     Uri getImportUri();
     void setImportFilename(String importFilename);

@@ -434,6 +434,7 @@
     <string name="deeplink_fonts" translatable="false">https://www.opensongapp.com/?p=settings/display/fonts</string>
     <string name="deeplink_forum" translatable="false">https://www.opensongapp.com/?p=settings/about/forum</string>
     <string name="deeplink_gestures" translatable="false">https://www.opensongapp.com/?p=settings/controls/gestures</string>
+    <string name="deeplink_helix" translatable="false">https://www.opensongapp.com/?p=settings/helix</string>
     <string name="deeplink_highlighter" translatable="false">https://www.opensongapp.com/?p=songactions/highlighter/edit</string>
     <string name="deeplink_import" translatable="false">https://www.opensongapp.com/?p=settings/import</string>
     <string name="deeplink_import_bulk" translatable="false">https://www.opensongapp.com/?p=settings/import/bulk</string>

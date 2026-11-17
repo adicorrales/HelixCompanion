@@ -584,6 +584,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     navHome();
                     showActionBar();
                     updateMargins();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && getAppPermissions().hasMidiScanPermissions()) {
+                        getMidi().setupBluetoothManager();
+                    }
                 } else {
                     waitingOnBootUpFragment = true;
 
@@ -3381,6 +3384,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private volatile int lastSentMidiSongPos = -1;
 
     private volatile boolean isMidiTransportLocked = false;
+    private volatile boolean waitingForSetChangeLoadConfirmation = false;
     private final Handler midiLockHandler = new Handler(Looper.getMainLooper());
     private final Runnable midiLockReleaseRunnable = () -> isMidiTransportLocked = false;
 
@@ -3393,28 +3397,40 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             if (ccNumber == 10) {
                 // Song cue confirmed by Helix -> Show "On Cue" in yellow on Play button
                 getMainHandler().post(() -> {
-                    if (myView != null && myView.myToolbar != null) {
-                        myView.myToolbar.setPlayStatus("On Cue", android.graphics.Color.parseColor("#FFEB3B"));
-                        myView.myToolbar.updatePlayButton(false);
+                    if (getToolbar() != null) {
+                        getToolbar().setPlayStatus("On Cue", android.graphics.Color.parseColor("#FFEB3B"));
+                        getToolbar().updatePlayButton(false);
                     }
                 });
             } else if (ccNumber == 51) {
-                String playMode = getPreferences().getMyPreferenceString("helixPlayMode", "Play");
-                if (playMode.equals("Play")) {
-                    boolean helixPlaying = ccValue > 0;
-                    if (isPlaying != helixPlaying) {
-                        isPlaying = helixPlaying;
-                        getMainHandler().post(() -> {
-                            if (myView != null && myView.myToolbar != null) {
-                                if (isPlaying) {
-                                    myView.myToolbar.updatePlayButton(true);
-                                    myView.myToolbar.setPlayStatus("Playing", android.graphics.Color.parseColor("#4CAF50"));
-                                } else {
-                                    myView.myToolbar.updatePlayButton(false);
-                                    myView.myToolbar.setPlayStatus("", 0);
+                if (waitingForSetChangeLoadConfirmation) {
+                    waitingForSetChangeLoadConfirmation = false;
+                    // Upon receiving confirmation / feedback of song loaded via CC51, select song 0 of set # in app UI ONLY (no CC10 sent)
+                    getMainHandler().post(() -> {
+                        loadSongFromSet(0, false);
+                        if (getToolbar() != null) {
+                            getToolbar().setPlayStatus("Loaded", android.graphics.Color.parseColor("#FFEB3B"));
+                            getToolbar().updatePlayButton(false);
+                        }
+                    });
+                } else {
+                    String playMode = getPreferences().getMyPreferenceString("helixPlayMode", "Play");
+                    if (playMode.equals("Play")) {
+                        boolean helixPlaying = ccValue > 0;
+                        if (isPlaying != helixPlaying) {
+                            isPlaying = helixPlaying;
+                            getMainHandler().post(() -> {
+                                if (getToolbar() != null) {
+                                    if (isPlaying) {
+                                        getToolbar().updatePlayButton(true);
+                                        getToolbar().setPlayStatus("Playing", android.graphics.Color.parseColor("#4CAF50"));
+                                    } else {
+                                        getToolbar().updatePlayButton(false);
+                                        getToolbar().setPlayStatus("", 0);
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
                     }
                 }
             }
@@ -3461,99 +3477,111 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         final int targetSet = Math.max(0, Math.min(setIdx, 127));
         final int targetSong = Math.max(0, Math.min(songPosition, 127));
 
+        String songMode = getPreferences().getMyPreferenceString("helixSongMode", "Cue");
+        String playMode = getPreferences().getMyPreferenceString("helixPlayMode", "Load");
+
         helixMidiExecutor.execute(() -> {
-            // Check if we already sent this exact set and song command
             if (lastSentMidiSetIdx == targetSet && lastSentMidiSongPos == targetSong) {
                 return;
             }
 
-            String playMode = getPreferences().getMyPreferenceString("helixPlayMode", "Play");
-
             String msgSet = "MIDI" + channel + ":CC63:" + targetSet;
-            String msgSong0 = "MIDI" + channel + ":CC10:0";
             String msgTargetSong = "MIDI" + channel + ":CC10:" + targetSong;
             String msgPlay = "MIDI" + channel + ":CC51:127";
+            String msgPause = "MIDI" + channel + ":CC51:0";
 
-            // Send synchronously (not via sendMidiHexSequence, which posts to the main thread)
-            // so the Helix receives the commands in order and on time, even when the UI thread is busy.
             if (lastSentMidiSetIdx != targetSet) {
-                // Playlist changed! Send CC63, wait, send CC10:0 and CC51:127 to LOAD/ACTIVATE new playlist on Helix.
-                // Loading song 0 with PLAY makes the playlist change take effect on the Helix.
                 lastSentMidiSetIdx = targetSet;
                 lastSentMidiSongPos = 0;
 
-                // CC51:0: ensure Helix is paused before changing playlist (so CC51 later loads cued song)
-                String msgPause = "MIDI" + channel + ":CC51:0";
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    getMidi().sendMidi(getMidi().returnBytesFromHexText(msgPause));
-                }
-                try {
-                    Thread.sleep(200);
-                } catch (InterruptedException ignored) {}
-
-                // CC63: select playlist (cues first song)
+                // 1. Send CC63:# with playlist number ONLY (Helix automatically cues song 0)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     getMidi().sendMidi(getMidi().returnBytesFromHexText(msgSet));
                 }
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException ignored) {}
+                try { Thread.sleep(300); } catch (InterruptedException ignored) {}
 
-                // CC51:127: start playback / load cued song (CC63 already cued song 0)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    getMidi().sendMidi(getMidi().returnBytesFromHexText(msgPlay));
-                }
-                try {
-                    Thread.sleep(300);
-                } catch (InterruptedException ignored) {}
-
-                // If target song is > 0, wait for Helix to finish loading playlist, then cue target song
-                if (targetSong > 0) {
-                    try {
-                        Thread.sleep(300);
-                    } catch (InterruptedException ignored) {}
-                    lastSentMidiSongPos = targetSong;
+                if (songMode.equals("Cue")) {
+                    waitingForSetChangeLoadConfirmation = true;
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        getMidi().sendMidi(getMidi().returnBytesFromHexText(msgTargetSong));
+                        getMidi().sendMidi(getMidi().returnBytesFromHexText(msgPlay));
                     }
-
-                    // target song is now in cue (not loaded/playing)
                     isPlaying = false;
                     transportClickCount = 0;
                     getMainHandler().post(() -> {
-                        if (myView != null) {
-                            myView.myToolbar.updatePlayButton(false);
+                        if (getToolbar() != null) {
+                            getToolbar().updatePlayButton(false);
+                            getToolbar().setPlayStatus("On Cue", android.graphics.Color.parseColor("#FFEB3B"));
                         }
                     });
                 } else {
-                    // target song 0 was loaded with PLAY: update transport state per mode
+                    waitingForSetChangeLoadConfirmation = false;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        getMidi().sendMidi(getMidi().returnBytesFromHexText(msgPlay));
+                    }
                     if (playMode.equals("Play")) {
                         isPlaying = true;
                         transportClickCount = 2;
+                        getMainHandler().post(() -> {
+                            if (getToolbar() != null) {
+                                getToolbar().updatePlayButton(true);
+                                getToolbar().setPlayStatus("Playing", android.graphics.Color.parseColor("#4CAF50"));
+                            }
+                        });
                     } else {
                         isPlaying = false;
                         transportClickCount = 1;
+                        getMainHandler().post(() -> {
+                            if (getToolbar() != null) {
+                                getToolbar().updatePlayButton(false);
+                                getToolbar().setPlayStatus("Loaded", android.graphics.Color.parseColor("#FFEB3B"));
+                            }
+                        });
                     }
-                    getMainHandler().post(() -> {
-                        if (myView != null) {
-                            myView.myToolbar.updatePlayButton(isPlaying);
-                        }
-                    });
+                    getMainHandler().post(() -> loadSongFromSet(0));
                 }
             } else {
-                // Same playlist: send CC10 for target song directly (placed in cue)
+                // Same playlist
+                lastSentMidiSetIdx = targetSet;
                 lastSentMidiSongPos = targetSong;
+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     getMidi().sendMidi(getMidi().returnBytesFromHexText(msgTargetSong));
                 }
 
-                isPlaying = false;
-                transportClickCount = 0;
-                getMainHandler().post(() -> {
-                    if (myView != null) {
-                        myView.myToolbar.updatePlayButton(false);
+                if (songMode.equals("Skip")) {
+                    try { Thread.sleep(300); } catch (InterruptedException ignored) {}
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        getMidi().sendMidi(getMidi().returnBytesFromHexText(msgPlay));
                     }
-                });
+                    if (playMode.equals("Play")) {
+                        isPlaying = true;
+                        transportClickCount = 2;
+                        getMainHandler().post(() -> {
+                            if (getToolbar() != null) {
+                                getToolbar().updatePlayButton(true);
+                                getToolbar().setPlayStatus("Playing", android.graphics.Color.parseColor("#4CAF50"));
+                            }
+                        });
+                    } else {
+                        isPlaying = false;
+                        transportClickCount = 1;
+                        getMainHandler().post(() -> {
+                            if (getToolbar() != null) {
+                                getToolbar().updatePlayButton(false);
+                                getToolbar().setPlayStatus("Loaded", android.graphics.Color.parseColor("#FFEB3B"));
+                            }
+                        });
+                    }
+                } else {
+                    isPlaying = false;
+                    transportClickCount = 0;
+                    getMainHandler().post(() -> {
+                        if (getToolbar() != null) {
+                            getToolbar().updatePlayButton(false);
+                            getToolbar().setPlayStatus("On Cue", android.graphics.Color.parseColor("#FFEB3B"));
+                        }
+                    });
+                }
             }
         });
     }
@@ -3561,6 +3589,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private boolean currentlyLoadingSongFromSet = false;
     @Override
     public void loadSongFromSet(int position) {
+        loadSongFromSet(position, true);
+    }
+
+    @Override
+    public void loadSongFromSet(int position, boolean sendMidi) {
         if (!currentlyLoadingSongFromSet) {
             currentlyLoadingSongFromSet = true;
             getThreadPoolExecutor().execute(() -> {
@@ -3571,10 +3604,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 }
 
                 if (getCurrentSet().getCurrentSetSize() > position) {
-                    // Send Helix MIDI for Playlist (CC 63) and Song (CC 10 base 0) -> placed in cue
-                    // Run on a separate thread so it doesn't block song loading/display
-                    int setIdx = getPreferences().getMyPreferenceInt("selectedSelectSetPosition", 0);
-                    getThreadPoolExecutor().execute(() -> sendHelixMidiSetAndSong(setIdx, position));
+                    // Send Helix MIDI if requested
+                    if (sendMidi) {
+                        int setIdx = getPreferences().getMyPreferenceInt("selectedSelectSetPosition", 0);
+                        getThreadPoolExecutor().execute(() -> sendHelixMidiSetAndSong(setIdx, position));
+                    }
 
                     // Song is now in cue. 1st click on Play will load it, 2nd click will play.
                     transportClickCount = 0;

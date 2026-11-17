@@ -91,7 +91,12 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
                 setFilenames.addAll(orderedSets);
             }
 
-            mainActivityInterface.getMainHandler().post(this::notifyDataSetChanged);
+            mainActivityInterface.getMainHandler().post(() -> {
+                notifyDataSetChanged();
+                if (mainActivityInterface.getCurrentSet().getCurrentSetSize() == 0) {
+                    loadSelectedSet(selectedPosition);
+                }
+            });
         });
     }
 
@@ -271,7 +276,7 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
                 mainActivityInterface.getPreferences().setMyPreferenceString("selectedActiveSetFilename", loadedFilename);
                 mainActivityInterface.getPreferences().setMyPreferenceInt("selectedSelectSetPosition", position);
                 if (isHelixSetMode) {
-                    mainActivityInterface.sendHelixSetMidi(position);
+                    mainActivityInterface.sendHelixMidiSetAndSong(position, 0);
                 }
                 mainActivityInterface.getCurrentSet().updateSetTitleView();
                 if (onSetSelectedListener != null) {

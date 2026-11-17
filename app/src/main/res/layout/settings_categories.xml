@@ -108,6 +108,16 @@
                 style="@style/MyDividerLine"/>
 
             <adco.helixsongview.customviews.MyMaterialTextView
+                android:id="@+id/helixButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Helix"
+                android:hint="Helix MIDI integration settings (Play mode, Skip/Cue, Channel)"
+                app:size="large"/>
+            <adco.helixsongview.customviews.MyDivider
+                style="@style/MyDividerLine"/>
+
+            <adco.helixsongview.customviews.MyMaterialTextView
                 android:id="@+id/profilesButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

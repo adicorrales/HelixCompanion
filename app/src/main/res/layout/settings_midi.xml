@@ -180,24 +180,6 @@
                 android:stepSize="100"
                 android:value="100"
                 app:adjustable="true"/>
-
-            <adco.helixsongview.customviews.MyMaterialSlider
-                android:id="@+id/helixGlobalMidiChannel"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Helix Global MIDI Channel"
-                android:valueFrom="1"
-                android:valueTo="16"
-                android:stepSize="1"
-                android:value="1"
-                app:adjustable="true"/>
-
-            <adco.helixsongview.customviews.ExposedDropDown
-                android:id="@+id/helixPlayMode"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"/>
         </LinearLayout>
     </ScrollView>
 

@@ -194,32 +194,6 @@ public class MidiFragment extends Fragment {
             mainActivityInterface.getMidi().setMidiDelay((int)myView.midiDelay.getValue());
             myView.midiDelay.setHint((int)myView.midiDelay.getValue()+"ms");
         });
-
-        myView.helixGlobalMidiChannel.setAdjustableButtons(true);
-        int globalChan = mainActivityInterface.getPreferences().getMyPreferenceInt("helixGlobalMidiChannel", 1);
-        myView.helixGlobalMidiChannel.setValue(globalChan);
-        myView.helixGlobalMidiChannel.setHint("Ch " + globalChan);
-        myView.helixGlobalMidiChannel.addOnChangeListener((slider, value, fromUser) -> {
-            mainActivityInterface.getPreferences().setMyPreferenceInt("helixGlobalMidiChannel", (int) value);
-            myView.helixGlobalMidiChannel.setHint("Ch " + (int) value);
-        });
-
-        ExposedDropDownArrayAdapter playModeAdapter = new ExposedDropDownArrayAdapter(
-                getContext(), myView.helixPlayMode, R.layout.view_exposed_dropdown_item, new String[]{"Play", "Load", "Load + Preset"}
-        );
-        myView.helixPlayMode.setAdapter(playModeAdapter);
-        myView.helixPlayMode.setHint("Helix Play Mode");
-        myView.helixPlayMode.setText(mainActivityInterface.getPreferences().getMyPreferenceString("helixPlayMode", "Play"));
-        myView.helixPlayMode.addTextChangedListener(new android.text.TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-            @Override
-            public void afterTextChanged(android.text.Editable s) {
-                mainActivityInterface.getPreferences().setMyPreferenceString("helixPlayMode", s.toString());
-            }
-        });
     }
 
     // Set the view visibilities
