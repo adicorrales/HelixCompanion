@@ -16,7 +16,7 @@
         android:layout_marginBottom="322dp"
         android:contentDescription="@string/app_name"
         android:padding="64dp"
-        android:scaleType="centerInside"
+        android:scaleType="fitCenter"
         android:visibility="visible" />
 
     <adco.helixsongview.customviews.MyMaterialSimpleTextView

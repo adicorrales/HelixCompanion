@@ -4,7 +4,6 @@ package adco.helixsongview.setprocessing;
 // All actions related to building/processing are in the SetActions class
 
 import android.content.Context;
-import android.os.Handler;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -117,22 +116,13 @@ public class CurrentSet {
     }
 
     public void setSetCurrent(String setCurrent) {
-        // Try to stop multiple calls getting in the way of each other.
-        // Each update delays 100ms, giving time for previous calls to complete
-
-        Handler handler = mainActivityInterface.getMainHandler();
-        handler.postDelayed(() -> {
-            // Keep a reference
-            mainActivityInterface.getThreadPoolExecutor().execute(() -> {
-                this.setCurrent = setCurrent;
-
-                // Save the user preference
-                mainActivityInterface.getPreferences().setMyPreferenceString("setCurrent", setCurrent);
-                // Check if we need to update the set menu title
-                mainActivityInterface.getMainHandler().post(this::updateSetTitleView);
-            });
-        },100);
-
+        this.setCurrent = setCurrent;
+        mainActivityInterface.getThreadPoolExecutor().execute(() -> {
+            // Save the user preference
+            mainActivityInterface.getPreferences().setMyPreferenceString("setCurrent", setCurrent);
+            // Check if we need to update the set menu title
+            mainActivityInterface.getMainHandler().post(this::updateSetTitleView);
+        });
     }
 
     public String getSetCurrent() {

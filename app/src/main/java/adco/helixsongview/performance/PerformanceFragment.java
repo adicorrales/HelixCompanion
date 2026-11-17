@@ -1017,7 +1017,7 @@ public class PerformanceFragment extends Fragment {
                 }
 
                 // Set a post listener for the view
-                view.postDelayed(() -> {
+                view.post(() -> {
                     viewsDrawn[viewNum] = true;
                     // Check if the array is only true
                     boolean isReady = true;
@@ -1029,11 +1029,10 @@ public class PerformanceFragment extends Fragment {
                         }
                     }
                     if (isReady) {
-                        // ABC removed: display as soon as views are ready (delay to allow measurement)
-                        mainActivityInterface.getMainHandler().postDelayed(this::songIsReadyToDisplay, 300);
+                        songIsReadyToDisplay();
                     }
 
-                },100);
+                });
 
                 // Add the view.  The post above gets called once drawn
                 myView.testPane.addView(view);

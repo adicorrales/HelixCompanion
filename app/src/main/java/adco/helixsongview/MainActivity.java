@@ -3498,7 +3498,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     getMidi().sendMidi(getMidi().returnBytesFromHexText(msgSet));
                 }
-                try { Thread.sleep(300); } catch (InterruptedException ignored) {}
+                try { Thread.sleep(40); } catch (InterruptedException ignored) {}
 
                 if (songMode.equals("Cue")) {
                     waitingForSetChangeLoadConfirmation = true;
@@ -3549,7 +3549,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 }
 
                 if (songMode.equals("Skip")) {
-                    try { Thread.sleep(300); } catch (InterruptedException ignored) {}
+                    try { Thread.sleep(40); } catch (InterruptedException ignored) {}
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         getMidi().sendMidi(getMidi().returnBytesFromHexText(msgPlay));
                     }

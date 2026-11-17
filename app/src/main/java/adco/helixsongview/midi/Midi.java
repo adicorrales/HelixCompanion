@@ -599,14 +599,8 @@ public class Midi {
             tryToGetPorts();
         }
 
-        if (bluetoothDevice!=null) {
-            if (useDirectGatt && activeGattCharacteristic != null && activeBluetoothGatt != null) {
-                Log.d(TAG, "sendMidi: Using Direct GATT fallback path.");
-            } else if (midiInputPort != null) {
-                Log.d(TAG, "sendMidi: Using standard MidiManager input port path.");
-            } else {
-                Log.e(TAG, "sendMidi: Both paths failed! activeGatt: " + activeBluetoothGatt + ", inputPort:null");
-            }
+        if (bluetoothDevice != null && !useDirectGatt && midiInputPort == null && activeBluetoothGatt == null) {
+            Log.e(TAG, "sendMidi: Both paths failed!");
         }
 
         if (b==null || b.length==0) {

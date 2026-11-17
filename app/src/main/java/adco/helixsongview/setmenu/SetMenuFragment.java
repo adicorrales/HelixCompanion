@@ -52,6 +52,7 @@ public class SetMenuFragment extends Fragment {
         prepareStrings();
         setListeners();
         runSetShowcase();
+        bindSetTitleViews();
         if (selectSetAdapter != null) {
             selectSetAdapter.prepareSets();
         }
@@ -80,9 +81,6 @@ public class SetMenuFragment extends Fragment {
             myView.setsColumnHeader.setText(getString(R.string.helix_sets));
         } else {
             myView.setsColumnHeader.setText(getString(R.string.local_sets));
-            mainActivityInterface.getCurrentSet().initialiseTheSet();
-            mainActivityInterface.getCurrentSet().setSetCurrentLastName("");
-            mainActivityInterface.getCurrentSet().updateSetTitleView();
         }
 
         // Prepare the strings
@@ -95,9 +93,17 @@ public class SetMenuFragment extends Fragment {
         setListeners();
 
         // Initialise the set title by passing reference to the views
-        mainActivityInterface.getCurrentSet().initialiseSetTitleViews(myView.setTitle.getImageView(),myView.setTitle, myView.saveSetButton);
+        bindSetTitleViews();
 
         return myView.getRoot();
+    }
+
+    public void bindSetTitleViews() {
+        if (myView != null && mainActivityInterface != null && mainActivityInterface.getCurrentSet() != null) {
+            if (mainActivityInterface.isHelixSet() == isHelixSetMode()) {
+                mainActivityInterface.getCurrentSet().initialiseSetTitleViews(myView.setTitle.getImageView(), myView.setTitle, myView.saveSetButton);
+            }
+        }
     }
 
     private void prepareStrings() {
@@ -148,13 +154,17 @@ public class SetMenuFragment extends Fragment {
 
     public void refreshSelectSetAdapter() {
         if (selectSetAdapter != null && mainActivityInterface != null) {
-            mainActivityInterface.getMainHandler().post(() -> selectSetAdapter.notifyDataSetChanged());
+            mainActivityInterface.getMainHandler().post(() -> {
+                bindSetTitleViews();
+                selectSetAdapter.notifyDataSetChanged();
+            });
         }
     }
 
     public void refreshAdapters() {
         if (mainActivityInterface != null) {
             mainActivityInterface.getMainHandler().post(() -> {
+                bindSetTitleViews();
                 if (setAdapter != null) {
                     setAdapter.notifyDataSetChanged();
                 }

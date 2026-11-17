@@ -25,9 +25,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="3.959798"
-     inkscape:cx="343.4032"
-     inkscape:cy="125.9132"
+     inkscape:zoom="1.4"
+     inkscape:cx="412.69543"
+     inkscape:cy="-139.04622"
      inkscape:document-units="mm"
      inkscape:current-layer="g828"
      showgrid="true"
@@ -39,7 +39,8 @@
      inkscape:window-height="2001"
      inkscape:window-x="-14"
      inkscape:window-y="-14"
-     inkscape:window-maximized="1">
+     inkscape:window-maximized="1"
+     showborder="false">
     <inkscape:grid
        type="xygrid"
        id="grid823" />
@@ -52,7 +53,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -65,62 +66,64 @@
        transform="matrix(1.5285892,0,0,1.5503105,9.6248364,-48.031258)"
        style="stroke-width:0.6495989">
       <rect
-         y="175.26241"
+         y="155.65257"
          x="-5.4310994"
-         height="46.302086"
-         width="130.96875"
+         height="65.911911"
+         width="184.98828"
          id="rect1391"
          style="fill:#ffffff;fill-opacity:1;stroke:#001360;stroke-width:1.94879651;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         ry="9.2646465" />
+         ry="13.188403" />
       <text
          id="text817"
-         y="191.45027"
-         x="0"
-         style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.17187303"
-         xml:space="preserve"><tspan
+         y="178.0009"
+         x="2.2488699"
+         style="font-style:normal;font-weight:normal;font-size:15.00694847px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.17187303"
+         xml:space="preserve"
+         transform="scale(0.99610836,1.0039068)"><tspan
            style="stroke-width:0.17187303"
-           y="191.45027"
-           x="0"
+           y="178.0009"
+           x="2.2488699"
            id="tspan815"
            sodipodi:role="line">Helix Song View</tspan></text>
       <text
          id="text821"
-         y="199.68472"
-         x="0"
-         style="font-style:normal;font-weight:normal;font-size:7.76111126px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.17187303"
-         xml:space="preserve"><tspan
-           style="font-size:7.76111126px;stroke-width:0.17187303"
-           y="199.68472"
-           x="0"
+         y="189.67719"
+         x="2.2488699"
+         style="font-style:normal;font-weight:normal;font-size:11.00509644px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.17187303"
+         xml:space="preserve"
+         transform="scale(0.99610836,1.0039068)"><tspan
+           style="font-size:11.00509644px;stroke-width:0.17187303"
+           y="189.67719"
+           x="2.2488699"
            id="tspan819"
            sodipodi:role="line">Showcase Companion</tspan></text>
       <path
          sodipodi:nodetypes="cccssaacccssaacc"
          inkscape:connector-curvature="0"
          id="path830"
-         d="m 92.391694,206.18895 -0.05258,-23.00152 23.843646,-3.2107 c 0,0 0.24661,20.14163 0.36844,30.21246 0.0232,1.91767 -2.6224,5.19013 -6.26357,5.2109 -2.37266,0.0134 -5.21865,-1.92675 -5.80527,-4.25265 -0.57256,-2.27014 1.0952,-5.00822 3.0198,-6.34132 1.64905,-1.14225 3.99747,-1.2418 5.9962,-0.51219 v -17.05375 l -17.196223,2.60355 -0.12071,21.60856 c -0.012,2.17367 -2.665871,5.28576 -6.050383,5.95414 -2.462203,0.48621 -5.643297,-1.0726 -6.756894,-3.32176 -0.935223,-1.88892 -0.254357,-4.69941 1.221632,-6.20408 1.862085,-1.89832 5.677792,-1.87693 7.795905,-1.69164 z"
+         d="m 132.7398,199.67711 -0.0743,-32.74311 33.67823,-4.57049 c 0,0 0.34833,28.672 0.52041,43.00802 0.0328,2.72984 -3.70404,7.38825 -8.84705,7.41782 -3.35129,0.0191 -7.37114,-2.74277 -8.19972,-6.05373 -0.80872,-3.23159 1.54693,-7.1293 4.26535,-9.02699 2.32922,-1.62602 5.64627,-1.76773 8.4694,-0.72912 v -24.27634 l -24.289,3.7062 -0.1705,30.76021 c -0.0169,3.09426 -3.76544,7.52438 -8.54593,8.47583 -3.47777,0.69213 -7.97094,-1.52687 -9.54385,-4.72859 -1.32097,-2.68891 -0.35927,-6.6897 1.72551,-8.83163 2.63012,-2.70229 8.01966,-2.67184 11.01141,-2.40808 z"
          style="fill:#37c871;fill-opacity:1;stroke:#000000;stroke-width:0.171873px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
       <text
          xml:space="preserve"
-         style="font-style:normal;font-weight:normal;font-size:3.31885695px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.13474536"
-         x="-0.22189708"
-         y="209.21223"
+         style="font-style:normal;font-weight:normal;font-size:4.70607138px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.13474536"
+         x="1.9244983"
+         y="202.78101"
          id="text832"
-         transform="scale(1.0043436,0.99567521)"><tspan
+         transform="scale(1.000435,0.99956514)"><tspan
            sodipodi:role="line"
-           x="-0.22189708"
-           y="209.21223"
-           style="font-size:3.31885695px;stroke-width:0.13474536"
+           x="1.9244983"
+           y="202.78101"
+           style="font-size:4.70607138px;stroke-width:0.13474536"
            id="tspan834">This app uses the main engine of the wonderful </tspan><tspan
            sodipodi:role="line"
-           x="-0.22189708"
-           y="213.36081"
-           style="font-size:3.31885695px;stroke-width:0.13474536"
+           x="1.9244983"
+           y="208.66359"
+           style="font-size:4.70607138px;stroke-width:0.13474536"
            id="tspan838">app https://www.opensongapp.com/ from </tspan><tspan
            sodipodi:role="line"
-           x="-0.22189708"
-           y="217.50938"
-           style="font-size:3.31885695px;stroke-width:0.13474536"
+           x="1.9244983"
+           y="214.54619"
+           style="font-size:4.70607138px;stroke-width:0.13474536"
            id="tspan840">Gareth Evans. All credits to him and his team.</tspan></text>
     </g>
   </g>

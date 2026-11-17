@@ -288,7 +288,7 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
                 if (mainActivityInterface.getSelectSetFragment() != null) {
                     mainActivityInterface.getSelectSetFragment().refreshSelectSetAdapter();
                 }
-                mainActivityInterface.getMainHandler().postDelayed(mainActivityInterface::updateSetList, 1000);
+                mainActivityInterface.updateSetList();
             });
         });
     }

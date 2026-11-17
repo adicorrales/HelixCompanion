@@ -346,8 +346,11 @@ public class ProcessSong {
     // These is used when loading and converting songs (ChordPro, badly formatted XML, etc).
     public String parseHTML(String s) {
         try {
-            if (s == null) {
+            if (s == null || s.isEmpty()) {
                 return "";
+            }
+            if (s.indexOf('&') == -1 && s.indexOf('\uFFFD') == -1 && !s.contains("pre class")) {
+                return s;
             }
             s = s.replace("&amp;apos;", "'").
                     replace("&amp;quote;", "\"").
@@ -405,7 +408,7 @@ public class ProcessSong {
                     replace("&ouml;", "ö").
                     replace("&szlig;", "ß").
                     replace("&Uacute;", "Ú").
-                    replace("&uacute;", "ú").
+                    replace("&unsqueeze;", "ú").
                     replace("&Ucirc;;", "Û").
                     replace("&ucirc;;", "û").
                     replace("&Ugrave;", "Ù").
@@ -414,9 +417,9 @@ public class ProcessSong {
                     replace("&uuml;", "ü").
                     replace("&#039;", "'").
                     replace("&#8217;", "'").
-                    replace("�??", "'").
-                    replace("�?", "'").
-                    replace("�", "'").
+                    replace("??", "'").
+                    replace("?", "'").
+                    replace("", "'").
                     replace("&nbsp;", " ");
 
             // If UG has been bad, replace these bits:
@@ -431,8 +434,11 @@ public class ProcessSong {
 
     public String parseToHTMLEntities(String s) {
         try {
-            if (s == null) {
-                s = "";
+            if (s == null || s.isEmpty()) {
+                return "";
+            }
+            if (s.indexOf('<') == -1 && s.indexOf('>') == -1 && s.indexOf('&') == -1 && s.indexOf('"') == -1 && s.indexOf('\'') == -1) {
+                return s;
             }
             // Make sure all ss are unencoded to start with
             // Now HTML encode everything that needs encoded
@@ -714,30 +720,33 @@ public class ProcessSong {
     public String[] getChordPositions(String chord, String lyric) {
         ArrayList<String> chordpositions = new ArrayList<>();
 
-        // IV - Set ready for the loop
         boolean thischordcharempty;
         boolean prevchordcharempty = false;
         boolean prevlyriccharempty;
         boolean prevlyricempty = true;
+        int chordLen = chord.length();
+        int lyricLen = lyric.length();
+        boolean startsWithSemicolons = lyricLen >= 2 && lyric.charAt(0) == ';' && lyric.charAt(1) == ';';
 
-        for (int x = 1; x < (chord.length()); x++) {
-            // IV - The first chord char is considered empty
-            thischordcharempty = chord.startsWith(" ", x);
-            prevlyriccharempty = lyric.startsWith(" ", x - 1);
+        for (int x = 1; x < chordLen; x++) {
+            thischordcharempty = (chord.charAt(x) == ' ');
+            prevlyriccharempty = ((x - 1) < lyricLen && lyric.charAt(x - 1) == ' ');
             prevlyricempty = prevlyricempty && prevlyriccharempty;
 
             // Add the start position of a chord
             if (!thischordcharempty && prevchordcharempty) {
                 // Remove the previous chord end position when in a run of chords over lyric spaces
-                if ((prevlyricempty && lyric.startsWith(" ", x))) {
-                    chordpositions.remove(chordpositions.size() - 1);
+                if (prevlyricempty && x < lyricLen && lyric.charAt(x) == ' ') {
+                    if (!chordpositions.isEmpty()) {
+                        chordpositions.remove(chordpositions.size() - 1);
+                    }
                 }
                 chordpositions.add(String.valueOf(x));
                 prevlyricempty = true;
                 // Add the end position of a chord if it ends over a lyric space
             } else if (thischordcharempty && !prevchordcharempty && prevlyriccharempty) {
-                if (lyric.startsWith(";;")) {
-                    chordpositions.add(String.valueOf(x-2));
+                if (startsWithSemicolons) {
+                    chordpositions.add(String.valueOf(x - 2));
                 } else {
                     chordpositions.add(String.valueOf(x));
                 }
@@ -747,7 +756,6 @@ public class ProcessSong {
             prevchordcharempty = thischordcharempty;
         }
         String[] chordpos = new String[chordpositions.size()];
-
         return chordpositions.toArray(chordpos);
     }
 

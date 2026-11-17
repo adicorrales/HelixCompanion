@@ -30,7 +30,12 @@ public class MyMaterialSimpleTextView extends androidx.appcompat.widget.AppCompa
     public MyMaterialSimpleTextView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         if (!isInEditMode()) {
-            palette = new Palette(context);
+            if (attrs == null && context instanceof adco.helixsongview.interfaces.MainActivityInterface) {
+                palette = ((adco.helixsongview.interfaces.MainActivityInterface) context).getPalette();
+            }
+            if (palette == null) {
+                palette = new Palette(context);
+            }
 
             if (attrs != null) {
                 String textColorValue = attrs.getAttributeValue("http://schemas.android.com/apk/res/android", "textColor");
