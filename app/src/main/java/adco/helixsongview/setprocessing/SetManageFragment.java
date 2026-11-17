@@ -24,6 +24,7 @@ import adco.helixsongview.databinding.SettingsSetsManageBinding;
 import adco.helixsongview.interfaces.MainActivityInterface;
 import adco.helixsongview.preferences.AreYouSureBottomSheet;
 import adco.helixsongview.preferences.TextInputBottomSheet;
+import adco.helixsongview.setmenu.SelectSetAdapter;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -496,6 +497,7 @@ public class SetManageFragment extends Fragment {
 
                 // Copy the file
                 if (mainActivityInterface.getStorageAccess().copyFile(inputStream, outputStream)) {
+                    SelectSetAdapter.markSetFilesChanged();
                     // Now load the set as well
                     mainActivityInterface.getMainHandler().post(this::loadSet);
                 }
@@ -539,6 +541,7 @@ public class SetManageFragment extends Fragment {
                     String setAsPref = mainActivityInterface.getSetActions().getSetAsPreferenceString();
                     mainActivityInterface.getStorageAccess().updateFileActivityLog(TAG + " saveSet writeFileFromString Sets/" + newSetFilename + " with: " + setXML);
                     if (mainActivityInterface.getStorageAccess().writeFileFromString("Sets","",newSetFilename,setXML, false)) {
+                        SelectSetAdapter.markSetFilesChanged();
                         // Update the last loaded set now it is saved.
                         mainActivityInterface.getCurrentSet().setSetCurrentBeforeEdits(
                                 mainActivityInterface.getCurrentSet().getSetCurrent());
@@ -586,6 +589,7 @@ public class SetManageFragment extends Fragment {
             }
 
             if (success) {
+                SelectSetAdapter.markSetFilesChanged();
                 mainActivityInterface.getShowToast().doIt(success_string);
             } else {
                 mainActivityInterface.getShowToast().doIt(error_string);
@@ -793,6 +797,7 @@ public class SetManageFragment extends Fragment {
             mainActivityInterface.getStorageAccess().updateFileActivityLog(TAG + " doRename renameFileFromUri " + oldSetUri + " to " + newSetUri);
             mainActivityInterface.getStorageAccess().renameFileFromUri(
                     oldSetUri, newSetUri, "Sets", "", newSetFilename);
+            SelectSetAdapter.markSetFilesChanged();
             // Update the recycler view via the adapter
             setManageAdapter.prepareSetManageInfos();
         });

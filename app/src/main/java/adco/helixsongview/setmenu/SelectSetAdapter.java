@@ -16,8 +16,17 @@ import adco.helixsongview.interfaces.MainActivityInterface;
 import adco.helixsongview.interfaces.SetItemTouchInterface;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> implements SetItemTouchInterface {
+
+    private static final AtomicInteger SET_FILE_GENERATION = new AtomicInteger();
+    private static final AtomicLong SET_LOAD_REQUEST = new AtomicLong();
+    private static final Object SET_LOAD_LOCK = new Object();
+    private static final Object SET_FILES_CACHE_LOCK = new Object();
+    private static ArrayList<String> cachedSetFiles;
+    private static int cachedSetFilesGeneration = -1;
 
     public interface OnSetSelectedListener {
         void onSetSelected(int position, String filename);
@@ -30,6 +39,9 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
     private ItemTouchHelper touchHelper;
     private final Object lock = new Object();
     private int selectedPosition = 0;
+    private boolean preparingSets;
+    private boolean initialSelectionRestored;
+    private int loadedSetFileGeneration = -1;
 
     public SelectSetAdapter(Context context, RecyclerView recyclerView, boolean isHelixSetMode, OnSetSelectedListener listener) {
         this.mainActivityInterface = (MainActivityInterface) context;
@@ -44,12 +56,17 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
     }
 
     public void prepareSets() {
-        mainActivityInterface.getThreadPoolExecutor().execute(() -> {
-            mainActivityInterface.getSetActions().migrateSetsToHelixAndLocal();
-            ArrayList<String> rawSets = mainActivityInterface.getSetActions().getAllSets();
-            if (rawSets == null) {
-                rawSets = new ArrayList<>();
+        int generation = SET_FILE_GENERATION.get();
+        synchronized (lock) {
+            if (preparingSets || loadedSetFileGeneration == generation) {
+                maybeRestoreInitialSelection();
+                return;
             }
+            preparingSets = true;
+        }
+
+        mainActivityInterface.getThreadPoolExecutor().execute(() -> {
+            ArrayList<String> rawSets = getCachedSetFiles(generation);
 
             ArrayList<String> filteredSets = new ArrayList<>();
             for (String setFile : rawSets) {
@@ -92,12 +109,45 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
             }
 
             mainActivityInterface.getMainHandler().post(() -> {
+                synchronized (lock) {
+                    preparingSets = false;
+                    loadedSetFileGeneration = generation;
+                }
                 notifyDataSetChanged();
-                if (mainActivityInterface.getCurrentSet().getCurrentSetSize() == 0) {
-                    loadSelectedSet(selectedPosition);
+                if (generation != SET_FILE_GENERATION.get()) {
+                    prepareSets();
+                } else {
+                    maybeRestoreInitialSelection();
                 }
             });
         });
+    }
+
+    public static void markSetFilesChanged() {
+        SET_FILE_GENERATION.incrementAndGet();
+    }
+
+    private ArrayList<String> getCachedSetFiles(int generation) {
+        synchronized (SET_FILES_CACHE_LOCK) {
+            if (cachedSetFiles == null || cachedSetFilesGeneration != generation) {
+                cachedSetFiles = mainActivityInterface.getSetActions().getAllSets();
+                if (cachedSetFiles == null) {
+                    cachedSetFiles = new ArrayList<>();
+                }
+                cachedSetFilesGeneration = generation;
+            }
+            return new ArrayList<>(cachedSetFiles);
+        }
+    }
+
+    private void maybeRestoreInitialSelection() {
+        if (!initialSelectionRestored && loadedSetFileGeneration >= 0 &&
+                isHelixSetMode == mainActivityInterface.isHelixSet()) {
+            initialSelectionRestored = true;
+            if (mainActivityInterface.getCurrentSet().getCurrentSetSize() == 0) {
+                loadSelectedSet(selectedPosition);
+            }
+        }
     }
 
     private void saveOrder() {
@@ -221,6 +271,10 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
             selectedPosition = position;
         }
 
+        boolean alreadyActive = mainActivityInterface.isHelixSet() == isHelixSetMode &&
+                filename.equalsIgnoreCase(mainActivityInterface.getPreferences()
+                        .getMyPreferenceString("selectedActiveSetFilename", "Song Library"));
+
         mainActivityInterface.setHelixSet(isHelixSetMode);
         mainActivityInterface.getPreferences().setMyPreferenceString("selectedActiveSetFilename", filename);
         mainActivityInterface.getPreferences().setMyPreferenceInt("selectedSelectSetPosition", selectedPosition);
@@ -233,51 +287,68 @@ public class SelectSetAdapter extends RecyclerView.Adapter<SelectSetViewHolder> 
             mainActivityInterface.getSelectSetFragment().refreshAdapters();
         }
 
-        loadSelectedSet(selectedPosition);
+        if (!alreadyActive || mainActivityInterface.getCurrentSet().getCurrentSetSize() == 0) {
+            loadSelectedSet(selectedPosition, filename);
+        }
     }
 
     public void loadSelectedSet(int position) {
+        String filename = getFilenameForPosition(position);
+        if (filename != null) {
+            loadSelectedSet(position, filename);
+        }
+    }
+
+    private String getFilenameForPosition(int position) {
+        if (isHelixSetMode && position == 0) {
+            return "Song Library";
+        }
+        int setIndex = isHelixSetMode ? position - 1 : position;
+        synchronized (lock) {
+            return setIndex >= 0 && setIndex < setFilenames.size()
+                    ? setFilenames.get(setIndex)
+                    : null;
+        }
+    }
+
+    private void loadSelectedSet(int position, String filename) {
         mainActivityInterface.resetLastSentMidiSetIdx();
-
+        long requestId = SET_LOAD_REQUEST.incrementAndGet();
         mainActivityInterface.getThreadPoolExecutor().execute(() -> {
-            mainActivityInterface.getCurrentSet().initialiseTheSet();
-            mainActivityInterface.getCurrentSet().setSetCurrent("");
-            mainActivityInterface.getCurrentSet().setSetCurrentBeforeEdits("");
-
-            String filename = "Song Library";
-            if (isHelixSetMode && position == 0) {
-                android.net.Uri uri = mainActivityInterface.getStorageAccess().getUriForItem("Sets", "", filename);
-                if (mainActivityInterface.getStorageAccess().uriExists(uri)) {
-                    ArrayList<android.net.Uri> setUris = new ArrayList<>();
-                    setUris.add(uri);
-                    mainActivityInterface.getSetActions().loadSets(setUris, mainActivityInterface.getCurrentSet(), filename);
-                } else {
-                    mainActivityInterface.getCurrentSet().setSetCurrentLastName(filename);
-                }
-            } else {
-                int setIndex = isHelixSetMode ? (position - 1) : position;
-                synchronized (lock) {
-                    if (setIndex >= 0 && setIndex < setFilenames.size()) {
-                        filename = setFilenames.get(setIndex);
-                    } else {
-                        return;
-                    }
+            synchronized (SET_LOAD_LOCK) {
+                if (requestId != SET_LOAD_REQUEST.get()) {
+                    return;
                 }
 
-                android.net.Uri uri = mainActivityInterface.getStorageAccess().getUriForItem("Sets", "", filename);
                 ArrayList<android.net.Uri> setUris = new ArrayList<>();
-                setUris.add(uri);
-                mainActivityInterface.getSetActions().loadSets(setUris, mainActivityInterface.getCurrentSet(), filename);
+                android.net.Uri uri = mainActivityInterface.getStorageAccess()
+                        .getUriForItem("Sets", "", filename);
+                if (mainActivityInterface.getStorageAccess().uriExists(uri)) {
+                    setUris.add(uri);
+                }
+                // loadSets replaces the current contents and saves the result once; do not
+                // clear the shared CurrentSet outside this serialized operation.
+                mainActivityInterface.getSetActions().loadSets(
+                        setUris, mainActivityInterface.getCurrentSet(), filename);
+            }
+
+            if (requestId != SET_LOAD_REQUEST.get()) {
+                return;
             }
 
             final String loadedFilename = filename;
             mainActivityInterface.getMainHandler().post(() -> {
+                if (requestId != SET_LOAD_REQUEST.get()) {
+                    return;
+                }
                 mainActivityInterface.setHelixSet(isHelixSetMode);
                 mainActivityInterface.getPreferences().setMyPreferenceString("selectedActiveSetFilename", loadedFilename);
                 mainActivityInterface.getPreferences().setMyPreferenceInt("selectedSelectSetPosition", position);
                 if (isHelixSetMode) {
                     mainActivityInterface.sendHelixMidiSetAndSong(position, 0);
                 }
+                mainActivityInterface.notifyToInsertAllInlineSet();
+                mainActivityInterface.updateInlineSetVisibility();
                 mainActivityInterface.getCurrentSet().updateSetTitleView();
                 if (onSetSelectedListener != null) {
                     onSetSelectedListener.onSetSelected(position, loadedFilename);

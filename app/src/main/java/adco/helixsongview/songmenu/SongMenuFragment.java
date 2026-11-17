@@ -56,7 +56,8 @@ public class SongMenuFragment extends Fragment implements SongListAdapter.Adapte
     private ExposedDropDownArrayAdapter folderArrayAdapter, keyArrayAdapter;
     private SongListAdapter songListAdapter;
     private LinearLayoutManager songListLayoutManager;
-    private ArrayList<String> foundFolders;
+    private volatile ArrayList<String> foundFolders;
+    private volatile boolean folderLoadInProgress;
     private String filter_by_folder_string="", filter_by_dropdown_string="",
             new_folder_info_string="", filter_by_artist_string="", filter_by_edit_string="",
             filter_by_key_string="", filter_by_tag_string="", tag_song_info_string="",
@@ -174,8 +175,11 @@ public class SongMenuFragment extends Fragment implements SongListAdapter.Adapte
             // Set values
             setValues();
 
-            // Get folders
-            setFolders();
+            // Folder discovery scans both the index and storage. Defer it until the
+            // user actually enables the folder filter.
+            if (songListSearchByFolder) {
+                setFolders();
+            }
 
             // Set up the spinners
             setUpExposedDropDowns();
@@ -229,36 +233,51 @@ public class SongMenuFragment extends Fragment implements SongListAdapter.Adapte
     }
 
     public void setFolders() {
+        if (foundFolders != null) {
+            bindFolderDropdown(foundFolders);
+            return;
+        }
+        if (folderLoadInProgress) {
+            return;
+        }
+        folderLoadInProgress = true;
         mainActivityInterface.getThreadPoolExecutor().execute(() -> {
-            foundFolders = mainActivityInterface.getSQLiteHelper().getFolders();
+            ArrayList<String> folders = mainActivityInterface.getSQLiteHelper().getFolders();
 
             // We always want MAIN as the top folder (regardless of alphabetical sort position)
-            foundFolders.remove(mainActivityInterface.getMainfoldername());
-            foundFolders.add(0,mainActivityInterface.getMainfoldername());
+            folders.remove(mainActivityInterface.getMainfoldername());
+            folders.add(0,mainActivityInterface.getMainfoldername());
+            foundFolders = folders;
+            folderLoadInProgress = false;
 
             if (getContext()!=null) {
                 mainActivityInterface.getMainHandler().post(() -> {
                     if (getContext()!=null) {
-                        folderArrayAdapter = new ExposedDropDownArrayAdapter(getContext(), myView.filters.folderSearch, R.layout.view_exposed_dropdown_item, foundFolders);
-                        myView.filters.folderSearch.setAdapter(folderArrayAdapter);
-                        myView.filters.folderSearch.addTextChangedListener(new MyTextWatcher("folder"));
-
-                        // If we are filtering folders, then set that position
-                        if (songListSearchByFolder && !songListSearchByFolderValue.isEmpty() &&
-                                foundFolders.contains(songListSearchByFolderValue) && myView!=null) {
-                            myView.filters.folderSearch.setText(songListSearchByFolderValue);
-
-                        } else if (songListSearchByFolder && myView!=null) {
-                            // Clear the saved search folder and hide the filter as the folder doesn't exist
-                            setSongListSearchByFolderValue("");
-                            setSongListSearchByFolder(false);
-                            showHideRows(myView.filters.folderLayout,false);
-                            myView.filters.folderSearch.setText("");
-                        }
+                        bindFolderDropdown(folders);
                     }
                 });
             }
         });
+    }
+
+    private void bindFolderDropdown(ArrayList<String> folders) {
+        if (myView == null || getContext() == null) {
+            return;
+        }
+        folderArrayAdapter = new ExposedDropDownArrayAdapter(getContext(),
+                myView.filters.folderSearch, R.layout.view_exposed_dropdown_item, folders);
+        myView.filters.folderSearch.setAdapter(folderArrayAdapter);
+        myView.filters.folderSearch.addTextChangedListener(new MyTextWatcher("folder"));
+
+        if (songListSearchByFolder && !songListSearchByFolderValue.isEmpty() &&
+                folders.contains(songListSearchByFolderValue)) {
+            myView.filters.folderSearch.setText(songListSearchByFolderValue);
+        } else if (songListSearchByFolder) {
+            setSongListSearchByFolderValue("");
+            setSongListSearchByFolder(false);
+            showHideRows(myView.filters.folderLayout, false);
+            myView.filters.folderSearch.setText("");
+        }
     }
 
     public void removeFiltersFromLoadSong() {
@@ -392,6 +411,7 @@ public class SongMenuFragment extends Fragment implements SongListAdapter.Adapte
             fixButtons();
             showHideRows(myView.filters.folderLayout, songListSearchByFolder);
             if (songListSearchByFolder) {
+                setFolders();
                 runShowCaseSequence(new View[] {myView.filterButtons.folderButton, myView.filters.folderSearch, myView.filters.manageFolders},
                         new String[] {filter_by_folder_string,
                                 filter_by_dropdown_string,
@@ -548,7 +568,8 @@ public class SongMenuFragment extends Fragment implements SongListAdapter.Adapte
                                 songListSearchByFolder, songListSearchByArtist, songListSearchByKey,
                                 songListSearchByTag, songListSearchByFilter, songListSearchByTitle,
                                 folderSearchVal, artistSearchVal, keySearchVal, tagSearchVal,
-                                filterSearchVal, titleSearchVal, songMenuSortTitles);
+                                filterSearchVal, titleSearchVal, songMenuSortTitles,
+                                songListSearchByFilter && !filterSearchVal.isEmpty());
 
                         if (newList == null) newList = new ArrayList<>();
 
@@ -770,7 +791,8 @@ public class SongMenuFragment extends Fragment implements SongListAdapter.Adapte
                         songListSearchByFolder, songListSearchByArtist, songListSearchByKey,
                         songListSearchByTag, songListSearchByFilter, songListSearchByTitle,
                         folderSearchVal, artistSearchVal, keySearchVal, tagSearchVal,
-                        filterSearchVal, titleSearchVal, songMenuSortTitles);
+                        filterSearchVal, titleSearchVal, songMenuSortTitles,
+                        songListSearchByFilter && !filterSearchVal.isEmpty());
                 songMenuSongs.updateSongs(tempSongsFound);
 
             } catch (Exception e) {

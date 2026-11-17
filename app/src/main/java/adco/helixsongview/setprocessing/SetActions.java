@@ -843,9 +843,12 @@ public class SetActions {
         return sb;
     }
 
-    public void loadSets(ArrayList<Uri> setsToLoad, CurrentSet currentSet, String setName) {
-        // Clear set at the start to prevent duplicate song accumulation!
+    public synchronized void loadSets(ArrayList<Uri> setsToLoad, CurrentSet currentSet, String setName) {
+        // Replace the current set atomically. Keeping this synchronized prevents two
+        // background set loads from interleaving their entries in the shared CurrentSet.
         currentSet.initialiseTheSet();
+        currentSet.setSetCurrent("");
+        currentSet.setSetCurrentBeforeEdits("");
 
         // This is called via a new thread in the manage sets fragment
         // We can append multiple sets together
@@ -870,7 +873,7 @@ public class SetActions {
         // Now users can load multiple sets and merge them, we need to load each one it turn
         for (Uri setToLoad:setsToLoad) {
             // Pass each uri to the set extraction function and let it populate the arrays
-            extractSetFile(setToLoad, currentSet,false);
+            extractSetFile(setToLoad, currentSet,false,false);
         }
         // Now we have the entire set contents, save it to our preferences
         saveTheSet();
@@ -880,6 +883,11 @@ public class SetActions {
     }
 
     public void extractSetFile(Uri uri, CurrentSet currentSet, boolean asExport) {
+        extractSetFile(uri, currentSet, asExport, true);
+    }
+
+    private void extractSetFile(Uri uri, CurrentSet currentSet, boolean asExport,
+                                boolean saveEachSong) {
         // This loads individual set files and populates the arrays
         // Set up the xml utility
         try {
@@ -907,7 +915,7 @@ public class SetActions {
                                 case "song":
                                     // Get Song
                                     try {
-                                        getSong(xpp,currentSet,asExport);
+                                        getSong(xpp,currentSet,asExport,saveEachSong);
                                     } catch (Exception e) {
                                         Log.d(TAG, "Couldn't get song location from set");
                                         e.printStackTrace();
@@ -996,7 +1004,8 @@ public class SetActions {
         xpp.next();
     }
 
-    private void getSong(XmlPullParser xpp, CurrentSet currentSet, boolean asExport)
+    private void getSong(XmlPullParser xpp, CurrentSet currentSet, boolean asExport,
+                         boolean saveEachSong)
             throws IOException, XmlPullParserException {
         // Set this info into the current set.  We will just load our song
         // When we load, we will transpose our song if the key is different
@@ -1018,7 +1027,7 @@ public class SetActions {
 
         if (!asExport && currentSet!=null) {
             // Only add to the current set if we aren't just preparing an export
-            currentSet.addItemToSet(path,name,name,key,"",true);
+            currentSet.addItemToSet(path,name,name,key,"",saveEachSong);
         }
         xpp.next();
     }

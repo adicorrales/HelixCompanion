@@ -347,7 +347,21 @@ public class CommonSQL {
                                              boolean searchByFilter, boolean searchByTitle, String folderVal,
                                              String artistVal, String keyVal, String tagVal,
                                              String filterVal, String titleVal, boolean songMenuSortTitles) {
+        return getSongsByFilters(db, searchByFolder, searchByArtist, searchByKey, searchByTag,
+                searchByFilter, searchByTitle, folderVal, artistVal, keyVal, tagVal, filterVal,
+                titleVal, songMenuSortTitles, true);
+    }
+
+    public ArrayList<Song> getSongsByFilters(SQLiteDatabase db, boolean searchByFolder,
+                                             boolean searchByArtist, boolean searchByKey, boolean searchByTag,
+                                             boolean searchByFilter, boolean searchByTitle, String folderVal,
+                                             String artistVal, String keyVal, String tagVal,
+                                             String filterVal, String titleVal, boolean songMenuSortTitles,
+                                             boolean includeLyrics) {
         ArrayList<Song> songs = new ArrayList<>();
+        // The global text filter needs lyrics for its accent-insensitive post-filter.
+        // Ordinary menu browsing only needs lightweight display metadata.
+        includeLyrics = includeLyrics || (searchByFilter && filterVal != null && !filterVal.isEmpty());
 
         // To avoid SQL injections, we need to build the args
         ArrayList<String> args = new ArrayList<>();
@@ -447,7 +461,7 @@ public class CommonSQL {
             Common strings for searching.  Don't need to grab everything here - we can get the rest later
         */
 
-        String selectQuery = getSelectQuery(songMenuSortTitles, sqlMatch);
+        String selectQuery = getSelectQuery(songMenuSortTitles, sqlMatch, includeLyrics);
 
         String[] selectionArgs = new String[args.size()];
         selectionArgs = args.toArray(selectionArgs);
@@ -464,7 +478,9 @@ public class CommonSQL {
                 String ti = cursor.getString(cursor.getColumnIndexOrThrow(SQLite.COLUMN_TITLE));
                 String th = cursor.getString(cursor.getColumnIndexOrThrow(SQLite.COLUMN_THEME));
                 String at = cursor.getString(cursor.getColumnIndexOrThrow(SQLite.COLUMN_ALTTHEME));
-                String ly = cursor.getString(cursor.getColumnIndexOrThrow(SQLite.COLUMN_LYRICS));
+                String ly = includeLyrics
+                        ? cursor.getString(cursor.getColumnIndexOrThrow(SQLite.COLUMN_LYRICS))
+                        : "";
                 String uu = "";
                 try {
                     uu = cursor.getString(cursor.getColumnIndexOrThrow(SQLite.COLUMN_UUID));
@@ -532,9 +548,9 @@ public class CommonSQL {
         }
 
         // Because the song sorting from SQL ignores accented characters...
+        Collator collator = Collator.getInstance(mainActivityInterface.getLocale());
+        collator.setStrength(Collator.SECONDARY);
         Comparator<Song> comparator = (o1, o2) -> {
-            Collator collator = Collator.getInstance();
-            collator.setStrength(Collator.SECONDARY);
             if (songMenuSortTitles) {
                 return collator.compare(o1.getTitle(), o2.getTitle());
             } else {
@@ -650,7 +666,8 @@ public class CommonSQL {
     private String getFolderFilenameQuery() {
         return "SELECT " + SQLite.COLUMN_FILENAME + ", " + SQLite.COLUMN_FOLDER + " FROM " + SQLite.TABLE_NAME;
     }
-    private String getSelectQuery(boolean songMenuSortTitles, String sqlMatch) {
+    private String getSelectQuery(boolean songMenuSortTitles, String sqlMatch,
+                                  boolean includeLyrics) {
         String listname = SQLite.COLUMN_FILENAME;
         if (songMenuSortTitles) {
             listname = SQLite.COLUMN_TITLE;
@@ -660,10 +677,9 @@ public class CommonSQL {
         String getBasicSQLQueryStart = "SELECT " + SQLite.COLUMN_FILENAME + ", " + SQLite.COLUMN_AUTHOR +
                 ", IFNULL(NULLIF(" + SQLite.COLUMN_TITLE + ",'')," + SQLite.COLUMN_FILENAME + ") AS " + SQLite.COLUMN_TITLE + ", " +
                 SQLite.COLUMN_KEY + ", " + SQLite.COLUMN_FOLDER + ", " + SQLite.COLUMN_THEME + ", " +
-                SQLite.COLUMN_ALTTHEME + ", " + SQLite.COLUMN_USER1 + ", " + SQLite.COLUMN_USER2 + ", " +
-                SQLite.COLUMN_USER3 + ", " + SQLite.COLUMN_LYRICS + ", " + SQLite.COLUMN_HYMNNUM + ", " +
-                SQLite.COLUMN_UUID +
-                " FROM " + SQLite.TABLE_NAME + " ";
+                SQLite.COLUMN_ALTTHEME +
+                (includeLyrics ? ", " + SQLite.COLUMN_LYRICS : "") +
+                ", " + SQLite.COLUMN_UUID + " FROM " + SQLite.TABLE_NAME + " ";
         return getBasicSQLQueryStart + sqlMatch + " " + getOrderBySQL;
     }
 

@@ -141,7 +141,7 @@ est para eficientar la lectura y escritura de la canción.
 pad. Si no hay un archivo de media asociado, no debe recurrirse a ningun pad. las opciones de PAD
 auto y off deben desaparecer. Si no hay link a archivo de audo asociado, el pad es OFF por default.
 14. Eliminar todo lo referente a multitrack, spotify, song tags y la exportación o share de la canción.
-15. en los pages boton, incluir un boton quepemita llamar a otras app instalada, para hacer cambios
+15. en los pages boton, incluir un boton que permita llamar a otras app instalada, para hacer cambios
 rápídos sin salir de esta.
 
 Como regla general, mantener la funcionalidad de la app, de manera que se logre el objetivo prioritario
@@ -170,4 +170,7 @@ inaceptable para una experiencia funcional.
 ## Bugs y funcionalidad erronea persistente.
 1. hay tres tabs en el page view para seleccionar las canciones. LA tab helix set muetra los sets de l¿helix y local st muestar los sets de locla. el fragmento Song in sets muestra las canciones del set selecionado. Sin embargo, la lista de canciones de ve en las dos tabs. La funcionalidad es que si no hay set sleecionado en helix o en local, no debería haber un alista de cacniones desplegada. No tiene caso tener la lsita duplicada. Solo debe mostrarse en la tab correspondente
 2. el indicador de conexión midi no funciona correctamente. El último dispositivo está apagado totalemnte y me indica que tengo conexión. Incluso test de settings en MIDI me dice ok. pero no sé ¿A qué está conectada la tablet? no hay ninguna indicación.
-3. 
+
+
+## implementacion futura (Planning)
+- Lo que queda es el coste real: en la canción de 613 vistas, 2,7 s hasta que el frame nuevo está listo (de ahí 1,7 s sólo de crear TextViews), y la pantalla mantiene la anterior todo ese tiempo. Eso ya es el límite del modelo de "una vista por trozo de línea"; el siguiente escalón es reducir vistas, no el flujo.

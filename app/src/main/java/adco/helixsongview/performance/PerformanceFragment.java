@@ -1225,6 +1225,21 @@ public class PerformanceFragment extends Fragment {
                     myView.pageHolder.getLayoutParams().height = heightAfterScale;
                     myView.songView.getLayoutParams().height = heightAfterScale;
 
+                    // Lay the new song out NOW, in this same message.
+                    // Otherwise the next frame can be drawn before the layout pass runs and
+                    // shows an empty page (the black flash on song changes). Doing it here also
+                    // means the traversal that follows finds the same measures cached.
+                    int layoutWidth = myView.pageHolder.getLayoutParams().width;
+                    int layoutHeight = myView.pageHolder.getLayoutParams().height;
+                    if (layoutWidth > 0 && layoutHeight > 0) {
+                        myView.pageHolder.measure(
+                                View.MeasureSpec.makeMeasureSpec(layoutWidth, View.MeasureSpec.EXACTLY),
+                                View.MeasureSpec.makeMeasureSpec(layoutHeight, View.MeasureSpec.EXACTLY));
+                        myView.pageHolder.layout(0, 0,
+                                myView.pageHolder.getMeasuredWidth(), myView.pageHolder.getMeasuredHeight());
+                    }
+                    logStage("laidOutPage");
+
                     // Pass this scale factor to the zoom layout as the new minimum scale
                     myView.zoomLayout.setCurrentScale(scaleFactor);
                     myView.zoomLayout.setSongSize(widthAfterScale, heightAfterScale);
@@ -1241,10 +1256,13 @@ public class PerformanceFragment extends Fragment {
                                     if (myView == null) {
                                         return true;
                                     }
-                                    myView.pageHolder.getViewTreeObserver().removeOnPreDrawListener(this);
+                                    int content = myView.songView.getCol1().getChildCount()
+                                            + myView.songView.getCol2().getChildCount()
+                                            + myView.songView.getCol3().getChildCount();
                                     long drawMs = System.currentTimeMillis() - displayStartTime;
-                                    if (drawMs >= 50) {
-                                        Log.d(TAG, "Layout + first draw: " + drawMs + "ms");
+                                    Log.d(TAG, "preDraw: +" + drawMs + "ms content=" + content);
+                                    if (content > 0) {
+                                        myView.pageHolder.getViewTreeObserver().removeOnPreDrawListener(this);
                                     }
                                     return true;
                                 }
@@ -1257,9 +1275,22 @@ public class PerformanceFragment extends Fragment {
                         try {
                             // IV - We need to request layout to get songsheet information added ahead of animate in. Odd!
                             if (myView != null) {
+                                // NOTE: the slide-in animation is no longer used for song changes.
+                                // The new song is already laid out and swapped in atomically, so
+                                // animating it in only made the change more noticeable (and showed
+                                // the page semi-transparent over the background for 200ms).
                                 myView.pageHolder.requestLayout();
+                                myView.pageHolder.invalidate();
                                 myView.pageHolder.setVisibility(View.VISIBLE);
-                                myView.pageHolder.startAnimation(animSlideIn);
+
+                                // Optional slide-in on song change (Song display settings).
+                                // Off by default: the new song is already laid out and swapped
+                                // in atomically, so an instant change feels faster.
+                                if (animSlideIn != null &&
+                                        mainActivityInterface.getPreferences()
+                                                .getMyPreferenceBoolean("songChangeSlideAnimation", false)) {
+                                    myView.pageHolder.startAnimation(animSlideIn);
+                                }
 
                                 // TEMPORARY: time spent after the song is ready
                                 long dealStartTime = System.currentTimeMillis();

@@ -31,6 +31,10 @@ public class SetMenuFragment extends Fragment {
     protected MainActivityInterface mainActivityInterface;
     protected SetAdapter setAdapter;
     protected SelectSetAdapter selectSetAdapter;
+    private String renderedSetSnapshot;
+    private int renderedSetSize = -1;
+    private int renderedSongIndex = -2;
+    private boolean renderedCategoryActive;
 
     protected boolean isHelixSetMode() {
         return true;
@@ -56,9 +60,7 @@ public class SetMenuFragment extends Fragment {
         if (selectSetAdapter != null) {
             selectSetAdapter.prepareSets();
         }
-        if (setAdapter != null) {
-            setAdapter.notifyDataSetChanged();
-        }
+        refreshSetItemsIfNeeded();
     }
 
     @Override
@@ -165,13 +167,32 @@ public class SetMenuFragment extends Fragment {
         if (mainActivityInterface != null) {
             mainActivityInterface.getMainHandler().post(() -> {
                 bindSetTitleViews();
-                if (setAdapter != null) {
-                    setAdapter.notifyDataSetChanged();
-                }
+                refreshSetItemsIfNeeded();
                 if (selectSetAdapter != null) {
                     selectSetAdapter.notifyDataSetChanged();
                 }
             });
+        }
+    }
+
+    private void refreshSetItemsIfNeeded() {
+        if (setAdapter == null || mainActivityInterface == null ||
+                mainActivityInterface.getCurrentSet() == null) {
+            return;
+        }
+        String setSnapshot = mainActivityInterface.getCurrentSet().getSetCurrent();
+        int setSize = mainActivityInterface.getCurrentSet().getCurrentSetSize();
+        int songIndex = mainActivityInterface.getCurrentSet().getIndexSongInSet();
+        boolean categoryActive = mainActivityInterface.isHelixSet() == isHelixSetMode();
+        if (!java.util.Objects.equals(renderedSetSnapshot, setSnapshot) ||
+                renderedSetSize != setSize ||
+                renderedSongIndex != songIndex ||
+                renderedCategoryActive != categoryActive) {
+            setAdapter.notifyDataSetChanged();
+            renderedSetSnapshot = setSnapshot;
+            renderedSetSize = setSize;
+            renderedSongIndex = songIndex;
+            renderedCategoryActive = categoryActive;
         }
     }
 

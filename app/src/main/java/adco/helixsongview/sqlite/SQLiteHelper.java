@@ -137,15 +137,27 @@ public class SQLiteHelper {
     }
 
     public ArrayList<Song> getSongsByFilters(boolean searchByFolder, boolean searchByArtist,
-                                             boolean searchByKey, boolean searchByTag,
-                                             boolean searchByFilter, boolean searchByTitle,
-                                             String folderVal, String artistVal, String keyVal,
-                                             String tagVal, String filterVal, String titleVal,
-                                             boolean songMenuSortTitles) {
+                                              boolean searchByKey, boolean searchByTag,
+                                              boolean searchByFilter, boolean searchByTitle,
+                                              String folderVal, String artistVal, String keyVal,
+                                              String tagVal, String filterVal, String titleVal,
+                                              boolean songMenuSortTitles) {
+        return getSongsByFilters(searchByFolder, searchByArtist, searchByKey, searchByTag,
+                searchByFilter, searchByTitle, folderVal, artistVal, keyVal, tagVal, filterVal,
+                titleVal, songMenuSortTitles, true);
+    }
+
+    public ArrayList<Song> getSongsByFilters(boolean searchByFolder, boolean searchByArtist,
+                                              boolean searchByKey, boolean searchByTag,
+                                              boolean searchByFilter, boolean searchByTitle,
+                                              String folderVal, String artistVal, String keyVal,
+                                              String tagVal, String filterVal, String titleVal,
+                                              boolean songMenuSortTitles, boolean includeLyrics) {
         try {
             return mainActivityInterface.getCommonSQL().getSongsByFilters(getReadableDatabase(), searchByFolder,
                     searchByArtist, searchByKey, searchByTag, searchByFilter, searchByTitle,
-                    folderVal, artistVal, keyVal, tagVal, filterVal, titleVal, songMenuSortTitles);
+                    folderVal, artistVal, keyVal, tagVal, filterVal, titleVal, songMenuSortTitles,
+                    includeLyrics);
         } catch (OutOfMemoryError | Exception e) {
             Log.d(TAG,"Table doesn't exist");
             return new ArrayList<>();

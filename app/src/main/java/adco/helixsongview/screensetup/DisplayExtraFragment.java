@@ -89,6 +89,7 @@ public class DisplayExtraFragment extends Fragment {
     private void setViews() {
         // Set the checkboxes
         myView.songSheet.setChecked(getChecked("songSheet",false));
+        myView.slideAnimation.setChecked(getChecked("songChangeSlideAnimation",false));
         myView.nextInSet.setChecked(getChecked("nextInSet",true));
         myView.prevInSet.setChecked(getChecked("prevInSet",false));
         myView.prevNextSongMenu.setChecked(getChecked("prevNextSongMenu",false));
@@ -174,6 +175,8 @@ public class DisplayExtraFragment extends Fragment {
     private void setListeners() {
         // The switches
         myView.songSheet.setOnCheckedChangeListener((buttonView, isChecked) -> updateBooleanPreference("songSheet",isChecked,null));
+        myView.slideAnimation.setOnCheckedChangeListener((buttonView, isChecked) ->
+                updateBooleanPreference("songChangeSlideAnimation", isChecked, null));
         myView.prevInSet.setOnCheckedChangeListener((buttonView, isChecked) -> {
             updateBooleanPreference("prevInSet",isChecked,null);
             mainActivityInterface.getDisplayPrevNext().updateShow();

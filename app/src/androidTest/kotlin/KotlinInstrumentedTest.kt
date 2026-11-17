@@ -15,6 +15,6 @@ class KotlinInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        Assert.assertEquals("com.garethevans.church.opensongtablet", appContext.packageName)
+        Assert.assertEquals("adco.helixsongview", appContext.packageName)
     }
 }

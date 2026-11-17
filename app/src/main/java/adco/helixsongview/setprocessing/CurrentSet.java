@@ -117,12 +117,11 @@ public class CurrentSet {
 
     public void setSetCurrent(String setCurrent) {
         this.setCurrent = setCurrent;
-        mainActivityInterface.getThreadPoolExecutor().execute(() -> {
-            // Save the user preference
-            mainActivityInterface.getPreferences().setMyPreferenceString("setCurrent", setCurrent);
-            // Check if we need to update the set menu title
-            mainActivityInterface.getMainHandler().post(this::updateSetTitleView);
-        });
+        // SharedPreferences.apply() updates the in-memory value immediately. Saving
+        // here keeps successive set loads ordered instead of queuing stale writes on
+        // the general-purpose thread pool.
+        mainActivityInterface.getPreferences().setMyPreferenceString("setCurrent", setCurrent);
+        mainActivityInterface.getMainHandler().post(this::updateSetTitleView);
     }
 
     public String getSetCurrent() {
@@ -166,6 +165,10 @@ public class CurrentSet {
     }
 
     public void addItemToSet(Song thisSong) {
+        addItemToSet(thisSong, true);
+    }
+
+    public void addItemToSet(Song thisSong, boolean doSave) {
         SetItemInfo setItemInfo = new SetItemInfo();
         setItemInfo.songfilename = thisSong.getFilename();
         setItemInfo.songfolder = thisSong.getFolder();
@@ -176,8 +179,9 @@ public class CurrentSet {
         setItemInfo.songforsetwork = mainActivityInterface.getSetActions().getSongForSetWork(setItemInfo);
         setItemInfos.add(setItemInfo);
 
-        // Update the currentSet preferences
-        updateCurrentSetPreferences();
+        if (doSave) {
+            updateCurrentSetPreferences();
+        }
     }
 
     public void addItemToSet(String folder, String filename, String title, String key, String capo, boolean doSave) {

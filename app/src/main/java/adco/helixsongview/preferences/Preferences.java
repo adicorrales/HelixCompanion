@@ -704,6 +704,7 @@ public class Preferences extends Activity {
     // songAutoScaleColumnMaximise      boolean     When autoscale is on full and columns are used, should each column scale independently to maximise font size (def:true)
     // songAutoScaleOverrideFull        boolean     If the app can override full autoscale if the font is too small (def:true)
     // songAutoScaleOverrideWidth       boolean     If the app can override width autoscale if the font is too small (def:false)
+    // songChangeSlideAnimation         boolean     Slide the page in when the song changes (off = instant change) (def:false)
     // songFilename                     String      The name of the current song file (def:"")
     // songListFilterReset              boolean     Should we reset the song list filters when loading a song from a set/connected device (def:true)
     // songListSearchByFolder           boolean     Should we search in the song list using a custom folder (def:true)

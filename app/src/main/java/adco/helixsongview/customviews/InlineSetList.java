@@ -273,9 +273,15 @@ public class InlineSetList extends RecyclerView {
 
     // Called when the set has been parsed (might be empty)
     public void notifyToInsertAllInlineSet() {
-        if (mainActivityInterface!=null) {
-            if (inlineSetListAdapter != null && mainActivityInterface.getCurrentSet().getCurrentSetSize() > 0) {
-                mainActivityInterface.getMainHandler().post(() -> inlineSetListAdapter.notifyItemRangeInserted(0, mainActivityInterface.getCurrentSet().getCurrentSetSize()));
+        if (mainActivityInterface != null) {
+            if (inlineSetListAdapter != null) {
+                // The current set may have been replaced rather than appended. A range
+                // insertion leaves stale rows/counts when the old and new sets differ.
+                mainActivityInterface.getMainHandler().post(() -> {
+                    if (inlineSetListAdapter != null) {
+                        inlineSetListAdapter.notifyDataSetChanged();
+                    }
+                });
             }
             checkVisibility();
         }

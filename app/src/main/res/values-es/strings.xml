@@ -1237,6 +1237,8 @@
     <string name="songs">Canciones</string>
     <string name="songsheet">Hoja de canciones</string>
     <string name="songsheet_info">Muestra un título con información sobre la canción.</string>
+    <string name="slide_animation">Deslizar al cambiar de canción</string>
+    <string name="slide_animation_info">Desliza la canción al cambiar. Desactívalo para un cambio instantáneo.</string>
     <string name="sound">Sonar</string>
     <string name="sound_bass_drum">Tambor de bajo</string>
     <string name="sound_bell">Campana</string>

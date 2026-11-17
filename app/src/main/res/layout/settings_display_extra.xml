@@ -35,6 +35,15 @@
                 android:hint="@string/songsheet_info"/>
 
             <adco.helixsongview.customviews.MyMaterialSwitch
+                android:id="@+id/slideAnimation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/slide_animation"
+                android:hint="@string/slide_animation_info"/>
+
+            <adco.helixsongview.customviews.MyMaterialSwitch
                 android:id="@+id/prevInSet"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

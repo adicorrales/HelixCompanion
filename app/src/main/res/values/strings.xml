@@ -1428,6 +1428,8 @@
     <string name="songs">Songs</string>
     <string name="songsheet">Songsheet</string>
     <string name="songsheet_info">Displays a title with information about the song</string>
+    <string name="slide_animation">Slide in on song change</string>
+    <string name="slide_animation_info">Slides the song in when it changes. Turn off for an instant change.</string>
     <string name="sound">Sound</string>
     <string name="sound_bass_drum">Bass drum</string>
     <string name="sound_bell">Bell</string>

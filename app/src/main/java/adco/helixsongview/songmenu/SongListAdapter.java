@@ -17,7 +17,9 @@ import adco.helixsongview.setmenu.SetItemInfo;
 import adco.helixsongview.songprocessing.Song;
 
 import java.util.LinkedHashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class SongListAdapter extends RecyclerView.Adapter<SongItemViewHolder> {
 
@@ -28,6 +30,9 @@ public class SongListAdapter extends RecyclerView.Adapter<SongItemViewHolder> {
     private boolean songMenuSortTitles;
     private float titleSize, subtitleSizeAuthor, subtitleSizeFile;
     private final SongMenuSongs songMenuSongs;
+    private final Set<String> currentSetSongPaths = new HashSet<>();
+    private String cachedSetPreference = "";
+    private int cachedSetSize = -1;
 
     AdapterCallback callback;
 
@@ -343,10 +348,33 @@ public class SongListAdapter extends RecyclerView.Adapter<SongItemViewHolder> {
     void bindCheckBox(MyMaterialCheckbox checkBox, String folderNamePair) {
         // Is this item in the set?
         try {
-            checkBox.setChecked(mainActivityInterface.getSetActions().isSongInSet(folderNamePair));
+            checkBox.setChecked(isSongInCurrentSet(folderNamePair));
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private boolean isSongInCurrentSet(String folderNamePair) {
+        if (folderNamePair == null) {
+            return false;
+        }
+
+        String setPreference = mainActivityInterface.getCurrentSet().getSetCurrent();
+        if (setPreference == null) {
+            setPreference = "";
+        }
+        int setSize = mainActivityInterface.getCurrentSet().getCurrentSetSize();
+        if (cachedSetSize != setSize || !cachedSetPreference.equals(setPreference)) {
+            currentSetSongPaths.clear();
+            for (SetItemInfo item : mainActivityInterface.getCurrentSet().getSetItemInfos()) {
+                if (item != null) {
+                    currentSetSongPaths.add(item.songfolder + "/" + item.songfilename);
+                }
+            }
+            cachedSetPreference = setPreference;
+            cachedSetSize = setSize;
+        }
+        return currentSetSongPaths.contains(folderNamePair);
     }
 
     @NonNull
@@ -403,18 +431,30 @@ public class SongListAdapter extends RecyclerView.Adapter<SongItemViewHolder> {
     public void addAllSongsToSet() {
         // This is called when the user clicks on the 'Set' text in the song menu
         if (songMenuSongs!=null && getItemCount()>0) {
+            Set<String> songsAlreadyInSet = new HashSet<>();
+            for (SetItemInfo item : mainActivityInterface.getCurrentSet().getSetItemInfos()) {
+                songsAlreadyInSet.add(item.songfolder + "/" + item.songfilename);
+            }
+
+            boolean addedAny = false;
             for (int i=0; i<getItemCount(); i++) {
                 Song song = songMenuSongs.getFoundSongs().get(i);
+                String songPath = song.getFolder() + "/" + song.getFilename();
 
                 // Only proceed if this song isn't already in the set
-                if (!mainActivityInterface.getSetActions().isSongInSet(song)) {
+                if (!songsAlreadyInSet.contains(songPath)) {
                     // Log this as well
                     if (song!=null) {
                         mainActivityInterface.getAnalyticsHelper().incrementSetCount(song.getUuid());
-                        mainActivityInterface.getCurrentSet().addItemToSet(song);
+                        mainActivityInterface.getCurrentSet().addItemToSet(song, false);
+                        songsAlreadyInSet.add(songPath);
+                        addedAny = true;
                         notifyItemChanged(i, "checkOn");
                     }
                 }
+            }
+            if (addedAny) {
+                mainActivityInterface.getCurrentSet().updateCurrentSetPreferences();
             }
         }
     }
