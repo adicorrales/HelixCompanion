@@ -86,7 +86,6 @@ public class WebServerMessagesBottomSheet extends BottomSheetCommon {
         myMaterialEditText.addTextChangedListener(new MyTextWatcher(messageNumber));
         myFloatingActionButton.setOnClickListener(view -> {
             mainActivityInterface.getWebServer().sendWebServerMessage(messageNumber);
-            mainActivityInterface.getNearbyActions().getNearbySendPayloads().sendWebServerMessage(messageNumber);
         });
     }
 

@@ -277,33 +277,6 @@ public class PerformanceGestures {
                 break;
 
 
-            // Controls
-            case "nearby":
-                if (isLongPress) {
-                    nearbySettings();
-                } else {
-                    // If we are already set up to be a host from preferences and allowing connections when not in the settings
-                    if (!mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().getNearbyHostMenuOnly() &&
-                            (mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().getIsHost() ||
-                                    mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().getNearbyPreferredHost())) {
-                        nearbyAdvertise();
-                    } else if (mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().getNearbyHostMenuOnly() &&
-                            (mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().getIsHost() ||
-                                    mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().getNearbyPreferredHost())) {
-                        // We want to act as the host, but because we need to be on the settings page, do that
-                        nearbySettings();
-                        String text = c.getString(R.string.nearby_host_menu_only) + ": " + c.getString(R.string.on);
-                        mainActivityInterface.getShowToast().doIt(text);
-
-                    } else {
-                        // We default to being the client
-                        nearbyDiscover();
-                    }
-                }
-                break;
-            case "nearbysettings":
-                nearbySettings();
-                break;
             case "gestures":
                 editGestures();
                 break;
@@ -672,9 +645,7 @@ public class PerformanceGestures {
                     height = -height;
                 }
                 recyclerView.smoothScrollBy(0, height);
-                // We will also send this to nearby devices if we are a host
-                mainActivityInterface.getNearbyActions().getNearbySendPayloads().sendScrollByPayload(scrollDown,
-                        mainActivityInterface.getGestures().getScrollDistance());
+                // nearby removed
             }
 
 
@@ -682,9 +653,7 @@ public class PerformanceGestures {
             myZoomLayout.animateScrollBy(
                     mainActivityInterface.getGestures().getScrollDistance(), scrollDown);
 
-            // We will also send this to nearby devices if we are a host
-            mainActivityInterface.getNearbyActions().getNearbySendPayloads().sendScrollByPayload(scrollDown,
-                    mainActivityInterface.getGestures().getScrollDistance());
+            // nearby removed
         }
 
         scrollPosCheckHandler.removeCallbacks(scrollPosRunnable);
@@ -859,19 +828,16 @@ public class PerformanceGestures {
     // Increase the autoscroll speed
     public void speedUpAutoscroll() {
         mainActivityInterface.getAutoscroll().speedUpAutoscroll();
-        mainActivityInterface.getNearbyActions().getNearbySendPayloads().sendCommandIfHost(mainActivityInterface.getNearbyActions().autoscrollIncrease);
     }
 
     // Decrease the autoscroll speed
     public void slowDownAutoscroll() {
         mainActivityInterface.getAutoscroll().slowDownAutoscroll();
-        mainActivityInterface.getNearbyActions().getNearbySendPayloads().sendCommandIfHost(mainActivityInterface.getNearbyActions().autoscrollDecrease);
     }
 
     // Pause autoscrolling
     public void pauseAutoscroll() {
         mainActivityInterface.getAutoscroll().pauseAutoscroll();
-        mainActivityInterface.getNearbyActions().getNearbySendPayloads().sendCommandIfHost(mainActivityInterface.getNearbyActions().autoscrollPause);
     }
 
     // Open links
@@ -879,33 +845,6 @@ public class PerformanceGestures {
         mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_links),0);
     }
 
-    // Nearby connections
-    public void nearbySettings() {
-        mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_nearby),0);
-    }
-    public void nearbyAdvertise() {
-        // Advertise device to others
-        // Stop advertising/discovering if we were already doing that
-        mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().stopAdvertising();
-        mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().stopDiscovery();
-
-        mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().setUsingNearby(true);
-
-        // Advertise device
-        // The advertise will check the user's settings and display a warning popup first time
-        mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().startAdvertising();
-    }
-    public void nearbyDiscover() {
-        // Run a 10 second discovery attempt
-        // Stop advertising/discovering if we were already doing that
-        mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().stopAdvertising();
-        mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().stopDiscovery();
-
-        mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().setUsingNearby(true);
-
-        // Temp discovery will run for 10 secs after showing a warning/popup the first time
-        mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().doTempDiscover();
-    }
 
     // Open the theme chooser
     public void editTheme() {

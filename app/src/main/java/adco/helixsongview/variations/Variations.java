@@ -258,10 +258,6 @@ public class Variations {
         // Get the original file uri
         Uri uriOriginal = mainActivityInterface.getStorageAccess().getUriForItem("Songs", existingFolder, newFilename);
 
-        // IV - When a received song - use the stored received song filename
-        if (setItemInfo.songfilename.equals("ReceivedSong")) {
-            setItemInfo.songfilename = mainActivityInterface.getNearbyActions().getNearbyReceivePayloads().getReceivedSongFilename();
-        }
 
         // Build a new filename based on the folder name
         if (existingFolder!=null && !existingFolder.isEmpty() && !existingFolder.contains(customLocStart)) {

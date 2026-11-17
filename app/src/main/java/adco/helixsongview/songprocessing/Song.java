@@ -56,8 +56,6 @@ public class Song implements Serializable {
     private String capoprint="";
     private String customchords="";
     private String notes="";
-    private String abc="";
-    private String abctranspose="0";
     private String linkyoutube="";
     private String linkweb="";
     private String linkaudio="";
@@ -180,10 +178,6 @@ public class Song implements Serializable {
     public String getCapoprint() {return capoprint;}
     public String getCustomchords() {return customchords;}
     public String getNotes() {return notes;}
-    public String getAbc() {return abc;}
-    public String getAbcTranspose() {
-        return abctranspose;
-    }
     public String getLinkyoutube() {return linkyoutube;}
     public String getLinkweb() {return linkweb;}
     public String getLinkaudio() {return linkaudio;}
@@ -358,10 +352,6 @@ public class Song implements Serializable {
     public void setCapoprint(String capoprint) {this.capoprint = capoprint;}
     public void setCustomChords(String customchords) {this.customchords = customchords;}
     public void setNotes(String notes) {this.notes = notes;}
-    public void setAbc(String abc) {this.abc = abc;}
-    public void setAbcTranspose(String abctranspose) {
-        this.abctranspose = abctranspose;
-    }
     public void setLinkyoutube(String linkyoutube) {this.linkyoutube = linkyoutube;}
     public void setLinkweb(String linkweb) {this.linkweb = linkweb;}
     public void setLinkaudio(String linkaudio) {this.linkaudio = linkaudio;}
@@ -484,8 +474,6 @@ public class Song implements Serializable {
         this.capoprint = toCopy.capoprint;
         this.customchords = toCopy.customchords;
         this.notes = toCopy.notes;
-        this.abc = toCopy.abc;
-        this.abctranspose = toCopy.abctranspose;
         this.linkyoutube = toCopy.linkyoutube;
         this.linkweb = toCopy.linkweb;
         this.linkaudio = toCopy.linkaudio;

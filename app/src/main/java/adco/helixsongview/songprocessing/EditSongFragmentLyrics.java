@@ -32,7 +32,7 @@ import androidx.fragment.app.Fragment;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.signature.ObjectKey;
 import adco.helixsongview.R;
-import adco.helixsongview.abcnotation.ABCEditorBottomSheet;
+
 import adco.helixsongview.customviews.MyMaterialSimpleTextView;
 import adco.helixsongview.databinding.EditSongLyricsBinding;
 import adco.helixsongview.interfaces.EditSongFragmentInterface;
@@ -545,9 +545,6 @@ public class EditSongFragmentLyrics extends Fragment {
                 if (bitToAdd.startsWith("__CHORD__")) {
                     bitToAdd = bitToAdd.replace("__CHORD__", "");
                     text = text.substring(0, cursorPos) + bitToAdd + "  " + text.substring(cursorPos);
-                } else if (bitToAdd.equals("abcEditor")) {
-                    ABCEditorBottomSheet abcEditorBottomSheet = new ABCEditorBottomSheet(EditSongFragmentLyrics.this,mainActivityInterface.getTempSong(),"inline");
-                    abcEditorBottomSheet.show(mainActivityInterface.getMyFragmentManager(),"AbcEditor");
                 } else {
                     if (bitToAdd.startsWith("[") && bitToAdd.endsWith("]")) {
                         bitToAdd = "\n" + bitToAdd;

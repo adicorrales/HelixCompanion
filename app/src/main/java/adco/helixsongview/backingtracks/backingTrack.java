@@ -139,15 +139,8 @@ public class backingTrack {
     }
 
     public boolean isAutoPad() {
-        String padFile = mainActivityInterface.getSong().getPadfile();
-        if (padFile == null) {
-            padFile = "";
-        }
-        String key = mainActivityInterface.getSong().getKey();
-        if (key == null) {
-            key = "";
-        }
-        return (padFile.isEmpty() || padFile.equals("auto") || padFile.equals(pad_auto)) && !key.isEmpty();
+        // Auto pads removed: only linked audio files are supported
+        return false;
     }
 
     public boolean isCustomAutoPad() {
@@ -176,11 +169,7 @@ public class backingTrack {
 
     public Uri getPadUri() {
         Uri padUri = null;
-        if (isCustomAutoPad()) {
-            padUri = mainActivityInterface.getStorageAccess().fixLocalisedUri(
-                    mainActivityInterface.getPreferences().getMyPreferenceString(
-                            "customPad"+keyToFlat(mainActivityInterface.getSong().getKey()),""));
-        } else if (isLinkAudio()) {
+        if (isLinkAudio()) {
             padUri = mainActivityInterface.getStorageAccess().fixLocalisedUri(
                     mainActivityInterface.getSong().getLinkaudio());
         }
@@ -205,34 +194,21 @@ public class backingTrack {
             key = "";
         }
 
-        // If the padUri is null, we likely need a default autopad assuming the key is set
-        AssetFileDescriptor assetFileDescriptor = null;
-        if (padUri==null && !key.isEmpty()) {
-            assetFileDescriptor = getAssetPad(key);
-        }
-
+        // Only linked audio files are supported as pads
         // Decide if pad should loop
         String padLoop = mainActivityInterface.getSong().getPadloop();
 
         // Decide if the pad is valid
-        boolean padValid = (assetFileDescriptor!=null || isPadValid(padUri)) &&
-                !padFile.equals("off");
+        boolean padValid = isPadValid(padUri);
 
-        Log.d(TAG,"assetFileDescriptor:"+assetFileDescriptor);
         Log.d(TAG,"padUri:"+padUri);
         Log.d(TAG,"exists:"+mainActivityInterface.getStorageAccess().uriExists(padUri));
         Log.d(TAG,"isPadValid():"+isPadValid(padUri));
 
         // Prepare any error message
         if (!padValid) {
-            if (key.isEmpty()) {
-                mainActivityInterface.getShowToast().doIt(pad_key_error);
-            } else if (isCustomAutoPad()) {
-                mainActivityInterface.getShowToast().doIt(pad_file_error);
-            } else if (isLinkAudio()) {
+            if (isLinkAudio()) {
                 mainActivityInterface.getShowToast().doIt(pad_custom_pad_error);
-            } else if (padFile.equals("off")) {
-                mainActivityInterface.getShowToast().doIt(pad_off);
             }
             stopPadPlay();
         }
@@ -250,16 +226,7 @@ public class backingTrack {
                         pad1Prepared = true;
                         doPlay(1);
                     });
-                    if (assetFileDescriptor != null) {
-                        try {
-                            pad1.setDataSource(assetFileDescriptor.getFileDescriptor(),
-                                    assetFileDescriptor.getStartOffset(),
-                                    assetFileDescriptor.getLength());
-                            assetFileDescriptor.close();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    } else if (padUri != null) {
+                    if (padUri != null) {
                         try {
                             pad1.setDataSource(c, padUri);
                         } catch (Exception e) {
@@ -289,16 +256,7 @@ public class backingTrack {
                         pad2Prepared = true;
                         doPlay(2);
                     });
-                    if (assetFileDescriptor != null) {
-                        try {
-                            pad2.setDataSource(assetFileDescriptor.getFileDescriptor(),
-                                    assetFileDescriptor.getStartOffset(),
-                                    assetFileDescriptor.getLength());
-                            assetFileDescriptor.close();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    } else if (padUri != null) {
+                    if (padUri != null) {
                         try {
                             pad2.setDataSource(c, padUri);
                         } catch (Exception e) {

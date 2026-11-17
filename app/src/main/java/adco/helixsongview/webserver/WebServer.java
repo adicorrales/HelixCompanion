@@ -53,12 +53,6 @@ public class WebServer {
         this.c = c;
         this.mainActivityInterface = (MainActivityInterface) c;
         abcJSFromAsset = "";
-        try {
-            InputStream inputStream = c.getAssets().open("ABC/abcjs-basic-min.js");
-            abcJSFromAsset = "\n" + mainActivityInterface.getStorageAccess().readTextFileToString(inputStream) + "\n";
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         getUpdatedPreferences();
     }
 

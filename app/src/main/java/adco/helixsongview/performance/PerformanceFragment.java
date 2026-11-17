@@ -87,9 +87,7 @@ public class PerformanceFragment extends Fragment {
         autoHideHighlighterHandler = new Handler(Looper.getMainLooper());
     private final Runnable sendSongAfterDelayRunnable = () -> {
         // IV - The send is always called by the 'if' and will return true if a large file has been sent
-        if (mainActivityInterface.getNearbyActions().getNearbySendPayloads().sendSongPayload()) {
-            mainActivityInterface.getShowToast().doIt(nearby_large_file_string);
-        }
+        // nearby removed
         sendSongDelay = 3000;
     };
     private final Runnable autoHideHighlighterRunnable = new Runnable() {
@@ -104,7 +102,7 @@ public class PerformanceFragment extends Fragment {
     private final Handler resetSendSongAfterDelayHandler = new Handler(Looper.getMainLooper());
     private final Runnable resetSendSongAfterDelayRunnable = () -> {
         sendSongDelay = 0;
-        mainActivityInterface.getNearbyActions().getNearbySendPayloads().setSendSongDelayActive(false);
+        // nearby removed
     };
 
     // Attaching and destroying
@@ -446,7 +444,7 @@ public class PerformanceFragment extends Fragment {
         // IV - Set a boolean indicating song change
         songChange = !mainActivityInterface.getSong().getFilename().equals(filename) ||
                 !mainActivityInterface.getSong().getFolder().equals(folder) ||
-                firstSongLoad || mainActivityInterface.getNearbyActions().getNearbyReceivePayloads().getForceReload() ||
+                firstSongLoad ||
                 mainActivityInterface.getForceReload();
         mainActivityInterface.setHighlightChangeAllowed(true);
 
@@ -497,7 +495,7 @@ public class PerformanceFragment extends Fragment {
                 mainActivityInterface.setForceReload(false);
                 myView.inlineSetList.setForceReload(false);
                 mainActivityInterface.getTranspose().setForceReload(false);
-                mainActivityInterface.getNearbyActions().getNearbyReceivePayloads().setForceReload(false);
+                // nearby removed
 
                 mainActivityInterface.setHighlightChangeAllowed(false);
 
@@ -610,17 +608,7 @@ public class PerformanceFragment extends Fragment {
 
                         mainActivityInterface.getSong().setCurrentSection(0);
 
-                        if (mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().sendAsHost()) {
-                            // Only the first (with no delay) and last (with delay) of a long sequence of song changes is actually sent
-                            // sendSongDelay will be 0 for the first song
-                            // IV - Always empty then add to queue (known state)
-                            mainActivityInterface.getNearbyActions().getNearbySendPayloads().setSendSongDelayActive(sendSongDelay != 0);
-                            sendSongAfterDelayHandler.removeCallbacks(sendSongAfterDelayRunnable);
-                            sendSongAfterDelayHandler.postDelayed(sendSongAfterDelayRunnable, sendSongDelay);
-                            // IV - Always empty then add to queue (known state)
-                            resetSendSongAfterDelayHandler.removeCallbacks(resetSendSongAfterDelayRunnable);
-                            resetSendSongAfterDelayHandler.postDelayed(resetSendSongAfterDelayRunnable, 3500);
-                        }
+                        // nearby removed
 
                         // Now slide out the song and after a delay start the next bit of the processing
                         if (myView != null) {
@@ -1250,11 +1238,6 @@ public class PerformanceFragment extends Fragment {
             endProcessing();
         }
 
-        if (mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().hasValidConnections() &&
-                !mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().getIsHost()) {
-            selectSection(mainActivityInterface.getNearbyActions().getNearbyReceivePayloads().getPendingSection());
-        }
-        mainActivityInterface.getNearbyActions().getNearbyReceivePayloads().resetPendingSection();
 
         mainActivityInterface.setHighlightChangeAllowed(true);
 
@@ -1401,14 +1384,7 @@ public class PerformanceFragment extends Fragment {
             mainActivityInterface.updateOnScreenInfo("showhide");
         }
     }
-    public void dealWithAbc(boolean forceShow, boolean hide) {
-        if (!hide) {
-            if (mainActivityInterface != null && mainActivityInterface.getSong() != null && mainActivityInterface.getSong().getAbc() != null && !mainActivityInterface.getSong().getAbc().trim().isEmpty()) {
-                mainActivityInterface.getPreferences().
-                        getMyPreferenceBoolean("abcAuto", false);
-            }
-        }
-    }
+
     private void dealWithHighlighterFile(int w, int h) {
         try {
             if (getContext()!=null) {
@@ -1568,18 +1544,7 @@ public class PerformanceFragment extends Fragment {
                     mainActivityInterface.updateOnScreenInfo("showhide");
                     mainActivityInterface.showActionBar();
                     mainActivityInterface.getHotZones().checkScrollButtonOn(myView.zoomLayout,myView.recyclerView);
-                    // Check for updating send nearby to
-                    if (mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().hasValidConnections() &&
-                            mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().getIsHost() &&
-                            !mainActivityInterface.getPreferences().getMyPreferenceString("songAutoScale", "W").equals("Y")) {
-                        // Get the scroll height
-                        int height = myView.zoomLayout.getMaxScrollY();
-                        // Get the scroll position
-                        int scrollPos = myView.zoomLayout.getScrollY();
-                        if (height > 0) {
-                            mainActivityInterface.getNearbyActions().getNearbySendPayloads().sendScrollToPayload((float) scrollPos / (float) height);
-                        }
-                    }
+                    // nearby removed
                 }
                 return gestureDetector.onTouchEvent(motionEvent);
             });
@@ -1644,12 +1609,7 @@ public class PerformanceFragment extends Fragment {
 
     // If a nearby host initiated a section change
     public void selectSection(int position) {
-        if (!mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().getIsHost() &&
-            mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().hasValidConnections()) {
-            if (mainActivityInterface.getSong().getFiletype()==null) {
-                mainActivityInterface.getSong().setFiletype(mainActivityInterface.getStorageAccess().tryToFixFileTypeFromNull(mainActivityInterface.getSong().getFilename()));
-            }
-        }
+        // nearby removed
     }
 
     // Get the width of the song display (to check it fits)
@@ -1661,13 +1621,7 @@ public class PerformanceFragment extends Fragment {
         }
     }
 
-    // We have abc webviews, so need to resize
-    public void inlineAbcWebViewsDrawn() {
-        if (!mainActivityInterface.getAbcNotation().getAbcWebViewsDrawn()) {
-            mainActivityInterface.getAbcNotation().setAbcWebViewsDrawn(true);
-            mainActivityInterface.getMainHandler().post(this::songIsReadyToDisplay);
-        }
-    }
+    // abc removed
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {

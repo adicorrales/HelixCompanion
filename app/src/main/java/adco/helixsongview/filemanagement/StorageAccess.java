@@ -2653,11 +2653,7 @@ public class StorageAccess {
         // Get the uri for this item
         byte[] tempBuff = new byte[1024];
         Uri fileUriToCopy;
-        if (filename.equals(mainActivityInterface.getNearbyActions().currentSetFile)) {
-            fileUriToCopy = mainActivityInterface.getStorageAccess().getUriForItem("Export", "", mainActivityInterface.getNearbyActions().currentSetFile);
-        } else {
-            fileUriToCopy = mainActivityInterface.getStorageAccess().getUriForItem(folder, subfolder, filename);
-        }
+        fileUriToCopy = mainActivityInterface.getStorageAccess().getUriForItem(folder, subfolder, filename);
         InputStream inputStream = mainActivityInterface.getStorageAccess().getInputStream(fileUriToCopy);
         String zipEntryId;
         if (folder.equals("Songs")) {

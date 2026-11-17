@@ -44,7 +44,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DecodeFormat;
 import com.bumptech.glide.signature.ObjectKey;
 import adco.helixsongview.R;
-import adco.helixsongview.abcnotation.InlineAbcObject;
+
 import adco.helixsongview.customviews.MyMaterialEditText;
 import adco.helixsongview.customviews.MyMaterialSimpleTextView;
 import adco.helixsongview.interfaces.MainActivityInterface;
@@ -201,9 +201,6 @@ public class ProcessSong {
         }
         thisSong.setTitle(fixNullValues(thisSong.getTitle()));
         thisSong.setAuthor(fixNullValues(thisSong.getAuthor()));
-        thisSong.setCopyright(fixNullValues(thisSong.getCopyright()));
-        thisSong.setPresentationorder(fixNullValues(thisSong.getPresentationorder()));
-        thisSong.setHymnnum(fixNullValues(thisSong.getHymnnum()));
         thisSong.setCapoprint(fixNullValues(thisSong.getCapoprint()));
         thisSong.setCapo(fixNullValues(thisSong.getCapo()));
         thisSong.setTempo(fixNullValues(DrumCalculations.getFixedTempoString(thisSong.getTempo(),false)));
@@ -233,8 +230,6 @@ public class ProcessSong {
         thisSong.setLinkaudio(fixNullValues(thisSong.getLinkaudio()));
         thisSong.setLinkweb(fixNullValues(thisSong.getLinkweb()));
         thisSong.setLinkother(fixNullValues(thisSong.getLinkother()));
-        thisSong.setAbc(fixNullValues(thisSong.getAbc()));
-        thisSong.setAbcTranspose(fixNullValues(thisSong.getAbcTranspose()));
 
         /*
         uuid: UUID of the song as identifier.  Must be set, if it doesn't exist, it gets added e.g. 475c839b-7c6c-44f4-8cec-8d56809e44c5  *required
@@ -324,8 +319,6 @@ public class ProcessSong {
         myNEWXML += "  <link_audio>" + parseToHTMLEntities(thisSong.getLinkaudio()).trim() + "</link_audio>\n";
         myNEWXML += "  <loop_audio>" + parseToHTMLEntities(thisSong.getPadloop()).trim() + "</loop_audio>\n";
         myNEWXML += "  <link_other>" + parseToHTMLEntities(thisSong.getLinkother()).trim() + "</link_other>\n";
-        myNEWXML += "  <abcnotation>" + unencodeQuotes(parseToHTMLEntities(thisSong.getAbc()).trim()) + "</abcnotation>\n";
-        myNEWXML += "  <abctranspose>" + parseToHTMLEntities(thisSong.getAbcTranspose()).trim() + "</abctranspose>\n";
 
         if (thisSong.getHasExtraStuff()) {
             String extraStuff = mainActivityInterface.getLoadSong().getExtraStuff(thisSong).trim();
@@ -2303,9 +2296,6 @@ public class ProcessSong {
                     case "tab":
                         text.append("<p>\n<div class=\"mono\">").append(str).append("</div>\n");
                         break;
-                    case "abc":
-                        text.append(getInlineAbcAsInlineHTML(str));
-                        break;
                     default:
                         text.append("<p>\n<div class=\"heading\">\n").append(str).append("</div>\n");
                         break;
@@ -2315,19 +2305,6 @@ public class ProcessSong {
         return text.toString();
     }
 
-    private String getInlineAbcAsInlineHTML(String line) {
-        line = line.replace("&nbsp;"," ");
-        line = line.replace("\\n ","\\n");
-        line = line.replace("\"","&quot;");
-        line = line.replace("\\&quot;","&quot;");
-        line = line.replace("&quot;","\\\"");
-        String abcJS = "<p>\n<div class=\"inline_abc\" " +
-                "id=\""+abcID+"\"></div>\n<script>ABCJS.renderAbc(\""+abcID+"\", \"" +
-                line + "\", {paddingtop:0, paddingbottom:0, paddingright:0, paddingleft:0,staffwidth:"+
-                mainActivityInterface.getAbcNotation().getAbcInlineWidth()+", responsive: 'resize'});</script>";
-        abcID++;
-        return abcJS;
-    }
     public String fixExcessSpaces(String str) {
         if (trimWordSpacing) {
             // Encode new lines as something else first
@@ -2837,20 +2814,20 @@ public class ProcessSong {
                                     linearLayout.addView(tl);
                                 }
                             } else if (!(clearedCurlyText && line.trim().isEmpty())) {
-                                if (line.startsWith(mainActivityInterface.getAbcNotation().getInlineAbcLineIndicator())) {
+                                if (line.startsWith("__disabled_abc__")) {
                                     if (showChords) {
                                         if (!presentation && !performancePresentation && !pdfPrinting && !asPDF) {
                                             // This is where we render the ABC WebView.
                                             // Once done, we can access an ImageView version for Secondary displays, PDF, etc.
-                                            InlineAbcObject inlineAbcObject = new InlineAbcObject(c, line, sect, overallBackgroundColor);
+                                            // InlineAbc removed
                                             if (pdfPrinting) {
-                                                inlineAbcObject.setIsPDF(true);
+                                                // removed
                                             }
 
                                             // Now we add the WebView and ImageView for the song display
                                             // Once rendering is complete, we hide the WebView and display the ImageView
-                                            linearLayout.addView(inlineAbcObject.getInlineAbcWebView());
-                                            linearLayout.addView(inlineAbcObject.getInlineAbcImageView(false));
+                                            // removed abc view
+                                            // removed abc image
                                             //linearLayout.addView(abcWebView.getInlin)
                                         } else {
                                             // Just show a text view for now until I can fix this for PDF/presentation/export

@@ -28,7 +28,7 @@ import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
 import adco.helixsongview.R;
-import adco.helixsongview.abcnotation.InlineAbcObject;
+
 import adco.helixsongview.customviews.ExposedDropDownArrayAdapter;
 import adco.helixsongview.databinding.SettingsExportBinding;
 import adco.helixsongview.interfaces.MainActivityInterface;

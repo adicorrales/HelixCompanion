@@ -476,10 +476,7 @@ public class LoadSong {
                                     case "last_modified":
                                         thisSong.setLastModified(xpp.nextText());
                                         break;
-                                    case "copyright":
-                                        thisSong.setCopyright(mainActivityInterface.getProcessSong().parseHTML(xpp.nextText()));
-                                        break;
-                                    case "title":
+                                                                        case "title":
                                         String testthetitle = mainActivityInterface.getProcessSong().parseHTML(xpp.nextText());
                                         if (testthetitle != null && !testthetitle.isEmpty()) {
                                             thisSong.setTitle(mainActivityInterface.getProcessSong().parseHTML(testthetitle));
@@ -496,43 +493,7 @@ public class LoadSong {
                                             thisSong.setLyrics(fixXML(thisSong, "lyrics", where));
                                         }
                                         break;
-                                    case "ccli":
-                                        thisSong.setCcli(mainActivityInterface.getProcessSong().parseHTML(xpp.nextText()));
-                                        break;
-                                    case "theme":
-                                        thisSong.setTheme(mainActivityInterface.getProcessSong().parseHTML(xpp.nextText()));
-                                        break;
-                                    case "alttheme":
-                                        thisSong.setAlttheme(mainActivityInterface.getProcessSong().parseHTML(xpp.nextText()));
-                                        break;
-                                    case "presentation":
-                                        thisSong.setPresentationorder(mainActivityInterface.getProcessSong().parseHTML(xpp.nextText()));
-                                        break;
-                                    case "hymn_number":
-                                        thisSong.setHymnnum(mainActivityInterface.getProcessSong().parseHTML(xpp.nextText()));
-                                        break;
-                                    case "user1":
-                                        thisSong.setUser1(mainActivityInterface.getProcessSong().parseHTML(xpp.nextText()));
-                                        break;
-                                    case "user2":
-                                        thisSong.setUser2(mainActivityInterface.getProcessSong().parseHTML(xpp.nextText()));
-                                        break;
-                                    case "user3":
-                                        thisSong.setUser3(mainActivityInterface.getProcessSong().parseHTML(xpp.nextText()));
-                                        break;
-                                    case "beatbuddysong":
-                                        thisSong.setBeatbuddysong(mainActivityInterface.getProcessSong().parseHTML(xpp.nextText()));
-                                        break;
-                                    case "beatbuddykit":
-                                        thisSong.setBeatbuddykit(mainActivityInterface.getProcessSong().parseHTML(xpp.nextText()));
-                                        break;
-                                    case "drummer":
-                                        thisSong.setDrummer(mainActivityInterface.getProcessSong().parseHTML(xpp.nextText()));
-                                        break;
-                                    case "drummerkit":
-                                        thisSong.setDrummerKit(mainActivityInterface.getProcessSong().parseHTML(xpp.nextText()));
-                                        break;
-                                    case "key":
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    case "key":
                                         thisSong.setKey(mainActivityInterface.getProcessSong().parseHTML(xpp.nextText()));
                                         break;
                                     case "keyoriginal":
@@ -544,10 +505,7 @@ public class LoadSong {
                                     case "previewoverride":
                                         thisSong.setPreviewoverride(mainActivityInterface.getProcessSong().parseHTML(xpp.nextText()));
                                         break;
-                                    case "aka":
-                                        thisSong.setAka(mainActivityInterface.getProcessSong().parseHTML(xpp.nextText()));
-                                        break;
-                                    case "capo":
+                                                                        case "capo":
                                         if (xpp.getAttributeCount() > 0 && xpp.getAttributeValue(0)!=null) {
                                             thisSong.setCapoprint(xpp.getAttributeValue(0));
                                         }
@@ -594,12 +552,6 @@ public class LoadSong {
                                         break;
                                     case "link_other":
                                         thisSong.setLinkother(mainActivityInterface.getProcessSong().parseHTML(xpp.nextText()));
-                                        break;
-                                    case "abcnotation":
-                                        thisSong.setAbc(mainActivityInterface.getProcessSong().parseHTML(xpp.nextText()));
-                                        break;
-                                    case "abctranspose":
-                                        thisSong.setAbcTranspose(mainActivityInterface.getProcessSong().parseHTML(xpp.nextText()));
                                         break;
                                     case "style":
                                     case "backgrounds":

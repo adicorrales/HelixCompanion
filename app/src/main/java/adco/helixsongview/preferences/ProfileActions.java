@@ -191,8 +191,6 @@ public class ProfileActions {
             mainActivityInterface.getSwipes().loadPreferences();
             mainActivityInterface.getStorageAccess().updatePreferences();
             mainActivityInterface.getMidi().getUpdatedPreferences();
-            mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().getUpdatedPreferences();
-            mainActivityInterface.getNearbyActions().getNearbyReceivePayloads().getUpdatedPreferences();
             mainActivityInterface.getMainHandler().post(() -> mainActivityInterface.getDisplayPrevNext().updateShow());
             mainActivityInterface.getDisplayPrevNext().updateColors();
             mainActivityInterface.getBatteryStatus().updateBatteryPrefs();

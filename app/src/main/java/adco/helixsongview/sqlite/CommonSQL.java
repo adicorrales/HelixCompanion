@@ -13,7 +13,7 @@ import adco.helixsongview.R;
 import adco.helixsongview.analytics.AnalyticsItem;
 import adco.helixsongview.interfaces.MainActivityInterface;
 import adco.helixsongview.songprocessing.DrumCalculations;
-import adco.helixsongview.nearby.ShareableObject;
+import adco.helixsongview.sqlite.ShareableObject;
 import adco.helixsongview.openchords.OpenChordsTag;
 import adco.helixsongview.songprocessing.Song;
 import adco.helixsongview.songprocessing.SongId;
@@ -237,8 +237,6 @@ public class CommonSQL {
         values.put(SQLite.COLUMN_CAPO_PRINT, thisSong.getCapoprint());
         values.put(SQLite.COLUMN_CUSTOM_CHORDS, thisSong.getCustomchords());
         values.put(SQLite.COLUMN_NOTES, thisSong.getNotes());
-        values.put(SQLite.COLUMN_ABC, thisSong.getAbc());
-        values.put(SQLite.COLUMN_ABC_TRANSPOSE, thisSong.getAbcTranspose());
         values.put(SQLite.COLUMN_LINK_YOUTUBE, thisSong.getLinkyoutube());
         values.put(SQLite.COLUMN_LINK_WEB, thisSong.getLinkweb());
         values.put(SQLite.COLUMN_LINK_AUDIO, thisSong.getLinkaudio());
@@ -834,8 +832,6 @@ public class CommonSQL {
         thisSong.setCapoprint(getValue(cursor, SQLite.COLUMN_CAPO_PRINT));
         thisSong.setCustomChords((getValue(cursor, SQLite.COLUMN_CUSTOM_CHORDS)));
         thisSong.setNotes(getValue(cursor, SQLite.COLUMN_NOTES));
-        thisSong.setAbc(getValue(cursor, SQLite.COLUMN_ABC));
-        thisSong.setAbcTranspose(getValue(cursor, SQLite.COLUMN_ABC_TRANSPOSE));
         thisSong.setLinkyoutube(getValue(cursor, SQLite.COLUMN_LINK_YOUTUBE));
         thisSong.setLinkweb(getValue(cursor, SQLite.COLUMN_LINK_WEB));
         thisSong.setLinkaudio(getValue(cursor, SQLite.COLUMN_LINK_AUDIO));
@@ -1421,8 +1417,6 @@ public class CommonSQL {
         stringBuilder.append("\"").append(escaped(song != null ? song.getCapo() : cursor.getString(cursor.getColumnIndexOrThrow(SQLite.COLUMN_CAPO)))).append("\",");
         stringBuilder.append("\"").append(escaped(song != null ? song.getCustomchords() : cursor.getString(cursor.getColumnIndexOrThrow(SQLite.COLUMN_CUSTOM_CHORDS)))).append("\",");
         stringBuilder.append("\"").append(escaped(song != null ? song.getNotes() : cursor.getString(cursor.getColumnIndexOrThrow(SQLite.COLUMN_NOTES)))).append("\",");
-        stringBuilder.append("\"").append(escaped(song != null ? song.getAbc() : cursor.getString(cursor.getColumnIndexOrThrow(SQLite.COLUMN_ABC)))).append("\",");
-        stringBuilder.append("\"").append(escaped(song != null ? song.getAbcTranspose() : cursor.getString(cursor.getColumnIndexOrThrow(SQLite.COLUMN_ABC_TRANSPOSE)))).append("\",");
         stringBuilder.append("\"").append(escaped(song != null ? song.getLinkyoutube() : cursor.getString(cursor.getColumnIndexOrThrow(SQLite.COLUMN_LINK_YOUTUBE)))).append("\",");
         stringBuilder.append("\"").append(escaped(song != null ? song.getLinkweb() : cursor.getString(cursor.getColumnIndexOrThrow(SQLite.COLUMN_LINK_WEB)))).append("\",");
         stringBuilder.append("\"").append(escaped(song != null ? song.getLinkaudio() : cursor.getString(cursor.getColumnIndexOrThrow(SQLite.COLUMN_LINK_AUDIO)))).append("\",");

@@ -6,7 +6,7 @@ import android.util.Log;
 
 import adco.helixsongview.R;
 import adco.helixsongview.interfaces.MainActivityInterface;
-import adco.helixsongview.nearby.ShareableObject;
+import adco.helixsongview.sqlite.ShareableObject;
 import adco.helixsongview.openchords.OpenChordsTag;
 import adco.helixsongview.songprocessing.Song;
 import adco.helixsongview.songprocessing.SongId;

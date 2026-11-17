@@ -14,7 +14,6 @@ import android.widget.LinearLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import adco.helixsongview.abcnotation.ABCNotation;
 import adco.helixsongview.animation.CustomAnimation;
 import adco.helixsongview.animation.ShowCase;
 import adco.helixsongview.appdata.AlertChecks;
@@ -45,7 +44,6 @@ import adco.helixsongview.importsongs.ImportOnlineFragment;
 import adco.helixsongview.importsongs.WebDownload;
 import adco.helixsongview.midi.Midi;
 import adco.helixsongview.midi.MidiFragment;
-import adco.helixsongview.nearby.NearbyActions;
 import adco.helixsongview.openchords.OpenChordsAPI;
 import adco.helixsongview.backingtracks.backingTrack;
 import adco.helixsongview.pdf.MakePDF;
@@ -263,8 +261,7 @@ public interface MainActivityInterface {
     PrepareFormats getPrepareFormats();
     void openFragmentBasedOnFileImport();
 
-    // Nearby connections
-    NearbyActions getNearbyActions();
+
 
 
     // Midi
@@ -323,8 +320,7 @@ public interface MainActivityInterface {
     Activity getMyActivity();
 
 
-    // ABC Notation
-    ABCNotation getAbcNotation();
+
 
     File getScreenshotFile();
       void setScreenshotFile(Bitmap bitmap);

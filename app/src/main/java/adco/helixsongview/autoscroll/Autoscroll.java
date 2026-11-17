@@ -91,7 +91,7 @@ public class Autoscroll {
         this.songHeight = songHeight;
         alreadyFiguredOut = false;
         autoscrollView.setOnClickListener(view -> {
-            mainActivityInterface.getNearbyActions().getNearbySendPayloads().sendCommandIfHost(mainActivityInterface.getNearbyActions().autoscrollPause);
+            // nearby removed
             isPaused = !isPaused;
         });
         autoscrollView.setOnLongClickListener(view -> {
@@ -500,8 +500,7 @@ public class Autoscroll {
                 e.printStackTrace();
             }
 
-            // If we are connected as a host, send to client devices
-            mainActivityInterface.getNearbyActions().getNearbySendPayloads().sendCommandIfHost(mainActivityInterface.getNearbyActions().autoscrollStart);
+            // nearby removed
         }
     }
     public void stopAutoscroll() {
@@ -509,8 +508,7 @@ public class Autoscroll {
         autoscrollActivated = false;
         // Now end
         endAutoscroll();
-        // If we are connected as a host, send to client devices
-        mainActivityInterface.getNearbyActions().getNearbySendPayloads().sendCommandIfHost(mainActivityInterface.getNearbyActions().autoscrollStop);
+        // nearby removed
     }
     private void endAutoscroll() {
         if (usingZoomLayout && myZoomLayout!=null) {

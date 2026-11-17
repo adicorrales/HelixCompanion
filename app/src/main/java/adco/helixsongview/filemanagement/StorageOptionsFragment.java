@@ -67,13 +67,8 @@ public class StorageOptionsFragment extends Fragment {
     }
 
     private void setupViews() {
-        // If we aren't at least using nearby connections, hide the sync menu item
-        if (!mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().getUsingNearby() ||
-                mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().getConnectedDevices().isEmpty()) {
-            myView.syncWithConnectedLayout.setVisibility(View.GONE);
-        } else {
-            myView.syncWithConnectedLayout.setVisibility(View.VISIBLE);
-        }
+        // Nearby connections removed: hide sync menu item
+        myView.syncWithConnectedLayout.setVisibility(View.GONE);
         if (mainActivityInterface.getPreferences().getMyPreferenceBoolean("needToSaveAgain",false)) {
             myView.updateSongsLayout.setVisibility(View.VISIBLE);
         } else {

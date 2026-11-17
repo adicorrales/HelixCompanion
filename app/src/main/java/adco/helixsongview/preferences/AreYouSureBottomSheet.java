@@ -67,11 +67,6 @@ public class AreYouSureBottomSheet extends BottomSheetCommon {
         // Initialise the 'close' floatingactionbutton
         myView.dialogHeading.setClose(this);
 
-        // If we are auto starting Nearby, show that prompt to make sense
-        if ((what.equals("NearbyAdvertise") || what.equals("NearbyDiscover")) &&
-                mainActivityInterface.getNearbyActions().getNearbyConnectionManagement().getNearbyStartOnBoot()) {
-            myView.dialogHeading.setText(getString(R.string.connections_start_on_boot));
-        }
 
         if (what.equals("newSet") && getContext()!=null) {
             myView.dialogHeading.setWebHelp(mainActivityInterface,getString(R.string.website_set_create_new));

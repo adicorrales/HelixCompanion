@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.Log
 import adco.helixsongview.MainActivity
 import adco.helixsongview.interfaces.MainActivityInterface
-import adco.helixsongview.nearby.ShareableObject
+import adco.helixsongview.sqlite.ShareableObject
 import adco.helixsongview.songprocessing.Song
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders

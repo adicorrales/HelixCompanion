@@ -17,8 +17,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import adco.helixsongview.R;
-import adco.helixsongview.abcnotation.ABCEditorBottomSheet;
-//import adco.helixsongview.abcnotation.ScoreToAbcExtractor;
+
+
 import adco.helixsongview.customviews.ExposedDropDownArrayAdapter;
 import adco.helixsongview.databinding.EditSongFeaturesBinding;
 import adco.helixsongview.interfaces.EditSongFragmentInterface;
@@ -531,9 +531,6 @@ public class EditSongFragmentFeatures extends Fragment {
                     break;
                 case "midi":
                     mainActivityInterface.getTempSong().setMidi(editable.toString());
-                    break;
-                case "abc":
-                    mainActivityInterface.getTempSong().setAbc(editable.toString());
                     break;
                 case "customchords":
                     mainActivityInterface.getTempSong().setCustomChords(editable.toString());
