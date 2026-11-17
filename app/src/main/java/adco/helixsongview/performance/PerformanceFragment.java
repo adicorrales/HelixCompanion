@@ -40,6 +40,7 @@ import adco.helixsongview.songprocessing.Song;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class PerformanceFragment extends Fragment {
 
@@ -60,6 +61,11 @@ public class PerformanceFragment extends Fragment {
     private int widthAfterScale;
     private int heightAfterScale;
     private boolean processingTestView;
+    private boolean isLoadingSong = false;
+    // Song requested while another load was running (only the latest one is kept)
+    private String pendingSongFolder = null, pendingSongFilename = null;
+    // Signature of the last generated chord diagram set (avoids regenerating on every song)
+    private String lastChordImageSignature = "";
     @SuppressWarnings("FieldCanBeLocal")
     private boolean songChange;
     private boolean firstSongLoad = true;
@@ -308,10 +314,25 @@ public class PerformanceFragment extends Fragment {
         mainActivityInterface.dealWithIntent(R.id.performanceFragment);
     }
     private void removeViews() {
+        removeViews(false);
+    }
+
+    /**
+     * Clears the song views.
+     * @param keepSongContent true during a song change: the previous song stays on screen
+     *                        (avoiding a black flash) until the new one replaces it.
+     */
+    private void removeViews(boolean keepSongContent) {
         if (myView!=null) {
             try {
-                mainActivityInterface.getSongSheetTitleLayout().removeAllViews();
-                myView.songView.clearViews();
+                // The song sheet header is null when the 'songSheet' preference is off:
+                // the old code threw an NPE here and silently skipped the rest of the cleanup
+                if (mainActivityInterface.getSongSheetTitleLayout() != null) {
+                    mainActivityInterface.getSongSheetTitleLayout().removeAllViews();
+                }
+                if (!keepSongContent) {
+                    myView.songView.clearViews();
+                }
                 myView.testPane.removeAllViews();
                 myView.recyclerView.removeAllViews();
                 myView.imageView.setImageDrawable(null);
@@ -433,6 +454,16 @@ public class PerformanceFragment extends Fragment {
 
     // This stuff loads the song and prepares the views
     public void doSongLoad(String folder, String filename) {
+        // Guard against overlapping/reentrant song loads that can cause the wrong song to appear.
+        // The request is not lost: it is queued and run as soon as the current load finishes
+        // (latest request wins), so fast song switching still ends on the right song.
+        if (isLoadingSong) {
+            pendingSongFolder = folder;
+            pendingSongFilename = filename;
+            Log.d(TAG, "doSongLoad queued: already loading");
+            return;
+        }
+        isLoadingSong = true;
         // Reset autoscale when loading a new song (especially first song after set change)
         scaleFactor = 1.0f;
         try {
@@ -554,6 +585,7 @@ public class PerformanceFragment extends Fragment {
                     } else {
                         stillToCreateVariation = false;
                     }
+                    logStage("setLookup");
 
                     // During the load song call, the song is cleared
                     // However it first extracts the folder and filename we've just set
@@ -563,6 +595,8 @@ public class PerformanceFragment extends Fragment {
                     final boolean stillToCreateVariationFinal = stillToCreateVariation;
                     final String keyInSetFinal = keyInSet;
                     mainActivityInterface.getThreadPoolExecutor().execute(() -> {
+                        // TEMPORARY: elapsed-time checkpoint of the pre-stage
+                        logStage("taskStart");
                         // Prepare the slide out and in animations based on swipe direction
                         setupSlideOut();
                         setupSlideIn();
@@ -591,10 +625,17 @@ public class PerformanceFragment extends Fragment {
                             songToUse = mainActivityInterface.getLoadSong().doLoadSong(mainActivityInterface.getSong(),false);
                         }
 
+                        long loadDuration = System.currentTimeMillis() - doSongLoadStartTime;
+                        if (loadDuration >= 100) {
+                            Log.d(TAG, "Song file load: " + loadDuration + "ms (" + mainActivityInterface.getSong().getFilename() + ")");
+                        }
+                        logStage("loaded");
+
                         // Set the main song with the loaded song, or the key variation song
                         mainActivityInterface.setSong(songToUse);
 
                         mainActivityInterface.getMainHandler().post(() -> {
+                            logStage("post:bgColourToolbar");
                             if (myView != null) {
                                 // Set the default color
                                 myView.pageHolder.setBackgroundColor(mainActivityInterface.getMyThemeColors().getLyricsBackgroundColor());
@@ -613,6 +654,7 @@ public class PerformanceFragment extends Fragment {
                         // Now slide out the song and after a delay start the next bit of the processing
                         if (myView != null) {
                             myView.recyclerView.post(() -> {
+                                logStage("post:slideOutRecycler");
                                 if (myView!=null) {
                                     try {
                                         if (myView.recyclerView.getVisibility() == View.VISIBLE) {
@@ -623,21 +665,20 @@ public class PerformanceFragment extends Fragment {
                                     }
                                 }
                             });
-                            myView.pageHolder.post(() -> {
-                                if (myView!=null) {
-                                    try {
-                                        if (myView.pageHolder.getVisibility() == View.VISIBLE) {
-                                            myView.pageHolder.startAnimation(animSlideOut);
-                                        }
-                                    } catch (Exception e) {
-                                        mainActivityInterface.getStorageAccess().updateCrashLog(e.toString());
-                                    }
-                                }
-                            });
+                            // NOTE: the page holder no longer slides out here. Doing it at the
+                            // start of the load made the song disappear ~1s before the new one
+                            // was ready (a long black screen). The old song now stays on screen
+                            // until it is replaced, and only the slide-in animation is used.
                         }
                         if (getContext() != null) {
                             // Scroll to the item in the set menus
+                            long perfNotifyStart = System.currentTimeMillis();
                             mainActivityInterface.notifySetFragment("scrollTo", mainActivityInterface.getCurrentSet().getIndexSongInSet());
+                            long perfNotifyMs = System.currentTimeMillis() - perfNotifyStart;
+                            if (perfNotifyMs >= 20) {
+                                Log.d(TAG, "notifySetFragment: " + perfNotifyMs + "ms");
+                            }
+                            logStage("notifiedSet");
 
                             // If we want to show chord diagrams, we need to prepare them
                             if (mainActivityInterface.getPreferences().getMyPreferenceBoolean("displayChordDiagrams",false)) {
@@ -666,30 +707,54 @@ public class PerformanceFragment extends Fragment {
                                         mainActivityInterface.getChordDisplayProcessing().getInstrumentFromPref(instrument),
                                         mainActivityInterface.getChordDisplayProcessing().getInstruments(), chordFormat);
 
-                                // Empty the chords folder
-                                File chordsFolder = mainActivityInterface.getStorageAccess().getAppSpecificFile("Chords","","");
-                                if (chordsFolder!=null) {
-                                    try {
-                                        FileUtils.deleteDirectory(chordsFolder);
-                                        Log.d(TAG,"Deleted chords folder");
-                                    } catch (Exception e) {
-                                        Log.d(TAG, "Error deleting chords folder");
+                                float chordImageScale = mainActivityInterface.getPreferences().getMyPreferenceFloat("scaleChords",0.8f);
+
+                                // The chord PNGs only depend on the global chord settings (instrument, format,
+                                // scale and the chord/capo colours). Reuse them whenever those did not change:
+                                // deleting and rewriting the whole folder for every song was a major source
+                                // of load delay.
+                                String chordSignature = buildChordImageSignature(instrument, chordFormat, chordImageScale);
+                                boolean rebuildChordImages = !chordSignature.equals(lastChordImageSignature);
+
+                                if (rebuildChordImages) {
+                                    // Empty the chords folder - the settings changed, so all images are stale
+                                    File chordsFolder = mainActivityInterface.getStorageAccess().getAppSpecificFile("Chords","","");
+                                    if (chordsFolder!=null) {
+                                        try {
+                                            FileUtils.deleteDirectory(chordsFolder);
+                                            Log.d(TAG,"Deleted chords folder");
+                                        } catch (Exception e) {
+                                            Log.d(TAG, "Error deleting chords folder");
+                                        }
                                     }
                                 }
-                                // Prepare the standard chord images
-                                mainActivityInterface.getChordDisplayProcessing().createChordImages(instrument,chordFormat,mainActivityInterface.getPreferences().getMyPreferenceFloat("scaleChords",0.8f),false);
+                                // Prepare the standard chord images (only the ones that are missing)
+                                mainActivityInterface.getChordDisplayProcessing().createChordImages(instrument, chordFormat, chordImageScale, false, !rebuildChordImages);
 
                                 // If we have a capo specified in the song, also create the images for the capo chords
                                 if (mainActivityInterface.getSong().getCapo()!=null && !mainActivityInterface.getSong().getCapo().isEmpty()) {
                                     mainActivityInterface.getTranspose().capoKeyTranspose(mainActivityInterface.getSong());
-                                    mainActivityInterface.getChordDisplayProcessing().createChordImages(instrument, chordFormat, mainActivityInterface.getPreferences().getMyPreferenceFloat("scaleChords", 0.8f), true);
+                                    mainActivityInterface.getChordDisplayProcessing().createChordImages(instrument, chordFormat, chordImageScale, true, !rebuildChordImages);
+                                }
+
+                                if (rebuildChordImages) {
+                                    // New files mean the cached image dimensions are no longer valid
+                                    mainActivityInterface.getProcessSong().clearChordImageSizeCache();
+                                    lastChordImageSignature = chordSignature;
                                 }
 
                             }
 
+                            logStage("chordImagesDone");
+
                             // Now continue with the song prep
                             if (getContext()!=null && mainActivityInterface!=null) {
-                                mainActivityInterface.getMainHandler().postDelayed(this::prepareSongViews, 50 + getContext().getResources().getInteger(R.integer.slide_out_time));
+                                int delay = 50 + getContext().getResources().getInteger(R.integer.slide_out_time);
+                                logStage("schedulePrepareViews+" + delay);
+                                long pingStart = System.currentTimeMillis();
+                                mainActivityInterface.getMainHandler().post(
+                                        () -> Log.d(TAG, "mainPing: " + (System.currentTimeMillis() - pingStart) + "ms"));
+                                mainActivityInterface.getMainHandler().postDelayed(this::prepareSongViews, delay);
                             }
                         }
                     });
@@ -699,7 +764,22 @@ public class PerformanceFragment extends Fragment {
                 mainActivityInterface.getStorageAccess().updateCrashLog(e.toString());
             }
         }
+        logStage("doSongLoadEnd");
     }
+    /**
+     * Builds a signature describing everything the generated chord diagram PNGs depend on.
+     * If it matches the previous song, the files are reused instead of being rebuilt.
+     */
+    private String buildChordImageSignature(String instrument, int chordFormat, float chordImageScale) {
+        StringBuilder signature = new StringBuilder();
+        signature.append(instrument).append('|')
+                .append(chordFormat).append('|')
+                .append(chordImageScale).append('|')
+                .append(mainActivityInterface.getMyThemeColors().getLyricsChordsColor()).append('|')
+                .append(mainActivityInterface.getMyThemeColors().getLyricsCapoColor());
+        return signature.toString();
+    }
+
     private void setupSlideOut() {
         // Set up the type of animate in
         if (getContext()!=null) {
@@ -723,9 +803,18 @@ public class PerformanceFragment extends Fragment {
     private void prepareSongViews() {
         if (myView!=null) {
             // This is called on the UI thread above via the handler from mainLooper()
+            logStage("prepareSongViews");
             // Reset the song views
             mainActivityInterface.setSectionViews(null);
-            removeViews();
+            long perfRemoveStart = System.currentTimeMillis();
+            // Keep the previous song on screen while the new one is built: clearing it here
+            // leaves the page blank for the whole build (the black flash on song changes)
+            removeViews(true);
+            long perfRemoveMs = System.currentTimeMillis() - perfRemoveStart;
+            if (perfRemoveMs >= 20) {
+                Log.d(TAG, "removeViews: " + perfRemoveMs + "ms");
+            }
+            logStage("removedViews");
 
             // Make sure we are scrolled to the top of the views
             myView.recyclerView.scrollToTop();
@@ -739,6 +828,7 @@ public class PerformanceFragment extends Fragment {
                     Log.e(TAG, "PerformanceFragment error", e);
                 }
             }
+            logStage("scrolled");
 
             int[] screenSizes = mainActivityInterface.getDisplayMetrics();
             int screenWidth = screenSizes[0];
@@ -914,15 +1004,22 @@ public class PerformanceFragment extends Fragment {
 
     }
     private void prepareXMLView() {
+        logStage("prepareXMLView");
         if (mainActivityInterface.getSong().getFiletype()==null) {
             mainActivityInterface.getSong().setFiletype(mainActivityInterface.getStorageAccess().tryToFixFileTypeFromNull(mainActivityInterface.getSong().getFilename()));
         }
 
         mainActivityInterface.setSectionViews(null);
 
-        // Now prepare the song sections views so we can measure them for scaling using a view tree observer
-        mainActivityInterface.setSectionViews(mainActivityInterface.getProcessSong().
-                setSongInLayout(mainActivityInterface.getSong(), false, false));
+        // Now prepare the song sections views so we can measure them for scaling
+        ArrayList<View> sectionViews = mainActivityInterface.getProcessSong().
+                setSongInLayout(mainActivityInterface.getSong(), false, false);
+        mainActivityInterface.setSectionViews(sectionViews);
+
+        // Measure the sections straight away. They are not attached to the window, so
+        // no layout pass is needed (the old test pane laid the whole song out twice).
+        mainActivityInterface.getProcessSong().measureSectionViews(sectionViews);
+        logStage("measured");
 
         // Prepare the song sheet header if required, if not, make it null
         if (mainActivityInterface.getPreferences().getMyPreferenceBoolean("songSheet", false)) {
@@ -931,118 +1028,64 @@ public class PerformanceFragment extends Fragment {
         } else {
             mainActivityInterface.setSongSheetTitleLayout(null);
         }
-        // We now have the views ready, we need to draw them so we can measure them
-        // Start with the song sheet title/header
-        // The other views are dealt with after this call
+        logStage("header");
 
-        // Run this as a post to the root view - otherwise views aren't necessarily fully ready for drawing
-        myView.getRoot().post(this::setUpHeaderListener);
+        // Measure the header here, so nothing has to be attached to the window and
+        // waited for. This used to cost a full layout pass + two handler round trips
+        // on every song change.
+        measureSongSheetHeader();
+
+        // Everything needed to display the song is now measured
+        setUpTestViewListener();
     }
 
-    private void setUpHeaderListener() {
-        try {
-            // If we want headers, the header layout isn't null, so we can draw and listen
-            // Add the view and wait for the vto return
-            if (mainActivityInterface.getSongSheetTitleLayout() != null &&
-                    !mainActivityInterface.getMode().equals(mode_presenter)) {
-                // Check the header isn't already attached to a view
-                if (mainActivityInterface.getSongSheetTitleLayout().getParent()!=null) {
-                    ((ViewGroup) mainActivityInterface.getSongSheetTitleLayout().getParent()).removeAllViews();
-                }
-                if (myView!=null) {
-                    myView.testPaneHeader.removeAllViews();
-                }
-
-                mainActivityInterface.getSongSheetTitleLayout().post(() -> {
-                    if (myView!=null) {
-                        try {
-                            setUpTestViewListener();
-                        } catch (Exception e) {
-                            Log.e(TAG, "PerformanceFragment error", e);
-                            mainActivityInterface.getStorageAccess().updateCrashLog(e.toString());
-                        }
-                    }
-                });
-                try {
-                    if (myView!=null) {
-                        myView.testPaneHeader.addView(mainActivityInterface.getSongSheetTitleLayout());
-                    }
-                } catch (Exception e) {
-                    Log.e(TAG, "PerformanceFragment error", e);
-                    mainActivityInterface.getStorageAccess().updateCrashLog(e.toString());
-                    setUpTestViewListener();
-                }
-
-            } else {
-                // No song sheet title requested, so skip
-                setUpTestViewListener();
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "PerformanceFragment error", e);
-            mainActivityInterface.getStorageAccess().updateCrashLog(e.toString());
-            // Error, so skip
-            setUpTestViewListener();
+    /**
+     * Measures the song sheet header in place (without attaching it) so its height is
+     * known when the columns are worked out.
+     */
+    private void measureSongSheetHeader() {
+        View header = mainActivityInterface.getSongSheetTitleLayout();
+        if (header == null || myView == null ||
+                mainActivityInterface.getMode().equals(mode_presenter)) {
+            return;
         }
+        // The header can be measured while still attached; addViewsToScreen re-parents it
+        int widthSpec = View.MeasureSpec.makeMeasureSpec(Math.max(availableWidth, 0),
+                View.MeasureSpec.AT_MOST);
+        int heightSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+        header.measure(widthSpec, heightSpec);
+        // layout() is needed because the column code reads getHeight()
+        header.layout(0, 0, header.getMeasuredWidth(), header.getMeasuredHeight());
     }
 
     private void setUpTestViewListener() {
-        if (myView!=null) {
-            // Add the views and wait for the vto of each to finish
-            myView.songView.clearViews();
-            myView.testPane.removeAllViews();
-
-            // We will only proceed once all of the views show true as being drawn
-            boolean[] viewsDrawn = new boolean[mainActivityInterface.getSectionViews().size()];
-
-            for (int v = 0; v < mainActivityInterface.getSectionViews().size(); v++) {
-                final int viewNum = v;
-                final View view = mainActivityInterface.getSectionViews().get(viewNum);
-
-                // If views are attached to a parent, remove it from the parent
-                if (view.getParent() != null) {
-                    // Still attached - remove it
-                    ((ViewGroup) view.getParent()).removeView(view);
-                }
-
-                // Set a post listener for the view
-                view.post(() -> {
-                    viewsDrawn[viewNum] = true;
-                    // Check if the array is only true
-                    boolean isReady = true;
-                    for (boolean thisBoolean : viewsDrawn) {
-                        if (!thisBoolean) {
-                            // Not ready
-                            isReady = false;
-                            break;
-                        }
-                    }
-                    if (isReady) {
-                        songIsReadyToDisplay();
-                    }
-
-                });
-
-                // Add the view.  The post above gets called once drawn
-                myView.testPane.addView(view);
-
-            }
+        logStage("testViewListener");
+        if (myView == null) {
+            return;
         }
+
+        myView.songView.clearViews();
+        myView.testPane.removeAllViews();
+
+        if (mainActivityInterface.getSectionViews().isEmpty()) {
+            // Nothing to display - preserve previous behaviour (no display update)
+            return;
+        }
+
+        // The sections were measured as soon as they were created
+        // (ProcessSong.measureSectionViews), so there is no need to attach them to a
+        // hidden pane and wait for a layout pass before showing the song.
+        songIsReadyToDisplay();
     }
 
     private void songIsReadyToDisplay() {
+        logStage("readyToDisplay");
         if (myView!=null) {
             try {
                 // Set the page holder to fullscreen for now
                 myView.pageHolder.getLayoutParams().width = availableWidth;
                 myView.pageHolder.getLayoutParams().height = availableHeight;
                 myView.songSheetTitle.setVisibility(View.VISIBLE);
-
-                // All views have now been drawn, so measure the arraylist views
-                for (int x = 0; x < mainActivityInterface.getSectionViews().size(); x++) {
-                    int width = mainActivityInterface.getSectionViews().get(x).getWidth();
-                    int height = mainActivityInterface.getSectionViews().get(x).getHeight();
-                    mainActivityInterface.addSectionSize(x, width, height);
-                }
 
                 myView.testPane.removeAllViews();
 
@@ -1098,7 +1141,8 @@ public class PerformanceFragment extends Fragment {
 
                 } else {
                     // We are in Performance mode, so use the songView
-                    myView.pageHolder.setVisibility(View.INVISIBLE);
+                    // NOTE: pageHolder is left visible so the previous song stays on screen
+                    // until the new one is inserted, instead of flashing to the background
                     myView.zoomLayout.setVisibility(View.VISIBLE);
                     myView.songView.setVisibility(View.VISIBLE);
                     myView.imageView.setVisibility(View.GONE);
@@ -1184,27 +1228,51 @@ public class PerformanceFragment extends Fragment {
                     // Pass this scale factor to the zoom layout as the new minimum scale
                     myView.zoomLayout.setCurrentScale(scaleFactor);
                     myView.zoomLayout.setSongSize(widthAfterScale, heightAfterScale);
+                    logStage("songSize");
 
                     endProcessing();
+
+                    // TEMPORARY: how long until the song is actually drawn on screen
+                    final long displayStartTime = System.currentTimeMillis();
+                    myView.pageHolder.getViewTreeObserver().addOnPreDrawListener(
+                            new ViewTreeObserver.OnPreDrawListener() {
+                                @Override
+                                public boolean onPreDraw() {
+                                    if (myView == null) {
+                                        return true;
+                                    }
+                                    myView.pageHolder.getViewTreeObserver().removeOnPreDrawListener(this);
+                                    long drawMs = System.currentTimeMillis() - displayStartTime;
+                                    if (drawMs >= 50) {
+                                        Log.d(TAG, "Layout + first draw: " + drawMs + "ms");
+                                    }
+                                    return true;
+                                }
+                            });
 
                     // Slide in
                     long QOSAdjustment = doSongLoadQOSTime - (System.currentTimeMillis() - doSongLoadStartTime);
 
                     myView.zoomLayout.postDelayed(() -> {
                         try {
-                            // The new song sizes were sent to the zoomLayout in ProcessSong
-                            int topPadding = 0;
-
                             // IV - We need to request layout to get songsheet information added ahead of animate in. Odd!
                             if (myView != null) {
                                 myView.pageHolder.requestLayout();
                                 myView.pageHolder.setVisibility(View.VISIBLE);
                                 myView.pageHolder.startAnimation(animSlideIn);
 
+                                // TEMPORARY: time spent after the song is ready
+                                long dealStartTime = System.currentTimeMillis();
                                 dealWithStuffAfterReady(false);
+                                long dealMs = System.currentTimeMillis() - dealStartTime;
+                                if (dealMs >= 20) {
+                                    Log.d(TAG, "dealWithStuffAfterReady: " + dealMs + "ms");
+                                }
 
-                                // Try to take a screenshot ready for any highlighter actions that may be called
-                                getScreenshot(myView.pageHolder.getWidth(), myView.pageHolder.getHeight() - myView.songSheetTitle.getHeight(), topPadding);
+                                // NOTE: the old full-page screenshot used to be rendered here.
+                                // It was never read anywhere in the app, but drawing the whole
+                                // song into a large bitmap (plus PNG compression to disk) on every
+                                // song change was expensive and caused dropped frames. Removed.
                             }
                         } catch (Exception e) {
                             mainActivityInterface.getStorageAccess().updateCrashLog(e.toString());
@@ -1225,15 +1293,66 @@ public class PerformanceFragment extends Fragment {
         mainActivityInterface.getSong().setCurrentlyLoading(false);
 
         // Set the previous/next
+        long perfPrevNextStart = System.currentTimeMillis();
         mainActivityInterface.getDisplayPrevNext().setPrevNext();
+        long perfPrevNextMs = System.currentTimeMillis() - perfPrevNextStart;
+        if (perfPrevNextMs >= 20) {
+            Log.d(TAG, "setPrevNext: " + perfPrevNextMs + "ms");
+        }
+
+        // Total time from the song load request until the song is ready to display
+        if (doSongLoadStartTime > 0) {
+            long totalDuration = System.currentTimeMillis() - doSongLoadStartTime;
+            if (totalDuration >= 150) {
+                Log.d(TAG, "Song switch total: " + totalDuration + "ms");
+            }
+        }
 
         // Release the processing lock
         processingTestView = false;
+
+        // Safety: always release the load guard, even on paths that never reach
+        // dealWithStuffAfterReady (e.g. unsupported file types)
+        isLoadingSong = false;
+
+        // If the user requested another song while this one was loading, honour it now
+        runPendingSongLoadIfAny();
+    }
+
+    // TEMPORARY: elapsed-time checkpoints of the song switch pipeline
+    private void logStage(String stage) {
+        if (doSongLoadStartTime > 0) {
+            Log.d(TAG, "stage " + stage + ": +" + (System.currentTimeMillis() - doSongLoadStartTime) + "ms");
+        }
+    }
+
+    /**
+     * Runs a song load that was requested while another load was in progress.
+     * Only the most recent request is kept.
+     */
+    private void runPendingSongLoadIfAny() {
+        if (pendingSongFilename == null) {
+            return;
+        }
+        String folder = pendingSongFolder;
+        String filename = pendingSongFilename;
+        pendingSongFolder = null;
+        pendingSongFilename = null;
+        if (mainActivityInterface == null) {
+            return;
+        }
+        if (filename.equals(mainActivityInterface.getSong().getFilename()) &&
+                folder != null && folder.equals(mainActivityInterface.getSong().getFolder())) {
+            // Already showing this song
+            return;
+        }
+        mainActivityInterface.getMainHandler().post(() -> doSongLoad(folder, filename));
     }
 
     // This stuff deals with running song actions
     @SuppressWarnings("ConstantConditions")
     private void dealWithStuffAfterReady(boolean callEndProcessing) {
+        isLoadingSong = false;
         if (callEndProcessing) {
             endProcessing();
         }

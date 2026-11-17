@@ -46,7 +46,7 @@ import com.bumptech.glide.signature.ObjectKey;
 import adco.helixsongview.R;
 
 import adco.helixsongview.customviews.MyMaterialEditText;
-import adco.helixsongview.customviews.MyMaterialSimpleTextView;
+import adco.helixsongview.customviews.SongTextView;
 import adco.helixsongview.interfaces.MainActivityInterface;
 
 import java.io.File;
@@ -109,7 +109,25 @@ public class ProcessSong {
     private int bracketsStyle = Typeface.NORMAL;
     private boolean curlyBrackets = true;
     private boolean curlyBracketsDevice = false;
-    private StringBuilder htmlLyrics = new StringBuilder();
+
+    // NOTE: the old htmlLyrics StringBuilder is no longer needed here.
+    // It was built per line while creating the display views but never read
+    // (the HTML output uses groupTableHTML/lineTextHTML instead).
+
+    // Cached mode checks and localised strings used inside per-line loops.
+    // Resolving these through Resources/getMode() on every line adds up quickly on long songs.
+    private boolean cachedValuesValid = false;
+    private boolean modePerformance, modeHybrid, modeStage, modePresenter;
+    private String tagVerse, tagPreChorus, tagChorus, tagBridge, tagTag, tagCustom, tagInlinePause;
+
+    // Chord diagram image dimensions (avoids re-decoding the same PNG for every chord occurrence)
+    private final java.util.HashMap<String, int[]> chordImageSizeCache = new java.util.HashMap<>();
+
+    // Temporary instrumentation for the view building loop. Remove once the
+    // performance work is finished - it is cheap (a few nanoTime calls per line).
+    private long perfGroupNs, perfLineNs, perfChordNs, perfBgNs, perfNewViewNs, perfMidiNs;
+    private int perfGroupN, perfLineN, perfChordN, perfBgN, perfNewViewN;
+
     private final String abc_on_override = "abc_on", abc_off_override = "abc_off";
     private boolean isRtl = false;
     private int gravityToUseForRtl = Gravity.START;
@@ -129,6 +147,8 @@ public class ProcessSong {
 
     // Update the processing preferences
     public void updateProcessingPreferences() {
+        // Invalidate cached mode/strings - they are rebuilt lazily on next use
+        cachedValuesValid = false;
         addSectionSpace = mainActivityInterface.getPreferences().getMyPreferenceBoolean("addSectionSpace", true);
         blockShadow = mainActivityInterface.getPreferences().getMyPreferenceBoolean("blockShadow", false);
         blockShadowAlpha = mainActivityInterface.getPreferences().getMyPreferenceFloat("blockShadowAlpha", 0.7f);
@@ -167,6 +187,51 @@ public class ProcessSong {
 
     public boolean showingCapo(String capo) {
         return (displayCapoChords || displayCapoAndNativeChords) && capo!=null && !capo.isEmpty();
+    }
+
+    // Rebuilds cached mode checks and localised section tags. Called lazily from hot loops.
+    private void ensureCachedValues() {
+        if (cachedValuesValid) {
+            return;
+        }
+        String mode = mainActivityInterface.getMode();
+        modePerformance = mode.equals(c.getString(R.string.mode_performance));
+        modeHybrid = mode.equals(c.getString(R.string.mode_hybrid));
+        modeStage = mode.equals(c.getString(R.string.mode_stage));
+        modePresenter = mode.equals(c.getString(R.string.mode_presenter));
+        tagVerse = c.getString(R.string.verse);
+        tagPreChorus = c.getString(R.string.prechorus);
+        tagChorus = c.getString(R.string.chorus);
+        tagBridge = c.getString(R.string.bridge);
+        tagTag = c.getString(R.string.tag);
+        tagCustom = c.getString(R.string.custom);
+        tagInlinePause = c.getString(R.string.autoscroll_inline_pause);
+        cachedValuesValid = true;
+    }
+
+    private boolean isPerformanceMode() {
+        ensureCachedValues();
+        return modePerformance;
+    }
+
+    private boolean isHybridMode() {
+        ensureCachedValues();
+        return modeHybrid;
+    }
+
+    private boolean isPerformanceOrHybridMode() {
+        ensureCachedValues();
+        return modePerformance || modeHybrid;
+    }
+
+    private boolean isStageMode() {
+        ensureCachedValues();
+        return modeStage;
+    }
+
+    private boolean isPresenterMode() {
+        ensureCachedValues();
+        return modePresenter;
     }
 
     // Get some preferences back
@@ -558,6 +623,12 @@ public class ProcessSong {
     public String fixLyricsOnlySpace(String s) {
         // IV - Used for whole lines when displaying lyrics only
         // IV - Remove typical word splits, white space and trim - beautify!
+        // Fast path for plain lines - avoids two regex passes for the common case
+        if (s.indexOf('_') < 0 && s.indexOf('-') < 0 && s.indexOf("  ") < 0
+                && s.indexOf('\n') < 0 && s.indexOf('\t') < 0 && s.indexOf('\r') < 0
+                && s.indexOf(". ") < 0 && s.equals(s.trim())) {
+            return s;
+        }
         return s.replace("_", "")
                 .replaceAll("\\s+-\\s+", "")
                 .replaceAll("\\s{2,}", " ")
@@ -1072,30 +1143,33 @@ public class ProcessSong {
     }
 
     private String replaceBadHeadings(String line, String fix, String replacement) {
-        if (line.contains(fix) || line.contains(fix.toUpperCase(mainActivityInterface.getLocale()))) {
+        String fixUpper = fix.toUpperCase(mainActivityInterface.getLocale());
+        if (line.contains(fix) || line.contains(fixUpper)) {
             line = line.replace(fix + " ", replacement).
-                    replace(fix.toUpperCase(mainActivityInterface.getLocale()) + " ", replacement).
+                    replace(fixUpper + " ", replacement).
                     replace(fix, replacement).
-                    replace(fix.toUpperCase(mainActivityInterface.getLocale()), replacement);
+                    replace(fixUpper, replacement);
         }
         return line;
     }
 
+    // List of annotated section identifiers to remove. Kept as a constant to avoid
+    // re-allocating the array for every heading that is beautified.
+    private static final String[] REMOVE_THIS_BIT = {
+            "V-", "V1-", "V2-", "V3-", "V4-", "V5-", "V6-", "V7-", "V8-", "V9-", "V10-",
+            "V -", "V1 -", "V2 -", "V3 -", "V4 -", "V5 -", "V6 -", "V7 -", "V8 -", "V9 -", "V10 -",
+            "C-", "C1-", "C2-", "C3-", "C4-", "C5-", "C6-", "C7-", "C8-", "C9-", "C10-",
+            "C -", "C1 -", "C2 -", "C3 -", "C4 -", "C5 -", "C6 -", "C7 -", "C8 -", "C9 -", "C10 -",
+            "P-", "P1-", "P2-", "P3-", "P4-", "P5-", "P6-", "P7-", "P8-", "P9-", "P10-",
+            "P -", "P1 -", "P2 -", "P3 -", "P4 -", "P5 -", "P6 -", "P7 -", "P8 -", "P9 -", "P10 -",
+            "T-", "T1-", "T2-", "T3-", "T4-", "T5-", "T6-", "T7-", "T8-", "T9-", "T10-",
+            "T -", "T1 -", "T2 -", "T3 -", "T4 -", "T5 -", "T6 -", "T7 -", "T8 -", "T9 -", "T10 -",
+            "B-", "B -", "I-", "I -"
+    };
+
     private String removeAnnotatedSections(String s) {
         // List things to remove
-        String[] removethisbit = {
-                "V-", "V1-", "V2-", "V3-", "V4-", "V5-", "V6-", "V7-", "V8-", "V9-", "V10-",
-                "V -", "V1 -", "V2 -", "V3 -", "V4 -", "V5 -", "V6 -", "V7 -", "V8 -", "V9 -", "V10 -",
-                "C-", "C1-", "C2-", "C3-", "C4-", "C5-", "C6-", "C7-", "C8-", "C9-", "C10-",
-                "C -", "C1 -", "C2 -", "C3 -", "C4 -", "C5 -", "C6 -", "C7 -", "C8 -", "C9 -", "C10 -",
-                "P-", "P1-", "P2-", "P3-", "P4-", "P5-", "P6-", "P7-", "P8-", "P9-", "P10-",
-                "P -", "P1 -", "P2 -", "P3 -", "P4 -", "P5 -", "P6 -", "P7 -", "P8 -", "P9 -", "P10 -",
-                "T-", "T1-", "T2-", "T3-", "T4-", "T5-", "T6-", "T7-", "T8-", "T9-", "T10-",
-                "T -", "T1 -", "T2 -", "T3 -", "T4 -", "T5 -", "T6 -", "T7 -", "T8 -", "T9 -", "T10 -",
-                "B-", "B -", "I-", "I -"
-        };
-
-        for (String sr : removethisbit) {
+        for (String sr : REMOVE_THIS_BIT) {
             s = s.replace(sr, "");
         }
         return s;
@@ -1174,22 +1248,25 @@ public class ProcessSong {
         boolean isAbcLine = false;
         if (incnormallyricline) {
             return (nl < lines.length && (lines[nl].startsWith(" ") && !lines[nl].trim().isEmpty() || (lines[nl].startsWith(";") && !isNlTabLine && !isAbcLine) ||
-                    lines[nl].matches("\\d.*$")));
+                    startsWithNumber(lines[nl])));
         } else {
-            return (nl < lines.length && (lines[nl].matches("\\d.*$")));
+            return (nl < lines.length && startsWithNumber(lines[nl]));
         }
+    }
+
+    // Equivalent to the old String.matches("\\d.*$") check, but without compiling a regex per line
+    private static boolean startsWithNumber(String line) {
+        return line != null && !line.isEmpty() && line.charAt(0) >= '0' && line.charAt(0) <= '9';
     }
 
     private TableLayout groupTable(Song thisSong, String string, int lyricColor, int multilingualColor, int chordColor, int capoColor,
                                    int highlightChordColor, boolean presentation, boolean boldText, boolean asPDF) {
+        long perfStart = System.nanoTime();
         TableLayout tableLayout = newTableLayout();
         tableLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT));
         //tableLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        htmlLyrics.append("\n<table class=\"lyrictable\">\n");
-
-        boolean performancePresentation = presentation &&
-                (mainActivityInterface.getMode().equals(c.getString(R.string.mode_performance)) || mainActivityInterface.getMode().equals(c.getString(R.string.mode_hybrid)));
+        boolean performancePresentation = presentation && isPerformanceOrHybridMode();
         boolean showChords = (presentation) ||
                 (!presentation && displayChords);
 
@@ -1206,8 +1283,8 @@ public class ProcessSong {
         }
 
         boolean applyFixExcessSpaces = (trimWordSpacing || presentation ||
-                !mainActivityInterface.getMode().equals(c.getString(R.string.mode_performance)) || !mainActivityInterface.getMode().equals(c.getString(R.string.mode_hybrid)) &&
-                (!multiLineVerseKeepCompact && !multilineSong));
+                !isPerformanceMode() ||
+                (!isHybridMode() && (!multiLineVerseKeepCompact && !multilineSong)));
 
         // Get rid of any square brackets holders in the content
         string = string.replace("__OPENSQUAREBRACKETS__","[").replace("__CLOSESQUAREBRACKETS__","]");
@@ -1271,11 +1348,6 @@ public class ProcessSong {
         for (int t = 0; t < lines.length; t++) {
             TableRow tableRow = newTableRow();
             linetype = getLineType(lines[t]);
-            if (linetype.equals("lyric") || linetype.equals("comment") || linetype.equals("heading")) {
-                htmlLyrics.append("<tr class=\"lyricrow\">");
-            } else {
-                htmlLyrics.append("<tr>");
-            }
             if (presentation && !performancePresentation) {
 
             }
@@ -1299,15 +1371,14 @@ public class ProcessSong {
             int startpos = 0;
             for (int endpos : pos) {
                 if (endpos != 0 && endpos>startpos && endpos<lines[t].length() + 1) {
-                    MyMaterialSimpleTextView textView = newTextView(presentation, linetype, typeface, size, color);
+                    SongTextView textView = newTextView(presentation, linetype, typeface, size, color);
                     textView.setGravity(Gravity.START);
                     ImageView chordLayout = null;
                     LinearLayout chordLineLayout = null;
                     String str = lines[t].substring(startpos, endpos);
                     if (startpos == 0) {
                         str = trimOutLineIdentifiers(thisSong, linetype, str);
-                        if (presentation && !mainActivityInterface.getMode().equals(c.getString(R.string.mode_performance)) &&
-                                !mainActivityInterface.getMode().equals(c.getString(R.string.mode_hybrid))) {
+                        if (presentation && !isPerformanceOrHybridMode()) {
                             // IV - Pad the start of line with space (line already has trailing space) to ensure good block shadow
                             // IV - Start with a non breaking space which will not be removed
                             if (str.startsWith(" ")) {
@@ -1360,7 +1431,6 @@ public class ProcessSong {
                                         chordLayout = getSingleChordImage(str,false);
                                     }
                                 }
-                                htmlLyrics.append("<td class=\"chord\">").append(str).append("</td>");
                             } else {
                                 textView = null;
                             }
@@ -1404,7 +1474,6 @@ public class ProcessSong {
                                         chordLayout = getSingleChordImage(str,true);
                                     }
                                 }
-                                htmlLyrics.append("<td class=\"capo\">").append(str).append("</td>");
                             } else {
                                 textView = null;
                             }
@@ -1413,7 +1482,7 @@ public class ProcessSong {
                         case "multilingual":
                             if (displayLyrics) {
                                 str = str.replace("_","");
-                                str = str.replaceAll("[|]"," ");
+                                str = str.replace('|',' ');
                                 if (!showChords) {
                                     // IV - Remove typical word splits, white space and beautify!
                                     str = fixLyricsOnlySpace(str);
@@ -1422,17 +1491,12 @@ public class ProcessSong {
                                         str = fixExcessSpaces(str);
                                     }
                                 }
-                                SpannableStringBuilder spannableString = getSpannableBracketString(str);
+                                CharSequence spannableString = getSpannableBracketString(str);
                                 if (boldText) {
                                     textView.setPaintFlags(textView.getPaintFlags() | Paint.FAKE_BOLD_TEXT_FLAG);
                                     textView.setTypeface(textView.getTypeface(),Typeface.BOLD);
                                 }
                                 textView.setText(spannableString);
-                                if (linetype.equals("lyric")) {
-                                    htmlLyrics.append("<td class=\"lyric\">").append(str).append("</td>");
-                                } else {
-                                    htmlLyrics.append("<td class=\"multilingual\">").append(str).append("</td>");
-                                }
                             } else {
                                 textView = null;
                             }
@@ -1440,7 +1504,7 @@ public class ProcessSong {
                         case "comment":
                             if (displayLyrics) {
                                 str = str.replace("_", "");
-                                str = str.replaceAll("[|]", " ");
+                                str = str.replace('|', ' ');
 
                                 if (!showChords) {
                                     // IV - Remove typical word splits, white space and beautify!
@@ -1451,7 +1515,7 @@ public class ProcessSong {
                                     }
                                 }
 
-                                SpannableStringBuilder spannableString = getSpannableBracketString(str);
+                                CharSequence spannableString = getSpannableBracketString(str);
                                 if (boldText) {
                                     textView.setPaintFlags(textView.getPaintFlags() | Paint.FAKE_BOLD_TEXT_FLAG);
                                     textView.setTypeface(textView.getTypeface(), Typeface.BOLD);
@@ -1463,7 +1527,6 @@ public class ProcessSong {
                                 } else {
                                     textView.setBackgroundColor(mainActivityInterface.getMyThemeColors().getLyricsCommentColor());
                                 }
-                                htmlLyrics.append("<td class=\"comment\">").append(str).append("</td>");
                             } else {
                                 textView = null;
                             }
@@ -1473,9 +1536,8 @@ public class ProcessSong {
                             if (applyFixExcessSpaces) {
                                 str = fixExcessSpaces(str);
                             }
-                            SpannableStringBuilder spannableString = getSpannableBracketString(str);
+                            CharSequence spannableString = getSpannableBracketString(str);
                             textView.setText(spannableString);
-                            htmlLyrics.append("<td class=\"lyric\">").append(str).append("</td>");
                             break;
                     }
 
@@ -1503,14 +1565,19 @@ public class ProcessSong {
             }
 
             tableLayout.addView(tableRow);
-            htmlLyrics.append("</tr>\n");
 
         }
-        htmlLyrics.append("</table>");
+        perfGroupNs += System.nanoTime() - perfStart;
+        perfGroupN++;
         return tableLayout;
     }
 
+    public void clearChordImageSizeCache() {
+        chordImageSizeCache.clear();
+    }
+
     private ImageView getSingleChordImage(String str, boolean capochord) {
+        long perfStart = System.nanoTime();
         ImageView imageView = null;
         String capobit = "";
         if (capochord) {
@@ -1521,24 +1588,32 @@ public class ProcessSong {
             File chordFile = mainActivityInterface.getStorageAccess().getAppSpecificFile("Chords", "", filename);
 
             if (chordFile != null) {
-                // Get the image dimensions
-                try (FileInputStream fileInputStream = new FileInputStream(chordFile)) {
-                    BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
-                    bitmapOptions.inJustDecodeBounds = true;
-                    BitmapFactory.decodeStream(fileInputStream, null, bitmapOptions);
-                    int imageWidth = (int) (bitmapOptions.outWidth / 2.5f);
-                    int imageHeight = (int) (bitmapOptions.outHeight / 2.5f);
-                    fileInputStream.close();
+                // Cache the image dimensions: the same chord picture is reused many times in a song
+                int[] imageSize = chordImageSizeCache.get(filename);
+                if (imageSize == null) {
+                    try (FileInputStream fileInputStream = new FileInputStream(chordFile)) {
+                        BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
+                        bitmapOptions.inJustDecodeBounds = true;
+                        BitmapFactory.decodeStream(fileInputStream, null, bitmapOptions);
+                        if (bitmapOptions.outWidth > 0 && bitmapOptions.outHeight > 0) {
+                            imageSize = new int[]{(int) (bitmapOptions.outWidth / 2.5f), (int) (bitmapOptions.outHeight / 2.5f)};
+                            chordImageSizeCache.put(filename, imageSize);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (imageSize != null) {
                     imageView = new ImageView(c);
                     imageView.setScaleType(ImageView.ScaleType.FIT_START);
                     imageView.setPadding(0, 0, 16, 0);
                     // Added signature to force only using the cache if it hasn't changed
-                    Glide.with(c).load(chordFile).signature(new ObjectKey(chordFile.getAbsoluteFile().lastModified())).override(imageWidth, imageHeight).dontTransform().format(DecodeFormat.PREFER_ARGB_8888).into(imageView);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    Glide.with(c).load(chordFile).signature(new ObjectKey(chordFile.getAbsoluteFile().lastModified())).override(imageSize[0], imageSize[1]).dontTransform().format(DecodeFormat.PREFER_ARGB_8888).into(imageView);
                 }
             }
         }
+        perfChordNs += System.nanoTime() - perfStart;
+        perfChordN++;
         return imageView;
     }
 
@@ -1654,7 +1729,7 @@ public class ProcessSong {
                         case "multilingual":
                             if (displayLyrics) {
                                 str = str.replace("_","");
-                                str = str.replaceAll("[|]"," ");
+                                str = str.replace('|',' ');
                                 if (!displayChords) {
                                     // IV - Remove typical word splits, white space and beautify!
                                     str = fixLyricsOnlySpace(str);
@@ -1682,30 +1757,40 @@ public class ProcessSong {
     }
 
 
-    private SpannableStringBuilder getSpannableBracketString(String str) {
+    private CharSequence getSpannableBracketString(String str) {
+        if (bracketsStyle == Typeface.NORMAL) {
+            // No spans needed: returning the plain String avoids copying the text into
+            // a Spannable for every single song cell
+            return str;
+        }
         SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(str);
+        boolean spanApplied = false;
         if (bracketsStyle!= Typeface.NORMAL) {
             try {
                 if (bracketsOpen && !str.contains((")"))) {
                     // All spannable adjusted
                     spannableStringBuilder.setSpan(new android.text.style.StyleSpan(bracketsStyle), 0, str.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    spanApplied = true;
                 } else if (str.contains("(") && str.contains(")") && str.indexOf(")") > str.indexOf("(")) {
                     // Replace the text inside the brackets as spannable italics
                     spannableStringBuilder.setSpan(new android.text.style.StyleSpan(bracketsStyle), str.indexOf("("), str.indexOf(")") + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    spanApplied = true;
                 } else if (str.contains("(") && !str.contains(")")) {
                     // Everything after ( is spannable adjusted and mark flag waiting for closing bracket
                     bracketsOpen = true;
                     spannableStringBuilder.setSpan(new android.text.style.StyleSpan(bracketsStyle), str.indexOf("("), str.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    spanApplied = true;
                 } else if (str.contains(")") && !str.contains("(")) {
                     // Everything up to ) is spannable adjusted and close flag
                     bracketsOpen = false;
                     spannableStringBuilder.setSpan(new android.text.style.StyleSpan(bracketsStyle), 0, str.indexOf(")") + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    spanApplied = true;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        return spannableStringBuilder;
+        return spanApplied ? spannableStringBuilder : str;
     }
 
 
@@ -1727,8 +1812,7 @@ public class ProcessSong {
 
     private String fixMultiLineFormat(String string, boolean presentation) {
         multilineSong = isMultiLineFormatSong(string);
-        if ((!mainActivityInterface.getMode().equals(c.getString(R.string.mode_performance)) &&
-                !mainActivityInterface.getMode().equals(c.getString(R.string.mode_hybrid))) || presentation ||
+        if ((!isPerformanceMode() && !isHybridMode()) || presentation ||
                 (!multiLineVerseKeepCompact && multilineSong)) {
             // Reset the available song sections
             // Ok the song is in the multiline format
@@ -2209,19 +2293,21 @@ public class ProcessSong {
         webViewCountSecondary = 0;
     }*/
 
-    private MyMaterialSimpleTextView lineText(Song thisSong, String linetype,
+    private SongTextView lineText(Song thisSong, String linetype,
                               String string, Typeface typeface, float size, int color,
                               int highlightHeadingColor, int highlightChordColor,
                               boolean presentation, boolean boldText) {
-        MyMaterialSimpleTextView textView = newTextView(presentation, linetype, typeface, size, color);
+        long perfStart = System.nanoTime();
+        SongTextView textView = newTextView(presentation, linetype, typeface, size, color);
         textView.setGravity(Gravity.START);
         boolean applyFixExcessSpaces = (trimWordSpacing || presentation ||
-                (!mainActivityInterface.getMode().equals(c.getString(R.string.mode_performance)) &&
-                        !mainActivityInterface.getMode().equals(c.getString(R.string.mode_hybrid))) &&
-                (!multiLineVerseKeepCompact && !multilineSong));
+                (!isPerformanceOrHybridMode() && (!multiLineVerseKeepCompact && !multilineSong)));
 
 
-        string = string.replace(";D:",";"+c.getString(R.string.autoscroll_inline_pause)+":  ");
+        if (string.contains(";D:")) {
+            ensureCachedValues();
+            string = string.replace(";D:",";" + tagInlinePause + ":  ");
+        }
         String str = trimOutLineIdentifiers(thisSong, linetype, string);
         if (linetype.equals("heading") && highlightHeadingColor != 0x00000000) {
             Spannable span = new SpannableString(str);
@@ -2229,40 +2315,26 @@ public class ProcessSong {
             int y = str.length();
             span.setSpan(new BackgroundColorSpan(highlightHeadingColor), x, y, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             textView.setText(span);
-            htmlLyrics.append("<div class=\"heading\">").append(str).append("</div>\n");
         } else {
             if (linetype.equals("chord") && highlightChordColor != 0x00000000) {
                 textView.setText(getChordDisplaySpannable(str, chordDisplay, highlightChordColor));
-                htmlLyrics.append("<div class=\"chord\">").append(str).append("</div>\n");
             } else if (linetype.equals("lyric") || linetype.equals("multilingual")) {
                 // Just set the text
-                str = str.replaceAll("[|_]", " ");
+                str = str.replace('|',' ').replace('_',' ');
                 if (applyFixExcessSpaces) {
                     str = fixExcessSpaces(str);
                 }
-                SpannableStringBuilder spannableString = getSpannableBracketString(str);
-                textView.setText(spannableString);
-                if (linetype.equals("lyric")) {
-                    htmlLyrics.append("<div class=\"lyric\">").append(str).append("</div>\n");
-                } else {
-                    htmlLyrics.append("<div class=\"multilingual\">").append(str).append("</div>\n");
-                }
+                textView.setText(getSpannableBracketString(str));
             } else {
-                SpannableStringBuilder spannableString = getSpannableBracketString(str);
-                textView.setText(spannableString);
-                if (linetype.equals("comment")) {
-                    htmlLyrics.append("<p>\n<div class=\"comment\">").append(str).append("</div>\n");
-                } else if (linetype.equals("tab")) {
-                    htmlLyrics.append("<p>\n<div class=\"mono\">").append(str).append("</div>\n");
-                } else {
-                    htmlLyrics.append("<p>\n<div class=\"heading\">").append(str).append("</div>\n");
-                }
+                textView.setText(getSpannableBracketString(str));
             }
         }
         if (boldText) {
             textView.setPaintFlags(textView.getPaintFlags() | Paint.FAKE_BOLD_TEXT_FLAG);
             textView.setTypeface(textView.getTypeface(),Typeface.BOLD);
         }
+        perfLineNs += System.nanoTime() - perfStart;
+        perfLineN++;
         return textView;
     }
 
@@ -2291,7 +2363,7 @@ public class ProcessSong {
             } else {
                 switch (linetype) {
                     case "comment":
-                        htmlLyrics.append("<p>\n<div class=\"comment\">").append(str).append("</div>\n");
+                        text.append("<p>\n<div class=\"comment\">").append(str).append("</div>\n");
                         break;
                     case "tab":
                         text.append("<p>\n<div class=\"mono\">").append(str).append("</div>\n");
@@ -2307,6 +2379,11 @@ public class ProcessSong {
 
     public String fixExcessSpaces(String str) {
         if (trimWordSpacing) {
+            // Fast path: nothing to collapse or fix, so skip the regex work entirely
+            if (str.indexOf("  ") < 0 && str.indexOf('\n') < 0 && str.indexOf('\t') < 0
+                    && str.indexOf('\r') < 0 && str.indexOf(". ") < 0) {
+                return str;
+            }
             // Encode new lines as something else first
             str = str.replace("\n",newline_string);
             // This removes multiple spaces and returns single spaces
@@ -2388,9 +2465,7 @@ public class ProcessSong {
         // 3. Make sure new column/breaks aren't pulled into separate sections
         // Do this by trimming whitespace before them
         // In performance mode, we want new section so split is easier as it could be in the middle of a section
-        if (lyrics.contains("!--") &&
-                (mainActivityInterface.getMode().equals(c.getString(R.string.mode_performance)) ||
-                        mainActivityInterface.getMode().equals(c.getString(R.string.mode_hybrid)))) {
+        if (lyrics.contains("!--") && isPerformanceOrHybridMode()) {
             lyrics = lyrics.replace("!--","!--\n[]\n");
             // Now remove this blank section if the next item was a new section already
             lyrics = lyrics.replace("!--\n[]\n[","!--\n[");
@@ -2411,15 +2486,15 @@ public class ProcessSong {
         // 5. Prepare for section splits: || are relevant to presentation and Stage mode.
         // If sectionSplit, ║ is used in further processing later.
         String sectionSplit = "";
-        if (presentation || mainActivityInterface.getMode().equals(c.getString(R.string.mode_stage))) {
+        if (presentation || isStageMode()) {
             sectionSplit = "║";
         }
 
         // 6. Prepare for double new line section split - needed for all except scripture or performance primary (not presentation) screen
         String doubleNewlineSplit = "\n\n";
         if (!song.getFolder().contains(c.getResources().getString(R.string.scripture)) &&
-                !(mainActivityInterface.getMode().equals(c.getString(R.string.mode_performance)) && !presentation) &&
-                !(mainActivityInterface.getMode().equals(c.getString(R.string.mode_hybrid)) && !presentation)) {
+                !(isPerformanceMode() && !presentation) &&
+                !(isHybridMode() && !presentation)) {
             doubleNewlineSplit = "§";
         }
 
@@ -2513,8 +2588,7 @@ public class ProcessSong {
             fixedlyrics.append("\n§");
             if (songSections.get(x).startsWith("[")) {
                 // IV - Store the header.  Use an empty header in performance mode.
-                if (mainActivityInterface.getMode().equals(c.getString(R.string.mode_performance)) ||
-                        mainActivityInterface.getMode().equals(c.getString(R.string.mode_hybrid))) {
+                if (isPerformanceOrHybridMode()) {
                     sectionHeader = "¬";
                 } else {
                     sectionHeader = songSections.get(x).substring(0,songSections.get(x).indexOf("]") + 1);
@@ -2534,10 +2608,8 @@ public class ProcessSong {
         // IV - Trim but not if performance primary screen and trimsections is off
         // GE - more complex #233.  If we are in Stage or Presenter then yes, trim
         // If we are in performance mode, we trim if we have requested it
-        boolean stageOrPresenter = mainActivityInterface.getMode().equals(c.getString(R.string.mode_stage)) ||
-                mainActivityInterface.getMode().equals(c.getString(R.string.mode_presenter));
-        boolean performance = mainActivityInterface.getMode().equals(c.getString(R.string.mode_performance)) ||
-                mainActivityInterface.getMode().equals(c.getString(R.string.mode_hybrid));
+        boolean stageOrPresenter = isStageMode() || isPresenterMode();
+        boolean performance = isPerformanceOrHybridMode();
         if (stageOrPresenter || (performance && trimSections)) {
                 lyrics = lyrics
                     // We protect the leading space of lyric lines
@@ -2623,7 +2695,6 @@ public class ProcessSong {
     public ArrayList<View> setSongInLayout(Song song, boolean asPDF, boolean presentation) {
         ArrayList<View> sectionViews = new ArrayList<>();
         ArrayList<Integer> sectionColors = new ArrayList<>();
-        htmlLyrics = new StringBuilder();
 
         isRtl = mainActivityInterface.getFixLocale().displaySongAsRTL(c,song.getLyrics());
         Log.d(TAG,"isRtl:"+isRtl);
@@ -2642,11 +2713,11 @@ public class ProcessSong {
         mainActivityInterface.getTranspose().checkChordFormat(song);
         mainActivityInterface.getProcessSong().setChordRegex(song.getDetectedChordFormat());
 
-        boolean performancePresentation = presentation &&
-                (mainActivityInterface.getMode().equals(c.getString(R.string.mode_performance)) ||
-                        mainActivityInterface.getMode().equals(c.getString(R.string.mode_hybrid)));
+        boolean performancePresentation = presentation && isPerformanceOrHybridMode();
         // First we process the song (could be the loaded song, or a temp song - that's why we take a reference)
+        long processStartTime = System.currentTimeMillis();
         processSongIntoSections(song, presentation && !performancePresentation);
+        long processDuration = System.currentTimeMillis() - processStartTime;
 
         boolean showChords = (presentation ) ||
                 (!presentation && displayChords);
@@ -2682,12 +2753,15 @@ public class ProcessSong {
         }
         overallBackgroundColor = backgroundColor;
 
+        long viewsStartTime = System.currentTimeMillis();
+        perfGroupNs = perfLineNs = perfChordNs = perfBgNs = perfNewViewNs = perfMidiNs = 0;
+        perfGroupN = perfLineN = perfChordN = perfBgN = perfNewViewN = 0;
         for (int sect = 0; sect < song.getPresoOrderSongSections().size(); sect++) {
             String section = song.getPresoOrderSongSections().get(sect);
             if (!section.isEmpty()) {
                 // Look for MIDI inline commands - these start with ;MIDI or raw as ;0x
                 if (song.getFiletype()!=null && song.getFiletype().equals("XML") &&
-                        !mainActivityInterface.getMode().equals(c.getString(R.string.mode_presenter)) &&
+                        !isPresenterMode() &&
                         section.contains(";MIDI") || section.contains(";0x")) {
                     String[] lines = section.split("\n");
                     StringBuilder midiString = new StringBuilder();
@@ -2831,7 +2905,7 @@ public class ProcessSong {
                                             //linearLayout.addView(abcWebView.getInlin)
                                         } else {
                                             // Just show a text view for now until I can fix this for PDF/presentation/export
-                                            MyMaterialSimpleTextView tv = lineText(song, "comment", ";" + c.getString(R.string.abc_not_available), typeface, size, textColor,
+                                            SongTextView tv = lineText(song, "comment", ";" + c.getString(R.string.abc_not_available), typeface, size, textColor,
                                                     mainActivityInterface.getMyThemeColors().getHighlightHeadingColor(),
                                                     mainActivityInterface.getMyThemeColors().getHighlightChordColor(),
                                                     true, isChorusBold);
@@ -2870,7 +2944,7 @@ public class ProcessSong {
                                     }
 
                                 } else if ((!presentation || performancePresentation) && !asPDF &&
-                                        (!line.isEmpty() || mainActivityInterface.getMode().equals(c.getString(R.string.mode_performance)) || mainActivityInterface.getMode().equals(c.getString(R.string.mode_hybrid)))) {
+                                        (!line.isEmpty() || isPerformanceOrHybridMode())) {
                                     // Get rid of any square brackets holders in the content
 
                                     // IV - Remove typical word splits, white space and trim - beautify!
@@ -2879,7 +2953,7 @@ public class ProcessSong {
                                         // IV - Remove typical word splits, white space and trim - beautify!
                                         line = fixLyricsOnlySpace(line);
                                     }
-                                    MyMaterialSimpleTextView tv = lineText(song, linetype, line, typeface,
+                                    SongTextView tv = lineText(song, linetype, line, typeface,
                                             size, textColor,
                                             mainActivityInterface.getMyThemeColors().getHighlightHeadingColor(),
                                             mainActivityInterface.getMyThemeColors().getHighlightChordColor(), performancePresentation, isChorusBold);
@@ -2924,7 +2998,7 @@ public class ProcessSong {
                     }
 
 
-                    if (presentation && !mainActivityInterface.getMode().equals(c.getString(R.string.mode_performance)) && !mainActivityInterface.getMode().equals(c.getString(R.string.mode_hybrid)) && blockShadow) {
+                    if (presentation && !isPerformanceOrHybridMode() && blockShadow) {
                         linearLayout.setBackgroundColor(getColorWithAlpha(mainActivityInterface.
                                     getMyThemeColors().getPresoShadowColor(), blockShadowAlpha));
                     } else {
@@ -2937,8 +3011,7 @@ public class ProcessSong {
                 // If this section has inline MIDI commands, add an on click listener
                 // Only do this if it is an XML song and we are in performance mode
                 // Stage mode (for XML files) will use the section adapter listener instead
-                if ((mainActivityInterface.getMode().equals(c.getString(R.string.mode_performance)) ||
-                            mainActivityInterface.getMode().equals(c.getString(R.string.mode_hybrid))) &&
+                if (isPerformanceOrHybridMode() &&
                         song.getFiletype().equals("XML") &&
                         !song.getInlineMidiMessages().get(sect,"").isEmpty()) {
                     final String message = song.getInlineMidiMessages().get(sect,"");
@@ -2949,6 +3022,16 @@ public class ProcessSong {
 
         if (!presentation) {
             mainActivityInterface.setSectionColors(sectionColors);
+        }
+
+        long viewsDuration = System.currentTimeMillis() - viewsStartTime;
+        if (processDuration + viewsDuration >= 100) {
+            Log.d(TAG, "Display processing: text=" + processDuration + "ms, views=" + viewsDuration + "ms");
+            Log.d(TAG, "Views breakdown: group=" + (perfGroupNs / 1000000) + "ms/" + perfGroupN
+                    + " line=" + (perfLineNs / 1000000) + "ms/" + perfLineN
+                    + " chord=" + (perfChordNs / 1000000) + "ms/" + perfChordN
+                    + " bg=" + (perfBgNs / 1000000) + "ms/" + perfBgN
+                    + " textview=" + (perfNewViewNs / 1000000) + "ms/" + perfNewViewN);
         }
 
         return sectionViews;
@@ -3011,19 +3094,39 @@ public class ProcessSong {
     }
 
     private int[] getBGColor(String line) {
+        long perfStart = System.nanoTime();
+        int[] result = getBGColorInternal(line);
+        perfBgNs += System.nanoTime() - perfStart;
+        perfBgN++;
+        return result;
+    }
+
+    private int[] getPdfBGColor(String line) {
+        long perfStart = System.nanoTime();
+        int[] result = getPdfBGColorInternal(line);
+        perfBgNs += System.nanoTime() - perfStart;
+        perfBgN++;
+        return result;
+    }
+
+    private int[] getBGColorInternal(String line) {
         if (line.startsWith(";")) {
             return new int[]{mainActivityInterface.getMyThemeColors().getLyricsCommentColor(), 0};
-        } else if (beautifyHeading(line).contains(c.getString(R.string.verse))) {
+        }
+        // Beautify once - the previous version recalculated this for every tag test
+        ensureCachedValues();
+        String beautified = beautifyHeading(line);
+        if (beautified.contains(tagVerse)) {
             return new int[]{mainActivityInterface.getMyThemeColors().getLyricsVerseColor(),0};
-        } else if (beautifyHeading(line).contains(c.getString(R.string.prechorus))) {
+        } else if (beautified.contains(tagPreChorus)) {
             return new int[]{mainActivityInterface.getMyThemeColors().getLyricsPreChorusColor(),0};
-        } else if (beautifyHeading(line).contains(c.getString(R.string.chorus))) {
+        } else if (beautified.contains(tagChorus)) {
             return new int[]{mainActivityInterface.getMyThemeColors().getLyricsChorusColor(),1};
-        } else if (beautifyHeading(line).contains(c.getString(R.string.bridge))) {
+        } else if (beautified.contains(tagBridge)) {
             return new int[]{mainActivityInterface.getMyThemeColors().getLyricsBridgeColor(),0};
-        } else if (beautifyHeading(line).contains(c.getString(R.string.tag))) {
+        } else if (beautified.contains(tagTag)) {
             return new int[]{mainActivityInterface.getMyThemeColors().getLyricsTagColor(),0};
-        } else if (beautifyHeading(line).contains(c.getString(R.string.custom))) {
+        } else if (beautified.contains(tagCustom)) {
             return new int[]{mainActivityInterface.getMyThemeColors().getLyricsCustomColor(),0};
         } else if (line.contains("[ ]") || line.contains("[]")) {
             return new int[]{mainActivityInterface.getMyThemeColors().getLyricsVerseColor(),0};
@@ -3034,20 +3137,24 @@ public class ProcessSong {
         }
     }
 
-    private int[] getPdfBGColor(String line) {
+    private int[] getPdfBGColorInternal(String line) {
         if (line.startsWith(";")) {
             return new int[]{mainActivityInterface.getMyThemeColors().getPdfCommentColor(),0};
-        } else if (beautifyHeading(line).contains(c.getString(R.string.verse))) {
+        }
+        // Beautify once - the previous version recalculated this for every tag test
+        ensureCachedValues();
+        String beautified = beautifyHeading(line);
+        if (beautified.contains(tagVerse)) {
             return new int[]{mainActivityInterface.getMyThemeColors().getPdfVerseColor(),0};
-        } else if (beautifyHeading(line).contains(c.getString(R.string.prechorus))) {
+        } else if (beautified.contains(tagPreChorus)) {
             return new int[]{mainActivityInterface.getMyThemeColors().getPdfPreChorusColor(),0};
-        } else if (beautifyHeading(line).contains(c.getString(R.string.chorus))) {
+        } else if (beautified.contains(tagChorus)) {
             return new int[]{mainActivityInterface.getMyThemeColors().getPdfChorusColor(),1};
-        } else if (beautifyHeading(line).contains(c.getString(R.string.bridge))) {
+        } else if (beautified.contains(tagBridge)) {
             return new int[]{mainActivityInterface.getMyThemeColors().getPdfBridgeColor(),0};
-        } else if (beautifyHeading(line).contains(c.getString(R.string.tag))) {
+        } else if (beautified.contains(tagTag)) {
             return new int[]{mainActivityInterface.getMyThemeColors().getPdfTagColor(),0};
-        } else if (beautifyHeading(line).contains(c.getString(R.string.custom))) {
+        } else if (beautified.contains(tagCustom)) {
             return new int[]{mainActivityInterface.getMyThemeColors().getPdfCustomColor(),0};
         } else if (line.contains("[") && line.contains("]")) {
             return new int[]{mainActivityInterface.getMyThemeColors().getPdfCustomColor(),0};
@@ -3102,8 +3209,8 @@ public class ProcessSong {
         return linearLayout;
     }
 
-    private MyMaterialSimpleTextView newTextView(boolean presentation, String linetype, Typeface typeface, float size, int color) {
-        MyMaterialSimpleTextView textView = getTextView(linetype, size);
+    private SongTextView newTextView(boolean presentation, String linetype, Typeface typeface, float size, int color) {
+        SongTextView textView = getTextView(linetype, size);
         textView.setGravity(gravityToUseForRtl|Gravity.CENTER_VERTICAL);
         textView.setTextDirection(textDirectionForRtl);
         textView.setTextSize(size);
@@ -3127,8 +3234,9 @@ public class ProcessSong {
         return textView;
     }
 
-    private MyMaterialSimpleTextView getTextView(String linetype, float size) {
-        MyMaterialSimpleTextView textView = new MyMaterialSimpleTextView(c);
+    private SongTextView getTextView(String linetype, float size) {
+        long perfStart = System.nanoTime();
+        SongTextView textView = new SongTextView(c);
         textView.setGravity(gravityToUseForRtl);
         if (trimLines && Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
             int trimval;
@@ -3143,6 +3251,8 @@ public class ProcessSong {
         } else {
             textView.setPadding(0, 0, 0, 0);
         }
+        perfNewViewNs += System.nanoTime() - perfStart;
+        perfNewViewN++;
         return textView;
     }
 
@@ -3237,10 +3347,8 @@ public class ProcessSong {
         int sectionSpace = 0;
         int totalSectionSpace = 0;
         // GE #233 more complex.
-        boolean performance = mainActivityInterface.getMode().equals(c.getString(R.string.mode_performance)) ||
-                mainActivityInterface.getMode().equals(c.getString(R.string.mode_hybrid));
-        boolean stageOrPresenter = (mainActivityInterface.getMode().equals(c.getString(R.string.mode_stage)) ||
-                mainActivityInterface.getMode().equals(c.getString(R.string.mode_presenter))) && !presentation;
+        boolean performance = isPerformanceOrHybridMode();
+        boolean stageOrPresenter = (isStageMode() || isPresenterMode()) && !presentation;
 
         if ((performance || stageOrPresenter) && addSectionSpace && (!mainActivityInterface.getMakePDF().getIsSetListPrinting() || pdfPrinting)) {
             sectionSpace = (int) (0.75 * TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, defFontSize, c.getResources().getDisplayMetrics()));
@@ -3287,7 +3395,7 @@ public class ProcessSong {
 
         if (!isSongList && !mainActivityInterface.getStorageAccess().isIMGorPDF(thisSong.getFilename()) && (autoScale.equals("Y") || (pdfPrinting && forceSinglePagePDF) ||
                 (presentation &&
-                        (mainActivityInterface.getMode().equals(c.getString(R.string.mode_performance)) || mainActivityInterface.getMode().equals(c.getString(R.string.mode_hybrid)))))) {
+                        (isPerformanceOrHybridMode())))) {
 
             if (forceColumns && forceColumnInfo != null && forceColumnInfo[0] != 1) {
                 if (forceColumnInfo[0] == 2) {
@@ -3523,12 +3631,55 @@ public class ProcessSong {
 
     // These are called from the VTO listener - draw the stuff to the screen as 1,2 or 3 columns
     // This then returns the best (largest) scaling size as a float
+    /**
+     * Measures the song sections in place so their natural size is known without
+     * attaching them to a window and waiting for a layout pass.
+     *
+     * This replaces the old 'test pane' pass, which added every section to a hidden
+     * container, laid it out, then removed it and added it again to the real layout:
+     * the whole song was measured twice on every song change.
+     *
+     * The section views are laid out with an unbounded width and height (they live
+     * inside wrap_content scroll containers), so UNSPECIFIED specs give the same
+     * sizes the test pane produced.
+     */
+    public void measureSectionViews(ArrayList<View> sectionViews) {
+        if (sectionViews == null || sectionViews.isEmpty()) {
+            return;
+        }
+        long start = System.nanoTime();
+
+        // Reset the stored sizes so each section is added at the right position
+        ArrayList<Integer> widths = mainActivityInterface.getSectionWidths();
+        ArrayList<Integer> heights = mainActivityInterface.getSectionHeights();
+        if (widths != null) {
+            widths.clear();
+        }
+        if (heights != null) {
+            heights.clear();
+        }
+
+        final int widthSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+        final int heightSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+        for (int i = 0; i < sectionViews.size(); i++) {
+            View view = sectionViews.get(i);
+            view.measure(widthSpec, heightSpec);
+            mainActivityInterface.addSectionSize(i, view.getMeasuredWidth(), view.getMeasuredHeight());
+        }
+
+        long ms = (System.nanoTime() - start) / 1000000;
+        if (ms >= 50) {
+            Log.d(TAG, "Measure sections: " + ms + "ms (" + sectionViews.size() + ")");
+        }
+    }
+
     public float[] addViewsToScreen(Song thisSong, ArrayList<View> sectionViews,
                                     ArrayList<Integer> sectionWidths, ArrayList<Integer> sectionHeights,
                                     RelativeLayout pageHolder, LinearLayout songView,
                                     LinearLayout songSheetView, int availableWidth, int availableHeight,
                                     LinearLayout column1, LinearLayout column2, LinearLayout column3,
                                     boolean presentation, DisplayMetrics displayMetrics) {
+        long perfAvStart = System.nanoTime();
         updateProcessingPreferences();
         songView.setLayoutDirection(layoutDirectionForRtl);
         songView.setGravity(gravityToUseForRtl);
@@ -3567,7 +3718,7 @@ public class ProcessSong {
         int songSheetTitleHeight = 0;
         if (songSheetView!=null &&
                 mainActivityInterface.getPreferences().getMyPreferenceBoolean("songSheet", false) &&
-                 !mainActivityInterface.getMode().equals(c.getString(R.string.mode_presenter))) {
+                 !isPresenterMode()) {
             songSheetTitleHeight = mainActivityInterface.getSongSheetTitleLayout().getHeight();
             // Check the songsheet isn't already attached to a view
             if (mainActivityInterface.getSongSheetTitleLayout().getParent()!=null) {
@@ -3649,6 +3800,10 @@ public class ProcessSong {
 
         }
 
+        long perfAvMs = (System.nanoTime() - perfAvStart) / 1000000;
+        if (perfAvMs >= 50) {
+            Log.d(TAG, "addViewsToScreen: " + perfAvMs + "ms");
+        }
         return columnInfo;
     }
 

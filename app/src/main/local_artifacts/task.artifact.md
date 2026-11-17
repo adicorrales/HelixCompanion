@@ -1,0 +1,6 @@
+- `[x]` Eliminar paquete `adco.helixsongview.abcnotation` y assets de ABC Notation (`assets/ABC/`)
+- `[x]` Eliminar paquete `adco.helixsongview.nearby` e interfaces relacionadas
+- `[x]` Remover referencias ABC y Nearby en `MainActivity.java`, `PerformanceFragment.java`, `ProcessSong.java`, `Song.java`, etc.
+- `[x]` Purga de tags no deseados en `LoadSong.java`, `SaveSong.java` y `Song.java`
+- `[x]` Simplificación de Media Pads en `backingTrack.java`
+- `[x]` Verificación y compilación del proyecto (`./gradlew assembleDebug`)

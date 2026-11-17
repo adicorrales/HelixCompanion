@@ -259,7 +259,6 @@ public class MyMaterialTextView extends LinearLayout {
     public void setHintColor(int color) { hintView.setTextColor(color); }
 
     public void setHintMonospace(Context c) {
-        Typeface mono = Typeface.createFromAsset(c.getAssets(), "font/Inconsolata.ttf");
         hintView.setTypeface(Typeface.MONOSPACE);
     }
 

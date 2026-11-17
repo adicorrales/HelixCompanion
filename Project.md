@@ -156,7 +156,7 @@ anteriores.
 en los diferentes modos o en cc63.
 5. bugs extraños en los que las canciones cambian solas despues de desplegar la correcta.
 6. bugs al momento de iniciar donde se selecciona un set diferente al que etaba selecionado al salir.
-7. inconsitencia en las tabs de helix y local en donde las canciones se muestran sin importar a que grupo 
+7. inconsistencia en las tabs de helix y local en donde las canciones se muestran sin importar a que grupo 
 pertenecen
 8. al reiniciar la app, el set seleccionado presenta canciones duplicadas o triplicadas, 
 al volverse a cargar sobre el set existente.
@@ -166,3 +166,8 @@ lleno de skipped frames
 
 Muchas de estas características ya están implementadas, pero el desempeño sigue siendo
 inaceptable para una experiencia funcional.
+
+## Bugs y funcionalidad erronea persistente.
+1. hay tres tabs en el page view para seleccionar las canciones. LA tab helix set muetra los sets de l¿helix y local st muestar los sets de locla. el fragmento Song in sets muestra las canciones del set selecionado. Sin embargo, la lista de canciones de ve en las dos tabs. La funcionalidad es que si no hay set sleecionado en helix o en local, no debería haber un alista de cacniones desplegada. No tiene caso tener la lsita duplicada. Solo debe mostrarse en la tab correspondente
+2. el indicador de conexión midi no funciona correctamente. El último dispositivo está apagado totalemnte y me indica que tengo conexión. Incluso test de settings en MIDI me dice ok. pero no sé ¿A qué está conectada la tablet? no hay ninguna indicación.
+3. 

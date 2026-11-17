@@ -9,6 +9,7 @@ import android.graphics.drawable.PictureDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.caverock.androidsvg.SVG;
 
@@ -114,7 +115,21 @@ public class BootUpFragment extends Fragment {
             myView.splashlogo.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
             SVG svg = SVG.getFromInputStream(getResources().openRawResource(R.raw.bootup_logo));
             PictureDrawable drawable = new PictureDrawable(svg.renderToPicture());
+            myView.splashlogo.setAdjustViewBounds(true);
+            myView.splashlogo.setScaleType(ImageView.ScaleType.FIT_CENTER);
             myView.splashlogo.setImageDrawable(drawable);
+            // Centre the logo and expand it to 80% of the screen width, preserving the SVG aspect ratio (no cropping)
+            if (getContext() != null) {
+                int screenWidth = getResources().getDisplayMetrics().widthPixels;
+                int targetWidth = (int) (screenWidth * 0.8f);
+                ViewGroup.LayoutParams lp = myView.splashlogo.getLayoutParams();
+                if (lp != null) {
+                    lp.width = targetWidth;
+                    lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                    myView.splashlogo.setLayoutParams(lp);
+                }
+            }
+            myView.splashlogo.requestLayout();
         } catch (Exception e) {
             Log.e(TAG, "Failed to load boot_logo.svg from raw", e);
         }
@@ -219,6 +234,9 @@ public class BootUpFragment extends Fragment {
                     }
 
                     mainActivityInterface.getStorageAccess().fixBadSongs();
+
+                    // Ensure all sets are categorized as Helix__ or Local__ before loading
+                    mainActivityInterface.getSetActions().migrateSetsToHelixAndLocal();
 
                     // Load in the setCurrent
                     message = set_string;

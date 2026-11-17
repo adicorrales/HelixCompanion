@@ -70,6 +70,15 @@ android {
             shrinkResources = false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+        // Same as release (not debuggable, so ART compiles/JITs normally) but signed
+        // with the debug key so it can be installed without release signing keys.
+        // Used to measure real-world on-device performance.
+        benchmark {
+            initWith release
+            debuggable = false
+            signingConfig = signingConfigs.debug
+            matchingFallbacks = ['release']
+        }
     }
 
     packagingOptions {
@@ -89,6 +98,12 @@ android {
         prefab = true
         buildConfig = true
         resValues = true
+    }
+
+    lint {
+        // 'lintVital' runs on release-like builds and needs a lint artifact that is not
+        // always available offline. Lint is run from the IDE instead.
+        checkReleaseBuilds = false
     }
 
 

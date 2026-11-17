@@ -74,7 +74,7 @@ public class FontSetupPreviewFragment extends DialogFragment {
     private void setupWebView(String ab) {
         mainActivityInterface.getThreadPoolExecutor().execute(() -> {
             if (fontNames==null || fontNames.isEmpty()) {
-                fontNames = mainActivityInterface.getMyFonts().getFontsFromGoogle();
+                fontNames = mainActivityInterface.getMyFonts().getAvailableFonts();
                 getAlphaList();
                 handler.post(this::prepareAlphaList);
             }

@@ -63,8 +63,8 @@ public class FontSetupFragment extends Fragment {
         getPreferences();
         mainActivityInterface.getThreadPoolExecutor().execute(() -> {
             // Got the fonts from Google
-            fontNames = mainActivityInterface.getMyFonts().getFontsFromGoogle();
-            monoFontNames = mainActivityInterface.getMyFonts().getMonoFontsFromGoogle();
+            fontNames = mainActivityInterface.getMyFonts().getAvailableFonts();
+            monoFontNames = mainActivityInterface.getMyFonts().getAvailableMonoFonts();
             try {
                 mainActivityInterface.getMainHandler().post(() -> {
                     if (fontNames!=null && !fontNames.isEmpty()) {
@@ -164,11 +164,12 @@ public class FontSetupFragment extends Fragment {
     }
 
     private void initialisePreviews() {
-        myView.lyricWebPreview.setVisibility(mainActivityInterface.getAlertChecks().getHasPlayServices() ? View.VISIBLE:View.GONE);
-        myView.chordWebPreview.setVisibility(mainActivityInterface.getAlertChecks().getHasPlayServices() ? View.VISIBLE:View.GONE);
-        myView.presoWebPreview.setVisibility(mainActivityInterface.getAlertChecks().getHasPlayServices() ? View.VISIBLE:View.GONE);
-        myView.presoInfoWebPreview.setVisibility(mainActivityInterface.getAlertChecks().getHasPlayServices() ? View.VISIBLE:View.GONE);
-        myView.stickyWebPreview.setVisibility(mainActivityInterface.getAlertChecks().getHasPlayServices() ? View.VISIBLE:View.GONE);
+        // Only local fonts are available now, so the Google Fonts web preview is not used
+        myView.lyricWebPreview.setVisibility(View.GONE);
+        myView.chordWebPreview.setVisibility(View.GONE);
+        myView.presoWebPreview.setVisibility(View.GONE);
+        myView.presoInfoWebPreview.setVisibility(View.GONE);
+        myView.stickyWebPreview.setVisibility(View.GONE);
 
         try {
             myView.songPreview.setBackgroundColor(mainActivityInterface.getMyThemeColors().getLyricsBackgroundColor());

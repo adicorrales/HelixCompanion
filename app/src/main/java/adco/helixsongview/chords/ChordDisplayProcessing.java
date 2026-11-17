@@ -426,49 +426,69 @@ public class ChordDisplayProcessing {
     }
 
     public void createChordImages(String instrument, int chordFormat, float scale, boolean capochords) {
+        createChordImages(instrument, chordFormat, scale, capochords, false);
+    }
+
+    /**
+     * Builds the chord diagram PNGs for the chords in the current song.
+     *
+     * @param skipExisting when true, chord images that are already on disk are left untouched.
+     *                     The files only depend on the global chord settings, so this avoids
+     *                     re-rendering (and re-writing) the same diagrams for every song.
+     */
+    public void createChordImages(String instrument, int chordFormat, float scale, boolean capochords,
+                                  boolean skipExisting) {
         boolean piano = instrument.equals("p");
+        if (capochords && mainActivityInterface.getSong().getCapo()==null) {
+            // No capo information - nothing to build
+            return;
+        }
+        String capobit = capochords ? "capo_" : "";
+        String capoString = capochords ? mainActivityInterface.getSong().getCapo().replaceAll("\\D","") : "";
+        boolean useCapo = capochords && !capoString.isEmpty();
         for (int i=0; i<chordsInSong.size(); i++) {
             String chordName = chordsInSong.get(i);
             LinearLayout v;
             String fingeringToUse = fingerings.get(i);
-            if (capochords) {
-                String capoString = mainActivityInterface.getSong().getCapo().replaceAll("\\D","");
-                if (!capoString.isEmpty()) {
-                    chordName = "." + chordName.replace("$","");
-                    chordName = mainActivityInterface.getTranspose().transposeChordForCapo(Integer.parseInt(capoString), chordName);
-                    chordName = chordName.replace(".","");
-                    switch (instrument) {
-                        case "g":
-                            // Guitar chords
-                            fingeringToUse = mainActivityInterface.getChordDirectory().guitarChords(chordFormat, chordName);
-                            break;
-                        case "u":
-                            // Ukelele chords
-                            fingeringToUse = mainActivityInterface.getChordDirectory().ukuleleChords(chordFormat, chordName);
-                            break;
-                        case "m":
-                            // Mandolin chords
-                            fingeringToUse = mainActivityInterface.getChordDirectory().mandolinChords(chordFormat, chordName);
-                            break;
-                        case "b":
-                            // Banjo 4 chords
-                            fingeringToUse = mainActivityInterface.getChordDirectory().banjo4stringChords(chordFormat, chordName);
-                            break;
-                        case "B":
-                            // Banjo 5 chords
-                            fingeringToUse = mainActivityInterface.getChordDirectory().banjo5stringChords(chordFormat, chordName);
-                            break;
-                        case "c":
-                            // Cavaqhino chords
-                            fingeringToUse = mainActivityInterface.getChordDirectory().cavaquinhoChords(chordFormat, chordName);
-                            break;
-                        case "p":
-                            // Piano chords
-                            fingeringToUse = mainActivityInterface.getChordDirectory().pianoChords(chordFormat, chordName);
-                            break;
-                    }
-                    chordName = "$"+chordName+"$";
+            if (useCapo) {
+                chordName = "." + chordName.replace("$","");
+                chordName = mainActivityInterface.getTranspose().transposeChordForCapo(Integer.parseInt(capoString), chordName);
+                chordName = chordName.replace(".","");
+                switch (instrument) {
+                    case "g":
+                        // Guitar chords
+                        fingeringToUse = mainActivityInterface.getChordDirectory().guitarChords(chordFormat, chordName);
+                        break;
+                    case "u":
+                        // Ukelele chords
+                        fingeringToUse = mainActivityInterface.getChordDirectory().ukuleleChords(chordFormat, chordName);
+                        break;
+                    case "m":
+                        // Mandolin chords
+                        fingeringToUse = mainActivityInterface.getChordDirectory().mandolinChords(chordFormat, chordName);
+                        break;
+                    case "b":
+                        // Banjo 4 chords
+                        fingeringToUse = mainActivityInterface.getChordDirectory().banjo4stringChords(chordFormat, chordName);
+                        break;
+                    case "B":
+                        // Banjo 5 chords
+                        fingeringToUse = mainActivityInterface.getChordDirectory().banjo5stringChords(chordFormat, chordName);
+                        break;
+                    case "c":
+                        // Cavaqhino chords
+                        fingeringToUse = mainActivityInterface.getChordDirectory().cavaquinhoChords(chordFormat, chordName);
+                        break;
+                    case "p":
+                        // Piano chords
+                        fingeringToUse = mainActivityInterface.getChordDirectory().pianoChords(chordFormat, chordName);
+                        break;
                 }
+                chordName = "$"+chordName+"$";
+            }
+            if (skipExisting && chordImageExists(capobit + chordName.replace("$","").replace("/","_") + ".png")) {
+                // Already rendered with the same global settings
+                continue;
             }
             if (piano) {
                 v = getChordDiagramPiano(LayoutInflater.from(c), chordName, fingeringToUse);
@@ -525,10 +545,6 @@ public class ChordDisplayProcessing {
                 }
 
                 chordName = chordName.replace("$","").replace("/","_");
-                String capobit = "";
-                if (capochords) {
-                    capobit = "capo_";
-                }
                 File file = mainActivityInterface.getStorageAccess().getAppSpecificFile("Chords","",capobit + chordName+".png");
                 if (file!=null) {
                     try (FileOutputStream outputStream = new FileOutputStream(file)) {
@@ -539,6 +555,11 @@ public class ChordDisplayProcessing {
                 }
             }
         }
+    }
+
+    private boolean chordImageExists(String filename) {
+        File file = mainActivityInterface.getStorageAccess().getAppSpecificFile("Chords","",filename);
+        return file != null && file.exists() && file.length() > 0;
     }
 
     private LinearLayout getChordLayout(int padding) {
