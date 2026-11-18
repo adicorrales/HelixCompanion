@@ -3433,6 +3433,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 String songMode = getPreferences().getMyPreferenceString("helixSongMode", "Cue");
                 String playMode = getPreferences().getMyPreferenceString("helixPlayMode", "Play");
                 getMainHandler().post(() -> {
+                    // Ignore a queued load-state update if the song has since reported its start.
+                    if (helixSongStartFlagReceived) return;
                     if (songMode.equals("Skip")) {
                         isPlaying = playMode.equals("Play");
                         transportClickCount = isPlaying ? 2 : 1;
@@ -3455,14 +3457,27 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     }
                 });
             } else if (ccNumber == 51) {
-                if (waitingForSetChangeLoadConfirmation) {
+                if (ccValue == 1) {
+                    // This is a start-from-zero indication, not a play/pause toggle.
+                    boolean wasWaitingForLoadConfirmation = waitingForSetChangeLoadConfirmation;
+                    waitingForSetChangeLoadConfirmation = false;
+                    helixSongStartFlagReceived = true;
+                    isPlaying = true;
+                    transportClickCount = 2;
+                    if (wasWaitingForLoadConfirmation) {
+                        getMainHandler().post(() -> loadSongFromSet(0, false));
+                    }
+                    if (getToolbar() != null) {
+                        getToolbar().updatePlayButton(true);
+                        getToolbar().setPlayStatus("Playing", android.graphics.Color.parseColor("#4CAF50"));
+                    }
+                } else if (waitingForSetChangeLoadConfirmation) {
                     waitingForSetChangeLoadConfirmation = false;
                     // Upon receiving confirmation / feedback of song loaded via CC51, select song 0 of set # in app UI ONLY (no CC10 sent)
                     getMainHandler().post(() -> {
                         loadSongFromSet(0, false);
                         String playMode = getPreferences().getMyPreferenceString("helixPlayMode", "Load");
-                        if (ccValue == 1 || playMode.equals("Play")) {
-                            helixSongStartFlagReceived |= ccValue == 1;
+                        if (playMode.equals("Play")) {
                             isPlaying = true;
                             transportClickCount = 2;
                             if (getToolbar() != null) {
@@ -3480,13 +3495,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     });
                 } else {
                     String playMode = getPreferences().getMyPreferenceString("helixPlayMode", "Play");
-                    if (ccValue == 1) {
-                        // CC51:1 marks the song's initial start from zero, not a play/pause toggle.
-                        helixSongStartFlagReceived = true;
-                    }
                     if (playMode.equals("Play") || helixSongStartFlagReceived) {
                         boolean helixPlaying = ccValue > 0;
-                        if (isPlaying != helixPlaying || ccValue == 1) {
+                        if (isPlaying != helixPlaying) {
                             isPlaying = helixPlaying;
                             if (helixSongStartFlagReceived) {
                                 transportClickCount = helixPlaying ? 2 : 1;
