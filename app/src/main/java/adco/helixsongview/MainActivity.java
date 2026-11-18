@@ -3415,12 +3415,17 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
     private volatile boolean isMidiTransportLocked = false;
     private volatile boolean waitingForSetChangeLoadConfirmation = false;
+    private boolean helixSongStartFlagReceived = false;
     private final Handler midiLockHandler = new Handler(Looper.getMainLooper());
     private final Runnable midiLockReleaseRunnable = () -> isMidiTransportLocked = false;
 
     @Override
     public void handleMidiFeedback(int channel, int ccNumber, int ccValue) {
         if (ccNumber == 51 || ccNumber == 49 || ccNumber == 47 || ccNumber == 10 || ccNumber == 63) {
+            if (ccNumber == 10 || ccNumber == 49 || ccNumber == 63) {
+                // A new song selection starts a fresh transport state; CC51:1 is an optional start hint.
+                helixSongStartFlagReceived = false;
+            }
             isMidiTransportLocked = false;
             midiLockHandler.removeCallbacks(midiLockReleaseRunnable);
 
@@ -3456,7 +3461,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     getMainHandler().post(() -> {
                         loadSongFromSet(0, false);
                         String playMode = getPreferences().getMyPreferenceString("helixPlayMode", "Load");
-                        if (playMode.equals("Play")) {
+                        if (ccValue == 1 || playMode.equals("Play")) {
+                            helixSongStartFlagReceived |= ccValue == 1;
                             isPlaying = true;
                             transportClickCount = 2;
                             if (getToolbar() != null) {
@@ -3474,18 +3480,25 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     });
                 } else {
                     String playMode = getPreferences().getMyPreferenceString("helixPlayMode", "Play");
-                    if (playMode.equals("Play")) {
+                    if (ccValue == 1) {
+                        // CC51:1 marks the song's initial start from zero, not a play/pause toggle.
+                        helixSongStartFlagReceived = true;
+                    }
+                    if (playMode.equals("Play") || helixSongStartFlagReceived) {
                         boolean helixPlaying = ccValue > 0;
-                        if (isPlaying != helixPlaying) {
+                        if (isPlaying != helixPlaying || ccValue == 1) {
                             isPlaying = helixPlaying;
+                            if (helixSongStartFlagReceived) {
+                                transportClickCount = helixPlaying ? 2 : 1;
+                            }
                             getMainHandler().post(() -> {
                                 if (getToolbar() != null) {
-                                    if (isPlaying) {
+                                    if (helixPlaying) {
                                         getToolbar().updatePlayButton(true);
                                         getToolbar().setPlayStatus("Playing", android.graphics.Color.parseColor("#4CAF50"));
                                     } else {
                                         getToolbar().updatePlayButton(false);
-                                        getToolbar().setPlayStatus("", 0);
+                                        getToolbar().setPlayStatus(helixSongStartFlagReceived ? "Paused" : "", helixSongStartFlagReceived ? android.graphics.Color.parseColor("#FFEB3B") : 0);
                                     }
                                 }
                             });
