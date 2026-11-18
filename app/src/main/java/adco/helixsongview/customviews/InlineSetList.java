@@ -39,6 +39,7 @@ public class InlineSetList extends RecyclerView {
     private final LinearLayoutManager llm;
     private float textSize = 12;
     private boolean useTitle = true, reloadSong = false, toggling = false;
+    private String scrollStatePreferenceKey;
     private final String highlightItem = "highlightItem", updateNumber = "updateNumber";
     private String no_set_string;
     private String divider_string;
@@ -59,20 +60,82 @@ public class InlineSetList extends RecyclerView {
 
     // Get the user preferences and set up the adapter
     public void initialisePreferences(Context c, MainActivityInterface mainActivityInterface) {
+        boolean createAdapter = inlineSetListAdapter == null;
+        float previousTextSize = textSize;
+        boolean previousUseTitle = useTitle;
+        String previousLongPressAction = longPressAction;
         this.mainActivityInterface = mainActivityInterface;
         showInline = mainActivityInterface.getPreferences().getMyPreferenceBoolean("inlineSet", false);
         int screenWidth = mainActivityInterface.getDisplayMetrics()[0];
         width = (int) (mainActivityInterface.getPreferences().getMyPreferenceFloat("inlineSetWidth", 0.20f) * screenWidth);
         adjustTextSize();
         showInlinePresenter = mainActivityInterface.getPreferences().getMyPreferenceBoolean("inlineSetPresenter", true);
-        inlineSetListAdapter = new InlineSetListAdapter();
-        setAdapter(inlineSetListAdapter);
         longPressAction = mainActivityInterface.getPreferences().getMyPreferenceString("inlineSetLongPress","scroll");
-        setVisibility(View.GONE);
         mode_presenter_string = c.getString(R.string.mode_presenter);
         no_set_string = c.getString(R.string.set_is_empty);
         useTitle = mainActivityInterface.getPreferences().getMyPreferenceBoolean("songMenuSortTitles",true);
         divider_string = c.getString(R.string.divider);
+
+        if (createAdapter) {
+            inlineSetListAdapter = new InlineSetListAdapter();
+            setAdapter(inlineSetListAdapter);
+            setVisibility(View.GONE);
+            scrollStatePreferenceKey = getScrollStatePreferenceKey();
+            addOnScrollListener(new OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                    if (newState == SCROLL_STATE_IDLE) {
+                        saveScrollState();
+                    }
+                }
+            });
+            post(this::restoreScrollState);
+        } else if (previousTextSize != textSize || previousUseTitle != useTitle ||
+                !java.util.Objects.equals(previousLongPressAction, longPressAction)) {
+            // Preferences can change while navigating inside the app. Refresh the
+            // existing adapter without replacing it or resetting its scroll position.
+            inlineSetListAdapter.notifyDataSetChanged();
+        }
+    }
+
+    private String getScrollStatePreferenceKey() {
+        String activeSet = mainActivityInterface.getPreferences()
+                .getMyPreferenceString("selectedActiveSetFilename", "Song Library");
+        String category = mainActivityInterface.isHelixSet() ? "helix" : "local";
+        return "inlineSetScroll." + category + "." + activeSet;
+    }
+
+    public void saveScrollState() {
+        if (mainActivityInterface == null || inlineSetListAdapter == null ||
+                scrollStatePreferenceKey == null) {
+            return;
+        }
+        int position = llm.findFirstVisibleItemPosition();
+        if (position == RecyclerView.NO_POSITION) {
+            return;
+        }
+        View firstVisibleView = llm.findViewByPosition(position);
+        int offset = firstVisibleView == null ? 0 : firstVisibleView.getTop() - getPaddingTop();
+        mainActivityInterface.getPreferences().setMyPreferenceInt(
+                scrollStatePreferenceKey + ".position", position);
+        mainActivityInterface.getPreferences().setMyPreferenceInt(
+                scrollStatePreferenceKey + ".offset", offset);
+    }
+
+    private void restoreScrollState() {
+        if (mainActivityInterface == null || inlineSetListAdapter == null ||
+                scrollStatePreferenceKey == null) {
+            return;
+        }
+        int itemCount = inlineSetListAdapter.getItemCount();
+        if (itemCount <= 0) {
+            return;
+        }
+        int position = mainActivityInterface.getPreferences().getMyPreferenceInt(
+                scrollStatePreferenceKey + ".position", 0);
+        int offset = mainActivityInterface.getPreferences().getMyPreferenceInt(
+                scrollStatePreferenceKey + ".offset", 0);
+        llm.scrollToPositionWithOffset(Math.min(position, itemCount - 1), offset);
     }
 
     // Change the preference to use the inlineSet
@@ -274,12 +337,14 @@ public class InlineSetList extends RecyclerView {
     // Called when the set has been parsed (might be empty)
     public void notifyToInsertAllInlineSet() {
         if (mainActivityInterface != null) {
+            scrollStatePreferenceKey = getScrollStatePreferenceKey();
             if (inlineSetListAdapter != null) {
                 // The current set may have been replaced rather than appended. A range
                 // insertion leaves stale rows/counts when the old and new sets differ.
                 mainActivityInterface.getMainHandler().post(() -> {
                     if (inlineSetListAdapter != null) {
                         inlineSetListAdapter.notifyDataSetChanged();
+                        restoreScrollState();
                     }
                 });
             }

@@ -136,6 +136,14 @@ public class PerformanceFragment extends Fragment {
     }
 
     @Override
+    public void onPause() {
+        if (myView != null && myView.inlineSetList != null) {
+            myView.inlineSetList.saveScrollState();
+        }
+        super.onPause();
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         // Register this fragment
