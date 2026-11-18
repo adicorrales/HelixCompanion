@@ -263,6 +263,8 @@
     <string name="connect">Conectar</string>
     <string name="connected">Conectado</string>
     <string name="midi_connection_disconnected">Desconectado</string>
+    <string name="helix_midi_mixer">Helix MIDI Mixer</string>
+    <string name="helix_midi_mixer_not_installed">Helix MIDI Mixer no está instalada</string>
     <string name="connected_display">Pantalla conectada</string>
     <string name="connected_display_description">Configuración específica para la salida Chromecast / HDMI</string>
     <string name="connection_autoscroll_info">Escuche los comandos de inicio y parada de desplazamiento automático</string>

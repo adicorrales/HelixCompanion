@@ -1473,7 +1473,8 @@ public class ExportFragment extends Fragment {
         mainActivityInterface.getProcessSong().setMakingImageOrScreenShot(true);
         scaleInfo = mainActivityInterface.getProcessSong().addViewsToScreen(thisSong, sectionViewsScreenshot,
                 sectionViewWidthsScreenshot,sectionViewHeightsScreenshot,myView.scaledPageHolder,myView.scaledSongContent,myView.scaledHeader,availableWidth,availableHeight,
-                myView.scaledSongContent.getCol1(),myView.scaledSongContent.getCol2(),myView.scaledSongContent.getCol3(),false,getResources().getDisplayMetrics());
+                myView.scaledSongContent.getCol1(),myView.scaledSongContent.getCol2(),myView.scaledSongContent.getCol3(),
+                myView.scaledSongContent.getCol4(),false,getResources().getDisplayMetrics());
         mainActivityInterface.getProcessSong().setMakingScaledScreenShot(false);
         mainActivityInterface.getProcessSong().setMakingImageOrScreenShot(false);
 

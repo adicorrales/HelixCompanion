@@ -363,7 +363,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private String no_suitable_application = "";
     private String indexing_string = "";
     private String deeplink_edit = "";
-    private String cast_info_string = "";
     private String menu_showcase_info = "";
 
     private String mode_presenter, mode_performance, mode_stage;
@@ -371,7 +370,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private View midiConnectionIndicatorView;
     private String webHelpAddress = null;
 
-    private Drawable searchIcon, helpIcon, settingsIcon, closeIcon, castIconOff, castIconOn,
+    private Drawable searchIcon, helpIcon, settingsIcon, closeIcon, mixerAppIcon,
             navIconBack, navIconMenu;
 
     // Used if implementing Oboe using C++ injection
@@ -751,7 +750,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             pad_playback_info = getString(R.string.pad_playback_info);
             no_suitable_application = getString(R.string.no_suitable_application);
             indexing_string = getString(R.string.index_songs_wait);
-            cast_info_string = getString(R.string.cast_info_string);
             menu_showcase_info = getString(R.string.menu_showcase_info);
         }
         getVariations().updateStrings(this);
@@ -1390,20 +1388,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             DrawableCompat.setTint(settingsIcon, getPalette().secondary);
         }
 
-        if (castIconOff == null) {
-            Drawable tempCastIconOff = AppCompatResources.getDrawable(this, R.drawable.cast);
-            if (tempCastIconOff != null) {
-                castIconOff = DrawableCompat.wrap(tempCastIconOff);
-                DrawableCompat.setTint(castIconOff, getPalette().secondary);
-            }
-        }
-
-        if (castIconOn == null) {
-            Drawable tempCastIconOn = AppCompatResources.getDrawable(this, R.drawable.cast_connected);
-            if (tempCastIconOn != null) {
-                castIconOn = DrawableCompat.wrap(tempCastIconOn);
-                DrawableCompat.setTint(castIconOn, getPalette().secondary);
-            }
+        if (mixerAppIcon == null) {
+            mixerAppIcon = AppCompatResources.getDrawable(this, R.drawable.helix_mixer);
         }
 
         if (searchIcon == null) {
@@ -1514,7 +1500,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                         // IV - Top level of menu - song details are added by song load
                         menuSettings.setIcon(settingsIcon);
                         invalidateOptionsMenu();
-                        updateCastIcon();
+                        updateMixerAppIcon();
                         if (getPreferences().getMyPreferenceBoolean("clockOn", true) ||
                                 getPreferences().getMyPreferenceBoolean("batteryTextOn", true) ||
                                 getPreferences().getMyPreferenceBoolean("batteryDialOn", true)) {
@@ -2143,7 +2129,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         menuSettings.setShowAsAction(minimiseAction && !settingsOpen? MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW : MenuItem.SHOW_AS_ACTION_ALWAYS);
         getMainHandler().postDelayed(() -> menuSettings.setShowAsAction(minimiseAction && !settingsOpen? MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW : MenuItem.SHOW_AS_ACTION_ALWAYS),200);
         myView.myToolbar.setNavigationIcon(settingsOpen ? navIconBack : null);
-        updateCastIcon();
+        updateMixerAppIcon();
         checkToolbarMenuIcons();
         return super.onPrepareOptionsMenu(menu);
     }
@@ -2161,6 +2147,23 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         // This is a secondary check as the fragment won't send null/empty values.
         updatingToolbarHandler.removeCallbacks(updatingToolbarRunnable);
         updatingToolbarHandler.postDelayed(updatingToolbarRunnable, 800);
+    }
+
+    private void launchHelixMidiMixer() {
+        Intent launchIntent = getPackageManager().getLaunchIntentForPackage("adco.helixmidimixer");
+        if (launchIntent == null) {
+            getShowToast().doIt(getString(R.string.helix_midi_mixer_not_installed));
+            return;
+        }
+        launchIntent.addFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                        | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+        try {
+            startActivity(launchIntent);
+        } catch (ActivityNotFoundException e) {
+            getShowToast().doIt(getString(R.string.helix_midi_mixer_not_installed));
+        }
     }
 
     @Override
@@ -2191,27 +2194,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             return true;
 
         } else if (item.getItemId() == R.id.mirror_menu_item) {
-            if (!getShowCase().singleShowCase(this, menuScreenMirror.getActionView(), null, cast_info_string, true, "castInfo")) {
-                try {
-                    startActivity(new Intent("android.settings.WIFI_DISPLAY_SETTINGS"));
-                } catch (ActivityNotFoundException e) {
-                    Log.d(TAG, "android.settings.WIFI_DISPLAY_SETTINGS not an option");
-                    try {
-                        startActivity(new Intent("com.samsung.wfd.LAUNCH_WFD_PICKER_DLG"));
-                    } catch (Exception e2) {
-                        Log.d(TAG, "com.samsung.wfd.LAUNCH_WFD_PICKER_DLG not an option");
-                        try {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                startActivity(new Intent(Settings.ACTION_CAST_SETTINGS));
-                            } else {
-                                startActivity(new Intent("android.settings.CAST_SETTINGS"));
-                            }
-                        } catch (Exception e3) {
-                            getShowToast().doIt(error);
-                        }
-                    }
-                }
-            }
+            launchHelixMidiMixer();
             return true;
         } else {
             return super.onOptionsItemSelected(item);
@@ -2227,7 +2210,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private void tintMenuIcons(Menu menu, @ColorInt int color) {
         for (int i = 0; i < menu.size(); i++) {
             MenuItem item = menu.getItem(i);
-            if (item.getIcon() != null) {
+            if (item.getIcon() != null && item.getItemId() != R.id.mirror_menu_item) {
                 Drawable icon = DrawableCompat.wrap(item.getIcon());
                 DrawableCompat.setTint(icon, color);
                 item.setIcon(icon);
@@ -2246,8 +2229,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         closeIcon = null;
         searchIcon = null;
         helpIcon = null;
-        castIconOff = null;
-        castIconOn = null;
+        mixerAppIcon = null;
         checkMenuIconsAreNotNull();
         updateMidiConnectionIndicator();
         invalidateOptionsMenu();
@@ -2345,8 +2327,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             if (helpIcon != null) {
                 menuScreenHelp.setIcon(helpIcon);
             }
-            if (castIconOff != null) {
-                menuScreenMirror.setIcon(castIconOff);
+            if (mixerAppIcon != null) {
+                menuScreenMirror.setIcon(mixerAppIcon);
             }
 
             menuScreenHelp.setVisible(!settingsOpen);
@@ -2365,7 +2347,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             tintMenuIcons(menu, tint);
 
             myView.myToolbar.setNavigationIcon(settingsOpen ? navIconBack : null);
-            updateCastIcon();
+            updateMixerAppIcon();
 
             return true;
         } catch (Exception e) {
@@ -5255,37 +5237,17 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             connectedDisplays = null;
         }
 
-        updateCastIcon();
+        updateMixerAppIcon();
     }
 
-    private boolean updatingIcon = false;
-    private final Runnable doCastUpdateRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if (!updatingIcon) {
-                updatingIcon = true;
-                if (menuScreenMirror != null) {
-                    if (settingsOpen || !getAlertChecks().getHasPlayServices()) {
-                        menuScreenMirror.setVisible(false);
-                    } else {
-                        menuScreenMirror.setIcon(castIconOff);
-                        menuScreenMirror.setVisible(true);
-                    }
-                }
-            }
+    private void updateMixerAppIcon() {
+        if (menuScreenMirror == null) {
+            return;
         }
-    };
-    private final Runnable allowCastUpdateRunnable = () -> updatingIcon = false;
-    private final Handler doCastUpdateHandler = new Handler(Looper.getMainLooper());
-
-    private void updateCastIcon() {
-        // Clear previous actions
-        doCastUpdateHandler.removeCallbacks(doCastUpdateRunnable);
-        doCastUpdateHandler.removeCallbacks(allowCastUpdateRunnable);
-
-        // Update the action (will check if not already doing this within 1 sec)
-        doCastUpdateHandler.post(doCastUpdateRunnable);
-        doCastUpdateHandler.postDelayed(allowCastUpdateRunnable, 1000);
+        if (mixerAppIcon != null) {
+            menuScreenMirror.setIcon(mixerAppIcon);
+        }
+        menuScreenMirror.setVisible(!settingsOpen);
     }
 
     private void setupDisplays() {}

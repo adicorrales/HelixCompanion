@@ -15,7 +15,7 @@ public class SongContent extends LinearLayout {
     @SuppressWarnings({"unused","FieldCanBeLocal"})
     private final String TAG = "SongContent";
     @SuppressWarnings("FieldCanBeLocal")
-    private LinearLayout songContent, songContent_col1, songContent_col2, songContent_col3;
+    private LinearLayout songContent, songContent_col1, songContent_col2, songContent_col3, songContent_col4;
     private ImageView songContent_img;
     private boolean isDisplaying = false;
 
@@ -35,12 +35,14 @@ public class SongContent extends LinearLayout {
         songContent_col1 = findViewById(R.id.songContent_col1);
         songContent_col2 = findViewById(R.id.songContent_col2);
         songContent_col3 = findViewById(R.id.songContent_col3);
+        songContent_col4 = findViewById(R.id.songContent_col4);
         songContent_img = findViewById(R.id.songContent_img);
 
         songContent.setId(View.generateViewId());
         songContent_col1.setId(View.generateViewId());
         songContent_col2.setId(View.generateViewId());
         songContent_col3.setId(View.generateViewId());
+        songContent_col4.setId(View.generateViewId());
         songContent_img.setId(View.generateViewId());
     }
     public void clearViews() {
@@ -52,6 +54,9 @@ public class SongContent extends LinearLayout {
         }
         if (songContent_col3!=null) {
             songContent_col3.removeAllViews();
+        }
+        if (songContent_col4!=null) {
+            songContent_col4.removeAllViews();
         }
         if (songContent_img!=null) {
             songContent_img.setImageBitmap(null);
@@ -66,6 +71,9 @@ public class SongContent extends LinearLayout {
     }
     public LinearLayout getCol3() {
         return songContent_col3;
+    }
+    public LinearLayout getCol4() {
+        return songContent_col4;
     }
 
     public ImageView getImageView() {

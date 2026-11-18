@@ -299,6 +299,8 @@
     <string name="connect">Connect</string>
     <string name="connected">Connected</string>
     <string name="midi_connection_disconnected">Disconnected</string>
+    <string name="helix_midi_mixer">Helix MIDI Mixer</string>
+    <string name="helix_midi_mixer_not_installed">Helix MIDI Mixer is not installed</string>
     <string name="connected_display">Connected display</string>
     <string name="connected_display_description">Settings specific to Chromecast/HDMI output</string>
     <string name="connection_autoscroll_info">Listen for autoscroll stop and start commands</string>

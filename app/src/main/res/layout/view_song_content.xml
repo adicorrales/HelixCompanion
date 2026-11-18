@@ -51,4 +51,14 @@
         android:clipChildren="false"
         android:clipToPadding="false"
         android:orientation="vertical"/>
+
+    <LinearLayout
+        android:id="@+id/songContent_col4"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:orientation="vertical"/>
 </LinearLayout>

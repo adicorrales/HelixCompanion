@@ -2416,21 +2416,24 @@ public class ProcessSong {
         }
     }
 
-    private void columnVisibility(LinearLayout c1, LinearLayout c2, LinearLayout c3, boolean v1, boolean v2, boolean v3) {
-        if (v1) {
-            c1.setVisibility(View.VISIBLE);
-        } else {
-            c1.setVisibility(View.GONE);
+    private void columnVisibility(LinearLayout c1, LinearLayout c2, LinearLayout c3,
+                                  boolean v1, boolean v2, boolean v3) {
+        columnVisibility(c1, c2, c3, null, v1, v2, v3, false);
+    }
+
+    private void columnVisibility(LinearLayout c1, LinearLayout c2, LinearLayout c3, LinearLayout c4,
+                                  boolean v1, boolean v2, boolean v3, boolean v4) {
+        if (c1 != null) {
+            c1.setVisibility(v1 ? View.VISIBLE : View.GONE);
         }
-        if (v2) {
-            c2.setVisibility(View.VISIBLE);
-        } else {
-            c2.setVisibility(View.GONE);
+        if (c2 != null) {
+            c2.setVisibility(v2 ? View.VISIBLE : View.GONE);
         }
-        if (v3) {
-            c3.setVisibility(View.VISIBLE);
-        } else {
-            c3.setVisibility(View.GONE);
+        if (c3 != null) {
+            c3.setVisibility(v3 ? View.VISIBLE : View.GONE);
+        }
+        if (c4 != null) {
+            c4.setVisibility(v4 ? View.VISIBLE : View.GONE);
         }
     }
 
@@ -3342,6 +3345,7 @@ public class ProcessSong {
         // Calculate the available widths for 2 and 3 columns
         int availableWidth2 = (int) (((float) availableWidth / 2.0f));
         int availableWidth3 = (int) (((float) availableWidth / 3.0f));
+        int availableWidth4 = (int) (((float) availableWidth / 4.0f));
 
         // If we have chosen to add section space, we need to add this to the bottom of all views
         // Do not add to the last view in a column though!
@@ -3391,6 +3395,13 @@ public class ProcessSong {
         float col1_3ScaleBest = 0f, col2_3ScaleBest = 0f, col3_3ScaleBest = 0f, threeColumnScale = 0f;
         int columnBreak3_a = 0, columnBreak3_b = 0;
         float threeColumnMaxHeight = Float.MAX_VALUE;
+
+        float col1_4ScaleBest = 0f, col2_4ScaleBest = 0f, col3_4ScaleBest = 0f, col4_4ScaleBest = 0f,
+                fourColumnScale = 0f;
+        int columnBreak4_a = 0, columnBreak4_b = 0, columnBreak4_c = 0;
+        float fourColumnMaxHeight = Float.MAX_VALUE;
+        int col1_4Width = 0, col2_4Width = 0, col3_4Width = 0, col4_4Width = 0;
+        int col1_4Height = 0, col2_4Height = 0, col3_4Height = 0, col4_4Height = 0;
         int col1_2Width = 0, col2_2Width = 0, col1_3Width = 0, col2_3Width = 0, col3_3Width = 0;
         int col1_2Height = 0, col2_2Height = 0, col1_3Height = 0, col2_3Height = 0, col3_3Height = 0;
 
@@ -3573,6 +3584,85 @@ public class ProcessSong {
                         c2 = 1;
                     }
                 }
+
+                // No point working out 4 columns unless we have 4 or more sections
+                if (sectionWidths.size() > 4) {
+                    // Every combination of 3 cut points. Same selection criteria as the
+                    // other layouts: best limiting scale, then the most balanced split.
+                    int[] cuts = new int[3];
+                    for (int i = 0; i < cuts.length; i++) {
+                        cuts[i] = i + 1;
+                    }
+                    while (true) {
+                        int c1 = cuts[0];
+                        int c2 = cuts[1];
+                        int c3 = cuts[2];
+                        int this1_4Width = getMaxValue(sectionWidths, 0, c1);
+                        int this2_4Width = getMaxValue(sectionWidths, c1, c2);
+                        int this3_4Width = getMaxValue(sectionWidths, c2, c3);
+                        int this4_4Width = getMaxValue(sectionWidths, c3, sectionWidths.size());
+                        int this1_4Height = getTotal(sectionHeights, 0, c1) + sectionSpace * (c1 - 1);
+                        int this2_4Height = getTotal(sectionHeights, c1, c2) + sectionSpace * (c2 - c1 - 1);
+                        int this3_4Height = getTotal(sectionHeights, c2, c3) + sectionSpace * (c3 - c2 - 1);
+                        int this4_4Height = getTotal(sectionHeights, c3, sectionHeights.size())
+                                + sectionSpace * (sectionHeights.size() - c3 - 1);
+
+                        float s1 = Math.min((float) (availableWidth4 - padding) / this1_4Width,
+                                (float) availableHeight / this1_4Height);
+                        float s2 = Math.min((float) (availableWidth4 - padding) / this2_4Width,
+                                (float) availableHeight / this2_4Height);
+                        float s3 = Math.min((float) (availableWidth4 - padding) / this3_4Width,
+                                (float) availableHeight / this3_4Height);
+                        float s4 = Math.min((float) (availableWidth4 - padding) / this4_4Width,
+                                (float) availableHeight / this4_4Height);
+                        float min = Math.min(Math.min(s1, s2), Math.min(s3, s4));
+
+                        if (min > 0f) {
+                            float thisMaxHeight = Math.max(Math.max(s1 * this1_4Height, s2 * this2_4Height),
+                                    Math.max(s3 * this3_4Height, s4 * this4_4Height));
+                            boolean better;
+                            if (min > fourColumnScale) {
+                                better = true;
+                            } else if (min >= fourColumnScale * (1f - balanceTolerance)) {
+                                better = thisMaxHeight < fourColumnMaxHeight;
+                            } else {
+                                better = false;
+                            }
+                            if (better) {
+                                col1_4Width = this1_4Width;
+                                col1_4Height = this1_4Height;
+                                col2_4Width = this2_4Width;
+                                col2_4Height = this2_4Height;
+                                col3_4Width = this3_4Width;
+                                col3_4Height = this3_4Height;
+                                col4_4Width = this4_4Width;
+                                col4_4Height = this4_4Height;
+                                col1_4ScaleBest = s1;
+                                col2_4ScaleBest = s2;
+                                col3_4ScaleBest = s3;
+                                col4_4ScaleBest = s4;
+                                fourColumnScale = min;
+                                fourColumnMaxHeight = thisMaxHeight;
+                                columnBreak4_a = c1;
+                                columnBreak4_b = c2;
+                                columnBreak4_c = c3;
+                            }
+                        }
+
+                        // Next combination of the 3 cut points
+                        int idx = cuts.length - 1;
+                        while (idx >= 0 && cuts[idx] == sectionWidths.size() - (cuts.length - idx)) {
+                            idx--;
+                        }
+                        if (idx < 0) {
+                            break;
+                        }
+                        cuts[idx]++;
+                        for (int j = idx + 1; j < cuts.length; j++) {
+                            cuts[j] = cuts[j - 1] + 1;
+                        }
+                    }
+                }
             }
         } else {
             // Autoscale turned off - base the scaling on the desired user font size
@@ -3580,11 +3670,58 @@ public class ProcessSong {
         }
 
         // Decide which is the best
-        boolean oneColumn = (oneColumnScale >= twoColumnScale && oneColumnScale >= threeColumnScale) || !autoScale.equals("Y");
+        boolean oneColumn = (oneColumnScale >= twoColumnScale && oneColumnScale >= threeColumnScale
+                && oneColumnScale >= fourColumnScale) || !autoScale.equals("Y");
         boolean twoColumn = (forceColumns && forceColumnInfo != null && forceColumnInfo[0] == 2) ||
-                (twoColumnScale > oneColumnScale && twoColumnScale >= threeColumnScale);
+                (twoColumnScale > oneColumnScale && twoColumnScale >= threeColumnScale
+                        && twoColumnScale >= fourColumnScale);
         boolean threeColumn = (forceColumns && forceColumnInfo != null && forceColumnInfo[0] == 3) ||
-                threeColumnScale > oneColumnScale && threeColumnScale > twoColumnScale;
+                threeColumnScale > oneColumnScale && threeColumnScale > twoColumnScale
+                        && threeColumnScale >= fourColumnScale;
+        boolean fourColumn = fourColumnScale > oneColumnScale && fourColumnScale > twoColumnScale
+                && fourColumnScale > threeColumnScale;
+
+        if (fourColumn) {
+            // Compare with max scaling due to font size allowed
+            fourColumnScale = Math.min(maxFontScale, fourColumnScale);
+            col1_4ScaleBest = Math.min(maxFontScale, col1_4ScaleBest);
+            col2_4ScaleBest = Math.min(maxFontScale, col2_4ScaleBest);
+            col3_4ScaleBest = Math.min(maxFontScale, col3_4ScaleBest);
+            col4_4ScaleBest = Math.min(maxFontScale, col4_4ScaleBest);
+
+            if (!songAutoScaleColumnMaximise) {
+                col1_4ScaleBest = fourColumnScale;
+                col2_4ScaleBest = fourColumnScale;
+                col3_4ScaleBest = fourColumnScale;
+                col4_4ScaleBest = fourColumnScale;
+            }
+
+            // If we have override to width, then check we are above the minimum font size
+            // If not, we revert to the three column logic
+            if (presentation || fourColumnScale >= minFontScale || !songAutoScaleOverrideFull) {
+                returnFloats = new float[]{4,// Number of columns
+                        fourColumnScale,    // Overall best scale
+                        columnBreak4_a,     // Break point 1
+                        columnBreak4_b,     // Break point 2
+                        columnBreak4_c,     // Break point 3
+                        col1_4ScaleBest,    // Best col 1 scale
+                        col1_4Width,        // Column 1 max width
+                        col1_4Height,       // Column 1 total height
+                        col2_4ScaleBest,    // Best col 2 scale
+                        col2_4Width,        // Column 2 max width
+                        col2_4Height,       // Column 2 total height
+                        col3_4ScaleBest,    // Best col 3 scale
+                        col3_4Width,        // Column 3 max width
+                        col3_4Height,       // Column 3 total height
+                        col4_4ScaleBest,    // Best col 4 scale
+                        col4_4Width,        // Column 4 max width
+                        col4_4Height,       // Column 4 total height
+                        sectionSpace};      // Section space per view except last in column
+                return returnFloats;
+            } else {
+                fourColumn = false;
+            }
+        }
 
         if (threeColumn) {
             // Compare with max scaling due to font size allowed
@@ -3655,7 +3792,7 @@ public class ProcessSong {
             }
         }
 
-        if (oneColumn && !twoColumn && !threeColumn) {
+        if (oneColumn && !twoColumn && !threeColumn && !fourColumn) {
             // Compare with max scaling due to font size allowed
             if (!presentation) {
                 if (autoScale.equals("Y")) {
@@ -3682,6 +3819,7 @@ public class ProcessSong {
 
         return returnFloats;
     }
+
 
     // These are called from the VTO listener - draw the stuff to the screen as 1,2 or 3 columns
     // This then returns the best (largest) scaling size as a float
@@ -3732,6 +3870,7 @@ public class ProcessSong {
                                     RelativeLayout pageHolder, LinearLayout songView,
                                     LinearLayout songSheetView, int availableWidth, int availableHeight,
                                     LinearLayout column1, LinearLayout column2, LinearLayout column3,
+                                    LinearLayout column4,
                                     boolean presentation, DisplayMetrics displayMetrics) {
         long perfAvStart = System.nanoTime();
         updateProcessingPreferences();
@@ -3740,7 +3879,7 @@ public class ProcessSong {
         pageHolder.setLayoutDirection(layoutDirectionForRtl);
         pageHolder.setGravity(gravityToUseForRtl);
         // Now we have all the sizes in, determines the best way to show the song
-        // This will be single, two or three columns.  The best one will be the one
+        // This will be single, two, three or four columns.  The best one will be the one
         // which gives the best scale size
 
         // Clear and reset the view's scaling
@@ -3753,6 +3892,11 @@ public class ProcessSong {
         clearAndResetLinearLayout(column1, true);
         clearAndResetLinearLayout(column2, true);
         clearAndResetLinearLayout(column3, true);
+        if (column4 != null) {
+            clearAndResetLinearLayout(column4, true);
+        }
+        // Hide every column first: the chosen layout will show the ones it uses
+        columnVisibility(column1, column2, column3, column4, false, false, false, false);
 
         // Set the padding and boxpadding from 8dp to px
         float scale = displayMetrics.density;
@@ -3852,6 +3996,13 @@ public class ProcessSong {
             createThreeColumns(sectionViews, column1, column2, column3, columnInfo,
                     presentation, songSheetTitleHeight);
 
+        } else if (columnInfo[0]==4) {
+            if (!presentation) {
+                // Used by primary screen highlighter file naming
+                primaryScreenColumns = 4;
+            }
+            createFourColumns(sectionViews, column1, column2, column3, column4, columnInfo,
+                    presentation, songSheetTitleHeight);
         }
 
         long perfAvMs = (System.nanoTime() - perfAvStart) / 1000000;
@@ -4235,6 +4386,147 @@ public class ProcessSong {
         if (!presentation && !makingScaledScreenShot) {
             mainActivityInterface.updateSizes(mainActivityInterface.getDisplayMetrics()[0],
                     Math.max(col1h,Math.max(col2h,col3h)) + songSheetTitleHeight);
+        }
+    }
+
+    private void createFourColumns(ArrayList<View> sectionViews, LinearLayout column1,
+                                   LinearLayout column2, LinearLayout column3, LinearLayout column4,
+                                   float[] columnInfo, boolean presentation, int songSheetTitleHeight) {
+        /*columnInfo new float[]{4,          // Number of columns
+        1                fourColumnScale,    // Overall best scale
+        2                columnBreak4_a,     // Break point 1
+        3                columnBreak4_b,     // Break point 2
+        4                columnBreak4_c,     // Break point 3
+        5                col1_4ScaleBest,    // Best col 1 scale
+        6                col1_4Width,        // Column 1 max width
+        7                col1_4Height,       // Column 1 total height
+        8                col2_4ScaleBest,    // Best col 2 scale
+        9                col2_4Width,        // Column 2 max width
+        10               col2_4Height,       // Column 2 total height
+        11               col3_4ScaleBest,    // Best col 3 scale
+        12               col3_4Width,        // Column 3 max width
+        13               col3_4Height,       // Column 3 total height
+        14               col4_4ScaleBest,    // Best col 4 scale
+        15               col4_4Width,        // Column 4 max width
+        16               col4_4Height,       // Column 4 total height
+        17               sectionSpace};      // Section space per view except last in column */
+
+        float bestOverallScale = columnInfo[1];
+        int columnBreak4_a = (int) columnInfo[2];
+        int columnBreak4_b = (int) columnInfo[3];
+        int columnBreak4_c = (int) columnInfo[4];
+        float col1_4ScaleBest = columnInfo[5];
+        int col1_4Width = (int) columnInfo[6];
+        int col1_4Height = (int) columnInfo[7];
+        float col2_4ScaleBest = columnInfo[8];
+        int col2_4Width = (int) columnInfo[9];
+        int col2_4Height = (int) columnInfo[10];
+        float col3_4ScaleBest = columnInfo[11];
+        int col3_4Width = (int) columnInfo[12];
+        int col3_4Height = (int) columnInfo[13];
+        float col4_4ScaleBest = columnInfo[14];
+        int col4_4Width = (int) columnInfo[15];
+        int col4_4Height = (int) columnInfo[16];
+        int sectionSpace = (int) columnInfo[17];
+
+        columnVisibility(column1, column2, column3, column4, false, false, false, false);
+
+        if (!songAutoScaleColumnMaximise) {
+            // All columns are drawn with the same scale
+            col1_4ScaleBest = bestOverallScale;
+            col2_4ScaleBest = bestOverallScale;
+            col3_4ScaleBest = bestOverallScale;
+            col4_4ScaleBest = bestOverallScale;
+        }
+
+        LinearLayout innerCol1 = newLinearLayout();
+        LinearLayout innerCol2 = newLinearLayout();
+        LinearLayout innerCol3 = newLinearLayout();
+        LinearLayout innerCol4 = newLinearLayout();
+
+        innerCol1.setLayoutDirection(layoutDirectionForRtl);
+        innerCol2.setLayoutDirection(layoutDirectionForRtl);
+        innerCol3.setLayoutDirection(layoutDirectionForRtl);
+        innerCol4.setLayoutDirection(layoutDirectionForRtl);
+
+        innerCol1.getLayoutParams().width = col1_4Width;
+        innerCol1.getLayoutParams().height = col1_4Height;
+        innerCol2.getLayoutParams().width = col2_4Width;
+        innerCol2.getLayoutParams().height = col2_4Height;
+        innerCol3.getLayoutParams().width = col3_4Width;
+        innerCol3.getLayoutParams().height = col3_4Height;
+        innerCol4.getLayoutParams().width = col4_4Width;
+        innerCol4.getLayoutParams().height = col4_4Height;
+
+        for (int i = 0; i < columnBreak4_a && i < sectionViews.size(); i++) {
+            sectionViews.get(i).getLayoutParams().width = col1_4Width;
+            sectionViews.get(i).setLayoutDirection(layoutDirectionForRtl);
+            if (i != columnBreak4_a - 1) {
+                sectionViews.get(i).setPadding(0, 0, 0, sectionSpace);
+            }
+            if (childNotInLinearLayoutParent(sectionViews.get(i))) {
+                innerCol1.addView(sectionViews.get(i));
+            }
+        }
+        for (int i = columnBreak4_a; i < columnBreak4_b && i < sectionViews.size(); i++) {
+            sectionViews.get(i).setLayoutDirection(layoutDirectionForRtl);
+            sectionViews.get(i).getLayoutParams().width = col2_4Width;
+            if (i != columnBreak4_b - 1) {
+                sectionViews.get(i).setPadding(0, 0, 0, sectionSpace);
+            }
+            if (childNotInLinearLayoutParent(sectionViews.get(i))) {
+                innerCol2.addView(sectionViews.get(i));
+            }
+        }
+        for (int i = columnBreak4_b; i < columnBreak4_c && i < sectionViews.size(); i++) {
+            sectionViews.get(i).setLayoutDirection(layoutDirectionForRtl);
+            sectionViews.get(i).getLayoutParams().width = col3_4Width;
+            if (i != columnBreak4_c - 1) {
+                sectionViews.get(i).setPadding(0, 0, 0, sectionSpace);
+            }
+            if (childNotInLinearLayoutParent(sectionViews.get(i))) {
+                innerCol3.addView(sectionViews.get(i));
+            }
+        }
+        for (int i = columnBreak4_c; i < sectionViews.size(); i++) {
+            sectionViews.get(i).setLayoutDirection(layoutDirectionForRtl);
+            sectionViews.get(i).getLayoutParams().width = col4_4Width;
+            if (i != sectionViews.size() - 1) {
+                sectionViews.get(i).setPadding(0, 0, 0, sectionSpace);
+            }
+            if (childNotInLinearLayoutParent(sectionViews.get(i))) {
+                innerCol4.addView(sectionViews.get(i));
+            }
+        }
+
+        scaleView(innerCol1, col1_4ScaleBest, col1_4Width);
+        scaleView(innerCol2, col2_4ScaleBest, col2_4Width);
+        scaleView(innerCol3, col3_4ScaleBest, col3_4Width);
+        scaleView(innerCol4, col4_4ScaleBest, col4_4Width);
+
+        int col1h = (int) (col1_4Height * col1_4ScaleBest);
+        int col2h = (int) (col2_4Height * col2_4ScaleBest);
+        int col3h = (int) (col3_4Height * col3_4ScaleBest);
+        int col4h = (int) (col4_4Height * col4_4ScaleBest);
+        innerCol1.getLayoutParams().height = col1h;
+        innerCol2.getLayoutParams().height = col2h;
+        innerCol3.getLayoutParams().height = col3h;
+        innerCol4.getLayoutParams().height = col4h;
+
+        columnVisibility(column1, column2, column3, column4, true, true, true, true);
+        column1.addView(innerCol1);
+        column2.addView(innerCol2);
+        column3.addView(innerCol3);
+        column4.addView(innerCol4);
+
+        setMargins(column1, 0, padding);
+        setMargins(column2, padding, padding);
+        setMargins(column3, padding, padding);
+        setMargins(column4, padding, 0);
+
+        if (!presentation && !makingScaledScreenShot) {
+            mainActivityInterface.updateSizes(mainActivityInterface.getDisplayMetrics()[0],
+                    Math.max(Math.max(col1h, col2h), Math.max(col3h, col4h)) + songSheetTitleHeight);
         }
     }
 

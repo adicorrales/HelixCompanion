@@ -4,21 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/actionBarBackground"
     android:layout_width="match_parent"
-    android:layout_height="?attr/actionBarSize"
-    android:minHeight="?attr/actionBarSize"
+    android:layout_height="60dp"
     android:layout_gravity="start"
     android:background="@color/helix_matrix_bar"
+    android:minHeight="?attr/actionBarSize"
     app:elevation="0dp">
 
     <LinearLayout
         android:id="@+id/songSourceButtons"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
+        android:background="@color/helix_matrix_bar"
         android:gravity="center_vertical"
+        android:orientation="horizontal"
         android:paddingStart="4dp"
         android:paddingEnd="4dp"
-        android:background="@color/helix_matrix_bar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/batterySpace"
         app:layout_constraintHorizontal_bias="0.5"
@@ -29,56 +29,56 @@
             android:id="@+id/songSourceAll"
             android:layout_width="68dp"
             android:layout_height="36dp"
+            android:background="@drawable/transport_btn_bg"
             android:gravity="center"
             android:minWidth="68dp"
             android:paddingStart="6dp"
             android:paddingEnd="6dp"
             android:text="All"
             android:textColor="#E2E8F0"
-            android:textStyle="bold"
             android:textSize="11sp"
-            android:background="@drawable/transport_btn_bg" />
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/songSourceHelix"
             android:layout_width="68dp"
             android:layout_height="36dp"
             android:layout_marginStart="4dp"
+            android:background="@drawable/transport_btn_bg"
             android:gravity="center"
             android:minWidth="68dp"
             android:paddingStart="6dp"
             android:paddingEnd="6dp"
             android:text="Helix"
             android:textColor="#E2E8F0"
-            android:textStyle="bold"
             android:textSize="11sp"
-            android:background="@drawable/transport_btn_bg" />
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/songSourceLocal"
             android:layout_width="68dp"
             android:layout_height="36dp"
             android:layout_marginStart="4dp"
+            android:background="@drawable/transport_btn_bg"
             android:gravity="center"
             android:minWidth="68dp"
             android:paddingStart="6dp"
             android:paddingEnd="6dp"
             android:text="Local"
             android:textColor="#E2E8F0"
-            android:textStyle="bold"
             android:textSize="11sp"
-            android:background="@drawable/transport_btn_bg" />
+            android:textStyle="bold" />
     </LinearLayout>
 
     <TextView
         android:id="@+id/screenTitle"
         android:layout_width="0dp"
         android:layout_height="match_parent"
+        android:ellipsize="end"
         android:gravity="center_vertical|start"
+        android:maxLines="1"
         android:paddingStart="56dp"
         android:paddingEnd="12dp"
-        android:ellipsize="end"
-        android:maxLines="1"
         android:textColor="#E2E8F0"
         android:textSize="18sp"
         android:textStyle="bold"
@@ -201,8 +201,8 @@
         android:id="@+id/transportAndSongBar"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
         android:gravity="center_vertical"
+        android:orientation="horizontal"
         android:paddingStart="2dp"
         android:paddingEnd="2dp"
         android:visibility="gone"
@@ -217,35 +217,35 @@
             android:id="@+id/btnTransportPrevContainer"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1.2"
             android:layout_marginStart="2dp"
-            android:layout_marginEnd="2dp"
             android:layout_marginTop="4dp"
+            android:layout_marginEnd="2dp"
             android:layout_marginBottom="4dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:paddingStart="6dp"
-            android:paddingEnd="6dp"
+            android:layout_weight="1.2"
             android:background="@drawable/transport_btn_bg"
             android:clickable="true"
-            android:focusable="true">
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp">
 
             <ImageView
                 android:id="@+id/btnTransportPrevArrow"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
-                android:src="@drawable/arrow_left"
-                android:contentDescription="Prev" />
+                android:contentDescription="Prev"
+                android:src="@drawable/arrow_left" />
 
             <adco.helixsongview.customviews.MyMaterialSimpleTextView
                 android:id="@+id/btnTransportPrevTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginStart="4dp"
+                android:layout_weight="1"
                 android:ellipsize="end"
-                android:maxLines="1"
                 android:gravity="start|center_vertical"
+                android:maxLines="1"
                 android:textSize="12sp"
                 tools:text="Previous Song" />
         </LinearLayout>
@@ -256,13 +256,13 @@
             android:layout_width="44dp"
             android:layout_height="match_parent"
             android:layout_marginStart="2dp"
-            android:layout_marginEnd="2dp"
             android:layout_marginTop="4dp"
+            android:layout_marginEnd="2dp"
             android:layout_marginBottom="4dp"
             android:background="@drawable/transport_btn_bg"
             android:clickable="true"
-            android:focusable="true"
             android:contentDescription="Return to 0"
+            android:focusable="true"
             android:padding="10dp"
             app:srcCompat="@drawable/refresh" />
 
@@ -271,32 +271,32 @@
             android:id="@+id/songandauthor"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="2.0"
             android:layout_marginStart="2dp"
-            android:layout_marginEnd="2dp"
             android:layout_marginTop="4dp"
+            android:layout_marginEnd="2dp"
             android:layout_marginBottom="4dp"
-            android:orientation="vertical"
-            android:gravity="center_vertical"
-            android:paddingStart="6dp"
-            android:paddingEnd="6dp"
+            android:layout_weight="2.0"
             android:background="@drawable/transport_btn_bg"
             android:clickable="true"
-            android:focusable="true">
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
                 <ImageView
                     android:id="@+id/setIcon"
                     android:layout_width="14dp"
                     android:layout_height="14dp"
                     android:layout_marginEnd="2dp"
-                    android:visibility="gone"
                     android:contentDescription="@string/set"
+                    android:visibility="gone"
                     app:srcCompat="@drawable/check" />
 
                 <adco.helixsongview.customviews.MyMaterialSimpleTextView
@@ -349,30 +349,30 @@
             android:id="@+id/btnTransportPlayContainer"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="2.0"
             android:layout_marginStart="2dp"
-            android:layout_marginEnd="2dp"
             android:layout_marginTop="4dp"
+            android:layout_marginEnd="2dp"
             android:layout_marginBottom="4dp"
-            android:orientation="vertical"
-            android:gravity="center"
+            android:layout_weight="2.0"
             android:background="@drawable/transport_btn_bg"
             android:clickable="true"
-            android:focusable="true">
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="vertical">
 
             <ImageView
                 android:id="@+id/playPauseIndicator"
                 android:layout_width="18dp"
                 android:layout_height="18dp"
-                app:srcCompat="@drawable/play"
-                android:contentDescription="Play/Pause" />
+                android:contentDescription="Play/Pause"
+                app:srcCompat="@drawable/play" />
 
             <adco.helixsongview.customviews.MyMaterialSimpleTextView
                 android:id="@+id/playPauseStatusText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="9sp"
                 android:maxLines="1"
+                android:textSize="9sp"
                 android:visibility="gone"
                 tools:text="On Cue" />
         </LinearLayout>
@@ -382,28 +382,28 @@
             android:id="@+id/btnTransportNextContainer"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1.2"
             android:layout_marginStart="2dp"
-            android:layout_marginEnd="2dp"
             android:layout_marginTop="4dp"
+            android:layout_marginEnd="2dp"
             android:layout_marginBottom="4dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:paddingStart="6dp"
-            android:paddingEnd="6dp"
+            android:layout_weight="1.2"
             android:background="@drawable/transport_btn_bg"
             android:clickable="true"
-            android:focusable="true">
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp">
 
             <adco.helixsongview.customviews.MyMaterialSimpleTextView
                 android:id="@+id/btnTransportNextTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginEnd="4dp"
+                android:layout_weight="1"
                 android:ellipsize="end"
-                android:maxLines="1"
                 android:gravity="end|center_vertical"
+                android:maxLines="1"
                 android:textSize="12sp"
                 tools:text="Next Song" />
 
@@ -411,8 +411,8 @@
                 android:id="@+id/btnTransportNextArrow"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
-                android:src="@drawable/arrow_right"
-                android:contentDescription="Next" />
+                android:contentDescription="Next"
+                android:src="@drawable/arrow_right" />
         </LinearLayout>
     </LinearLayout>
 

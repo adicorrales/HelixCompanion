@@ -1171,7 +1171,7 @@ public class PerformanceFragment extends Fragment {
                             mainActivityInterface.getSectionWidths(), mainActivityInterface.getSectionHeights(),
                             myView.pageHolder, myView.songView, myView.songSheetTitle,
                             availableWidth, availableHeight, myView.songView.getCol1(), myView.songView.getCol2(),
-                            myView.songView.getCol3(), false, getResources().getDisplayMetrics());
+                            myView.songView.getCol3(), myView.songView.getCol4(), false, getResources().getDisplayMetrics());
 
                     // Determine how many columns are scaled
                     heightAfterScale = 0;
@@ -1227,6 +1227,36 @@ public class PerformanceFragment extends Fragment {
                         heightAfterScale = (int) Math.max(scaleInfo[4] * scaleInfo[6], Math.max(scaleInfo[7] * scaleInfo[9], scaleInfo[10] * scaleInfo[12]));
                         myView.pageHolder.getLayoutParams().width = availableWidth;
                         myView.songView.getLayoutParams().width = availableWidth;
+                    } else if (scaleInfo[0] == 4) {
+                    /*float[]{4,             // Number of columns
+                    1    fourColumnScale,   // Overall best scale
+                    2    columnBreak4_a,    // Break point 1
+                    3    columnBreak4_b,    // Break point 2
+                    4    columnBreak4_c,    // Break point 3
+                    5    col1_4ScaleBest,   // Best col 1 scale
+                    6    col1_4Width,       // Column 1 max width
+                    7    col1_4Height,      // Column 1 total height
+                    8    col2_4ScaleBest,   // Best col 2 scale
+                    9    col2_4Width,       // Column 2 max width
+                    10   col2_4Height,      // Column 2 total height
+                    11   col3_4ScaleBest,   // Best col 3 scale
+                    12   col3_4Width,       // Column 3 max width
+                    13   col3_4Height,      // Column 3 total height
+                    14   col4_4ScaleBest,   // Best col 4 scale
+                    15   col4_4Width,       // Column 4 max width
+                    16   col4_4Height,      // Column 4 total height
+                    17   sectionSpace};     // Section space per view except last in column */
+                        widthBeforeScale = availableWidth;
+                        heightBeforeScale = (int) Math.max(Math.max(scaleInfo[7], scaleInfo[10]),
+                                Math.max(scaleInfo[13], scaleInfo[16]));
+                        widthAfterScale = availableWidth;
+                        scaleFactor = Math.max(Math.max(scaleInfo[5], scaleInfo[8]),
+                                Math.max(scaleInfo[11], scaleInfo[14]));
+                        heightAfterScale = (int) Math.max(
+                                Math.max(scaleInfo[5] * scaleInfo[7], scaleInfo[8] * scaleInfo[10]),
+                                Math.max(scaleInfo[11] * scaleInfo[13], scaleInfo[14] * scaleInfo[16]));
+                        myView.pageHolder.getLayoutParams().width = availableWidth;
+                        myView.songView.getLayoutParams().width = availableWidth;
                     }
 
                     heightAfterScale = heightAfterScale + mainActivityInterface.getSongSheetTitleLayout().getHeight();
@@ -1266,7 +1296,8 @@ public class PerformanceFragment extends Fragment {
                                     }
                                     int content = myView.songView.getCol1().getChildCount()
                                             + myView.songView.getCol2().getChildCount()
-                                            + myView.songView.getCol3().getChildCount();
+                                            + myView.songView.getCol3().getChildCount()
+                                            + myView.songView.getCol4().getChildCount();
                                     long drawMs = System.currentTimeMillis() - displayStartTime;
                                     Log.d(TAG, "preDraw: +" + drawMs + "ms content=" + content);
                                     if (content > 0) {

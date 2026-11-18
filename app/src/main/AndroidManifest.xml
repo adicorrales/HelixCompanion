@@ -107,6 +107,7 @@
     <queries>
         <package android:name="com.google.android.apps.wear.companion" />
         <package android:name="com.samsung.android.watermelo" />
+        <package android:name="adco.helixmidimixer" />
     </queries>
 
     <application
