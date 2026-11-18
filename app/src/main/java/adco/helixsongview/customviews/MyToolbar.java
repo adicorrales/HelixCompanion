@@ -53,8 +53,6 @@ public class MyToolbar extends Toolbar {
     private View transportBar;
     private LinearLayout songSourceButtons;
     private TextView songSourceAll, songSourceHelix, songSourceLocal, screenTitle;
-    private final LinearLayout metronomeLayout;
-    private final ArrayList<View> beatView;
     private final MyMaterialSimpleTextView batterycharge;
     private MyMaterialSimpleTextView playPauseStatusText;
     private Handler delayActionBarHide;
@@ -140,28 +138,7 @@ public class MyToolbar extends Toolbar {
         songandauthor = v.findViewById(R.id.songandauthor);
         clock = v.findViewById(R.id.digitalclock);
 
-        beatView = new ArrayList<>();
-        beatView.add(null);
-        beatView.add(v.findViewById(R.id.beat1));
-        beatView.add(v.findViewById(R.id.beat2));
-        beatView.add(v.findViewById(R.id.beat3));
-        beatView.add(v.findViewById(R.id.beat4));
-        beatView.add(v.findViewById(R.id.beat5));
-        beatView.add(v.findViewById(R.id.beat6));
-        beatView.add(v.findViewById(R.id.beat7));
-        beatView.add(v.findViewById(R.id.beat8));
-        beatView.add(v.findViewById(R.id.beat9));
-        beatView.add(v.findViewById(R.id.beat10));
-        beatView.add(v.findViewById(R.id.beat11));
-        beatView.add(v.findViewById(R.id.beat12));
-        beatView.add(v.findViewById(R.id.beat13));
-        beatView.add(v.findViewById(R.id.beat14));
-        beatView.add(v.findViewById(R.id.beat15));
-        beatView.add(v.findViewById(R.id.beat16));
 
-       
-
-        metronomeLayout = v.findViewById(R.id.metronomeLayout);
         btnTransportPrevContainer = v.findViewById(R.id.btnTransportPrevContainer);
         btnTransportNextContainer = v.findViewById(R.id.btnTransportNextContainer);
         btnTransportRt0 = v.findViewById(R.id.btnTransportRt0);
