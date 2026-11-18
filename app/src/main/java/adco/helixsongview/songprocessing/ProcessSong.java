@@ -3330,10 +3330,11 @@ public class ProcessSong {
                                          boolean forceColumns, int[] forceColumnInfo, boolean presentation) {
         // An updated algorithm to calculate the best way to split a song into columns
 
-        // v6 algorithm uses the actual section widths and heights.
-        // This fudge factor is effectively a percentage of the running total subtracted from the best so far
-        // This favours more in column 1.  It doesn't need much!!  1% is a little too high.
-        float fudgeFactor = 0.001f;
+        // Candidate selection: the scale that matters is the one allowed by the tallest
+        // column, so between splits whose limiting scale is within this tolerance we take
+        // the most balanced one (smallest tallest column). That keeps the font as big as
+        // possible without emptying a column.
+        float balanceTolerance = 0.02f;
 
         // Prepare the return float.  [0]=num columns best
         float[] returnFloats = null;
@@ -3383,9 +3384,13 @@ public class ProcessSong {
 
         float col1_2ScaleBest = 0f, col2_2ScaleBest = 0f, twoColumnScale = 0f;
         int columnBreak2 = 0;
+        // Height of the tallest column for the best split so far. Used to prefer the
+        // most balanced split among the ones with a similar scale.
+        float twoColumnMaxHeight = Float.MAX_VALUE;
 
         float col1_3ScaleBest = 0f, col2_3ScaleBest = 0f, col3_3ScaleBest = 0f, threeColumnScale = 0f;
         int columnBreak3_a = 0, columnBreak3_b = 0;
+        float threeColumnMaxHeight = Float.MAX_VALUE;
         int col1_2Width = 0, col2_2Width = 0, col1_3Width = 0, col2_3Width = 0, col3_3Width = 0;
         int col1_2Height = 0, col2_2Height = 0, col1_3Height = 0, col2_3Height = 0, col3_3Height = 0;
 
@@ -3465,7 +3470,23 @@ public class ProcessSong {
                             scale2 = Math.min(maxXScale2, maxYScale2);
                         }
 
-                        if (Math.min(scale1, scale2) > twoColumnScale - fudgeFactor * twoColumnScale) {
+                        float thisMinScale = Math.min(scale1, scale2);
+                        if (thisMinScale <= 0f) {
+                            continue;
+                        }
+                        // The scale of the tallest column is what limits the font size on
+                        // screen, so between splits with a very similar scale we prefer the
+                        // most balanced one (smallest tallest column).
+                        float thisMaxHeight = Math.max(scale1 * thisHeight1_2, scale2 * thisHeight2_2);
+                        boolean better;
+                        if (thisMinScale > twoColumnScale) {
+                            better = true;
+                        } else if (thisMinScale >= twoColumnScale * (1f - balanceTolerance)) {
+                            better = thisMaxHeight < twoColumnMaxHeight;
+                        } else {
+                            better = false;
+                        }
+                        if (better) {
                             // Improved column split option, so get the values
                             col1_2Width = thisWidth1_2;
                             col1_2Height = thisHeight1_2;
@@ -3473,7 +3494,8 @@ public class ProcessSong {
                             col2_2Height = thisHeight2_2;
                             col1_2ScaleBest = scale1;
                             col2_2ScaleBest = scale2;
-                            twoColumnScale = Math.min(scale1, scale2);
+                            twoColumnScale = thisMinScale;
+                            twoColumnMaxHeight = thisMaxHeight;
                             columnBreak2 = v;
                         }
                     }
@@ -3515,7 +3537,23 @@ public class ProcessSong {
                             float scale2 = Math.min(scaleX2, scaleY2);
                             float scale3 = Math.min(scaleX3, scaleY3);
                             float min = Math.min(scale1, Math.min(scale2, scale3));
-                            if (min > threeColumnScale - fudgeFactor * threeColumnScale) {
+                            if (min <= 0f) {
+                                c2++;
+                                continue;
+                            }
+                            // See the 2 column note: prefer the most balanced split among
+                            // the ones whose limiting scale is within the tolerance.
+                            float thisMaxHeight = Math.max(scale1 * this1_3Height,
+                                    Math.max(scale2 * this2_3Height, scale3 * this3_3Height));
+                            boolean better;
+                            if (min > threeColumnScale) {
+                                better = true;
+                            } else if (min >= threeColumnScale * (1f - balanceTolerance)) {
+                                better = thisMaxHeight < threeColumnMaxHeight;
+                            } else {
+                                better = false;
+                            }
+                            if (better) {
                                 col1_3Width = this1_3Width;
                                 col1_3Height = this1_3Height;
                                 col2_3Width = this2_3Width;
@@ -3526,6 +3564,7 @@ public class ProcessSong {
                                 col2_3ScaleBest = scale2;
                                 col3_3ScaleBest = scale3;
                                 threeColumnScale = min;
+                                threeColumnMaxHeight = thisMaxHeight;
                                 columnBreak3_a = c1;
                                 columnBreak3_b = c1 + c2;
                             }
@@ -3554,6 +3593,13 @@ public class ProcessSong {
             col2_3ScaleBest = Math.min(maxFontScale, col2_3ScaleBest);
             col3_3ScaleBest = Math.min(maxFontScale, col3_3ScaleBest);
 
+            // Same as the 2 column case: report the scale that will really be applied
+            if (!songAutoScaleColumnMaximise) {
+                col1_3ScaleBest = threeColumnScale;
+                col2_3ScaleBest = threeColumnScale;
+                col3_3ScaleBest = threeColumnScale;
+            }
+
             // If we have override to width, then check we are above the minimum font size
             // If not, we revert to the oneColumn logic
             if (presentation || threeColumnScale >= minFontScale || !songAutoScaleOverrideFull) {
@@ -3581,6 +3627,14 @@ public class ProcessSong {
             twoColumnScale = Math.min(maxFontScale, twoColumnScale);
             col1_2ScaleBest = Math.min(maxFontScale, col1_2ScaleBest);
             col2_2ScaleBest = Math.min(maxFontScale, col2_2ScaleBest);
+
+            // If the columns are not scaled independently, both are drawn with the same
+            // scale: report that one so the page height/size is calculated with the
+            // scales that are actually applied.
+            if (!songAutoScaleColumnMaximise) {
+                col1_2ScaleBest = twoColumnScale;
+                col2_2ScaleBest = twoColumnScale;
+            }
 
             // If we have override to width, then check we are above the minimum font size
             // If not, we revert to the oneColumn logic
@@ -3919,7 +3973,7 @@ public class ProcessSong {
         // GE Adding extra height here.
         // It seems to be linked to the display cutout height (on rotation so cutout isn't there it isn't an issue)
         // For testing, this happens on Abba Medley, American Pie (i.e. long songs!)
-        innerCol1.setLayoutParams(new LinearLayout.LayoutParams((int)(maxWidth*scaleSize),(int)(totalHeight*scaleSize) + 1000));
+        innerCol1.setLayoutParams(new LinearLayout.LayoutParams((int)(maxWidth*scaleSize),(int)(totalHeight*scaleSize)));
 
         // Sort the margins
         setMargins(innerCol1, 0, 0);
@@ -3980,9 +4034,9 @@ public class ProcessSong {
         // Need to consider scaling <1.  If I did this now, the views get cropped
         // As with column 1, adding height just in case of cropping
         innerCol1.getLayoutParams().width = col1_2Width;
-        innerCol1.getLayoutParams().height = col1_2Height+1000;
+        innerCol1.getLayoutParams().height = col1_2Height;
         innerCol2.getLayoutParams().width = col2_2Width;
-        innerCol2.getLayoutParams().height = col2_2Height+1000;
+        innerCol2.getLayoutParams().height = col2_2Height;
 
         // Scale the inner columns
         scaleView(innerCol1, col1_2ScaleBest, col1_2Width);
@@ -4028,8 +4082,8 @@ public class ProcessSong {
         int col1h = (int) (col1_2Height*col1_2ScaleBest);
         int col2h = (int) (col2_2Height*col2_2ScaleBest);
         // As with column 1 adding extra height
-        column1.getLayoutParams().height = col1h+1000;
-        column2.getLayoutParams().height = col2h+1000;
+        column1.getLayoutParams().height = col1h;
+        column2.getLayoutParams().height = col2h;
 
         columnVisibility(column1, column2, column3, true, true, false);
         column1.addView(innerCol1);
@@ -4101,11 +4155,11 @@ public class ProcessSong {
         // Need to consider scaling <1.  If I did this now, the views get cropped
         // As with column 1 adding extra height
         innerCol1.getLayoutParams().width = col1_3Width;
-        innerCol1.getLayoutParams().height = col1_3Height+1000;
+        innerCol1.getLayoutParams().height = col1_3Height;
         innerCol2.getLayoutParams().width = col2_3Width;
-        innerCol2.getLayoutParams().height = col2_3Height+1000;
+        innerCol2.getLayoutParams().height = col2_3Height;
         innerCol3.getLayoutParams().width = col3_3Width;
-        innerCol3.getLayoutParams().height = col3_3Height+1000;
+        innerCol3.getLayoutParams().height = col3_3Height;
 
         for (int i = 0; i < columnBreak3_a; i++) {
             // Make all the views the same width as each other
@@ -4164,9 +4218,9 @@ public class ProcessSong {
         int col2h = (int) (col2_3Height*col2_3ScaleBest);
         int col3h = (int) (col3_3Height*col3_3ScaleBest);
         // As with column 1 adding extra height
-        innerCol1.getLayoutParams().height = col1h+1000;
-        innerCol2.getLayoutParams().height = col2h+1000;
-        innerCol3.getLayoutParams().height = col3h+1000;
+        innerCol1.getLayoutParams().height = col1h;
+        innerCol2.getLayoutParams().height = col2h;
+        innerCol3.getLayoutParams().height = col3h;
 
         columnVisibility(column1, column2, column3, true, true, true);
         column1.addView(innerCol1);
