@@ -135,7 +135,7 @@
             android:maxLines="1"
             android:textAlignment="center"
             android:textColor="#E2E8F0"
-            android:textSize="12sp"
+            android:textSize="10sp"
             tools:text="Artist" />
     </LinearLayout>
 
