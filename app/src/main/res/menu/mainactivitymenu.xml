@@ -23,9 +23,15 @@
         android:icon="@drawable/cast"
         android:orderInCategory="3" />
 
+    <item android:id="@+id/midi_connection_menu_item"
+        android:title="@string/midi"
+        app:actionLayout="@layout/view_midi_connection_indicator"
+        app:showAsAction="always"
+        android:orderInCategory="4" />
+
     <item android:id="@+id/settings_menu_item"
         android:title="@string/settings"
         android:icon="@drawable/tune"
         app:showAsAction="always"
-        android:orderInCategory="4"/>
+        android:orderInCategory="5"/>
 </menu>

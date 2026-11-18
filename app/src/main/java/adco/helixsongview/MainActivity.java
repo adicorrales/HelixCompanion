@@ -9,9 +9,11 @@ import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.hardware.display.DisplayManager;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
@@ -36,6 +38,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
@@ -364,7 +367,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private String menu_showcase_info = "";
 
     private String mode_presenter, mode_performance, mode_stage;
-    private MenuItem menuScreenMirror, menuScreenHelp, menuSearch, menuSettings;
+    private MenuItem menuScreenMirror, menuScreenHelp, menuSearch, menuSettings, menuMidiConnection;
+    private View midiConnectionIndicatorView;
     private String webHelpAddress = null;
 
     private Drawable searchIcon, helpIcon, settingsIcon, closeIcon, castIconOff, castIconOn,
@@ -942,6 +946,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         }
         if (menuSettings != null) {
             menuSettings.setVisible(!disable);
+        }
+        if (menuMidiConnection != null) {
+            menuMidiConnection.setVisible(!disable);
         }
         if (menuScreenHelp != null) {
             return (ImageView) menuScreenHelp.getActionView();
@@ -2117,12 +2124,22 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     public boolean onPrepareOptionsMenu(@NonNull Menu menu) {
         menuScreenHelp.setVisible(settingsOpen && webHelpAddress != null && !webHelpAddress.isEmpty());
         menuScreenMirror.setVisible(!settingsOpen);
+        if (menuMidiConnection != null) {
+            menuMidiConnection.setVisible(!settingsOpen);
+            updateMidiConnectionIndicator();
+        }
 
         // Decide if the user wants the showIfRoom option
         boolean minimiseAction = getPreferences().getMyPreferenceBoolean("actionBarSettingsMinimise",false);
+        boolean compactToolbar = getResources().getConfiguration().screenWidthDp < 600;
+        int optionalActionMode = (minimiseAction || compactToolbar)
+                ? MenuItem.SHOW_AS_ACTION_IF_ROOM : MenuItem.SHOW_AS_ACTION_ALWAYS;
         menuScreenHelp.setShowAsAction(minimiseAction && !settingsOpen ? MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW : MenuItem.SHOW_AS_ACTION_ALWAYS);
-        menuSearch.setShowAsAction(minimiseAction && !settingsOpen ? MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW : MenuItem.SHOW_AS_ACTION_ALWAYS);
-        menuScreenMirror.setShowAsAction(minimiseAction ? MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW : MenuItem.SHOW_AS_ACTION_ALWAYS);
+        menuSearch.setShowAsAction(minimiseAction && !settingsOpen ? MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW : optionalActionMode);
+        menuScreenMirror.setShowAsAction(minimiseAction ? MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW : optionalActionMode);
+        if (menuMidiConnection != null) {
+            menuMidiConnection.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        }
         menuSettings.setShowAsAction(minimiseAction && !settingsOpen? MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW : MenuItem.SHOW_AS_ACTION_ALWAYS);
         getMainHandler().postDelayed(() -> menuSettings.setShowAsAction(minimiseAction && !settingsOpen? MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW : MenuItem.SHOW_AS_ACTION_ALWAYS),200);
         myView.myToolbar.setNavigationIcon(settingsOpen ? navIconBack : null);
@@ -2132,7 +2149,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     }
 
     private void checkOptionsMenu() {
-        if (menuSettings == null || menuSearch == null || menuScreenHelp == null || menuScreenMirror == null) {
+        if (menuSettings == null || menuSearch == null || menuScreenHelp == null ||
+                menuScreenMirror == null || menuMidiConnection == null) {
             invalidateOptionsMenu();
         }
     }
@@ -2148,7 +2166,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         // GE had to add onResume string update otherwise this call failed if user changed languages
-        if (item.getItemId() == R.id.settings_menu_item) {
+        if (item.getItemId() == R.id.midi_connection_menu_item) {
+            showActionBar();
+            navigateToFragment(getString(R.string.deeplink_midi), 0);
+            return true;
+
+        } else if (item.getItemId() == R.id.settings_menu_item) {
             // Either open or close the settings menu
             if (settingsOpen) {
                 navHome();
@@ -2226,12 +2249,61 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         castIconOff = null;
         castIconOn = null;
         checkMenuIconsAreNotNull();
+        updateMidiConnectionIndicator();
         invalidateOptionsMenu();
         tintDrawerLayout();
         updatePageButtonLayout();
         myView.actionFAB.setPalette(getPalette());
         getDisplayPrevNext().updateColors();
         setUpSongMenuTabs();
+    }
+
+    private void updateMidiConnectionIndicator() {
+        View indicator = midiConnectionIndicatorView;
+        if (indicator == null) {
+            return;
+        }
+
+        boolean connected = hasValidMidiConnection();
+        int statusColor = connected ? getPalette().secondary : getPalette().hintColor;
+        View dot = indicator.findViewById(R.id.midiConnectionDot);
+        ImageView icon = indicator.findViewById(R.id.midiConnectionIcon);
+        TextView label = indicator.findViewById(R.id.midiConnectionLabel);
+
+        float density = getResources().getDisplayMetrics().density;
+        GradientDrawable background = new GradientDrawable();
+        background.setColor(Color.parseColor("#0D0F13"));
+        background.setCornerRadius(8 * density);
+        int borderColor = Color.argb(
+                160,
+                Color.red(statusColor),
+                Color.green(statusColor),
+                Color.blue(statusColor));
+        background.setStroke(Math.max(1, (int) density), borderColor);
+        indicator.setBackground(background);
+
+        if (dot != null) {
+            GradientDrawable dotBackground = new GradientDrawable();
+            dotBackground.setShape(GradientDrawable.OVAL);
+            dotBackground.setColor(statusColor);
+            dot.setBackground(dotBackground);
+        }
+        if (icon != null) {
+            icon.setImageResource(R.drawable.midi_bluetooth);
+            icon.setColorFilter(statusColor);
+        }
+
+        String deviceName = connected ? getMidi().getMidiDeviceName() : null;
+        if (connected && (deviceName == null || deviceName.trim().isEmpty())) {
+            deviceName = getString(R.string.connected);
+        }
+        String statusText = connected ? deviceName : getString(R.string.midi_connection_disconnected);
+        if (label != null) {
+            label.setText(statusText);
+            label.setVisibility(getResources().getConfiguration().screenWidthDp < 600
+                    ? View.GONE : View.VISIBLE);
+        }
+        indicator.setContentDescription(getString(R.string.midi) + ": " + statusText);
     }
 
     @SuppressLint("PrivateResource")
@@ -2250,7 +2322,16 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             menuScreenHelp.setVisible(false);
 
             menuScreenMirror = menu.findItem(R.id.mirror_menu_item);
+            menuMidiConnection = menu.findItem(R.id.midi_connection_menu_item);
             menuSettings = menu.findItem(R.id.settings_menu_item);
+            midiConnectionIndicatorView = menuMidiConnection.getActionView();
+            if (midiConnectionIndicatorView != null) {
+                midiConnectionIndicatorView.setOnClickListener(view -> {
+                    showActionBar();
+                    navigateToFragment(getString(R.string.deeplink_midi), 0);
+                });
+                updateMidiConnectionIndicator();
+            }
 
             if (settingsOpen && closeIcon != null) {
                 menuSettings.setIcon(closeIcon);
@@ -2270,6 +2351,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
             menuScreenHelp.setVisible(!settingsOpen);
             menuScreenMirror.setVisible(!settingsOpen);
+            menuMidiConnection.setVisible(!settingsOpen);
 
             // Target the overflow icon in the Toolbar
             Drawable overflowIcon = getToolbar().getOverflowIcon();

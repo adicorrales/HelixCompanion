@@ -298,6 +298,7 @@
     <string name="confirm">Confirm</string>
     <string name="connect">Connect</string>
     <string name="connected">Connected</string>
+    <string name="midi_connection_disconnected">Disconnected</string>
     <string name="connected_display">Connected display</string>
     <string name="connected_display_description">Settings specific to Chromecast/HDMI output</string>
     <string name="connection_autoscroll_info">Listen for autoscroll stop and start commands</string>
