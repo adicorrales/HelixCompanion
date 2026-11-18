@@ -817,7 +817,7 @@ public class MyToolbar extends Toolbar {
     public void changeTheme() {
         this.setTitleTextColor(mainActivityInterface.getPalette().textColor);
         this.setSubtitleTextColor(mainActivityInterface.getPalette().textColor);
-        this.setBackgroundColor(android.graphics.Color.parseColor("#181B20"));
+        this.setBackgroundColor(android.graphics.Color.parseColor("#192724"));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             this.setElevation(0);
         }

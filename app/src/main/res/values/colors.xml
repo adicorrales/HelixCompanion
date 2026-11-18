@@ -1,6 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Helix Stadium Dark Theme Colors -->
-    <color name="helix_matrix_bar">#181B20</color>
+    <color name="helix_matrix_bar">#192724</color> <!-- HelixSurface with 4dp tonal elevation -->
+    <color name="helix_matrix_transport_bar">#192925</color> <!-- HelixSurface with 6dp tonal elevation -->
     <color name="dark_primary">#121418</color>
     <color name="dark_primary_variant">#181B20</color>
     <color name="dark_secondary">#20A050</color>
