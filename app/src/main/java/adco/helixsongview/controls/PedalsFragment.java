@@ -157,7 +157,7 @@ public class PedalsFragment extends Fragment {
             mainActivityInterface.getMidi().setMidiInput(b);
             midiPedalAllowed();
         });
-        if (mainActivityInterface.getMidi() != null && mainActivityInterface.getMidi().getMidiDevice() != null &&
+        if (mainActivityInterface.getMidi() != null && mainActivityInterface.getMidi().hasActiveConnection() &&
                 mainActivityInterface.getMidi().getMidiInput()) {
             String message = midi_pedal_string + ": " +
                     mainActivityInterface.getMidi().getMidiDeviceName();

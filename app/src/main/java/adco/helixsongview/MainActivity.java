@@ -2900,7 +2900,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
     @Override
     public boolean hasValidMidiConnection() {
-        return getMidi() != null && getMidi().getMidiDevice() != null;
+        return getMidi() != null && getMidi().hasActiveConnection();
     }
 
     @Override
@@ -3317,11 +3317,28 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             midiLockHandler.removeCallbacks(midiLockReleaseRunnable);
 
             if (ccNumber == 10) {
-                // Song cue confirmed by Helix -> Show "On Cue" in yellow on Play button
+                String songMode = getPreferences().getMyPreferenceString("helixSongMode", "Cue");
+                String playMode = getPreferences().getMyPreferenceString("helixPlayMode", "Play");
                 getMainHandler().post(() -> {
+                    if (songMode.equals("Skip")) {
+                        isPlaying = playMode.equals("Play");
+                        transportClickCount = isPlaying ? 2 : 1;
+                    } else {
+                        isPlaying = false;
+                        transportClickCount = 0;
+                    }
+
                     if (getToolbar() != null) {
-                        getToolbar().setPlayStatus("On Cue", android.graphics.Color.parseColor("#FFEB3B"));
-                        getToolbar().updatePlayButton(false);
+                        if (songMode.equals("Skip") && isPlaying) {
+                            getToolbar().setPlayStatus("Playing", android.graphics.Color.parseColor("#4CAF50"));
+                            getToolbar().updatePlayButton(true);
+                        } else if (songMode.equals("Skip")) {
+                            getToolbar().setPlayStatus("Loaded", android.graphics.Color.parseColor("#FFEB3B"));
+                            getToolbar().updatePlayButton(false);
+                        } else {
+                            getToolbar().setPlayStatus("On Cue", android.graphics.Color.parseColor("#FFEB3B"));
+                            getToolbar().updatePlayButton(false);
+                        }
                     }
                 });
             } else if (ccNumber == 51) {
@@ -3330,9 +3347,21 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     // Upon receiving confirmation / feedback of song loaded via CC51, select song 0 of set # in app UI ONLY (no CC10 sent)
                     getMainHandler().post(() -> {
                         loadSongFromSet(0, false);
-                        if (getToolbar() != null) {
-                            getToolbar().setPlayStatus("Loaded", android.graphics.Color.parseColor("#FFEB3B"));
-                            getToolbar().updatePlayButton(false);
+                        String playMode = getPreferences().getMyPreferenceString("helixPlayMode", "Load");
+                        if (playMode.equals("Play")) {
+                            isPlaying = true;
+                            transportClickCount = 2;
+                            if (getToolbar() != null) {
+                                getToolbar().setPlayStatus("Playing", android.graphics.Color.parseColor("#4CAF50"));
+                                getToolbar().updatePlayButton(true);
+                            }
+                        } else {
+                            isPlaying = false;
+                            transportClickCount = 1;
+                            if (getToolbar() != null) {
+                                getToolbar().setPlayStatus("Loaded", android.graphics.Color.parseColor("#FFEB3B"));
+                                getToolbar().updatePlayButton(false);
+                            }
                         }
                     });
                 } else {
@@ -3410,7 +3439,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             String msgSet = "MIDI" + channel + ":CC63:" + targetSet;
             String msgTargetSong = "MIDI" + channel + ":CC10:" + targetSong;
             String msgPlay = "MIDI" + channel + ":CC51:127";
-            String msgPause = "MIDI" + channel + ":CC51:0";
 
             if (lastSentMidiSetIdx != targetSet) {
                 lastSentMidiSetIdx = targetSet;
@@ -3437,10 +3465,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     });
                 } else {
                     waitingForSetChangeLoadConfirmation = false;
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        getMidi().sendMidi(getMidi().returnBytesFromHexText(msgPlay));
-                    }
                     if (playMode.equals("Play")) {
+                        // Skip selects and loads song 0 via CC63; Play mode then
+                        // starts it with CC51. Load mode must leave it loaded.
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            getMidi().sendMidi(getMidi().returnBytesFromHexText(msgPlay));
+                        }
                         isPlaying = true;
                         transportClickCount = 2;
                         getMainHandler().post(() -> {
@@ -3459,7 +3489,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                             }
                         });
                     }
-                    getMainHandler().post(() -> loadSongFromSet(0));
+                    getMainHandler().post(() -> loadSongFromSet(0, false));
                 }
             } else {
                 // Same playlist
@@ -3471,11 +3501,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 }
 
                 if (songMode.equals("Skip")) {
-                    try { Thread.sleep(40); } catch (InterruptedException ignored) {}
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        getMidi().sendMidi(getMidi().returnBytesFromHexText(msgPlay));
-                    }
                     if (playMode.equals("Play")) {
+                        try { Thread.sleep(40); } catch (InterruptedException ignored) {}
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            getMidi().sendMidi(getMidi().returnBytesFromHexText(msgPlay));
+                        }
                         isPlaying = true;
                         transportClickCount = 2;
                         getMainHandler().post(() -> {
@@ -3485,6 +3515,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                             }
                         });
                     } else {
+                        // CC10 in Skip mode loads the selected song. Do not send
+                        // CC51 here: in Load mode it is reserved for the user's
+                        // first Play press.
                         isPlaying = false;
                         transportClickCount = 1;
                         getMainHandler().post(() -> {
@@ -3533,14 +3566,18 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                             getThreadPoolExecutor().execute(() -> sendHelixMidiSetAndSong(setIdx, position));
                         }
 
-                        // Song is now in cue. 1st click on Play will load it, 2nd click will play.
-                        transportClickCount = 0;
-                        isPlaying = false;
-                        getMainHandler().post(() -> {
-                            if (myView != null) {
-                                myView.myToolbar.updatePlayButton(false);
-                            }
-                        });
+                        // A user-selected song starts a fresh transport state. Internal
+                        // UI syncs (sendMidi == false) must preserve the state established
+                        // by the MIDI mode transition that triggered them.
+                        if (sendMidi) {
+                            transportClickCount = 0;
+                            isPlaying = false;
+                            getMainHandler().post(() -> {
+                                if (myView != null) {
+                                    myView.myToolbar.updatePlayButton(false);
+                                }
+                            });
+                        }
 
                         // Update the index in the set
                         // Remove highlighting from the old position
@@ -5001,7 +5038,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             Log.e(TAG, "MainActivity error", e);
         }
 
-        // If we had a bluetooth MIDI device, cancel the connection and unpair
+        // Close any active MIDI transport while preserving Bluetooth pairing.
         if (getMidi()!=null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 getMidi().tryDisconnectBluetoothLE();

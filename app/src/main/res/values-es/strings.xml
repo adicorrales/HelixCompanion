@@ -795,6 +795,25 @@
     <string name="midi_devices">Dispositivos disponibles</string>
     <string name="midi_disconnect">Desconectar</string>
     <string name="midi_error">Verifique la conexión MIDI</string>
+    <string name="midi_command_channel">Canal %1$d · %2$s</string>
+    <string name="midi_command_play_pause">Reproducir/Pausar (CC51)</string>
+    <string name="midi_command_select_song">Seleccionar canción %1$d (CC10)</string>
+    <string name="midi_command_select_playlist">Seleccionar set %1$d (CC63)</string>
+    <string name="midi_command_previous_song">Canción anterior (CC49)</string>
+    <string name="midi_command_next_song">Canción siguiente (CC49)</string>
+    <string name="midi_command_return_to_zero">Volver al inicio (CC47)</string>
+    <string name="midi_command_previous_marker">Marcador anterior (CC50)</string>
+    <string name="midi_command_next_marker">Marcador siguiente (CC50)</string>
+    <string name="midi_command_select_marker">Seleccionar marcador %1$d (CC46)</string>
+    <string name="midi_command_clear_cycle">Borrar ciclo (CC48)</string>
+    <string name="midi_command_toggle_cycle">Activar/Desactivar ciclo (CC48)</string>
+    <string name="midi_command_start">Iniciar</string>
+    <string name="midi_command_stop">Detener</string>
+    <string name="midi_command_note_on">Nota activada %1$d</string>
+    <string name="midi_command_note_off">Nota desactivada %1$d</string>
+    <string name="midi_command_program">Cambio de programa %1$d</string>
+    <string name="midi_command_control_change">Cambio CC%1$d = %2$d</string>
+    <string name="midi_command_other">Mensaje MIDI</string>
     <string name="midi_index">índice midi</string>
     <string name="midi_index_code">Se requiere MIDI para cargar la canción</string>
     <string name="midi_input_channel_pedal">Escuche las acciones del pedal MIDI en este canal</string>

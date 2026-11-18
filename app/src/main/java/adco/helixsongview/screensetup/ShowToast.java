@@ -10,6 +10,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
@@ -18,6 +19,7 @@ import adco.helixsongview.R;
 import adco.helixsongview.customviews.MyMaterialSimpleTextView;
 import adco.helixsongview.interfaces.MainActivityInterface;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.snackbar.Snackbar;
 
 public class ShowToast {
 
@@ -30,6 +32,7 @@ public class ShowToast {
     private final MainActivityInterface mainActivityInterface;
     private Handler handlerShow;
     private Handler handlerHide;
+    private Snackbar midiSnackbar;
     private final long showTime = 2500;
     private String currentMessage = "";
     private final Runnable runnableHide;
@@ -100,6 +103,30 @@ public class ShowToast {
             handlerHide.postDelayed(runnableHide, showTime);
         }
     }
+
+    public void doItMidi(final String message) {
+        if (message == null || message.isEmpty() || toastBox == null) {
+            return;
+        }
+        mainActivityInterface.getMainHandler().post(() -> {
+            if (midiSnackbar != null) {
+                midiSnackbar.dismiss();
+            }
+            midiSnackbar = Snackbar.make(toastBox, message, Snackbar.LENGTH_SHORT)
+                    .setDuration(1500);
+            View snackbarView = midiSnackbar.getView();
+            snackbarView.setAlpha(0.92f);
+            snackbarView.setBackgroundTintList(
+                    android.content.res.ColorStateList.valueOf(mainActivityInterface.getPalette().secondary));
+            TextView text = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
+            if (text != null) {
+                text.setTextColor(mainActivityInterface.getPalette().textColor);
+                text.setMaxLines(2);
+            }
+            midiSnackbar.show();
+        });
+    }
+
     public void doItBottomSheet(final String message, View bsAnchor) {
         // Because the BottomSheet fragment sits above all views, the normal toastBox gets coveree
         // We need to use a popup window here
@@ -149,6 +176,10 @@ public class ShowToast {
 
     public void kill() {
         currentMessage = "";
+        if (midiSnackbar != null) {
+            midiSnackbar.dismiss();
+            midiSnackbar = null;
+        }
         if (toastBox!=null) {
             toastBox.post(() -> {
                 toastBox.setText("");

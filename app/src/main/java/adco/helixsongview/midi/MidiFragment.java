@@ -200,15 +200,15 @@ public class MidiFragment extends Fragment {
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void hideShowViews(boolean initialise, boolean isSearchingDevices) {
         // If a device is connected, hide the list of found devices
-        if (initialise || !isSearchingDevices || mainActivityInterface.getMidi().getMidiDevice() == null) {
+        if (initialise || !isSearchingDevices || !mainActivityInterface.getMidi().hasActiveConnection()) {
             myView.searchProgressLayout.setVisibility(View.GONE);
         }
-        if (mainActivityInterface.getMidi().getMidiDevice() == null) {
+        if (!mainActivityInterface.getMidi().hasActiveConnection()) {
             myView.connectionStatus.setVisibility(View.GONE);
         } else {
             myView.connectionStatus.setVisibility(View.VISIBLE);
-            myView.connectedDevice.setText(mainActivityInterface.getMidi().getMidiDeviceName());
-            myView.connectedDevice.setHint(mainActivityInterface.getMidi().getMidiDeviceAddress());
+            myView.connectedDevice.setText(getConnectedDeviceLabel());
+            myView.connectedDevice.setHint("");
         }
         if (isSearchingDevices) {
             myView.searchProgressLayout.setVisibility(View.VISIBLE);
@@ -268,7 +268,7 @@ public class MidiFragment extends Fragment {
         myView.midiInput.setOnCheckedChangeListener(((buttonView, isChecked) -> {
             mainActivityInterface.getPreferences().setMyPreferenceBoolean("midiInput", isChecked);
             mainActivityInterface.getMidi().setMidiInput(isChecked);
-            if (isChecked && mainActivityInterface.getMidi().getMidiDevice() != null &&
+            if (isChecked && mainActivityInterface.getMidi().hasActiveConnection() &&
                 mainActivityInterface.getMidi().getMidiInputPort() != null) {
                 mainActivityInterface.getMidi().enableMidiListener();
             } else {
@@ -305,8 +305,9 @@ public class MidiFragment extends Fragment {
     // Scan for devices (USB or Bluetooth)
     private void startScan() {
         if (getActivity() != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && mainActivityInterface.getMidi().checkAndConnectActiveGattMidi()) {
-                mainActivityInterface.getShowToast().doIt("Already connected to active MIDI device");
+            if (mainActivityInterface.getMidi().hasActiveConnection()) {
+                mainActivityInterface.getShowToast().doIt(
+                        "Already connected to " + getConnectedDeviceLabel());
                 displayCurrentDevice();
                 return;
             }
@@ -445,12 +446,12 @@ public class MidiFragment extends Fragment {
     };
 
     private void displayCurrentDevice() {
-        if (mainActivityInterface.getMidi().getMidiDevice() != null && mainActivityInterface.getMidi().getMidiDeviceName() != null &&
+        if (mainActivityInterface.getMidi().hasActiveConnection() && mainActivityInterface.getMidi().getMidiDeviceName() != null &&
                 mainActivityInterface.getMidi().getMidiDeviceAddress() != null) {
             myView.searchProgressLayout.setVisibility(View.GONE);
             myView.connectionStatus.setVisibility(View.VISIBLE);
-            myView.connectedDevice.setText(mainActivityInterface.getMidi().getMidiDeviceName());
-            myView.connectedDevice.setHint(mainActivityInterface.getMidi().getMidiDeviceAddress());
+            myView.connectedDevice.setText(getConnectedDeviceLabel());
+            myView.connectedDevice.setHint("");
         } else {
             myView.searchProgressLayout.setVisibility(View.GONE);
             displayProgressBar(false);
@@ -458,6 +459,21 @@ public class MidiFragment extends Fragment {
             myView.connectedDevice.setText("");
             myView.connectedDevice.setHint("");
         }
+    }
+
+    public void refreshConnectionStatus() {
+        if (myView != null) {
+            displayCurrentDevice();
+        }
+    }
+
+    private String getConnectedDeviceLabel() {
+        String name = mainActivityInterface.getMidi().getMidiDeviceName();
+        String address = mainActivityInterface.getMidi().getMidiDeviceAddress();
+        if (name == null || name.isEmpty()) {
+            return address == null ? "" : address;
+        }
+        return address == null || address.isEmpty() ? name : name + " (" + address + ")";
     }
 
     @SuppressLint("MissingPermission")
@@ -524,10 +540,6 @@ public class MidiFragment extends Fragment {
 
                                 if (bluetoothscan) {
                                     // Trigger the device setting pipeline (handles bonding checks & auto-connect)
-                                    if (bluetoothDevices!=null && bluetoothDevices.size()>finalX) {
-                                        mainActivityInterface.getMidi().setBluetoothDevice(bluetoothDevices.get(finalX));
-                                    }
-
                                     // Stop scanning
                                     bleScanHandler.removeCallbacks(stopBleScan);
                                     bleScanHandler.post(stopBleScan);

@@ -944,6 +944,25 @@
     <string name="midi_burst">Burst mode</string>
     <string name="midi_burst_info">Some devices rely on receiving multiple controller messages quickly.  When switched on, any MIDI command generated will be annotated by * as a burst command (i.e. sent several times in a row)</string>
     <string name="midi_channel">Channel</string>
+    <string name="midi_command_channel">Channel %1$d · %2$s</string>
+    <string name="midi_command_play_pause">Play/Pause (CC51)</string>
+    <string name="midi_command_select_song">Select song %1$d (CC10)</string>
+    <string name="midi_command_select_playlist">Select playlist %1$d (CC63)</string>
+    <string name="midi_command_previous_song">Previous song (CC49)</string>
+    <string name="midi_command_next_song">Next song (CC49)</string>
+    <string name="midi_command_return_to_zero">Return to zero (CC47)</string>
+    <string name="midi_command_previous_marker">Previous marker (CC50)</string>
+    <string name="midi_command_next_marker">Next marker (CC50)</string>
+    <string name="midi_command_select_marker">Select marker %1$d (CC46)</string>
+    <string name="midi_command_clear_cycle">Clear cycle (CC48)</string>
+    <string name="midi_command_toggle_cycle">Toggle cycle (CC48)</string>
+    <string name="midi_command_start">Start</string>
+    <string name="midi_command_stop">Stop</string>
+    <string name="midi_command_note_on">Note on %1$d</string>
+    <string name="midi_command_note_off">Note off %1$d</string>
+    <string name="midi_command_program">Program change %1$d</string>
+    <string name="midi_command_control_change">Control change CC%1$d = %2$d</string>
+    <string name="midi_command_other">MIDI message</string>
     <string name="midi_channel_default">When sending automatic messages to the VoiceLive the MIDI channel below will be used</string>
     <string name="midi_click_track">Send MIDI click track</string>
     <string name="midi_click_track_channel">MIDI channel for click track</string>

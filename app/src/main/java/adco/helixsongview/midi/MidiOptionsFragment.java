@@ -69,7 +69,7 @@ public class MidiOptionsFragment extends Fragment {
             midiBoardBottomSheet.show(mainActivityInterface.getMyFragmentManager(),"MidiBoardBottomSheet");
         });
         myView.midiClock.setOnClickListener(view -> {
-            if (mainActivityInterface.getMidi().getMidiDevice()!=null) {
+            if (mainActivityInterface.getMidi().hasActiveConnection()) {
                 mainActivityInterface.navigateToFragment(deeplink_midi_clock, 0);
             } else {
                 mainActivityInterface.getShowToast().doIt(no_device_string);

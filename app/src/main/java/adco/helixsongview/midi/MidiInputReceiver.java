@@ -19,6 +19,7 @@ import java.util.Arrays;
 public class MidiInputReceiver extends MidiReceiver {
 
     private final MainActivityInterface mainActivityInterface;
+    private final Context context;
     private final String TAG = "MidiInputReceiver";
     private ArrayList<Byte> receivedMessage;
     private final int nx_start=128, nx_end=143, no_start=144, no_end=159,
@@ -33,6 +34,7 @@ public class MidiInputReceiver extends MidiReceiver {
     private boolean isLongPress = false;
 
     MidiInputReceiver(Context c) {
+        context = c;
         mainActivityInterface = (MainActivityInterface) c;
         songMessageRunnable = () -> {
             // We took too long (runnable called 1sec after msbChosen is set)
@@ -85,10 +87,11 @@ public class MidiInputReceiver extends MidiReceiver {
                 });
             }
 
-            String midiInfo = "MIDI IN [" + messageType + "] Ch:" + midiChannel + " Data1:" + data1 + " Data2:" + data2;
+            String midiInfo = getMidiCommandText(
+                    messageType, midiChannel, data1, data2, midiStart, midiStop, songSelect);
             mainActivityInterface.getMainHandler().post(() -> {
-                if (mainActivityInterface != null && mainActivityInterface.getShowToast() != null) {
-                    mainActivityInterface.getShowToast().doIt(midiInfo);
+                if (mainActivityInterface != null) {
+                    mainActivityInterface.getShowToast().doItMidi(midiInfo);
                 }
             });
 
@@ -276,6 +279,72 @@ public class MidiInputReceiver extends MidiReceiver {
         }
         return 0;
     }
+
+    private String getMidiCommandText(String messageType, int channel, int data1, int data2,
+                                      boolean midiStart, boolean midiStop, boolean songSelect) {
+        String command;
+        if (midiStart) {
+            command = context.getString(adco.helixsongview.R.string.midi_command_start);
+        } else if (midiStop) {
+            command = context.getString(adco.helixsongview.R.string.midi_command_stop);
+        } else if (songSelect) {
+            command = context.getString(
+                    adco.helixsongview.R.string.midi_command_select_song, data1 + 1);
+        } else if ("CC".equals(messageType)) {
+            switch (data1) {
+                case 10:
+                    command = context.getString(
+                            adco.helixsongview.R.string.midi_command_select_song, data2 + 1);
+                    break;
+                case 46:
+                    command = context.getString(
+                            adco.helixsongview.R.string.midi_command_select_marker, data2 + 1);
+                    break;
+                case 47:
+                    command = context.getString(adco.helixsongview.R.string.midi_command_return_to_zero);
+                    break;
+                case 48:
+                    command = context.getString(data2 < 64
+                            ? adco.helixsongview.R.string.midi_command_clear_cycle
+                            : adco.helixsongview.R.string.midi_command_toggle_cycle);
+                    break;
+                case 49:
+                    command = context.getString(data2 < 64
+                            ? adco.helixsongview.R.string.midi_command_previous_song
+                            : adco.helixsongview.R.string.midi_command_next_song);
+                    break;
+                case 50:
+                    command = context.getString(data2 < 64
+                            ? adco.helixsongview.R.string.midi_command_previous_marker
+                            : adco.helixsongview.R.string.midi_command_next_marker);
+                    break;
+                case 51:
+                    command = context.getString(adco.helixsongview.R.string.midi_command_play_pause);
+                    break;
+                case 63:
+                    command = context.getString(
+                            adco.helixsongview.R.string.midi_command_select_playlist, data2);
+                    break;
+                default:
+                    command = context.getString(
+                            adco.helixsongview.R.string.midi_command_control_change, data1, data2);
+                    break;
+            }
+        } else if ("NO".equals(messageType)) {
+            command = context.getString(adco.helixsongview.R.string.midi_command_note_on, data1);
+        } else if ("NX".equals(messageType)) {
+            command = context.getString(adco.helixsongview.R.string.midi_command_note_off, data1);
+        } else if ("PC".equals(messageType)) {
+            command = context.getString(adco.helixsongview.R.string.midi_command_program, data1);
+        } else {
+            command = context.getString(adco.helixsongview.R.string.midi_command_other);
+        }
+
+        return channel > 0
+                ? context.getString(adco.helixsongview.R.string.midi_command_channel, channel, command)
+                : command;
+    }
+
     private boolean isMidiStart(int[] bytes) {
         // Could be a MIDI start (0xFA)
         if (bytes.length>=2) {
