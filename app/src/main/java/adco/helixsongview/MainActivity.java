@@ -29,6 +29,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.MimeTypeMap;
 import android.widget.EditText;
@@ -990,8 +991,24 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     finalTopPadding = margins[1] + additionalTop;
                 }
 
+                int transportHeight = 0;
                 if (myView != null) {
-                    myView.fragmentView.setPadding(margins[0], finalTopPadding, margins[2], margins[3]);
+                    View transportView = myView.transportBar.getRoot();
+                    ViewGroup.MarginLayoutParams transportParams =
+                            (ViewGroup.MarginLayoutParams) transportView.getLayoutParams();
+                    transportParams.setMargins(margins[0], transportParams.topMargin, margins[2], margins[3]);
+                    transportView.setLayoutParams(transportParams);
+                    if (transportView.getVisibility() == View.VISIBLE) {
+                        transportHeight = transportView.getHeight();
+                        if (transportHeight <= 0) {
+                            transportHeight = (int) (68 * getResources().getDisplayMetrics().density);
+                        }
+                    }
+                }
+
+                if (myView != null) {
+                    myView.fragmentView.setPadding(margins[0], finalTopPadding, margins[2],
+                            margins[3] + transportHeight);
                     myView.songMenuLayout.setPadding(margins[0], margins[1] + additionalTop, 0, margins[3]);
                     myView.songMenuLayout.findViewById(R.id.menu_top).setPadding(windowFlags.getMarginToolbarLeft(), 0, 0, 0);
                 }
@@ -1357,20 +1374,20 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         }
 
         if (settingsIcon == null) {
-            Drawable tempSettingsIcon = AppCompatResources.getDrawable(this, R.drawable.settings_outline);
+            Drawable tempSettingsIcon = AppCompatResources.getDrawable(this, R.drawable.tune);
             if (tempSettingsIcon != null) {
                 settingsIcon = DrawableCompat.wrap(tempSettingsIcon);
             }
         }
         if (settingsIcon != null) {
-            DrawableCompat.setTint(settingsIcon, iconColor);
+            DrawableCompat.setTint(settingsIcon, getPalette().secondary);
         }
 
         if (castIconOff == null) {
             Drawable tempCastIconOff = AppCompatResources.getDrawable(this, R.drawable.cast);
             if (tempCastIconOff != null) {
                 castIconOff = DrawableCompat.wrap(tempCastIconOff);
-                DrawableCompat.setTint(castIconOff, getPalette().textColor);
+                DrawableCompat.setTint(castIconOff, getPalette().secondary);
             }
         }
 
@@ -1378,7 +1395,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             Drawable tempCastIconOn = AppCompatResources.getDrawable(this, R.drawable.cast_connected);
             if (tempCastIconOn != null) {
                 castIconOn = DrawableCompat.wrap(tempCastIconOn);
-                DrawableCompat.setTint(castIconOn, getPalette().textColor);
+                DrawableCompat.setTint(castIconOn, getPalette().secondary);
             }
         }
 
@@ -1386,7 +1403,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             Drawable tempSearchIcon = AppCompatResources.getDrawable(this, R.drawable.search);
             if (tempSearchIcon != null) {
                 searchIcon = DrawableCompat.wrap(tempSearchIcon);
-                DrawableCompat.setTint(searchIcon, getPalette().textColor);
+                DrawableCompat.setTint(searchIcon, getPalette().secondary);
             }
         }
 
@@ -1394,7 +1411,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             Drawable tempHelpIcon = AppCompatResources.getDrawable(this, R.drawable.help_outline);
             if (tempHelpIcon != null) {
                 helpIcon = DrawableCompat.wrap(tempHelpIcon);
-                DrawableCompat.setTint(helpIcon, getPalette().textColor);
+                DrawableCompat.setTint(helpIcon, getPalette().secondary);
             }
         }
 
@@ -1479,7 +1496,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
                     checkMenuIconsAreNotNull();
 
-                    myView.myToolbar.setNavigationIcon(settingsOpen ? navIconBack : navIconMenu);
+                    myView.myToolbar.setNavigationIcon(settingsOpen ? navIconBack : null);
 
                     if (settingsOpen && menuSettings != null) {
                         menuSettings.setIcon(closeIcon);
@@ -2108,7 +2125,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         menuScreenMirror.setShowAsAction(minimiseAction ? MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW : MenuItem.SHOW_AS_ACTION_ALWAYS);
         menuSettings.setShowAsAction(minimiseAction && !settingsOpen? MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW : MenuItem.SHOW_AS_ACTION_ALWAYS);
         getMainHandler().postDelayed(() -> menuSettings.setShowAsAction(minimiseAction && !settingsOpen? MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW : MenuItem.SHOW_AS_ACTION_ALWAYS),200);
-        myView.myToolbar.setNavigationIcon(settingsOpen ? navIconBack : navIconMenu);
+        myView.myToolbar.setNavigationIcon(settingsOpen ? navIconBack : null);
         updateCastIcon();
         checkToolbarMenuIcons();
         return super.onPrepareOptionsMenu(menu);
@@ -2224,7 +2241,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             // Inflate the menu; this adds items to the action bar if it is present.
             globalMenuItem = menu;
             getMenuInflater().inflate(R.menu.mainactivitymenu, menu);
-            int tint = getPalette().onPrimary;
+            int tint = settingsOpen ? getPalette().textColor : getPalette().secondary;
 
             checkMenuIconsAreNotNull();
 
@@ -2265,7 +2282,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
             tintMenuIcons(menu, tint);
 
-            myView.myToolbar.setNavigationIcon(settingsOpen ? navIconBack : navIconMenu);
+            myView.myToolbar.setNavigationIcon(settingsOpen ? navIconBack : null);
             updateCastIcon();
 
             return true;
@@ -2306,6 +2323,22 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
         // Check if we need to hide the actionbar
         showActionBar();
+    }
+
+    @Override
+    public void openSongMenuPage(int page) {
+        if (viewPager == null || songMenuFragment == null) {
+            return;
+        }
+        int targetPage = Math.max(0, Math.min(2, page));
+        showSetMenu = targetPage != 0;
+        if (targetPage == 1) {
+            setHelixSet(true);
+        } else if (targetPage == 2) {
+            setHelixSet(false);
+        }
+        viewPager.setCurrentItem(targetPage, false);
+        closeDrawer(false);
     }
 
     @Override
@@ -2429,10 +2462,18 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private boolean setSongMenuFragment() {
         runOnUiThread(() -> {
             if (songMenuFragment != null && viewPager != null) {
-                if (showSetMenu) {
-                    viewPager.setCurrentItem(1);
+                int currentPage = viewPager.getCurrentItem();
+                int targetPage;
+                if (!showSetMenu) {
+                    targetPage = 0;
+                } else if (currentPage == 1 || currentPage == 2) {
+                    // Preserve the selected Helix/Local page when the drawer reopens.
+                    targetPage = currentPage;
                 } else {
-                    viewPager.setCurrentItem(0);
+                    targetPage = isHelixSet() ? 1 : 2;
+                }
+                if (currentPage != targetPage) {
+                    viewPager.setCurrentItem(targetPage, false);
                 }
             }
         });
@@ -2462,7 +2503,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     @Override
     public void chooseMenu(boolean showSetMenu) {
         this.showSetMenu = showSetMenu;
-        setSongMenuFragment();
+        if (viewPager != null) {
+            int targetPage = showSetMenu ? (isHelixSet() ? 1 : 2) : 0;
+            viewPager.setCurrentItem(targetPage, false);
+        }
         closeDrawer(myView.drawerLayout.isOpen());
     }
 

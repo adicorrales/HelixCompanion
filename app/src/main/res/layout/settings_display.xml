@@ -15,15 +15,7 @@
             android:orientation="vertical"
             android:paddingBottom="@dimen/extra_scroll_space_large">
 
-            <adco.helixsongview.customviews.MyMaterialTextView
-                android:id="@+id/themeButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/theme_edit"
-                android:hint="@string/theme_dark"
-                app:size="large"/>
-            <adco.helixsongview.customviews.MyDivider
-                style="@style/MyDividerLine"/>
+            <!-- The Helix Matrix suite uses a fixed application chrome palette. -->
 
             <adco.helixsongview.customviews.MyMaterialTextView
                 android:id="@+id/fontButton"

@@ -7,7 +7,86 @@
     android:layout_height="?attr/actionBarSize"
     android:minHeight="?attr/actionBarSize"
     android:layout_gravity="start"
+    android:background="@color/helix_matrix_bar"
     app:elevation="0dp">
+
+    <LinearLayout
+        android:id="@+id/songSourceButtons"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
+        android:background="@color/helix_matrix_bar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/batterySpace"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/songSourceAll"
+            android:layout_width="68dp"
+            android:layout_height="36dp"
+            android:gravity="center"
+            android:minWidth="68dp"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
+            android:text="All"
+            android:textColor="#E2E8F0"
+            android:textStyle="bold"
+            android:textSize="11sp"
+            android:background="@drawable/transport_btn_bg" />
+
+        <TextView
+            android:id="@+id/songSourceHelix"
+            android:layout_width="68dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="4dp"
+            android:gravity="center"
+            android:minWidth="68dp"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
+            android:text="Helix"
+            android:textColor="#E2E8F0"
+            android:textStyle="bold"
+            android:textSize="11sp"
+            android:background="@drawable/transport_btn_bg" />
+
+        <TextView
+            android:id="@+id/songSourceLocal"
+            android:layout_width="68dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="4dp"
+            android:gravity="center"
+            android:minWidth="68dp"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
+            android:text="Local"
+            android:textColor="#E2E8F0"
+            android:textStyle="bold"
+            android:textSize="11sp"
+            android:background="@drawable/transport_btn_bg" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/screenTitle"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical|start"
+        android:paddingStart="56dp"
+        android:paddingEnd="12dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="#E2E8F0"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/batterySpace"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:id="@+id/metronomeLayout"
@@ -126,11 +205,13 @@
         android:gravity="center_vertical"
         android:paddingStart="2dp"
         android:paddingEnd="2dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/batterySpace"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <!-- Existing controls are retained for compatibility; the active transport is docked at screen bottom. -->
         <!-- 1. Prev Song Button (Framed) -->
         <LinearLayout
             android:id="@+id/btnTransportPrevContainer"

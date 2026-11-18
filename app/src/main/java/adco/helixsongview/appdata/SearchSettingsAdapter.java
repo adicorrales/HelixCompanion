@@ -395,12 +395,6 @@ public class SearchSettingsAdapter extends RecyclerView.Adapter<SearchSettingsVi
                         c.getString(R.string.deeplink_openchords),
                         settings+"/"+storage+"/"+c.getString(R.string.openchords)),
 
-                // Theme
-                new SettingItem(c.getString(R.string.theme_choose),c.getString(R.string.theme_edit),
-                        Arrays.asList(theme,display,light,dark,custom,color,colour,style),
-                        c.getString(R.string.deeplink_theme),
-                        settings+"/"+display+"/"+c.getString(R.string.theme_edit)),
-
                 // Fonts
                 new SettingItem(c.getString(R.string.font_choose),c.getString(R.string.font_choose_description),
                         Arrays.asList(font,text,display,style,lyrics,chords,chord),

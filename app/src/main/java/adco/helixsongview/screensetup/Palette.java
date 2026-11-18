@@ -1,7 +1,6 @@
 package adco.helixsongview.screensetup;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.util.Log;
 
 import androidx.core.content.res.ResourcesCompat;
@@ -37,68 +36,22 @@ public final class Palette {
     public String theme;
 
     public Palette(Context c) {
-        if (c == null) {
-            theme = "dark";
-            setDisplayVariables(null);
-            setColors(null);
-            return;
-        }
-        try {
-            theme = c.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-                            .getString(DISPLAY_MODE,"");
-        } catch (Throwable t) {
-            theme = "";
-        }
-        // If the theme hasn't been set, look for the device day/night
-        if (theme == null || theme.isEmpty()) {
-            // Get the default theme based on device setting
-            // This then saves this an sets up the colours
-            getDefaultTheme(c);
-        } else {
-            // Go straight to setup
-            setDisplayVariables(c);
-            setColors(c);
-        }
+        // App chrome follows the fixed Helix Matrix suite palette.
+        theme = "dark";
+        setDisplayVariables(c);
+        setColors(c);
     }
 
     public void getDefaultTheme(Context c) {
-        theme = "dark";
-        if (c != null) {
-            try {
-                Context appContext = c.getApplicationContext() != null ? c.getApplicationContext() : c;
-                if (appContext.getResources() != null && appContext.getResources().getConfiguration() != null) {
-                    int nightModeFlags = appContext.getResources().getConfiguration().uiMode
-                            & Configuration.UI_MODE_NIGHT_MASK;
-
-                    switch (nightModeFlags) {
-                        case Configuration.UI_MODE_NIGHT_YES:
-                            // Dark mode is active
-                            theme = "dark";
-                            break;
-                        case Configuration.UI_MODE_NIGHT_NO:
-                            // Light mode is active
-                            theme = "light";
-                            break;
-                        case Configuration.UI_MODE_NIGHT_UNDEFINED:
-                            // Mode is unknown (very rare)
-                            theme = "dark";
-                            break;
-                    }
-                }
-            } catch (Throwable t) {
-                theme = "dark";
-            }
-        }
-        savePref(c, theme);
+        savePref(c, "dark");
     }
 
-    public void savePref(Context c, String theme) {
-        this.theme = theme;
+    public void savePref(Context c, String ignoredTheme) {
+        this.theme = "dark";
         if (c != null) {
             try {
-                // Save the new preference
-                c.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE).
-                        edit().putString(DISPLAY_MODE, theme).apply();
+                c.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+                        .edit().putString(DISPLAY_MODE, "dark").apply();
             } catch (Throwable t) {
                 // SharedPreferences is not supported in edit/preview mode
             }
@@ -152,19 +105,19 @@ public final class Palette {
     @SuppressWarnings("deprecation")
     public void setColors(Context context) {
         if (context == null) {
-            background = 0xFF121212;
-            onBackground = 0xFFFFFFFF;
-            surface = 0xFF1E1E1E;
-            onSurface = 0xFFFFFFFF;
-            primary = 0xFFBB86FC;
-            primaryVariant = 0xFF3700B3;
-            onPrimary = 0xFF000000;
-            textColor = 0xFFFFFFFF;
-            hintColor = 0xFF888888;
-            secondary = 0xFF03DAC6;
-            secondaryVariant = 0xFF018786;
-            secondaryFixed = 0xFF03DAC6;
-            errorColor = 0xFFCF6679;
+            background = 0xFF121418;
+            onBackground = 0xFFE2E8F0;
+            surface = 0xFF181B20;
+            onSurface = 0xFFE2E8F0;
+            primary = 0xFF181B20;
+            primaryVariant = 0xFF21252E;
+            onPrimary = 0xFFE2E8F0;
+            textColor = 0xFFE2E8F0;
+            hintColor = 0xFFA0AEC0;
+            secondary = 0xFF20A050;
+            secondaryVariant = 0xFF286E42;
+            secondaryFixed = 0xFF16281E;
+            errorColor = 0xFFE53E3E;
             return;
         }
         try {
@@ -198,19 +151,19 @@ public final class Palette {
                 secondaryFixed = context.getResources().getColor(amoled ? R.color.amoled_secondary_fixed : dark ? R.color.dark_secondary_fixed : R.color.light_secondary_fixed);
                 errorColor = context.getResources().getColor(amoled ? R.color.amoled_error : dark ? R.color.dark_error : R.color.light_error);
             } catch (Throwable t2) {
-                background = 0xFF121212;
-                onBackground = 0xFFFFFFFF;
-                surface = 0xFF1E1E1E;
-                onSurface = 0xFFFFFFFF;
-                primary = 0xFFBB86FC;
-                primaryVariant = 0xFF3700B3;
-                onPrimary = 0xFF000000;
-                textColor = 0xFFFFFFFF;
-                hintColor = 0xFF888888;
-                secondary = 0xFF03DAC6;
-                secondaryVariant = 0xFF018786;
-                secondaryFixed = 0xFF03DAC6;
-                errorColor = 0xFFCF6679;
+                background = 0xFF121418;
+                onBackground = 0xFFE2E8F0;
+                surface = 0xFF181B20;
+                onSurface = 0xFFE2E8F0;
+                primary = 0xFF181B20;
+                primaryVariant = 0xFF21252E;
+                onPrimary = 0xFFE2E8F0;
+                textColor = 0xFFE2E8F0;
+                hintColor = 0xFFA0AEC0;
+                secondary = 0xFF20A050;
+                secondaryVariant = 0xFF286E42;
+                secondaryFixed = 0xFF16281E;
+                errorColor = 0xFFE53E3E;
             }
         }
     }

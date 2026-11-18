@@ -1,15 +1,16 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Helix Stadium Dark Theme Colors -->
-    <color name="dark_primary">#0f172a</color>              <!-- dark primary - deep slate -->
-    <color name="dark_primary_variant">#1e293b</color>      <!-- dark primary variant -->
-    <color name="dark_secondary">#0f766e</color>            <!-- FABs, accents - teal -->
-    <color name="dark_secondary_variant">#14b8a6</color>    <!-- variant (more emphasised) - lighter teal -->
-    <color name="dark_secondary_fixed">#155e55</color>      <!-- variant (even more emphasised) -->
-    <color name="dark_surface">#1e293b</color>              <!-- Bottom sheets, component backgrounds -->
-    <color name="dark_surface_variant">#334155</color>      <!-- variant (more emphasised) -->
+    <color name="helix_matrix_bar">#181B20</color>
+    <color name="dark_primary">#121418</color>
+    <color name="dark_primary_variant">#181B20</color>
+    <color name="dark_secondary">#20A050</color>
+    <color name="dark_secondary_variant">#286E42</color>
+    <color name="dark_secondary_fixed">#16281E</color>
+    <color name="dark_surface">#181B20</color>
+    <color name="dark_surface_variant">#21252E</color>
     <color name="dark_error">#ef4444</color>                <!-- red -->
-    <color name="dark_hint">#94a3b8</color>                <!-- light grey for hints -->
-    <color name="dark_color">#f1f5f9</color>               <!-- text and icon color - light -->
+    <color name="dark_hint">#A0AEC0</color>
+    <color name="dark_color">#E2E8F0</color>
 
     <!-- Light theme colors remain unchanged -->
     <color name="light_primary">#FFFFFF</color>             <!-- light primary -->

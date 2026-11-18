@@ -235,7 +235,6 @@ public class PageButtons {
         prepareOption("showlyrics",c.getString(R.string.show_lyrics),c.getString(R.string.show) + " / " + c.getString(R.string.hide),"",R.drawable.voice);
         prepareOption("curlybrackets",c.getString(R.string.curly_brackets_hide),c.getString(R.string.show) + " / " + c.getString(R.string.hide),"",R.drawable.curly_brackets);
         prepareOption("curlybracketsdevice",c.getString(R.string.curly_brackets_hide)+" ("+c.getString(R.string.device)+")",c.getString(R.string.show) + " / " + c.getString(R.string.hide),"",R.drawable.curly_brackets_device);
-        prepareOption("theme",c.getString(R.string.theme_choose),c.getString(R.string.select),"",R.drawable.theme);
         prepareOption("invertpdf",c.getString(R.string.invert_PDF),c.getString(R.string.select),"",R.drawable.invert_colors);
         prepareOption("fonts",c.getString(R.string.font_choose),c.getString(R.string.select),"",R.drawable.text);
         prepareOption("refreshsong",c.getString(R.string.refresh_song),c.getString(R.string.select),"",R.drawable.redo);

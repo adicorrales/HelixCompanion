@@ -1,6 +1,7 @@
 package adco.helixsongview.customviews;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
 import android.util.AttributeSet;
@@ -11,11 +12,14 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextClock;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.graphics.drawable.DrawableCompat;
 
 import adco.helixsongview.MainActivity;
 import adco.helixsongview.R;
@@ -35,19 +39,24 @@ public class MyToolbar extends Toolbar {
     private MainActivityInterface mainActivityInterface;
     private ActionBar actionBar;
     private final FrameLayout batteryholder;
-    private final MyMaterialSimpleTextView title;
-    private final MyMaterialSimpleTextView author;
-    private final MyMaterialSimpleTextView key;
-    private final MyMaterialSimpleTextView capo;
+    private MyMaterialSimpleTextView title;
+    private MyMaterialSimpleTextView author;
+    private MyMaterialSimpleTextView key;
+    private MyMaterialSimpleTextView capo;
     private final TextClock clock;
-    private final MyMaterialSimpleTextView tempo;
-    private final ImageView setIcon, batteryimage;
-    private final ImageView btnTransportRt0, playPauseIndicator, btnTransportPrevArrow, btnTransportNextArrow;
-    private final MyMaterialSimpleTextView btnTransportPrevTitle, btnTransportNextTitle;
-    private final LinearLayout btnTransportPrevContainer, btnTransportNextContainer, songandauthor, btnTransportPlayContainer;
+    private MyMaterialSimpleTextView tempo;
+    private ImageView setIcon;
+    private final ImageView batteryimage;
+    private ImageView btnTransportRt0, playPauseIndicator, btnTransportPrevArrow, btnTransportNextArrow;
+    private MyMaterialSimpleTextView btnTransportPrevTitle, btnTransportNextTitle;
+    private LinearLayout btnTransportPrevContainer, btnTransportNextContainer, songandauthor, btnTransportPlayContainer;
+    private View transportBar;
+    private LinearLayout songSourceButtons;
+    private TextView songSourceAll, songSourceHelix, songSourceLocal, screenTitle;
     private final LinearLayout metronomeLayout;
     private final ArrayList<View> beatView;
-    private final MyMaterialSimpleTextView batterycharge, playPauseStatusText;
+    private final MyMaterialSimpleTextView batterycharge;
+    private MyMaterialSimpleTextView playPauseStatusText;
     private Handler delayActionBarHide;
     private Runnable hideActionBarRunnable;
     private int actionBarHideTime = 1200, additionalTopPadding = 0;
@@ -63,6 +72,22 @@ public class MyToolbar extends Toolbar {
     public void initialiseToolbar(Context c, ActionBar actionBar) {
         this.c = c;
         mainActivityInterface = (MainActivityInterface) c;
+        View bottomTransport = mainActivityInterface.getMyActivity().findViewById(R.id.transportBar);
+        if (bottomTransport != null) {
+            bindTransportBar(bottomTransport);
+        }
+        songSourceButtons = findViewById(R.id.songSourceButtons);
+        songSourceAll = findViewById(R.id.songSourceAll);
+        songSourceHelix = findViewById(R.id.songSourceHelix);
+        songSourceLocal = findViewById(R.id.songSourceLocal);
+        screenTitle = findViewById(R.id.screenTitle);
+        if (songSourceAll != null) songSourceAll.setOnClickListener(view -> mainActivityInterface.openSongMenuPage(0));
+        if (songSourceHelix != null) songSourceHelix.setOnClickListener(view -> mainActivityInterface.openSongMenuPage(1));
+        if (songSourceLocal != null) songSourceLocal.setOnClickListener(view -> mainActivityInterface.openSongMenuPage(2));
+        setSongSourceIcon(songSourceAll, R.drawable.music_note);
+        setSongSourceIcon(songSourceHelix, R.drawable.midi);
+        setSongSourceIcon(songSourceLocal, R.drawable.inline_set);
+        styleSongSourceButtons();
         changeTheme();
         actionBar.setElevation(0);
         this.actionBar = actionBar;
@@ -170,6 +195,57 @@ public class MyToolbar extends Toolbar {
         });
     }
 
+    private void bindTransportBar(View root) {
+        transportBar = root;
+        setIcon = root.findViewById(R.id.setIcon);
+        title = root.findViewById(R.id.songtitle_ab);
+        key = root.findViewById(R.id.songkey_ab);
+        capo = root.findViewById(R.id.songcapo_ab);
+        author = root.findViewById(R.id.songauthor_ab);
+        tempo = root.findViewById(R.id.songtempo_ab);
+        songandauthor = root.findViewById(R.id.songandauthor);
+        btnTransportPrevContainer = root.findViewById(R.id.btnTransportPrevContainer);
+        btnTransportNextContainer = root.findViewById(R.id.btnTransportNextContainer);
+        btnTransportRt0 = root.findViewById(R.id.btnTransportRt0);
+        playPauseIndicator = root.findViewById(R.id.playPauseIndicator);
+        playPauseStatusText = root.findViewById(R.id.playPauseStatusText);
+        btnTransportPlayContainer = root.findViewById(R.id.btnTransportPlayContainer);
+        btnTransportPrevArrow = root.findViewById(R.id.btnTransportPrevArrow);
+        btnTransportNextArrow = root.findViewById(R.id.btnTransportNextArrow);
+        btnTransportPrevTitle = root.findViewById(R.id.btnTransportPrevTitle);
+        btnTransportNextTitle = root.findViewById(R.id.btnTransportNextTitle);
+
+        btnTransportPrevContainer.setOnClickListener(view -> mainActivityInterface.onTransportPrev());
+        btnTransportRt0.setOnClickListener(view -> mainActivityInterface.onTransportRt0());
+        songandauthor.setOnClickListener(view -> openDetails());
+        btnTransportPlayContainer.setOnClickListener(view -> mainActivityInterface.onTransportPlay());
+        btnTransportNextContainer.setOnClickListener(view -> mainActivityInterface.onTransportNext());
+    }
+
+    private void styleSongSourceButtons() {
+        styleSongSourceButton(songSourceAll);
+        styleSongSourceButton(songSourceHelix);
+        styleSongSourceButton(songSourceLocal);
+    }
+
+    private void setSongSourceIcon(TextView button, int drawableId) {
+        if (button == null) return;
+        Drawable drawable = AppCompatResources.getDrawable(getContext(), drawableId);
+        if (drawable == null) return;
+        Drawable icon = DrawableCompat.wrap(drawable.mutate());
+        int iconSize = (int) (16 * getResources().getDisplayMetrics().density);
+        icon.setBounds(0, 0, iconSize, iconSize);
+        DrawableCompat.setTint(icon, android.graphics.Color.parseColor("#20A050"));
+        button.setCompoundDrawablePadding((int) (4 * getResources().getDisplayMetrics().density));
+        button.setCompoundDrawablesRelative(icon, null, null, null);
+    }
+
+    private void styleSongSourceButton(TextView button) {
+        if (button == null) return;
+        button.setBackgroundResource(R.drawable.transport_btn_bg);
+        button.setTextColor(android.graphics.Color.parseColor("#E2E8F0"));
+    }
+
     public void updatePlayButton(boolean isPlaying) {
         if (playPauseIndicator != null && c != null) {
             if (isPlaying) {
@@ -182,16 +258,8 @@ public class MyToolbar extends Toolbar {
                 }
             }
         }
-        if (btnTransportPlayContainer != null && mainActivityInterface != null) {
-            boolean isHelixActiveSet = mainActivityInterface.isHelixSet();
-            boolean isSongInCurrentSet = mainActivityInterface.getCurrentSet().getIndexSongInSet() >= 0
-                    || mainActivityInterface.getSetActions().indexSongInSet(mainActivityInterface.getSong()) >= 0;
-
-            if (isHelixActiveSet && isSongInCurrentSet) {
-                btnTransportPlayContainer.setBackgroundColor(android.graphics.Color.parseColor("#334CAF50"));
-            } else {
-                btnTransportPlayContainer.setBackgroundResource(R.drawable.transport_btn_bg);
-            }
+        if (btnTransportPlayContainer != null) {
+            btnTransportPlayContainer.setBackgroundResource(R.drawable.transport_btn_bg);
         }
     }
 
@@ -278,6 +346,7 @@ public class MyToolbar extends Toolbar {
         if (mainActivityInterface==null) {
             mainActivityInterface = (MainActivityInterface) c;
         }
+        updateSurfaceMode(newtitle);
         // If changing, reset help
         if (title!=null && !title.getText().equals(newtitle)) {
             // By default hide help (can be shown later)
@@ -292,7 +361,7 @@ public class MyToolbar extends Toolbar {
             hideView(btnTransportPlayContainer, !performanceMode);
             updatePrevNextTitles();
 
-            float mainsize = mainActivityInterface.getPreferences().getMyPreferenceFloat("songTitleSize",13.0f);
+            float mainsize = mainActivityInterface.getPreferences().getMyPreferenceFloat("songTitleSize",15.0f);
 
             if (title != null && mainActivityInterface.getSong().getTitle() != null) {
                 // Songs have the gravity bottom for the content
@@ -332,7 +401,7 @@ public class MyToolbar extends Toolbar {
             }
             if (author != null && mainActivityInterface.getSong().getAuthor() != null &&
                     !mainActivityInterface.getSong().getAuthor().isEmpty()) {
-                author.setTextSize(mainActivityInterface.getPreferences().getMyPreferenceFloat("songAuthorSize",11.0f));
+                author.setTextSize(mainActivityInterface.getPreferences().getMyPreferenceFloat("songAuthorSize",12.0f));
                 author.setText(mainActivityInterface.getSong().getAuthor());
                 hideView(author, false);
                 if (title!=null) {
@@ -355,8 +424,8 @@ public class MyToolbar extends Toolbar {
             if (key != null && mainActivityInterface.getSong().getKey() != null &&
                     !mainActivityInterface.getSong().getKey().isEmpty()) {
                 keyString = " (" + mainActivityInterface.getSong().getKey() + ")";
-                key.setTextSize(mainsize);
-                capo.setTextSize(mainsize);
+                key.setTextSize(Math.max(11f, mainsize - 2f));
+                capo.setTextSize(Math.max(11f, mainsize - 2f));
                 key.setText(keyString);
                 hideView(key, false);
             } else if (key!=null) {
@@ -386,7 +455,7 @@ public class MyToolbar extends Toolbar {
             if (actionBarTempo && tempo!=null && mainActivityInterface.getSong().getTempo() != null &&
                 !mainActivityInterface.getSong().getTempo().isEmpty()) {
                 String tempoString = " " + mainActivityInterface.getSong().getTempo() + " bpm";
-                tempo.setTextSize(mainsize);
+                tempo.setTextSize(Math.max(11f, mainsize - 3f));
                 tempo.setText(tempoString);
                 hideView(tempo, false);
             } else if (tempo!=null) {
@@ -450,6 +519,25 @@ public class MyToolbar extends Toolbar {
         }
     }
 
+    private void updateSurfaceMode(String newtitle) {
+        boolean isPerformanceScreen = newtitle == null && performanceMode;
+        if (transportBar != null) {
+            int visibility = isPerformanceScreen ? View.VISIBLE : View.GONE;
+            if (transportBar.getVisibility() != visibility) {
+                transportBar.setVisibility(visibility);
+                mainActivityInterface.updateMargins();
+            }
+        }
+        if (songSourceButtons != null) {
+            songSourceButtons.setVisibility(newtitle == null ? View.VISIBLE : View.GONE);
+        }
+        if (screenTitle != null) {
+            screenTitle.setText(newtitle == null ? "" : newtitle);
+            screenTitle.setVisibility(newtitle == null ? View.GONE : View.VISIBLE);
+        }
+        styleSongSourceButtons();
+    }
+
     public void updatePrevNextTitles() {
         if (mainActivityInterface == null) return;
         try {
@@ -506,8 +594,8 @@ public class MyToolbar extends Toolbar {
                 }
             }
 
-            MyMaterialSimpleTextView prevTv = findViewById(R.id.btnTransportPrevTitle);
-            MyMaterialSimpleTextView nextTv = findViewById(R.id.btnTransportNextTitle);
+            MyMaterialSimpleTextView prevTv = btnTransportPrevTitle;
+            MyMaterialSimpleTextView nextTv = btnTransportNextTitle;
 
             if (prevTv != null) {
                 prevTv.setText(prevTitle);
@@ -729,7 +817,7 @@ public class MyToolbar extends Toolbar {
     public void changeTheme() {
         this.setTitleTextColor(mainActivityInterface.getPalette().textColor);
         this.setSubtitleTextColor(mainActivityInterface.getPalette().textColor);
-        this.setBackgroundColor(mainActivityInterface.getPalette().primary);
+        this.setBackgroundColor(android.graphics.Color.parseColor("#181B20"));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             this.setElevation(0);
         }

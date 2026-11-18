@@ -129,6 +129,13 @@
                     android:theme="@style/ThemeOverlay.MaterialComponents.ActionBar"
                     app:popupTheme="@style/ThemeOverlay.MaterialComponents.ActionBar"/>
             </LinearLayout>
+
+            <include
+                android:id="@+id/transportBar"
+                layout="@layout/view_transport_bar"
+                android:layout_width="match_parent"
+                android:layout_height="68dp"
+                android:layout_gravity="bottom" />
         </FrameLayout>
 
         <!--The left song and set menu-->

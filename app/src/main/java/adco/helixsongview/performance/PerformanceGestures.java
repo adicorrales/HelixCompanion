@@ -256,9 +256,6 @@ public class PerformanceGestures {
             case "curlybracketsdevice":
                 showCurlyBracketsDevice();
                 break;
-            case "theme":
-                editTheme();
-                break;
             case "togglescale":
                 if (isLongPress) {
                     editAutoscale();
@@ -845,11 +842,6 @@ public class PerformanceGestures {
         mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_links),0);
     }
 
-
-    // Open the theme chooser
-    public void editTheme() {
-        mainActivityInterface.navigateToFragment(c.getString(R.string.deeplink_theme),0);
-    }
 
     // Open the autoscale options
     public void editAutoscale() {

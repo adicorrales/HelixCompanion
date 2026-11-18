@@ -177,6 +177,7 @@ public interface MainActivityInterface {
     void updateSongMenu(String fragName, Fragment callingFragment, ArrayList<String> arguments);
     void updateSongMenu(Song song);
     void chooseMenu(boolean showSetMenu);
+    void openSongMenuPage(int page);
     void setIndexingSong(Song indexingSong);
     Song getSongInMenu(int position);
 

@@ -180,7 +180,6 @@ public class PedalActions {
         addString("showchords",c.getString(R.string.show_chords));
         addString("showcapo",c.getString(R.string.show_capo));
         addString("showlyrics",c.getString(R.string.show_lyrics));
-        addString("theme",c.getString(R.string.theme_choose));
         addString("togglescale",c.getString(R.string.scale_auto));
         addString("autoscalesettings",c.getString(R.string.scaling_info));
         addString("pdfpage",c.getString(R.string.select_page));

@@ -143,8 +143,8 @@ public class WindowFlags {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            w.setStatusBarColor(Color.TRANSPARENT);
-            w.setNavigationBarColor(Color.TRANSPARENT);
+            w.setStatusBarColor(Color.parseColor("#181B20"));
+            w.setNavigationBarColor(Color.parseColor("#181B20"));
         } else {
             w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                     WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
@@ -267,12 +267,13 @@ public class WindowFlags {
 
         // Status bar should match the app theme (light/dark)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            w.setStatusBarColor(mainActivityInterface.getPalette().primary);
+            w.setStatusBarColor(Color.parseColor("#181B20"));
         }
 
         // true = dark icons (for light backgrounds), false = light icons
         windowInsetsControllerCompat.setAppearanceLightStatusBars(!mainActivityInterface.getPalette().dark &&
                 !mainActivityInterface.getPalette().amoled);
+        windowInsetsControllerCompat.setAppearanceLightNavigationBars(false);
     }
 
     // Display cutouts

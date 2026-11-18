@@ -25,7 +25,7 @@
 
     <item android:id="@+id/settings_menu_item"
         android:title="@string/settings"
-        android:icon="@drawable/settings_outline"
+        android:icon="@drawable/tune"
         app:showAsAction="always"
         android:orderInCategory="4"/>
 </menu>
