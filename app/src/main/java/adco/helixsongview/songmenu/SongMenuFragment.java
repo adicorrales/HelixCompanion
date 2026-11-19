@@ -70,7 +70,7 @@ public class SongMenuFragment extends Fragment implements SongListAdapter.Adapte
     private String longClickFilename = "", longClickFolder="";
     private IndexAdapter indexAdapter;
 
-    private static MainActivityInterface mainActivityInterface;
+    private MainActivityInterface mainActivityInterface;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -233,6 +233,10 @@ public class SongMenuFragment extends Fragment implements SongListAdapter.Adapte
     }
 
     public void setFolders() {
+        MainActivityInterface activityInterface = mainActivityInterface;
+        if (activityInterface == null || !isAdded() || myView == null) {
+            return;
+        }
         if (foundFolders != null) {
             bindFolderDropdown(foundFolders);
             return;
@@ -240,22 +244,31 @@ public class SongMenuFragment extends Fragment implements SongListAdapter.Adapte
         if (folderLoadInProgress) {
             return;
         }
+
         folderLoadInProgress = true;
-        mainActivityInterface.getThreadPoolExecutor().execute(() -> {
-            ArrayList<String> folders = mainActivityInterface.getSQLiteHelper().getFolders();
-
-            // We always want MAIN as the top folder (regardless of alphabetical sort position)
-            folders.remove(mainActivityInterface.getMainfoldername());
-            folders.add(0,mainActivityInterface.getMainfoldername());
-            foundFolders = folders;
+        if (activityInterface.getThreadPoolExecutor() == null) {
             folderLoadInProgress = false;
+            return;
+        }
+        activityInterface.getThreadPoolExecutor().execute(() -> {
+            try {
+                ArrayList<String> folderQuery = activityInterface.getSQLiteHelper().getFolders();
+                final ArrayList<String> folders = folderQuery != null ? folderQuery : new ArrayList<>();
 
-            if (getContext()!=null) {
-                mainActivityInterface.getMainHandler().post(() -> {
-                    if (getContext()!=null) {
+                // Keep MAIN first regardless of alphabetical sort position.
+                String mainFolder = activityInterface.getMainfoldername();
+                folders.remove(mainFolder);
+                folders.add(0, mainFolder);
+                foundFolders = folders;
+                activityInterface.getMainHandler().post(() -> {
+                    if (isAdded() && myView != null && mainActivityInterface == activityInterface) {
                         bindFolderDropdown(folders);
                     }
                 });
+            } catch (Exception e) {
+                Log.e(TAG, "Unable to load song folders", e);
+            } finally {
+                folderLoadInProgress = false;
             }
         });
     }
@@ -542,74 +555,76 @@ public class SongMenuFragment extends Fragment implements SongListAdapter.Adapte
         prepareSearch();
     }
     public void prepareSearch() {
-        if (mainActivityInterface != null) {
-            if (!adapterReady) {
-                //Try again soon
-                mainActivityInterface.getMainHandler().postDelayed(this::prepareSearch, 100);
-            } else {
-                adapterReady = false;
-                songMenuSortTitles = mainActivityInterface.getPreferences().getMyPreferenceBoolean("songMenuSortTitles", true);
-                getSearchVals();
-                buttonsEnabled(false);
+        MainActivityInterface activityInterface = mainActivityInterface;
+        if (activityInterface == null || !isAdded() || myView == null) {
+            return;
+        }
+        if (!adapterReady) {
+            activityInterface.getMainHandler().postDelayed(() -> {
+                if (mainActivityInterface == activityInterface && isAdded() && myView != null) {
+                    prepareSearch();
+                }
+            }, 100);
+            return;
+        }
 
-                mainActivityInterface.getThreadPoolExecutor().execute(() -> {
+        adapterReady = false;
+        songMenuSortTitles = activityInterface.getPreferences().getMyPreferenceBoolean("songMenuSortTitles", true);
+        getSearchVals();
+        buttonsEnabled(false);
+        if (activityInterface.getThreadPoolExecutor() == null) {
+            adapterReady = true;
+            buttonsEnabled(true);
+            return;
+        }
+
+        activityInterface.getThreadPoolExecutor().execute(() -> {
+            try {
+                List<Song> oldList = new ArrayList<>();
+                if (songMenuSongs.getFoundSongs() != null) {
+                    oldList.addAll(songMenuSongs.getFoundSongs());
+                }
+
+                ArrayList<Song> queriedSongs = activityInterface.getSQLiteHelper().getSongsByFilters(
+                        songListSearchByFolder, songListSearchByArtist, songListSearchByKey,
+                        songListSearchByTag, songListSearchByFilter, songListSearchByTitle,
+                        folderSearchVal, artistSearchVal, keySearchVal, tagSearchVal,
+                        filterSearchVal, titleSearchVal, songMenuSortTitles,
+                        songListSearchByFilter && !filterSearchVal.isEmpty());
+                final ArrayList<Song> newList = queriedSongs != null ? queriedSongs : new ArrayList<>();
+
+                SongDiffCallback diffCallback = new SongDiffCallback(oldList, newList);
+                DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
+                LinkedHashMap<String, Integer> newAlphaIndex = songListAdapter.getAlphaIndex(newList);
+
+                activityInterface.getMainHandler().post(() -> {
+                    if (mainActivityInterface != activityInterface || !isAdded() || myView == null || songListAdapter == null) {
+                        return;
+                    }
+                    songMenuSongs.updateSongs(newList);
+                    diffResult.dispatchUpdatesTo(songListAdapter);
                     try {
-                        // 1. Get the current list (Snapshotted to avoid the reference trap)
-                        List<Song> oldList = new ArrayList<>();
-                        if (songMenuSongs.getFoundSongs() != null) {
-                            oldList.addAll(songMenuSongs.getFoundSongs());
-                        }
-
-                        // 2. Fetch the "new" list from DB
-                        // Get the songs based on the filters
-                        ArrayList<Song> newList = mainActivityInterface.getSQLiteHelper().getSongsByFilters(
-                                songListSearchByFolder, songListSearchByArtist, songListSearchByKey,
-                                songListSearchByTag, songListSearchByFilter, songListSearchByTitle,
-                                folderSearchVal, artistSearchVal, keySearchVal, tagSearchVal,
-                                filterSearchVal, titleSearchVal, songMenuSortTitles,
-                                songListSearchByFilter && !filterSearchVal.isEmpty());
-
-                        if (newList == null) newList = new ArrayList<>();
-
-                        // 3. Calculate the diff (This is where the Log.d will trigger)
-                        SongDiffCallback diffCallback = new SongDiffCallback(oldList, newList);
-                        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
-
-                        // NEW: Calculate the index map here on the background thread!
-                        LinkedHashMap<String, Integer> newAlphaIndex = songListAdapter.getAlphaIndex(newList);
-
-                        // 4. Update the UI
-                        ArrayList<Song> finalNewList = newList;
-                        if (mainActivityInterface!=null) {
-                            mainActivityInterface.getMainHandler().post(() -> {
-                                // Update the underlying data source
-                                songMenuSongs.updateSongs(finalNewList);
-
-                                // Tell the adapter to animate the specific changes
-                                diffResult.dispatchUpdatesTo(songListAdapter);
-
-                                // Clean up UI
-                                // Pass the pre-calculated index map from the adapter
-                                try {
-                                    displayIndex(newAlphaIndex);
-                                    updateSongCount();
-                                    if (myView != null) myView.progressBar.setVisibility(View.GONE);
-                                    adapterReady = true;
-                                    buttonsEnabled(true);
-                                } catch (Exception e) {
-                                    // Isse updating the song menu (likely resetting)
-                                    Log.d(TAG,"crash updating song menu:"+e);
-                                }
-                            });
-                        }
-
+                        displayIndex(newAlphaIndex);
+                        updateSongCount();
+                        myView.progressBar.setVisibility(View.GONE);
                     } catch (Exception e) {
-                        Log.e("SongMenu", "Search failed", e);
+                        Log.d(TAG, "Unable to finish song-menu refresh", e);
+                    } finally {
+                        adapterReady = true;
+                        buttonsEnabled(true);
                     }
                 });
-
+            } catch (Exception e) {
+                Log.e(TAG, "Song-list refresh failed", e);
+                activityInterface.getMainHandler().post(() -> {
+                    if (mainActivityInterface == activityInterface && isAdded() && myView != null) {
+                        myView.progressBar.setVisibility(View.GONE);
+                        adapterReady = true;
+                        buttonsEnabled(true);
+                    }
+                });
             }
-        }
+        });
     }
 
     public void updateCheckForThisSong(Song thisSong) {
@@ -637,9 +652,9 @@ public class SongMenuFragment extends Fragment implements SongListAdapter.Adapte
     }
 
     private void displayIndex(LinkedHashMap<String, Integer> indexMap) {
-        if (mainActivityInterface!=null || getContext()!=null || myView!=null) {
-            if (myView == null || indexMap == null) return;
-
+        if (mainActivityInterface == null || !isAdded() || getContext() == null || myView == null || indexMap == null) {
+            return;
+        }
             boolean isIndexEnabled = mainActivityInterface.getPreferences()
                     .getMyPreferenceBoolean("songMenuAlphaIndexShow", true);
 
@@ -679,8 +694,7 @@ public class SongMenuFragment extends Fragment implements SongListAdapter.Adapte
                                 .scrollToPositionWithOffset(position, 0);
                     }
                 }
-            }, level2Pref); // Don't forget to pass the boolean to your new setData method
-        }
+        }, level2Pref); // Don't forget to pass the boolean to your new setData method
     }
 
     public void changeAlphabeticalLayout() {
@@ -746,32 +760,28 @@ public class SongMenuFragment extends Fragment implements SongListAdapter.Adapte
 
 
     public void moveToSongInMenu(Song song) {
-        // scroll to the song in the song menu
-        try {
-            if (mainActivityInterface!=null) {
-                mainActivityInterface.getThreadPoolExecutor().execute(() -> {
-                    if (mainActivityInterface != null && songListLayoutManager != null) {
-                        mainActivityInterface.getMainHandler().post(() -> {
-                            try {
-                                if (songListAdapter.getItemCount() > songListAdapter.getPositionOfSong(song)) {
-                                    int position = songListAdapter.getPositionOfSong(song);
-                                    if (position == -1) {
-                                        position = 0;
-                                    }
-                                    songListLayoutManager.scrollToPositionWithOffset(position, 0);
-                                    // IV - Reset to a 1 char alphabetic index
-                                    displayIndex(songListAdapter.getAlphaIndex(songMenuSongs.getFoundSongs()));
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        });
-                    }
-                });
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        // This can be scheduled by a delayed song-load callback after the fragment detaches.
+        MainActivityInterface activityInterface = mainActivityInterface;
+        if (activityInterface == null || !isAdded() || myView == null || song == null) {
+            return;
         }
+
+        activityInterface.getMainHandler().post(() -> {
+            if (mainActivityInterface != activityInterface || !isAdded() || myView == null ||
+                    songListAdapter == null || songListLayoutManager == null) {
+                return;
+            }
+            try {
+                int position = songListAdapter.getPositionOfSong(song);
+                if (position < 0) {
+                    return;
+                }
+                songListLayoutManager.scrollToPositionWithOffset(position, 0);
+                displayIndex(songListAdapter.getAlphaIndex(songMenuSongs.getFoundSongs()));
+            } catch (Exception e) {
+                Log.w(TAG, "Unable to move the song-menu selection", e);
+            }
+        });
     }
 
     public int getPositionInSongMenu(Song song) {

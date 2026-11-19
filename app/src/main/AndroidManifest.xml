@@ -72,7 +72,6 @@
     <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_SCAN" />
     <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_ADVERTISE" />
-    <uses-permission android:name="adco.helixmidimixer.permission.CONTROL_MIDI_CONNECTION" />
 
     <!-- Specifying never for location stops many devices being discovered -->
     <uses-permission android:name="android.permission.NEARBY_WIFI_DEVICES" tools:targetApi="s" />
@@ -108,10 +107,10 @@
     <queries>
         <package android:name="com.google.android.apps.wear.companion" />
         <package android:name="com.samsung.android.watermelo" />
-        <package android:name="adco.helixmidimixer" />
     </queries>
 
     <application
+        android:name="adco.helixcompanion.HelixCompanionApplication"
         android:allowBackup="true"
         android:fullBackupContent="@xml/backup_rules"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -323,8 +322,17 @@
 
         </activity>
 
-
-
+        <!-- Compose requires a hardware accelerated window. The application (and the
+             Song View activity) deliberately run in software rendering, so this has to
+             be enabled explicitly here: otherwise Compose draws through
+             ViewRootImpl.drawSoftware and crashes in GraphicsViewLayer.record
+             (SIGSEGV) as soon as the mixer screen is shown. -->
+        <activity
+            android:name="adco.helixmidimixer.MainActivity"
+            android:exported="false"
+            android:hardwareAccelerated="true"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustResize" />
 
         <!--ATTENTION: This was auto-generated to add Google Play services to your project for
                     App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.-->

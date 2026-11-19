@@ -28,6 +28,10 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
+import adco.helixcompanion.HelixCompanionApplication;
+import adco.helixmidimixer.midi.BleConnectionState;
+import adco.helixmidimixer.midi.BleMidiConnectionListener;
+import adco.helixmidimixer.midi.BleMidiManager;
 import adco.helixsongview.R;
 import adco.helixsongview.interfaces.MainActivityInterface;
 
@@ -48,6 +52,9 @@ public class Midi {
     private final Activity activity;
     private final MainActivityInterface mainActivityInterface;
     private MidiInputReceiver pedalMidiReceiver;
+    private BleMidiManager sharedBleMidiManager;
+    private boolean sharedConnectionListenerRegistered;
+    private BleMidiConnectionListener sharedBleConnectionListener;
     private final ShortHandMidi shortHandMidi;
     @SuppressWarnings({"FieldCanBeLocal","unused"})
     private final String TAG = "Midi";
@@ -71,8 +78,40 @@ public class Midi {
         this.activity = activity;
         this.c = c;
         mainActivityInterface = (MainActivityInterface) c;
+        sharedBleConnectionListener = state -> {
+            if (state instanceof BleConnectionState.Connected) {
+                BleConnectionState.Connected connected = (BleConnectionState.Connected) state;
+                midiDeviceName = connected.getDeviceName();
+                midiDeviceAddress = connected.getAddress();
+                if (pedalMidiReceiver == null) {
+                    pedalMidiReceiver = new MidiInputReceiver(c);
+                }
+                BleMidiManager manager = getSharedBleMidiManager();
+                if (manager != null) {
+                    manager.addMidiReceiver(pedalMidiReceiver);
+                }
+                if (readyListener != null) {
+                    readyListener.onReady(null);
+                }
+            }
+            mainActivityInterface.getMainHandler().post(() -> mainActivityInterface.refreshToolbarMenu());
+        };
         getUpdatedPreferences();
         shortHandMidi = new ShortHandMidi(c);
+    }
+
+    private BleMidiManager getSharedBleMidiManager() {
+        if (sharedBleMidiManager == null) {
+            Context applicationContext = c.getApplicationContext();
+            if (applicationContext instanceof HelixCompanionApplication) {
+                sharedBleMidiManager = ((HelixCompanionApplication) applicationContext).getBleMidiManager();
+            }
+        }
+        if (sharedBleMidiManager != null && !sharedConnectionListenerRegistered) {
+            sharedBleMidiManager.addConnectionListener(sharedBleConnectionListener);
+            sharedConnectionListenerRegistered = true;
+        }
+        return sharedBleMidiManager;
     }
 
     // If we change load in a profile, this is called
@@ -280,7 +319,12 @@ public class Midi {
         } else {
             activeBluetoothGatt = null;
             activeGattCharacteristic = null;
-            openBleMidiDevice(bluetoothDevice);
+            BleMidiManager sharedManager = getSharedBleMidiManager();
+            if (sharedManager != null) {
+                sharedManager.connect(bluetoothDevice);
+            } else {
+                openBleMidiDevice(bluetoothDevice);
+            }
         }
     }
 
@@ -378,8 +422,10 @@ public class Midi {
     }
 
     public boolean hasActiveConnection() {
+        BleMidiManager sharedManager = getSharedBleMidiManager();
         return (midiDevice != null && midiInputPort != null)
-                || (useDirectGatt && activeBluetoothGatt != null && activeGattCharacteristic != null);
+                || (useDirectGatt && activeBluetoothGatt != null && activeGattCharacteristic != null)
+                || (sharedManager != null && sharedManager.isConnected());
     }
 
     public MidiManager getMidiManager() {
@@ -397,11 +443,15 @@ public class Midi {
     }
 
     public String getMidiDeviceName() {
-        return midiDeviceName;
+        if (midiDeviceName != null && !midiDeviceName.isEmpty()) return midiDeviceName;
+        BleMidiManager sharedManager = getSharedBleMidiManager();
+        return sharedManager != null ? sharedManager.connectedDeviceName() : midiDeviceName;
     }
 
     public String getMidiDeviceAddress() {
-        return midiDeviceAddress;
+        if (midiDeviceAddress != null && !midiDeviceAddress.isEmpty()) return midiDeviceAddress;
+        BleMidiManager sharedManager = getSharedBleMidiManager();
+        return sharedManager != null ? sharedManager.connectedDeviceAddress() : midiDeviceAddress;
     }
 
     public boolean getIncludeBluetoothMidi() {
@@ -648,12 +698,13 @@ public class Midi {
             tryToGetPorts();
         }
 
-        if (bluetoothDevice != null && !useDirectGatt && midiInputPort == null && activeBluetoothGatt == null) {
-            Log.e(TAG, "sendMidi: Both paths failed!");
-        }
-
         if (b==null || b.length==0) {
             return true;
+        }
+
+        BleMidiManager sharedManager = getSharedBleMidiManager();
+        if (!useDirectGatt && midiInputPort == null && sharedManager != null && sharedManager.isConnected()) {
+            return sharedManager.sendMidiMessage(b);
         }
 
         // Check if we are using the Direct GATT fallback (for budget/problematic devices)
@@ -956,6 +1007,13 @@ public class Midi {
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void disconnectDevice() {
+        BleMidiManager sharedManager = getSharedBleMidiManager();
+        if (sharedManager != null) {
+            if (pedalMidiReceiver != null) {
+                sharedManager.removeMidiReceiver(pedalMidiReceiver);
+            }
+            sharedManager.disconnect();
+        }
         clearMidiSession();
         unregisterBondReceiver();
         // Keep the Bluetooth pairing. Disconnecting MIDI should not force the user
@@ -1031,12 +1089,31 @@ public class Midi {
         // Close the transport, but preserve the system Bluetooth bond so the next
         // connection can be established without another pairing flow.
         unregisterBondReceiver();
+        BleMidiManager sharedManager = getSharedBleMidiManager();
+        if (sharedManager != null) {
+            if (pedalMidiReceiver != null) {
+                sharedManager.removeMidiReceiver(pedalMidiReceiver);
+            }
+            sharedManager.disconnect();
+            if (sharedConnectionListenerRegistered) {
+                sharedManager.removeConnectionListener(sharedBleConnectionListener);
+                sharedConnectionListenerRegistered = false;
+            }
+        }
         clearMidiSession();
         bluetoothDevice = null;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void enableMidiListener() {
+        BleMidiManager sharedManager = getSharedBleMidiManager();
+        if (sharedManager != null && sharedManager.isConnected()) {
+            if (pedalMidiReceiver == null) {
+                pedalMidiReceiver = new MidiInputReceiver(c);
+            }
+            sharedManager.addMidiReceiver(pedalMidiReceiver);
+            return;
+        }
         if (midiDevice != null && midiOutputPort != null) {
             pedalMidiReceiver = new MidiInputReceiver(c);
             try {
@@ -1052,6 +1129,10 @@ public class Midi {
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void disableMidiListener() {
+        BleMidiManager sharedManager = getSharedBleMidiManager();
+        if (sharedManager != null && pedalMidiReceiver != null) {
+            sharedManager.removeMidiReceiver(pedalMidiReceiver);
+        }
         if (midiDevice != null && midiOutputPort != null && pedalMidiReceiver != null) {
             try {
                 midiOutputPort.disconnect(pedalMidiReceiver);
@@ -1798,7 +1879,7 @@ public class Midi {
     }
 
     public void connectToLastDevice() {
-        if (getMidiDevice() != null) {
+        if (hasActiveConnection()) {
             mainActivityInterface.getShowToast().doIt("Already connected to MIDI device.");
             return;
         }

@@ -1,17 +1,11 @@
 package adco.helixsongview.midi
 
-import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothManager
-import android.bluetooth.le.BluetoothLeScanner
-import android.bluetooth.le.ScanCallback
-import android.bluetooth.le.ScanFilter
-import android.bluetooth.le.ScanResult
-import android.bluetooth.le.ScanSettings
 import android.content.Context
-import android.media.midi.MidiDevice
-import android.os.ParcelUuid
-import android.util.Log
+import adco.helixcompanion.HelixCompanionApplication
+import adco.helixmidimixer.midi.BleConnectionState as SharedBleConnectionState
+import adco.helixmidimixer.midi.BleMidiManager
+import adco.helixmidimixer.midi.BleDeviceInfo as SharedBleDeviceInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -21,14 +15,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
-/**
- * Compose-friendly bridge over the existing Java [Midi] class, so the
- * Matrix Mixer style dialog can scan / connect / disconnect BLE MIDI devices
- * through the same connection that the rest of Song View uses.
- */
 sealed interface BleConnectionState {
     data object Disconnected : BleConnectionState
     data object Scanning : BleConnectionState
@@ -44,20 +32,20 @@ data class BleDeviceInfo(
     val rssi: Int
 )
 
+/** Song View adapter over the single process-wide BLE MIDI connection. */
 class BleMidiBridge(
-    private val context: Context,
+    context: Context,
     private val midi: Midi
 ) {
-
     companion object {
-        private const val TAG = "BleMidiBridge"
         private const val CONNECT_TIMEOUT_MS = 15_000L
     }
 
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
-    private var scanner: BluetoothLeScanner? = null
-    private var pollJob: Job? = null
+    private val manager: BleMidiManager =
+        (context.applicationContext as HelixCompanionApplication).bleMidiManager
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private var connectJob: Job? = null
+    private var connectionPending = false
 
     private val _connectionState = MutableStateFlow<BleConnectionState>(BleConnectionState.Disconnected)
     val connectionState: StateFlow<BleConnectionState> = _connectionState.asStateFlow()
@@ -65,139 +53,81 @@ class BleMidiBridge(
     private val _scannedDevices = MutableStateFlow<List<BleDeviceInfo>>(emptyList())
     val scannedDevices: StateFlow<List<BleDeviceInfo>> = _scannedDevices.asStateFlow()
 
-    private val scanCallback = object : ScanCallback() {
-        @SuppressLint("MissingPermission")
-        override fun onScanResult(callbackType: Int, result: ScanResult?) {
-            val device = result?.device ?: return
-            val info = BleDeviceInfo(
-                device = device,
-                name = device.name ?: "Unknown Device",
-                address = device.address,
-                rssi = result.rssi
-            )
-            val current = _scannedDevices.value.toMutableList()
-            val idx = current.indexOfFirst { it.address == device.address }
-            if (idx >= 0) {
-                current[idx] = info
-            } else {
-                current.add(info)
-            }
-            _scannedDevices.value = current
-        }
-
-        override fun onScanFailed(errorCode: Int) {
-            Log.e(TAG, "Scan failed with error code $errorCode")
-            _connectionState.value = BleConnectionState.Error("Scan failed: error code $errorCode")
-        }
-    }
-
     init {
-        refreshFromMidi()
-        pollJob = scope.launch {
-            while (isActive) {
-                delay(500)
-                refreshFromMidi()
+        scope.launch {
+            manager.connectionState.collect { state ->
+                when (state) {
+                    SharedBleConnectionState.Disconnected -> {
+                        if (!connectionPending) refreshFromMidi()
+                    }
+                    SharedBleConnectionState.Scanning -> {
+                        _connectionState.value = BleConnectionState.Scanning
+                    }
+                    is SharedBleConnectionState.Connecting -> {
+                        _connectionState.value = BleConnectionState.Connecting(state.deviceName)
+                    }
+                    is SharedBleConnectionState.Connected -> {
+                        connectionPending = false
+                        connectJob?.cancel()
+                        midi.setMidiDeviceName(state.deviceName)
+                        midi.setMidiDeviceAddress(state.address)
+                        _connectionState.value = BleConnectionState.Connected(state.deviceName, state.address)
+                    }
+                    is SharedBleConnectionState.Error -> {
+                        connectionPending = false
+                        connectJob?.cancel()
+                        _connectionState.value = BleConnectionState.Error(state.message)
+                    }
+                }
             }
         }
+        scope.launch {
+            manager.scannedDevices.collect { devices ->
+                _scannedDevices.value = devices.map { it.toSongViewDevice() }
+            }
+        }
+        refreshFromMidi()
     }
+
+    private fun SharedBleDeviceInfo.toSongViewDevice() = BleDeviceInfo(
+        device = device,
+        name = name,
+        address = address,
+        rssi = rssi
+    )
 
     private fun refreshFromMidi() {
         if (midi.hasActiveConnection()) {
-            val name = midi.midiDeviceName
-            val address = midi.midiDeviceAddress
-            val current = _connectionState.value
-            if (current !is BleConnectionState.Connected ||
-                current.deviceName != name ||
-                current.address != address
-            ) {
-                _connectionState.value = BleConnectionState.Connected(name, address)
-            }
+            _connectionState.value = BleConnectionState.Connected(
+                midi.midiDeviceName,
+                midi.midiDeviceAddress
+            )
         } else {
-            when (_connectionState.value) {
-                is BleConnectionState.Scanning,
-                is BleConnectionState.Connecting -> Unit // keep transient states
-                else -> _connectionState.value = BleConnectionState.Disconnected
-            }
-        }
-    }
-
-    @SuppressLint("MissingPermission")
-    fun startScan() {
-        val manager = context.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager
-        val adapter = manager?.adapter
-        if (adapter == null || !adapter.isEnabled) {
-            _connectionState.value = BleConnectionState.Error("Bluetooth is disabled")
-            return
-        }
-
-        val leScanner = adapter.bluetoothLeScanner
-        if (leScanner == null) {
-            _connectionState.value = BleConnectionState.Error("BLE Scanner not available")
-            return
-        }
-
-        scanner = leScanner
-        _scannedDevices.value = emptyList()
-        _connectionState.value = BleConnectionState.Scanning
-
-        val filter = ScanFilter.Builder()
-            .setServiceUuid(ParcelUuid.fromString(midi.uuidBle))
-            .build()
-        val settings = ScanSettings.Builder()
-            .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
-            .build()
-
-        try {
-            leScanner.startScan(listOf(filter), settings, scanCallback)
-        } catch (e: SecurityException) {
-            Log.e(TAG, "Missing Bluetooth permissions for scan", e)
-            _connectionState.value = BleConnectionState.Error("Bluetooth permission missing")
-        } catch (e: Exception) {
-            Log.e(TAG, "Error starting BLE scan", e)
-            _connectionState.value = BleConnectionState.Error("Failed to start scan: ${e.message}")
-        }
-    }
-
-    @SuppressLint("MissingPermission")
-    fun stopScan() {
-        try {
-            scanner?.stopScan(scanCallback)
-        } catch (_: Exception) {
-        }
-        scanner = null
-        if (_connectionState.value is BleConnectionState.Scanning) {
             _connectionState.value = BleConnectionState.Disconnected
         }
     }
 
-    @SuppressLint("MissingPermission")
+    fun startScan() {
+        manager.startScan()
+    }
+
+    fun stopScan() {
+        manager.stopScan()
+    }
+
     fun connect(info: BleDeviceInfo) {
         stopScan()
         connectJob?.cancel()
+        midi.disconnectDevice()
 
-        try {
-            midi.disconnectDevice()
-        } catch (_: Exception) {
-        }
-
-        midi.setOnMidiDeviceReadyListener(object : Midi.OnMidiDeviceReadyListener {
-            override fun onReady(device: MidiDevice) {
-                _connectionState.value = BleConnectionState.Connected(
-                    midi.midiDeviceName,
-                    midi.midiDeviceAddress
-                )
-            }
-        })
-
-        midi.setMidiDeviceName(info.name)
-        midi.setMidiDeviceAddress(info.address)
+        connectionPending = true
         _connectionState.value = BleConnectionState.Connecting(info.name)
-
         connectJob = scope.launch {
             delay(CONNECT_TIMEOUT_MS)
-            if (_connectionState.value is BleConnectionState.Connecting) {
+            if (connectionPending) {
+                connectionPending = false
                 _connectionState.value = BleConnectionState.Error(
-                    "Connection timed out. The WIDI may be busy in another app."
+                    "Connection timed out. The WIDI may be busy or pairing was cancelled."
                 )
             }
         }
@@ -205,25 +135,22 @@ class BleMidiBridge(
         try {
             midi.setBluetoothDevice(info.device)
         } catch (e: Exception) {
-            Log.e(TAG, "Unable to start Bluetooth MIDI connection", e)
             connectJob?.cancel()
+            connectionPending = false
             _connectionState.value = BleConnectionState.Error("Unable to connect: ${e.message}")
         }
     }
 
     fun disconnect() {
         connectJob?.cancel()
-        try {
-            midi.disconnectDevice()
-        } catch (_: Exception) {
-        }
+        connectionPending = false
+        midi.disconnectDevice()
         _connectionState.value = BleConnectionState.Disconnected
     }
 
     fun release() {
         stopScan()
         connectJob?.cancel()
-        pollJob?.cancel()
         scope.cancel()
     }
 }

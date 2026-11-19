@@ -18,6 +18,7 @@ buildscript {
         // Add these lines so the plugins are available for your modules
         classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:2.4.0'
         classpath 'org.jetbrains.kotlin:compose-compiler-gradle-plugin:2.4.0'
+        classpath 'org.jetbrains.kotlin:kotlin-serialization:2.4.0'
     }
 }
 

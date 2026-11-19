@@ -494,7 +494,10 @@ public class MyRecyclerView extends RecyclerView  implements RecyclerView.Smooth
         canvas.scale(mScaleFactor, mScaleFactor);
         super.dispatchDraw(canvas);
         canvas.restore();
-        invalidate();
+        // Do not invalidate here: drawing must not schedule another draw. The old
+        // unconditional invalidate() kept the whole song (hundreds of TextViews)
+        // repainting every frame, which made scrolling and the inline set feel slow.
+        // Scale/pan handlers already invalidate when the transform changes.
     }
 
     public void toggleScale() {

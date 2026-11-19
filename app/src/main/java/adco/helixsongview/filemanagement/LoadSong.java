@@ -64,9 +64,17 @@ public class LoadSong {
         if (!indexing) {
             Song cached = songCache.get(cacheKey);
             if (cached != null) {
-                cached.setCurrentlyLoading(false);
-                mainActivityInterface.setHighlightChangeAllowed(true);
-                return cached;
+                boolean cachedXml = cached.getFiletype() == null || "XML".equals(cached.getFiletype());
+                if (!cachedXml || hasMeaningfulLyrics(cached)) {
+                    // The active Song is mutable and must never alias the cache entry.
+                    Song cachedCopy = new Song(cached);
+                    cachedCopy.setCurrentlyLoading(false);
+                    mainActivityInterface.setHighlightChangeAllowed(true);
+                    return cachedCopy;
+                }
+                // Do not keep a blank indexed result: it may have been cached before
+                // the source XML could be read successfully.
+                songCache.remove(cacheKey);
             }
         }
 
@@ -96,14 +104,36 @@ public class LoadSong {
             if (thisSong.getFilename().equals("Welcome to OpenSongApp") || thisSong.getFilename().endsWith(c.getString(R.string.welcome))) {
                 loadedSong = mainActivityInterface.getSong().showWelcomeSong(c, thisSong);
             } else {
-                thisSong = mainActivityInterface.getSQLiteHelper().getSpecificSong(
-                        thisSong.getFolder(), thisSong.getFilename());
-                // IV - A Database song still needs cleaning -odd?
-                // Fix all the rogue code
-                if (thisSong.getLyrics()==null || thisSong.getLyrics().isEmpty()) {
+                thisSong = mainActivityInterface.getSQLiteHelper().getSpecificSong(folder, filename);
+                boolean loadedFromSourceFile = false;
+
+                // The index can contain a song row with empty lyrics even though the
+                // OpenSong XML is present. Re-read that source instead of accepting a
+                // placeholder that renders as a black/empty page.
+                boolean isXmlSong = thisSong.getFiletype() == null ||
+                        "XML".equals(thisSong.getFiletype());
+                if (isXmlSong && !hasMeaningfulLyrics(thisSong)) {
+                    Log.w(TAG, "Indexed lyrics empty; retrying source file: " + folder + "/" + filename);
+                    Song sourceSong = new Song();
+                    sourceSong.setFolder(folder);
+                    sourceSong.setFilename(filename);
+                    sourceSong = doLoadSongFile(sourceSong, indexing);
+                    if (hasMeaningfulLyrics(sourceSong)) {
+                        thisSong = sourceSong;
+                        loadedFromSourceFile = true;
+                        Log.i(TAG, "Source file supplied lyrics: " + folder + "/" + filename);
+                    }
+                }
+
+                // Fix all the rogue code. Keep the historical placeholder only if
+                // both the database and the source file genuinely contain no lyrics.
+                if (!hasMeaningfulLyrics(thisSong)) {
                     thisSong.setLyrics(" ");
                 }
-                thisSong.setLyrics(mainActivityInterface.getProcessSong().parseLyrics(mainActivityInterface.getLocale(), thisSong, true));
+                if (!loadedFromSourceFile) {
+                    thisSong.setLyrics(mainActivityInterface.getProcessSong()
+                            .parseLyrics(mainActivityInterface.getLocale(), thisSong, true));
+                }
 
                 sortLoadingSuccessful(thisSong);
 
@@ -118,9 +148,20 @@ public class LoadSong {
         }
 
         if (!indexing && loadedSong != null) {
-            songCache.put(cacheKey, loadedSong);
+            if (loadedSong.getFiletype() == null ||
+                    !"XML".equals(loadedSong.getFiletype()) ||
+                    hasMeaningfulLyrics(loadedSong)) {
+                // Keep a separate snapshot; current-song state is mutable during loads.
+                songCache.put(cacheKey, new Song(loadedSong));
+            } else {
+                songCache.remove(cacheKey);
+            }
         }
         return loadedSong;
+    }
+
+    private boolean hasMeaningfulLyrics(Song song) {
+        return song != null && song.getLyrics() != null && !song.getLyrics().trim().isEmpty();
     }
 
     public Song doLoadSongFile(Song thisSong, boolean indexing) {

@@ -6,7 +6,7 @@
 > - ✅ **Mantener** (se migra)
 > - ❌ **Eliminar** (se retira; no migrar el paquete asociado)
 > - ⏳ **Evaluar** (pendiente de decidir)
-> - ? **Funcion desconocida**  (el usuario no sabe que hace)
+> - ? **Función desconocida**  (el usuario no sabe que hace)
 >
 > La columna "Ubicación" indica el paquete/archivo para localizarlo. Retira primero, migra después.
 
@@ -17,8 +17,8 @@
 - [✅ ] ChordPro (`.chordpro`, `.chopro`, `.cho`, `.pro`) — `songprocessing/ConvertChoPro`
 - [✅ ] OnSong (`.onsong`) — `songprocessing/ConvertOnSong`
 - [⏳ ] OpenSong (`.osb`, `.ost`, `.ossb`, `.osts`) — `songprocessing/ConvertOnSong`, `export`
-- [⏳ ] Texto plano / Word (`.txt`, `.docx` vía Mammoth) — `songprocessing/ConvertWord`, `ConvertTextSong`
-- [⏳ ] Backup (`.backup`) — `backupandrestore`
+- [✅ ] Texto plano / Word (`.txt`, `.docx` vía Mammoth) — `songprocessing/ConvertWord`, `ConvertTextSong`
+- [✅ ] Backup (`.backup`) — `backupandrestore`
 - [⏳ ] MusicXML — `openchords/OpenChordsMusicXML`
 - [❌ ] PDF (importación) — `pdf/MakePDF`, OCR
 - [❌] Imágenes (OCR vía ML Kit) — `importsongs`, ML Kit
@@ -62,11 +62,11 @@
 
 ## 6. OpenChords (sincronización/servicio)
 
-- [⏳ ] API OpenChords — `openchords/OpenChordsAPI`
-- [⏳ ] Login/autenticación — `openchords/AuthInterceptor`, `OpenChordsLogin*`
-- [⏳ ] Carpetas y permisos — `openchords/OpenChordsFolder*`
-- [⏳ ] Resolución de conflictos — `openchords/OpenChordsConflict*`
-- [⏳ ] Sincronización de canciones y sets — `openchords/OpenChordsFragment`
+- [❌ ] API OpenChords — `openchords/OpenChordsAPI`
+- [❌ ] Login/autenticación — `openchords/AuthInterceptor`, `OpenChordsLogin*`
+- [❌ ] Carpetas y permisos — `openchords/OpenChordsFolder*`
+- [❌ ] Resolución de conflictos — `openchords/OpenChordsConflict*`
+- [❌ ] Sincronización de canciones y sets — `openchords/OpenChordsFragment`
 
 ## 7. Presentación / Performance
 
@@ -117,16 +117,16 @@
 - [✅ ] Barra de acción (action bar) — `screensetup/ActionBarSettingsFragment`
 - [✅ ] Botones de scroll — `screensetup/ScrollButtons`
 - [?] Bandera de ventana — `screensetup/WindowFlags`
-- [⏳ ] Estado de batería — `screensetup/BatteryStatus`
+- [✅ ] Estado de batería — `screensetup/BatteryStatus`
 - [❌ ] Idioma (~20 idiomas) — `appdata/LanguageFragment`, `res/values-*`
 - [✅ ] Preferencias — `preferences/Preferences`, `HelixSettingsFragment`
 - [❌ ] Tutorial ShowCase (destacar features) — `animation/ShowCase`, MaterialShowcaseView
 
 ## 12. Analytics
 
-- [?] Registro de uso (SQLite) — `analytics/*`, `sqlite/AnalyticsSQLiteHelper`
-- [?] Bottom sheet de analytics — `analytics/AnalyticsBottomSheet`
-- [?] Orden de analytics — `analytics/SortMode`
+- [✅] Registro de uso (SQLite) — `analytics/*`, `sqlite/AnalyticsSQLiteHelper`
+- [✅] Bottom sheet de analytics — `analytics/AnalyticsBottomSheet`
+- [✅] Orden de analytics — `analytics/SortMode`
 
 ## 13. PDF / OCR / Escaneo
 
@@ -171,8 +171,8 @@
 
 ## 20. Deeplinks / Apertura de archivos
 
-- [?] Esquema `opensongapp://` — `AndroidManifest.xml` intent-filter
-- [?] Apertura de `.osb/.chordpro/.onsong/...` desde otras apps — `AndroidManifest.xml` intent-filters
+- [✅] Esquema `opensongapp://` — `AndroidManifest.xml` intent-filter
+- [✅] Apertura de `.osb/.chordpro/.onsong/...` desde otras apps — `AndroidManifest.xml` intent-filters
 
 ## 21. Wear OS companion
 
@@ -190,7 +190,7 @@
 
 - [✅] Comprobación de internet — `appdata/CheckInternet`
 - [❌ ] Herramientas de tiempo — `appdata/TimeTools`
-- [?] Locale/fecha fija — `appdata/FixLocale`
+- [❌ ] Locale/fecha fija — `appdata/FixLocale`
 - [?] Comprobaciones de alertas — `appdata/AlertChecks`
 - [❌ ] Diálogos personalizados — `appdata/CustomAlertDialog`
 - [❌ ] Compartir logs — `appdata/ShareLogsFragment`

@@ -329,6 +329,11 @@ public class SetMenuFragment extends Fragment {
     }
 
     public void updateKeys() {
+        // The drawer page may exist without being attached yet (ViewPager2 creates the
+        // fragment on demand), so there is no activity interface to update against.
+        if (mainActivityInterface == null) {
+            return;
+        }
         if (mainActivityInterface.getSetActions().getMissingKeyPositions()!=null &&
                 setAdapter!=null &&
                 mainActivityInterface.getCurrentSet().getSetItemInfos()!=null &&

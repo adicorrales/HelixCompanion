@@ -1949,10 +1949,13 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             mainLooper.post(() -> {
                 if (myView != null) {
                     myView.myToolbar.setActionBar(this, what);
-                    if (whattodo != null && whattodo.equals("storageBad")) {
-                        myView.fragmentView.setTop(0);
-                    } else {
-                        myView.fragmentView.setTop(myView.myToolbar.getActionBarHeight(settingsOpen || menuOpen));
+                    int top = 0;
+                    if (whattodo == null || !whattodo.equals("storageBad")) {
+                        top = myView.myToolbar.getActionBarHeight(settingsOpen || menuOpen);
+                    }
+                    // setTop() requests a full layout even when the value did not change.
+                    if (myView.fragmentView.getTop() != top) {
+                        myView.fragmentView.setTop(top);
                     }
                 }
             });
@@ -2147,20 +2150,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     }
 
     private void launchHelixMidiMixer() {
-        Intent launchIntent = getPackageManager().getLaunchIntentForPackage("adco.helixmidimixer");
-        if (launchIntent == null) {
-            getShowToast().doIt(getString(R.string.helix_midi_mixer_not_installed));
-            return;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            getMidi().tryDisconnectBluetoothLE();
         }
-        launchIntent.addFlags(
-                Intent.FLAG_ACTIVITY_NEW_TASK
-                        | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-                        | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-        try {
-            startActivity(launchIntent);
-        } catch (ActivityNotFoundException e) {
-            getShowToast().doIt(getString(R.string.helix_midi_mixer_not_installed));
-        }
+        Intent mixerIntent = new Intent(this, adco.helixmidimixer.MainActivity.class);
+        mixerIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        startActivity(mixerIntent);
     }
 
     @Override
@@ -2372,12 +2367,23 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
     @Override
     public void closeDrawer(boolean close) {
+        // Only touch the drawer when its state actually changes. A redundant close
+        // triggers a full DrawerLayout pass, which recreates the song/set fragments
+        // and can block the UI for seconds during a song change.
+        // isDrawerVisible() is used instead of isDrawerOpen() because the latter is
+        // false while the drawer is still animating: a close requested mid-open was
+        // being ignored, leaving the menu on screen after the song had loaded.
+        boolean isVisible = myView.drawerLayout.isDrawerVisible(GravityCompat.START);
         if (close) {
-            myView.drawerLayout.post(() -> myView.drawerLayout.closeDrawer(GravityCompat.START));
             menuOpen = false;
+            if (isVisible) {
+                myView.drawerLayout.post(() -> myView.drawerLayout.closeDrawer(GravityCompat.START));
+            }
         } else {
-            myView.drawerLayout.post(() -> myView.drawerLayout.openDrawer(GravityCompat.START));
             menuOpen = true;
+            if (!isVisible) {
+                myView.drawerLayout.post(() -> myView.drawerLayout.openDrawer(GravityCompat.START));
+            }
         }
         // Hide the keyboard
         getWindowFlags().hideKeyboard();
@@ -2455,7 +2461,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             }
             viewPager = myView.viewpager;
             viewPager.setAdapter(viewPagerAdapter);
-            viewPager.setOffscreenPageLimit(1);
+            // Do not keep the neighbouring drawer page alive. With a limit of 1 the
+            // song menu AND the set menu (hundreds of rows each) were built during the
+            // first song load, blocking the main thread for several seconds. The default
+            // lets ViewPager2 create each page only when it is actually shown.
+            viewPager.setOffscreenPageLimit(androidx.viewpager2.widget.ViewPager2.OFFSCREEN_PAGE_LIMIT_DEFAULT);
             // Disable the swiping gesture
             viewPager.setUserInputEnabled(false);
             TabLayout tabLayout = myView.menuTop.tabs;
@@ -3400,18 +3410,22 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             delay = 100;
         }
 
-        if (folder != null && filename != null) {
-            getPreferences().setMyPreferenceString("songFolder", folder);
-            getPreferences().setMyPreferenceString("songFilename", filename);
-            getSong().setFolder(folder);
-            getSong().setFilename(filename);
-        }
-
         mainLooper.postDelayed(() -> {
             getToolbar().setPerformanceMode(true);
             if (performanceValid()) {
+                // PerformanceFragment owns the serialized load queue. Do not mutate the
+                // globally visible Song here while an earlier request is still rendering.
                 performanceFragment.doSongLoad(folder, filename);
             } else {
+                // The new fragment needs the requested location before it is created.
+                if (folder != null && filename != null) {
+                    getPreferences().setMyPreferenceString("songFolder", folder);
+                    getPreferences().setMyPreferenceString("songFilename", filename);
+                    Song requestedSong = new Song(getSong());
+                    requestedSong.setFolder(folder);
+                    requestedSong.setFilename(filename);
+                    setSong(requestedSong);
+                }
                 navigateToFragment(null, R.id.performanceFragment);
             }
         }, delay);
@@ -3605,7 +3619,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                             }
                         });
                     }
-                    getMainHandler().post(() -> loadSongFromSet(0, false));
+                    // Only ask the app to show song 0 when this set change came from
+                    // outside the app. If the app initiated the load, that request is
+                    // already queued and this would reload song 0 first.
+                    if (!currentlyLoadingSongFromSet) {
+                        getMainHandler().post(() -> loadSongFromSet(0, false));
+                    }
                 }
             } else {
                 // Same playlist
@@ -3657,7 +3676,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         });
     }
 
+    private final Object setSongLoadLock = new Object();
     private boolean currentlyLoadingSongFromSet = false;
+    private int pendingSongFromSetPosition = -1;
+    private boolean pendingSongFromSetSendMidi = true;
+
     @Override
     public void loadSongFromSet(int position) {
         loadSongFromSet(position, true);
@@ -3665,10 +3688,23 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
     @Override
     public void loadSongFromSet(int position, boolean sendMidi) {
-        if (!currentlyLoadingSongFromSet) {
+        synchronized (setSongLoadLock) {
+            if (currentlyLoadingSongFromSet) {
+                // Keep the newest request rather than dropping Next while set metadata is
+                // being resolved. The fragment also coalesces requests during rendering.
+                pendingSongFromSetPosition = position;
+                pendingSongFromSetSendMidi = sendMidi;
+                Log.d(TAG, "loadSongFromSet queued position=" + position);
+                return;
+            }
             currentlyLoadingSongFromSet = true;
-            getThreadPoolExecutor().execute(() -> {
-                try {
+        }
+        executeSongFromSetLoad(position, sendMidi);
+    }
+
+    private void executeSongFromSetLoad(int position, boolean sendMidi) {
+        getThreadPoolExecutor().execute(() -> {
+            try {
                     if (position >= currentSet.getIndexSongInSet()) {
                         displayPrevNext.setSwipeDirection("R2L");
                     } else {
@@ -3710,10 +3746,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                         String setFolder = setItemInfo.songfolder;
                         String setFilename = setItemInfo.songfilename;
                         String setKey = setItemInfo.songkey;
-                        getPreferences().setMyPreferenceString("songFolder", setFolder);
-                        getPreferences().setMyPreferenceString("songFilename", setFilename);
-                        getSong().setFolder(setFolder);
-                        getSong().setFilename(setFilename);
+                        // Resolve this request without mutating either the visible Song
+                        // model or its saved location. PerformanceFragment commits both when
+                        // this request reaches the front of its load queue.
                         Uri setUri = getStorageAccess().getUriForItem("Songs", setFolder, setFilename);
 
                         if (setItemInfo.songfilename.equals(getSetActions().getDividerIdentifier())) {
@@ -3824,10 +3859,21 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 } catch (Exception e) {
                     Log.e(TAG, "Error loading song from set", e);
                 } finally {
-                    currentlyLoadingSongFromSet = false;
+                    int nextPosition;
+                    boolean nextSendMidi;
+                    synchronized (setSongLoadLock) {
+                        nextPosition = pendingSongFromSetPosition;
+                        nextSendMidi = pendingSongFromSetSendMidi;
+                        pendingSongFromSetPosition = -1;
+                        if (nextPosition < 0) {
+                            currentlyLoadingSongFromSet = false;
+                        }
+                    }
+                    if (nextPosition >= 0) {
+                        executeSongFromSetLoad(nextPosition, nextSendMidi);
+                    }
                 }
             });
-        }
     }
 
     private boolean isPlaying = false;
@@ -4203,8 +4249,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
     @Override
     public void updateSongList() {
-        // This uses the existing database objects
-        if (songMenuFragment != null) {
+        // A delayed set-save refresh can arrive after Song View has been covered
+        // or its fragment has detached while Matrix Mixer is visible.
+        if (songMenuFragment != null && songMenuFragment.isAdded()) {
             try {
                 songMenuFragment.setFolders();
                 songMenuFragment.refreshSongList();
@@ -5059,6 +5106,14 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             // Prepare the themes
             getMyThemeColors();
 
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                    getAppPermissions().hasMidiScanPermissions()) {
+                boolean midiConnected = getMidi().hasActiveConnection();
+                boolean autoReconnect = getPreferences().getMyPreferenceBoolean("midiAutoConnectLast", true);
+                if (!midiConnected && autoReconnect) {
+                    getMidi().setupBluetoothManager();
+                }
+            }
         }
 
         try {

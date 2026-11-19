@@ -64,6 +64,8 @@ public class PerformanceFragment extends Fragment {
     private boolean isLoadingSong = false;
     // Song requested while another load was running (only the latest one is kept)
     private String pendingSongFolder = null, pendingSongFilename = null;
+    // Folder/filename currently committed to the page (used to ignore duplicate requests)
+    private String renderedSongFolder = null, renderedSongFilename = null;
     // Signature of the last generated chord diagram set (avoids regenerating on every song)
     private String lastChordImageSignature = "";
     @SuppressWarnings("FieldCanBeLocal")
@@ -342,7 +344,11 @@ public class PerformanceFragment extends Fragment {
                     myView.songView.clearViews();
                 }
                 myView.testPane.removeAllViews();
-                myView.recyclerView.removeAllViews();
+                // The stage/hybrid recycler is hidden in Performance mode. Clearing it
+                // there only detaches its adapter and forces a full rebind later.
+                if (!mainActivityInterface.getMode().equals(mode_performance)) {
+                    myView.recyclerView.removeAllViews();
+                }
                 myView.imageView.setImageDrawable(null);
                 mainActivityInterface.setSectionViews(null);
             } catch (Exception e) {
@@ -471,6 +477,14 @@ public class PerformanceFragment extends Fragment {
             Log.d(TAG, "doSongLoad queued: already loading");
             return;
         }
+        // A duplicate request for the page that is already on screen must not rebuild
+        // the whole song (it caused a second full load and a black page).
+        if (!firstSongLoad && !mainActivityInterface.getForceReload() &&
+                folder != null && filename != null &&
+                folder.equals(renderedSongFolder) && filename.equals(renderedSongFilename)) {
+            Log.d(TAG, "doSongLoad skipped: already rendered " + folder + "/" + filename);
+            return;
+        }
         isLoadingSong = true;
         // Reset autoscale when loading a new song (especially first song after set change)
         scaleFactor = 1.0f;
@@ -487,14 +501,25 @@ public class PerformanceFragment extends Fragment {
                 mainActivityInterface.getForceReload();
         mainActivityInterface.setHighlightChangeAllowed(true);
 
-        if (filename==null || filename.isEmpty() ||
-                mainActivityInterface.getSong().getFilename()==null || mainActivityInterface.getSong().getFilename().isEmpty()) {
+        if (filename==null || filename.isEmpty()) {
             songChange = true;
             filename = "Welcome to OpenSongApp";
             folder = mainfoldername;
-            mainActivityInterface.getSong().setFilename("Welcome to OpenSongApp");
-            mainActivityInterface.getSong().setFolder(mainfoldername);
         }
+
+        // Commit the model only after this request owns the load lock. A queued Next
+        // must not replace the model while an older request is still preparing views.
+        if (folder != null && filename != null) {
+            mainActivityInterface.getPreferences().setMyPreferenceString("songFolder", folder);
+            mainActivityInterface.getPreferences().setMyPreferenceString("songFilename", filename);
+
+            // Detach from any song object held by the load cache before changing its path.
+            Song requestedSong = new Song(mainActivityInterface.getSong());
+            requestedSong.setFolder(folder);
+            requestedSong.setFilename(filename);
+            mainActivityInterface.setSong(requestedSong);
+        }
+        Log.d(TAG, "doSongLoad start: " + folder + "/" + filename);
 
         boolean needToTryAgain = false;
         String keyInFilename;
@@ -516,8 +541,15 @@ public class PerformanceFragment extends Fragment {
             String tryagainfolder = folder;
             String tryagainfilename = filename;
             firstSongLoad = true;
-            mainActivityInterface.getMainHandler().post(() -> doSongLoad(tryagainfolder,tryagainfilename));
-            // End this run now
+            // This path exits before endProcessing; release the guard explicitly so
+            // the retry (or a newer queued selection) can actually start.
+            isLoadingSong = false;
+            processingTestView = false;
+            if (pendingSongFilename != null) {
+                runPendingSongLoadIfAny();
+            } else {
+                mainActivityInterface.getMainHandler().post(() -> doSongLoad(tryagainfolder, tryagainfilename));
+            }
             return;
         }
 
@@ -595,10 +627,11 @@ public class PerformanceFragment extends Fragment {
                     }
                     logStage("setLookup");
 
-                    // During the load song call, the song is cleared
-                    // However it first extracts the folder and filename we've just set
-                    mainActivityInterface.getSong().setFolder(folder);
-                    mainActivityInterface.getSong().setFilename(filename);
+                    // Snapshot the requested song. MainActivity may update its current Song
+                    // object immediately for a newer set selection while this load is queued.
+                    final Song songBaseForLoad = new Song(mainActivityInterface.getSong());
+                    songBaseForLoad.setFolder(folder);
+                    songBaseForLoad.setFilename(filename);
 
                     final boolean stillToCreateVariationFinal = stillToCreateVariation;
                     final String keyInSetFinal = keyInSet;
@@ -615,32 +648,36 @@ public class PerformanceFragment extends Fragment {
                         if (stillToCreateVariationFinal) {
                             // If we are pointing to variation file check the file exists and if not, create it
                             boolean useExisting = true;
-                            if (mainActivityInterface.getSong().getFolder().contains(mainActivityInterface.getVariations().getKeyVariationsFolder())) {
-                                Uri uri = mainActivityInterface.getVariations().getKeyVariationUri(mainActivityInterface.getSong().getFilename());
+                            if (songBaseForLoad.getFolder().contains(mainActivityInterface.getVariations().getKeyVariationsFolder())) {
+                                Uri uri = mainActivityInterface.getVariations().getKeyVariationUri(songBaseForLoad.getFilename());
                                 if (!mainActivityInterface.getStorageAccess().uriExists(uri)) {
-                                    String[] folderfilename = mainActivityInterface.getVariations().getPreVariationInfo(mainActivityInterface.getSong().getFolder(),mainActivityInterface.getSong().getFilename(),keyInSetFinal);
-                                    mainActivityInterface.getSong().setFolder(folderfilename[0]);
-                                    mainActivityInterface.getSong().setFilename(folderfilename[1]);
+                                    String[] folderfilename = mainActivityInterface.getVariations().getPreVariationInfo(songBaseForLoad.getFolder(),songBaseForLoad.getFilename(),keyInSetFinal);
+                                    songBaseForLoad.setFolder(folderfilename[0]);
+                                    songBaseForLoad.setFilename(folderfilename[1]);
                                     useExisting = false;
                                 }
                             }
                             if (useExisting) {
-                                songToUse = mainActivityInterface.getLoadSong().doLoadSong(mainActivityInterface.getSong(), false);
+                                songToUse = mainActivityInterface.getLoadSong().doLoadSong(songBaseForLoad, false);
                             } else {
-                                songToUse = mainActivityInterface.getVariations().makeKeyVariation(mainActivityInterface.getLoadSong().doLoadSong(mainActivityInterface.getSong(), false), keyInSetFinal, true, true);
+                                songToUse = mainActivityInterface.getVariations().makeKeyVariation(mainActivityInterface.getLoadSong().doLoadSong(songBaseForLoad, false), keyInSetFinal, true, true);
                             }
                         } else {
-                            songToUse = mainActivityInterface.getLoadSong().doLoadSong(mainActivityInterface.getSong(),false);
+                            songToUse = mainActivityInterface.getLoadSong().doLoadSong(songBaseForLoad,false);
                         }
 
                         long loadDuration = System.currentTimeMillis() - doSongLoadStartTime;
                         if (loadDuration >= 100) {
-                            Log.d(TAG, "Song file load: " + loadDuration + "ms (" + mainActivityInterface.getSong().getFilename() + ")");
+                            Log.d(TAG, "Song file load: " + loadDuration + "ms (" + songToUse.getFilename() + ")");
                         }
                         logStage("loaded");
 
-                        // Set the main song with the loaded song, or the key variation song
+                        // Set the main song with the loaded song, or the key variation song.
+                        // The fragment serializes this commit with the matching view build.
                         mainActivityInterface.setSong(songToUse);
+                        Log.d(TAG, "loaded model: file=" + songToUse.getFolder() + "/" +
+                                songToUse.getFilename() + " title=" + songToUse.getTitle() +
+                                " lyrics=" + (songToUse.getLyrics() == null ? -1 : songToUse.getLyrics().length()));
 
                         mainActivityInterface.getMainHandler().post(() -> {
                             logStage("post:bgColourToolbar");
@@ -878,7 +915,11 @@ public class PerformanceFragment extends Fragment {
                     prepareSlideImageView();
 
                 } else if (mainActivityInterface.getSong().getFiletype().equals("XML")) {
-                    prepareXMLView();
+                    // Building and measuring the section views is CPU bound (hundreds of
+                    // TextViews). Keep it off the main thread so the previous page stays
+                    // responsive and no black frame is drawn while it is prepared.
+                    logStage("dispatchPrepareXML");
+                    mainActivityInterface.getThreadPoolExecutor().execute(this::prepareXMLView);
                 } else {
                     endProcessing();
                 }
@@ -1023,6 +1064,11 @@ public class PerformanceFragment extends Fragment {
         ArrayList<View> sectionViews = mainActivityInterface.getProcessSong().
                 setSongInLayout(mainActivityInterface.getSong(), false, false);
         mainActivityInterface.setSectionViews(sectionViews);
+        Log.d(TAG, "render model: file=" + mainActivityInterface.getSong().getFolder() + "/" +
+                mainActivityInterface.getSong().getFilename() + " title=" + mainActivityInterface.getSong().getTitle() +
+                " lyrics=" + (mainActivityInterface.getSong().getLyrics() == null ? -1 :
+                mainActivityInterface.getSong().getLyrics().length()) + " sections=" +
+                (sectionViews == null ? -1 : sectionViews.size()));
 
         // Measure the sections straight away. They are not attached to the window, so
         // no layout pass is needed (the old test pane laid the whole song out twice).
@@ -1043,8 +1089,10 @@ public class PerformanceFragment extends Fragment {
         // on every song change.
         measureSongSheetHeader();
 
-        // Everything needed to display the song is now measured
-        setUpTestViewListener();
+        // Everything needed to display the song is now measured. This method runs on
+        // a worker thread, so hand the measured views back to the UI thread.
+        logStage("prepareXMLDone");
+        mainActivityInterface.getMainHandler().post(this::setUpTestViewListener);
     }
 
     /**
@@ -1072,17 +1120,19 @@ public class PerformanceFragment extends Fragment {
             return;
         }
 
-        myView.songView.clearViews();
+        // Keep the previous song visible while the new view tree is measured and built.
+        // ProcessSong.addViewsToScreen replaces the content atomically once the new
+        // sections are ready; clearing here creates a long black page on slower devices.
         myView.testPane.removeAllViews();
-
-        if (mainActivityInterface.getSectionViews().isEmpty()) {
-            // Nothing to display - preserve previous behaviour (no display update)
+        ArrayList<View> sectionViews = mainActivityInterface.getSectionViews();
+        if (sectionViews == null || sectionViews.isEmpty()) {
+            // No new content was produced; keep the previous page and release queued loads.
+            endProcessing();
             return;
         }
 
-        // The sections were measured as soon as they were created
-        // (ProcessSong.measureSectionViews), so there is no need to attach them to a
-        // hidden pane and wait for a layout pass before showing the song.
+        // The sections were measured as soon as they were created, so there is no need
+        // to attach them to a hidden pane and wait for a layout pass before showing them.
         songIsReadyToDisplay();
     }
 
@@ -1123,9 +1173,8 @@ public class PerformanceFragment extends Fragment {
                                 myView.recyclerView.setMaxScrollY(heightAfterScale - availableHeight);
                                 myView.recyclerView.setPadding(myView.inlineSetList.getInlineSetWidth(), 0, 0, 0);
 
-                                endProcessing();
-
-                                // Slide in
+                                // Hold the load lock until this page has been revealed. If another
+                                // song is queued, it must not clear this page before the user sees it.
                                 long QOSAdjustment = doSongLoadQOSTime - (System.currentTimeMillis() - doSongLoadStartTime);
 
                                 myView.recyclerView.setVisibility(View.VISIBLE);
@@ -1140,6 +1189,7 @@ public class PerformanceFragment extends Fragment {
 
                                         // Get a null screenshot
                                         getScreenshot(0, 0, 0);
+                                        endProcessing();
                                     }
                                 }, Math.max(0, QOSAdjustment));
                             }
@@ -1151,6 +1201,7 @@ public class PerformanceFragment extends Fragment {
                     // We are in Performance mode, so use the songView
                     // NOTE: pageHolder is left visible so the previous song stays on screen
                     // until the new one is inserted, instead of flashing to the background
+                    myView.pageHolder.setVisibility(View.VISIBLE);
                     myView.zoomLayout.setVisibility(View.VISIBLE);
                     myView.songView.setVisibility(View.VISIBLE);
                     myView.imageView.setVisibility(View.GONE);
@@ -1283,7 +1334,8 @@ public class PerformanceFragment extends Fragment {
                     myView.zoomLayout.setSongSize(widthAfterScale, heightAfterScale);
                     logStage("songSize");
 
-                    endProcessing();
+                    // Keep the current load locked through the final reveal callback.
+                    // Otherwise a queued selection can clear this page before it is visible.
 
                     // TEMPORARY: how long until the song is actually drawn on screen
                     final long displayStartTime = System.currentTimeMillis();
@@ -1321,6 +1373,8 @@ public class PerformanceFragment extends Fragment {
                                 myView.pageHolder.requestLayout();
                                 myView.pageHolder.invalidate();
                                 myView.pageHolder.setVisibility(View.VISIBLE);
+                                renderedSongFolder = mainActivityInterface.getSong().getFolder();
+                                renderedSongFilename = mainActivityInterface.getSong().getFilename();
 
                                 // Optional slide-in on song change (Song display settings).
                                 // Off by default: the new song is already laid out and swapped
@@ -1347,6 +1401,12 @@ public class PerformanceFragment extends Fragment {
                         } catch (Exception e) {
                             mainActivityInterface.getStorageAccess().updateCrashLog(e.toString());
                             Log.e(TAG, "PerformanceFragment error", e);
+                        } finally {
+                            if (mainActivityInterface != null && myView != null) {
+                                endProcessing();
+                            } else {
+                                isLoadingSong = false;
+                            }
                         }
                     }, Math.max(0, QOSAdjustment));
                 }
@@ -1385,6 +1445,15 @@ public class PerformanceFragment extends Fragment {
         // dealWithStuffAfterReady (e.g. unsupported file types)
         isLoadingSong = false;
 
+        // A navigation or UI refresh during a long load can set forceReload again.
+        // The page we have just revealed already shows the latest content, so keeping
+        // that flag only schedules an identical second load: several extra seconds
+        // of black screen and a visible re-render of the same song.
+        mainActivityInterface.setForceReload(false);
+        if (myView != null && myView.inlineSetList != null) {
+            myView.inlineSetList.setForceReload(false);
+        }
+
         // If the user requested another song while this one was loading, honour it now
         runPendingSongLoadIfAny();
     }
@@ -1411,18 +1480,15 @@ public class PerformanceFragment extends Fragment {
         if (mainActivityInterface == null) {
             return;
         }
-        if (filename.equals(mainActivityInterface.getSong().getFilename()) &&
-                folder != null && folder.equals(mainActivityInterface.getSong().getFolder())) {
-            // Already showing this song
-            return;
-        }
+        // The Activity can point at the pending song before its view has been rendered.
+        // Do not compare against that mutable model here: this queued load is what commits
+        // the newest requested song to the screen.
         mainActivityInterface.getMainHandler().post(() -> doSongLoad(folder, filename));
     }
 
     // This stuff deals with running song actions
     @SuppressWarnings("ConstantConditions")
     private void dealWithStuffAfterReady(boolean callEndProcessing) {
-        isLoadingSong = false;
         if (callEndProcessing) {
             endProcessing();
         }
