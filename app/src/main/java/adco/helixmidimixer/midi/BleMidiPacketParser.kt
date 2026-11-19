@@ -42,21 +42,16 @@ object BleMidiPacketParser {
     }
 
     /**
-     * Parses incoming MIDI packet bytes (supporting both raw MIDI and BLE-MIDI packets) into a list of [MidiCcMessage] objects.
+     * Parses incoming MIDI packet bytes (supporting raw MIDI, a leading
+     * header/timestamp byte, and full BLE-MIDI packets) into [MidiCcMessage] objects.
      */
     fun parse(bytes: ByteArray): List<MidiCcMessage> {
         logDebug("BleMidiPacketParser", "Parsing incoming bytes: ${bytes.joinToString(" ") { "0x%02X".format(it) }}")
         if (bytes.size < 3) return emptyList()
 
         val messages = mutableListOf<MidiCcMessage>()
-        var i = 0
-
-        val firstByte = bytes[0].toInt() and 0xFF
-        val isBleMidiHeader = (firstByte and 0x80) != 0 && (firstByte and 0x40) == 0 && (bytes[1].toInt() and 0x80) != 0
-
-        if (isBleMidiHeader) {
-            i = 1
-        }
+        val statusOffset = initialStatusOffset(bytes)
+        var i = statusOffset
 
         var runningStatus: Int? = null
 
@@ -64,7 +59,7 @@ object BleMidiPacketParser {
             var b = bytes[i].toInt() and 0xFF
 
             // In BLE MIDI, a timestamp byte (bit 7 set) precedes a status byte or running status data
-            if (isBleMidiHeader && (b and 0x80) != 0 && i + 1 < bytes.size && (bytes[i + 1].toInt() and 0x80) != 0) {
+            if (statusOffset > 0 && (b and 0x80) != 0 && i + 1 < bytes.size && (bytes[i + 1].toInt() and 0x80) != 0) {
                 i++
                 if (i >= bytes.size) break
                 b = bytes[i].toInt() and 0xFF
@@ -111,6 +106,26 @@ object BleMidiPacketParser {
             }
         }
 
+        logDebug(
+            "BleMidiPacketParser",
+            "Parsed CC messages: " + messages.joinToString { "ch=${it.channel}, cc=${it.ccNumber}, value=${it.value}" }
+        )
         return messages
+    }
+
+    /**
+     * Finds where the MIDI status byte starts.
+     *
+     * Android's MIDI output port delivers raw MIDI ([status, data...]), but some
+     * Bluetooth stacks prepend the BLE-MIDI header and/or timestamp byte
+     * ([header, timestamp, status, data...]). In both cases the data bytes that
+     * follow the status are below 0x80, so a high bit in the second byte means the
+     * first byte was not the status.
+     */
+    private fun initialStatusOffset(bytes: ByteArray): Int {
+        if (bytes.size >= 2 && (bytes[1].toInt() and 0x80) != 0) {
+            return if (bytes.size >= 5 && (bytes[2].toInt() and 0x80) != 0) 2 else 1
+        }
+        return 0
     }
 }

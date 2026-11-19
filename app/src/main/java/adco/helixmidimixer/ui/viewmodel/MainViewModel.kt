@@ -61,14 +61,19 @@ class MainViewModel(
     val isPlaying: StateFlow<Boolean> = _isPlaying.asStateFlow()
 
     private var isSongLoaded = false
-    private val lastSentCcTime = mutableMapOf<Int, Long>()
+    // Echo suppression is keyed by channel + CC + value: the Helix answers our
+    // CC51:127 with CC51:1 (start-from-zero) and that notification must not be
+    // mistaken for an echo of the value we sent.
+    private val lastSentCcTime = mutableMapOf<String, Long>()
 
-    private fun markCcSent(ccNumber: Int) {
-        lastSentCcTime[ccNumber] = System.currentTimeMillis()
+    private fun ccEchoKey(channel: Int, ccNumber: Int, value: Int) = "$channel:$ccNumber:$value"
+
+    private fun markCcSent(channel: Int, ccNumber: Int, value: Int) {
+        lastSentCcTime[ccEchoKey(channel, ccNumber, value)] = System.currentTimeMillis()
     }
 
-    private fun isCcSelfEcho(ccNumber: Int): Boolean {
-        val sentTime = lastSentCcTime[ccNumber] ?: return false
+    private fun isCcSelfEcho(channel: Int, ccNumber: Int, value: Int): Boolean {
+        val sentTime = lastSentCcTime[ccEchoKey(channel, ccNumber, value)] ?: return false
         return (System.currentTimeMillis() - sentTime) < 400L
     }
 
@@ -199,7 +204,7 @@ class MainViewModel(
         // Listen to incoming MIDI CC packets over BLE
         viewModelScope.launch {
             bleMidiManager.incomingMidiCc.collect { ccMsg ->
-                handleIncomingMidiCc(ccMsg.ccNumber, ccMsg.value)
+                handleIncomingMidiCc(ccMsg.ccNumber, ccMsg.value, ccMsg.channel)
             }
         }
 
@@ -305,7 +310,7 @@ class MainViewModel(
         // Send BLE MIDI CC (value 127 >= 64 to toggle state per Helix specification)
         val channelCcMapping = midiCcMapping.value.getChannelCc(group, channelIndex)
         val midiCh = getActiveMatrixMidiChannel(group)
-        markCcSent(channelCcMapping.muteCc)
+        markCcSent(midiCh, channelCcMapping.muteCc, 127)
         bleMidiManager.sendControlChange(
             channel = midiCh,
             ccNumber = channelCcMapping.muteCc,
@@ -325,7 +330,7 @@ class MainViewModel(
         // Send BLE MIDI CC (value 127 >= 64 to toggle state per Helix specification)
         val channelCcMapping = midiCcMapping.value.getChannelCc(group, channelIndex)
         val midiCh = getActiveMatrixMidiChannel(group)
-        markCcSent(channelCcMapping.soloCc)
+        markCcSent(midiCh, channelCcMapping.soloCc, 127)
         bleMidiManager.sendControlChange(
             channel = midiCh,
             ccNumber = channelCcMapping.soloCc,
@@ -349,7 +354,7 @@ class MainViewModel(
         }
         // Send Clear Solo CC (CC 94, value 127 >= 64)
         val midiCh = getActiveMatrixMidiChannel(group)
-        markCcSent(94)
+        markCcSent(midiCh, 94, 127)
         bleMidiManager.sendControlChange(channel = midiCh, ccNumber = 94, value = 127)
     }
 
@@ -397,8 +402,7 @@ class MainViewModel(
 
     fun sendTransportPrev() {
         val ch = getTransportMidiChannel0Based()
-        markCcSent(49)
-        markCcSent(51)
+        markCcSent(ch, 49, 0)
         bleMidiManager.sendControlChange(channel = ch, ccNumber = 49, value = 0)
         _isPlaying.value = false
         isSongLoaded = false
@@ -406,7 +410,7 @@ class MainViewModel(
 
     fun sendTransportReturnToZero() {
         val ch = getTransportMidiChannel0Based()
-        markCcSent(47)
+        markCcSent(ch, 47, 127)
         bleMidiManager.sendControlChange(channel = ch, ccNumber = 47, value = 127)
     }
 
@@ -414,7 +418,7 @@ class MainViewModel(
         val ch = getTransportMidiChannel0Based()
         val currentPlaying = _isPlaying.value
 
-        markCcSent(51)
+        markCcSent(ch, 51, 127)
 
         if (currentPlaying) {
             // Currently playing -> pause/stop playback
@@ -449,8 +453,7 @@ class MainViewModel(
 
     fun sendTransportNext() {
         val ch = getTransportMidiChannel0Based()
-        markCcSent(49)
-        markCcSent(51)
+        markCcSent(ch, 49, 127)
         bleMidiManager.sendControlChange(channel = ch, ccNumber = 49, value = 127)
         _isPlaying.value = false
         isSongLoaded = false
@@ -498,14 +501,52 @@ class MainViewModel(
         super.onCleared()
     }
 
-    private fun handleIncomingMidiCc(ccNumber: Int, value: Int) {
-        val group = _selectedGroup.value
+    private fun handleIncomingMidiCc(ccNumber: Int, value: Int, channel: Int) {
         val mapping = midiCcMapping.value
 
-        // Ignore self-echoes from app-initiated CC sends (e.g. Mute/Solo/Transport CCs)
-        if (isCcSelfEcho(ccNumber)) {
+        // Ignore only exact self-echoes from app-initiated CC sends (same channel,
+        // CC and value). The Helix reports a hardware start with CC51:1 right after
+        // our CC51:127, and that response must reach the transport state.
+        if (isCcSelfEcho(channel, ccNumber, value)) {
             return
         }
+
+        // Handle Transport Play / Start-from-zero CC (CC 51). The start-from-zero
+        // notification (value 1) is a global hardware event, so accept it even if
+        // it arrives on a different channel; the rest of the transport states must
+        // come from the configured transport channel.
+        val isTransportChannel = channel == getTransportMidiChannel0Based()
+        val isStartFromZero = ccNumber == 51 && value == 1
+        if (ccNumber == 51 && (isTransportChannel || isStartFromZero)) {
+            android.util.Log.d(
+                "MainViewModel",
+                "Transport feedback: channel=$channel cc=$ccNumber value=$value"
+            )
+            // CC51 value 1 is the Helix notification that the song started from
+            // zero on the hardware. It means "playing", even though the value is
+            // below the usual 64 threshold.
+            val startFromZero = value == 1
+            val isPlayingVal = startFromZero || value >= 64
+            val isLoadMode = songPlayMode.value != SongPlayMode.PLAY
+            // In Load / Load+Preset modes, the echo of our own load pulse must not
+            // flip the button to "playing"; a real hardware start always wins.
+            if (isPlayingVal && !startFromZero && isLoadMode && isSongLoaded) {
+                return
+            }
+            _isPlaying.value = isPlayingVal
+            if (isPlayingVal) {
+                isSongLoaded = false
+            }
+            return
+        }
+
+        // Matrix feedback is per output group, and each group owns a MIDI channel
+        // (3/4/5 by default). Route the message by channel instead of applying it
+        // to whichever group is selected; fall back to the selected group when the
+        // device answers on an unexpected channel.
+        val group = OutputGroup.entries.firstOrNull { candidate ->
+            getActiveMatrixMidiChannel(candidate) - 1 == channel
+        } ?: _selectedGroup.value
 
         // Handle Clear Solo CC (CC 94)
         if (ccNumber == 94 && value >= 64) {
@@ -513,22 +554,6 @@ class MainViewModel(
                 for (chIdx in 0..18) {
                     repository.saveSoloState(group, chIdx, false)
                 }
-            }
-            return
-        }
-
-        // Handle Transport Play/Pause CC (CC 51)
-        if (ccNumber == 51) {
-            val isPlayingVal = value >= 64
-            // In Load / Load+Preset modes, a CC 51 echo that arrives while a song has
-            // been loaded but not yet played must not flip the button to "playing".
-            val isLoadMode = songPlayMode.value != SongPlayMode.PLAY
-            if (isLoadMode && isSongLoaded && isPlayingVal) {
-                return
-            }
-            _isPlaying.value = isPlayingVal
-            if (isPlayingVal) {
-                isSongLoaded = false
             }
             return
         }

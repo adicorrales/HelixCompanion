@@ -63,9 +63,10 @@ public class MidiInputReceiver extends MidiReceiver {
         try {
             // Keep a reference of the midi message (so we can record incoming messages)
             addReceivedMessage(msg);
-            int[] bytes = new int[msg.length];
-            for (int i = 0; i < msg.length; i++) {
-                bytes[i] = msg[i] & 0xFF;
+            int length = Math.max(0, Math.min(count, msg.length - offset));
+            int[] bytes = new int[length];
+            for (int i = 0; i < length; i++) {
+                bytes[i] = msg[offset + i] & 0xFF;
             }
 
             Log.d(TAG,"message:"+ Arrays.toString(bytes));
@@ -230,21 +231,37 @@ public class MidiInputReceiver extends MidiReceiver {
 
 
     // Get the MIDI message information from the received bytes
+    // Android delivers raw MIDI starting with the status byte, but some Bluetooth
+    // transports (and the old code path) prepend a header/timestamp byte. Detect
+    // the real status position instead of assuming a fixed index, otherwise
+    // [status, CC, value] is read as [CC, value] and every message looks generic.
+    private int getStatusOffset(int[] bytes) {
+        if (bytes.length >= 5 && bytes[1] >= 0x80 && bytes[2] >= 0x80) {
+            // BLE-MIDI header + timestamp + status + data...
+            return 2;
+        }
+        if (bytes.length >= 2 && bytes[1] >= 0x80) {
+            // Header/timestamp + status + data...
+            return 1;
+        }
+        return 0;
+    }
+
     // If there is an issue, return a sensible non-null value
     private String getMessageType(int[] bytes) {
-        if (bytes.length>=2) {
-            // Byte 1 is the action and MIDI channel in hex format
-            // byte[1] is the action and MIDI channel in hex format
-            if (bytes[1] >= nx_start && bytes[1] <= nx_end) {
+        int o = getStatusOffset(bytes);
+        if (bytes.length > o) {
+            int status = bytes[o];
+            if (status >= nx_start && status <= nx_end) {
                 // This is a note off message
                 return "NX";
-            } else if (bytes[1] >= no_start && bytes[1] <= no_end) {
+            } else if (status >= no_start && status <= no_end) {
                 // This is a note on message
                 return "NO";
-            } else if (bytes[1] >= cc_start && bytes[1] <= cc_end) {
+            } else if (status >= cc_start && status <= cc_end) {
                 // This is a control change message
                 return "CC";
-            } else if (bytes[1] >= pc_start && bytes[1] <= pc_end) {
+            } else if (status >= pc_start && status <= pc_end) {
                 // This is a program change message
                 return "PC";
             }
@@ -252,30 +269,34 @@ public class MidiInputReceiver extends MidiReceiver {
         return "";
     }
     private int getMidiChannelFromBytes(int[] bytes) {
-        if (bytes.length>=2) {
-            // byte[1] is the action and MIDI channel in hex format
-            if (bytes[1] >= nx_start && bytes[1] <= nx_end) {
-                return (bytes[1] - nx_start) + 1;
-            } else if (bytes[1] >= no_start && bytes[1] <= no_end) {
-                return (bytes[1] - no_start) + 1;
-            } else if (bytes[1] >= cc_start && bytes[1] <= cc_end) {
-                return (bytes[1] - cc_start) + 1;
-            } else if (bytes[1] >= pc_start && bytes[1] <= pc_end) {
-                return (bytes[1] - pc_start) + 1;
+        int o = getStatusOffset(bytes);
+        if (bytes.length > o) {
+            // The status byte holds the action and MIDI channel in hex format
+            int status = bytes[o];
+            if (status >= nx_start && status <= nx_end) {
+                return (status - nx_start) + 1;
+            } else if (status >= no_start && status <= no_end) {
+                return (status - no_start) + 1;
+            } else if (status >= cc_start && status <= cc_end) {
+                return (status - cc_start) + 1;
+            } else if (status >= pc_start && status <= pc_end) {
+                return (status - pc_start) + 1;
             }
         }
         // Use default MIDI input channel if we can't get it from the message
         return -1;
     }
     private int getData1(int[] bytes) {
-        if (bytes.length>=3) {
-            return bytes[2];
+        int o = getStatusOffset(bytes);
+        if (bytes.length > o + 1) {
+            return bytes[o + 1];
         }
         return 0;
     }
     private int getData2(int[] bytes) {
-        if (bytes.length >= 4) {
-            return bytes[3];
+        int o = getStatusOffset(bytes);
+        if (bytes.length > o + 2) {
+            return bytes[o + 2];
         }
         return 0;
     }
@@ -347,28 +368,25 @@ public class MidiInputReceiver extends MidiReceiver {
 
     private boolean isMidiStart(int[] bytes) {
         // Could be a MIDI start (0xFA)
-        if (bytes.length>=2) {
-            int decimal = bytes[1] & 0xFF;
-            String hexCode = "0x" + String.format("%02X", decimal);
-            return hexCode.equals("0xFA");
+        int o = getStatusOffset(bytes);
+        if (bytes.length > o) {
+            return (bytes[o] & 0xFF) == 0xFA;
         }
         return false;
     }
     private boolean isMidiStop(int[] bytes) {
         // Could be a MIDI stop (0xFC)
-        if (bytes.length>=2) {
-            int decimal = bytes[1] & 0xFF;
-            String hexCode = "0x" + String.format("%02X", decimal);
-            return hexCode.equals("0xFC");
+        int o = getStatusOffset(bytes);
+        if (bytes.length > o) {
+            return (bytes[o] & 0xFF) == 0xFC;
         }
         return false;
     }
     private boolean isSongSelect(int[] bytes) {
         // Could be a Song Select message (0xF3)
-        if (bytes.length>=2) {
-            int decimal = bytes[1] & 0xFF;
-            String hexCode = "0x" + String.format("%02X", decimal);
-            return hexCode.equals("0xF3");
+        int o = getStatusOffset(bytes);
+        if (bytes.length > o) {
+            return (bytes[o] & 0xFF) == 0xF3;
         }
         return false;
     }

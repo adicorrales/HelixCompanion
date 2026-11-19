@@ -3438,12 +3438,17 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
     private volatile boolean isMidiTransportLocked = false;
     private volatile boolean waitingForSetChangeLoadConfirmation = false;
+    private boolean helixSongStartFlagReceived = false;
     private final Handler midiLockHandler = new Handler(Looper.getMainLooper());
     private final Runnable midiLockReleaseRunnable = () -> isMidiTransportLocked = false;
 
     @Override
     public void handleMidiFeedback(int channel, int ccNumber, int ccValue) {
         if (ccNumber == 51 || ccNumber == 49 || ccNumber == 47 || ccNumber == 10 || ccNumber == 63) {
+            if (ccNumber == 10 || ccNumber == 49 || ccNumber == 63) {
+                // A new song selection starts a fresh transport state; CC51:1 is an optional start hint.
+                helixSongStartFlagReceived = false;
+            }
             isMidiTransportLocked = false;
             midiLockHandler.removeCallbacks(midiLockReleaseRunnable);
 
@@ -3451,6 +3456,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 String songMode = getPreferences().getMyPreferenceString("helixSongMode", "Cue");
                 String playMode = getPreferences().getMyPreferenceString("helixPlayMode", "Play");
                 getMainHandler().post(() -> {
+                    // Ignore a queued load-state update if the song has since reported its start.
+                    if (helixSongStartFlagReceived) return;
                     if (songMode.equals("Skip")) {
                         isPlaying = playMode.equals("Play");
                         transportClickCount = isPlaying ? 2 : 1;
@@ -3473,7 +3480,21 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     }
                 });
             } else if (ccNumber == 51) {
-                if (waitingForSetChangeLoadConfirmation) {
+                if (ccValue == 1) {
+                    // This is a start-from-zero indication, not a play/pause toggle.
+                    boolean wasWaitingForLoadConfirmation = waitingForSetChangeLoadConfirmation;
+                    waitingForSetChangeLoadConfirmation = false;
+                    helixSongStartFlagReceived = true;
+                    isPlaying = true;
+                    transportClickCount = 2;
+                    if (wasWaitingForLoadConfirmation) {
+                        getMainHandler().post(() -> loadSongFromSet(0, false));
+                    }
+                    if (getToolbar() != null) {
+                        getToolbar().updatePlayButton(true);
+                        getToolbar().setPlayStatus("Playing", android.graphics.Color.parseColor("#4CAF50"));
+                    }
+                } else if (waitingForSetChangeLoadConfirmation) {
                     waitingForSetChangeLoadConfirmation = false;
                     // Upon receiving confirmation / feedback of song loaded via CC51, select song 0 of set # in app UI ONLY (no CC10 sent)
                     getMainHandler().post(() -> {
@@ -3497,18 +3518,21 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     });
                 } else {
                     String playMode = getPreferences().getMyPreferenceString("helixPlayMode", "Play");
-                    if (playMode.equals("Play")) {
+                    if (playMode.equals("Play") || helixSongStartFlagReceived) {
                         boolean helixPlaying = ccValue > 0;
                         if (isPlaying != helixPlaying) {
                             isPlaying = helixPlaying;
+                            if (helixSongStartFlagReceived) {
+                                transportClickCount = helixPlaying ? 2 : 1;
+                            }
                             getMainHandler().post(() -> {
                                 if (getToolbar() != null) {
-                                    if (isPlaying) {
+                                    if (helixPlaying) {
                                         getToolbar().updatePlayButton(true);
                                         getToolbar().setPlayStatus("Playing", android.graphics.Color.parseColor("#4CAF50"));
                                     } else {
                                         getToolbar().updatePlayButton(false);
-                                        getToolbar().setPlayStatus("", 0);
+                                        getToolbar().setPlayStatus(helixSongStartFlagReceived ? "Paused" : "", helixSongStartFlagReceived ? android.graphics.Color.parseColor("#FFEB3B") : 0);
                                     }
                                 }
                             });
