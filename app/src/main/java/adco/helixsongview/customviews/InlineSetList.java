@@ -432,14 +432,22 @@ public class InlineSetList extends RecyclerView {
             mainActivityInterface.getMainHandler().post(() -> inlineSetListAdapter.notifyItemRangeChanged(from,count));
         }
     }
-    // Check the the highlighting of set item (index of song in set and the previously selected item)
+    // Refresh the highlighting of set items
     public void notifyInlineSetHighlight() {
         if (inlineSetListAdapter!=null && mainActivityInterface!=null) {
             mainActivityInterface.getMainHandler().post(() -> {
-                if (mainActivityInterface.getCurrentSet().getPrevIndexSongInSet()>-1) {
-                    inlineSetListAdapter.notifyItemChanged(mainActivityInterface.getCurrentSet().getPrevIndexSongInSet(), highlightItem);
+                if (inlineSetListAdapter!=null && mainActivityInterface!=null) {
+                    int itemCount = mainActivityInterface.getCurrentSet().getCurrentSetSize();
+                    if (itemCount > 0) {
+                        // Refresh every row instead of just prevIndexSongInSet/indexSongInSet.
+                        // Some flows call setIndexSongInSet twice for the same selection, which
+                        // overwrites prevIndexSongInSet with the new index before this runs. The
+                        // previously selected row was then never rebound and kept its active
+                        // colour. RecyclerView only rebinds the attached (visible) holders, so
+                        // this stays cheap even for large sets.
+                        inlineSetListAdapter.notifyItemRangeChanged(0, itemCount, highlightItem);
+                    }
                 }
-                inlineSetListAdapter.notifyItemChanged(mainActivityInterface.getCurrentSet().getIndexSongInSet(), highlightItem);
             });
             checkVisibility();
         }
@@ -468,6 +476,9 @@ public class InlineSetList extends RecyclerView {
         @Override
         public void onBindViewHolder(@NonNull InlineSetItemViewHolder holder, int position, @NonNull List<Object> payloads) {
             position = holder.getAbsoluteAdapterPosition();
+            if (position == RecyclerView.NO_POSITION) {
+                return;
+            }
             if (mainActivityInterface!=null) {
                 if (payloads.isEmpty()) {
                     super.onBindViewHolder(holder, position, payloads);
