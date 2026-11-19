@@ -28,7 +28,6 @@ import androidx.compose.material.icons.automirrored.rounded.BluetoothSearching
 import androidx.compose.material.icons.rounded.Bluetooth
 import androidx.compose.material.icons.rounded.BluetoothConnected
 import androidx.compose.material.icons.rounded.Cable
-import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Headphones
 import androidx.compose.material.icons.rounded.Mic
 import androidx.compose.material.icons.rounded.Tune
@@ -76,8 +75,7 @@ fun MatrixTopBar(
     onOpenSongView: () -> Unit,
     onOpenBleDialog: () -> Unit,
     onOpenCcDialog: () -> Unit,
-    modifier: Modifier = Modifier,
-    onDisconnect: (() -> Unit)? = null
+    modifier: Modifier = Modifier
 ) {
     val configuration = LocalConfiguration.current
     val isSmallPortrait = configuration.orientation != Configuration.ORIENTATION_LANDSCAPE &&
@@ -171,25 +169,6 @@ fun MatrixTopBar(
                     compact = compactBle,
                     onClick = onOpenBleDialog
                 )
-
-                // Quick Disconnect button on main top bar when connected
-                if (bleConnectionState is BleConnectionState.Connected && onDisconnect != null) {
-                    IconButton(
-                        onClick = onDisconnect,
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(Color(0xFF4A1515))
-                            .border(1.dp, Color(0xFF9B2C2C), RoundedCornerShape(8.dp))
-                            .size(36.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.Close,
-                            contentDescription = "Disconnect BLE",
-                            tint = Color(0xFFFC8181),
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-                }
 
                 // Settings / CC Customization button
                 IconButton(

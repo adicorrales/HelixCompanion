@@ -71,12 +71,14 @@ fun HelixStadiumMixerScreen(
                 onOutputGroupSelected = { group -> viewModel.selectOutputGroup(group) },
                 bleConnectionState = bleConnectionState,
                 onOpenSongView = {
-                    viewModel.disconnectBleDevice()
+                    // Keep the shared BLE session alive: both features use the same
+                    // BleMidiManager in this process. Disconnecting here was a leftover
+                    // from when Song View and the mixer were separate apps and left
+                    // Song View without MIDI when coming back from the mixer.
                     launchHelixSongView(context)
                 },
                 onOpenBleDialog = { showBleDialog = true },
-                onOpenCcDialog = { showCcDialog = true },
-                onDisconnect = { viewModel.disconnectBleDevice() }
+                onOpenCcDialog = { showCcDialog = true }
             )
         },
         bottomBar = {

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
+import android.bluetooth.BluetoothProfile
 import android.bluetooth.le.BluetoothLeScanner
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanFilter
@@ -62,6 +63,7 @@ open class BleMidiManager(context: Context) {
         private const val TAG = "BleMidiManager"
         private const val MIDI_OPEN_TIMEOUT_MS = 15_000L
         private const val EXISTING_DEVICE_LOOKUP_DELAY_MS = 300L
+        private const val STABLE_CONNECTION_MS = 5_000L
 
         val MIDI_SERVICE_UUID: UUID = UUID.fromString("03B80E5A-EDE8-4B33-A751-6CE34EC4C700")
     }
@@ -84,6 +86,10 @@ open class BleMidiManager(context: Context) {
 
     private var isManualDisconnect = false
     private var lastConnectedDevice: BluetoothDevice? = null
+    // When the current session was opened. A device that disappears almost
+    // immediately was a stale Android MIDI entry, not a real link: retrying it
+    // forever only produces a connection/disconnection loop.
+    private var connectedAtMs = 0L
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
@@ -149,13 +155,20 @@ open class BleMidiManager(context: Context) {
             if (connectedDeviceId != info.id || isManualDisconnect) return
 
             Log.w(TAG, "Connected MIDI device removed: id=${info.id}")
+            val wasStable = connectedAtMs > 0L &&
+                android.os.SystemClock.elapsedRealtime() - connectedAtMs > STABLE_CONNECTION_MS
             closeMidiSession()
             publishConnectionState(BleConnectionState.Disconnected)
-            lastConnectedDevice?.let { device ->
-                scope.launch {
-                    delay(2_000L)
-                    if (!isManualDisconnect && _connectionState.value == BleConnectionState.Disconnected) {
-                        connect(device)
+            // Only retry after a connection that had actually been working. The
+            // system exposes a stale BLE MIDI device after the WIDI is switched off
+            // and removes it seconds later; retrying that would loop forever.
+            if (wasStable) {
+                lastConnectedDevice?.let { device ->
+                    scope.launch {
+                        delay(2_000L)
+                        if (!isManualDisconnect && _connectionState.value == BleConnectionState.Disconnected) {
+                            connect(device)
+                        }
                     }
                 }
             }
@@ -289,7 +302,11 @@ open class BleMidiManager(context: Context) {
 
             try {
                 val existingInfo = findExistingBluetoothMidiDevice(manager, device.address)
-                if (existingInfo != null) {
+                // Android keeps a BLE MIDI device listed with a null connection status
+                // after the WIDI is switched off (and openDevice() on it still succeeds
+                // locally). Only reuse it when the Bluetooth link is really up, otherwise
+                // both features would report a connection that does not exist.
+                if (existingInfo != null && isBluetoothLinkConnected(device.address)) {
                     Log.d(TAG, "Reusing system MIDI device for ${device.address}")
                     manager.openDevice(existingInfo, createOpenListener(attempt, device), mainHandler)
                 } else {
@@ -316,6 +333,30 @@ open class BleMidiManager(context: Context) {
                 MidiDeviceInfo.PROPERTY_BLUETOOTH_DEVICE
             ) as? BluetoothDevice
             bluetoothDevice?.address.equals(address, ignoreCase = true)
+        }
+    }
+
+    /**
+     * True only when the tablet really has a Bluetooth link with [address].
+     *
+     * Android's MIDI service keeps a BLE MIDI device listed (with no connection
+     * status) after the WIDI is powered off, and opening that descriptor succeeds
+     * locally. Without this check the app reported "Connected" while nothing was
+     * connected, and Song View and the Matrix Mixer could even disagree.
+     */
+    @SuppressLint("MissingPermission")
+    private fun isBluetoothLinkConnected(address: String): Boolean {
+        val manager = bluetoothManager ?: return false
+        return try {
+            manager.getConnectedDevices(BluetoothProfile.GATT).any { device ->
+                device.address.equals(address, ignoreCase = true)
+            }
+        } catch (e: SecurityException) {
+            Log.w(TAG, "Missing permission while checking the Bluetooth link", e)
+            false
+        } catch (e: Exception) {
+            Log.w(TAG, "Unable to check the Bluetooth link", e)
+            false
         }
     }
 
@@ -364,6 +405,7 @@ open class BleMidiManager(context: Context) {
             connectionTimeoutJob?.cancel()
             val deviceName = getBluetoothDeviceName(requestedDevice)
                 ?: info.properties.getString(MidiDeviceInfo.PROPERTY_NAME)
+            connectedAtMs = android.os.SystemClock.elapsedRealtime()
             publishConnectionState(BleConnectionState.Connected(deviceName, requestedDevice.address))
             Log.d(TAG, "Opened MIDI device ${info.id} for ${requestedDevice.address}")
         } catch (e: SecurityException) {
@@ -426,6 +468,7 @@ open class BleMidiManager(context: Context) {
         connectionTimeoutJob?.cancel()
         connectionTimeoutJob = null
         connectedDeviceId = null
+        connectedAtMs = 0L
 
         midiOutputPort?.let { port ->
             try {

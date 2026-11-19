@@ -64,19 +64,19 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import adco.helixsongview.midi.BleConnectionState
-import adco.helixsongview.midi.BleDeviceInfo
+import adco.helixmidimixer.midi.BleConnectionState
+import adco.helixmidimixer.midi.BleDeviceInfo
+import adco.helixmidimixer.ui.theme.HelixBackground
+import adco.helixmidimixer.ui.theme.HelixBadgeBg
+import adco.helixmidimixer.ui.theme.HelixCardBorder
+import adco.helixmidimixer.ui.theme.HelixGreenHeader
+import adco.helixmidimixer.ui.theme.HelixGreenPrimary
+import adco.helixmidimixer.ui.theme.HelixMidiMixerTheme
+import adco.helixmidimixer.ui.theme.HelixSurface
+import adco.helixmidimixer.ui.theme.HelixTextPrimary
+import adco.helixmidimixer.ui.theme.HelixTextSecondary
 import adco.helixsongview.midi.BleMidiBridge
 import adco.helixsongview.midi.Midi
-import adco.helixsongview.ui.theme.HelixBackground
-import adco.helixsongview.ui.theme.HelixBadgeBg
-import adco.helixsongview.ui.theme.HelixCardBorder
-import adco.helixsongview.ui.theme.HelixGreenHeader
-import adco.helixsongview.ui.theme.HelixGreenPrimary
-import adco.helixsongview.ui.theme.HelixMidiMixerTheme
-import adco.helixsongview.ui.theme.HelixSurface
-import adco.helixsongview.ui.theme.HelixTextPrimary
-import adco.helixsongview.ui.theme.HelixTextSecondary
 import java.util.function.Consumer
 
 @Composable

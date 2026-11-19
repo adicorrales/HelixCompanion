@@ -2150,9 +2150,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     }
 
     private void launchHelixMidiMixer() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            getMidi().tryDisconnectBluetoothLE();
-        }
+        // The BLE MIDI session is process-wide and shared with the mixer (both use
+        // the same BleMidiManager instance). Disconnecting here tore the session
+        // down before the mixer opened, so it always showed "Disconnected" and the
+        // user had to reconnect when coming back to Song View.
         Intent mixerIntent = new Intent(this, adco.helixmidimixer.MainActivity.class);
         mixerIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(mixerIntent);
@@ -5106,14 +5107,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             // Prepare the themes
             getMyThemeColors();
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                    getAppPermissions().hasMidiScanPermissions()) {
-                boolean midiConnected = getMidi().hasActiveConnection();
-                boolean autoReconnect = getPreferences().getMyPreferenceBoolean("midiAutoConnectLast", true);
-                if (!midiConnected && autoReconnect) {
-                    getMidi().setupBluetoothManager();
-                }
-            }
+            // Deliberately no MIDI auto-connect here. onResume also runs when
+            // returning from the Matrix Mixer, which explicitly disconnects the
+            // shared session; reconnecting silently made the toolbar flip to
+            // "Connected" a second later even with the WIDI switched off.
+            // Auto-connect on launch is handled by BootUpFragment / the post-boot
+            // path, and the user can always connect from the MIDI chip.
         }
 
         try {

@@ -1,11 +1,10 @@
 package adco.helixsongview.midi
 
-import android.bluetooth.BluetoothDevice
 import android.content.Context
 import adco.helixcompanion.HelixCompanionApplication
-import adco.helixmidimixer.midi.BleConnectionState as SharedBleConnectionState
+import adco.helixmidimixer.midi.BleConnectionState
+import adco.helixmidimixer.midi.BleDeviceInfo
 import adco.helixmidimixer.midi.BleMidiManager
-import adco.helixmidimixer.midi.BleDeviceInfo as SharedBleDeviceInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -17,22 +16,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-sealed interface BleConnectionState {
-    data object Disconnected : BleConnectionState
-    data object Scanning : BleConnectionState
-    data class Connecting(val deviceName: String?) : BleConnectionState
-    data class Connected(val deviceName: String?, val address: String) : BleConnectionState
-    data class Error(val message: String) : BleConnectionState
-}
-
-data class BleDeviceInfo(
-    val device: BluetoothDevice,
-    val name: String,
-    val address: String,
-    val rssi: Int
-)
-
-/** Song View adapter over the single process-wide BLE MIDI connection. */
+/**
+ * Song View adapter over the single process-wide BLE MIDI connection.
+ *
+ * The connection state type lives in [adco.helixmidimixer.midi] and is shared with
+ * the Matrix Mixer so both features always report the same connection. There used
+ * to be a second copy of these models here, which is what allowed Song View and
+ * the mixer to disagree about whether the WIDI was connected.
+ */
 class BleMidiBridge(
     context: Context,
     private val midi: Midi
@@ -57,23 +48,23 @@ class BleMidiBridge(
         scope.launch {
             manager.connectionState.collect { state ->
                 when (state) {
-                    SharedBleConnectionState.Disconnected -> {
+                    BleConnectionState.Disconnected -> {
                         if (!connectionPending) refreshFromMidi()
                     }
-                    SharedBleConnectionState.Scanning -> {
+                    BleConnectionState.Scanning -> {
                         _connectionState.value = BleConnectionState.Scanning
                     }
-                    is SharedBleConnectionState.Connecting -> {
+                    is BleConnectionState.Connecting -> {
                         _connectionState.value = BleConnectionState.Connecting(state.deviceName)
                     }
-                    is SharedBleConnectionState.Connected -> {
+                    is BleConnectionState.Connected -> {
                         connectionPending = false
                         connectJob?.cancel()
                         midi.setMidiDeviceName(state.deviceName)
                         midi.setMidiDeviceAddress(state.address)
                         _connectionState.value = BleConnectionState.Connected(state.deviceName, state.address)
                     }
-                    is SharedBleConnectionState.Error -> {
+                    is BleConnectionState.Error -> {
                         connectionPending = false
                         connectJob?.cancel()
                         _connectionState.value = BleConnectionState.Error(state.message)
@@ -89,7 +80,7 @@ class BleMidiBridge(
         refreshFromMidi()
     }
 
-    private fun SharedBleDeviceInfo.toSongViewDevice() = BleDeviceInfo(
+    private fun BleDeviceInfo.toSongViewDevice() = BleDeviceInfo(
         device = device,
         name = name,
         address = address,
@@ -97,10 +88,13 @@ class BleMidiBridge(
     )
 
     private fun refreshFromMidi() {
-        if (midi.hasActiveConnection()) {
+        // Do not ask the legacy Midi object here: it can still hold a device that
+        // Android released, which is exactly what made the toolbar show a connection
+        // with the WIDI switched off. The shared manager is the single source.
+        if (manager.isConnected()) {
             _connectionState.value = BleConnectionState.Connected(
-                midi.midiDeviceName,
-                midi.midiDeviceAddress
+                manager.connectedDeviceName(),
+                manager.connectedDeviceAddress() ?: ""
             )
         } else {
             _connectionState.value = BleConnectionState.Disconnected
@@ -126,6 +120,9 @@ class BleMidiBridge(
             delay(CONNECT_TIMEOUT_MS)
             if (connectionPending) {
                 connectionPending = false
+                // Abort the shared attempt so it cannot connect later and leave the
+                // dialog showing an error while the link is actually up.
+                manager.disconnect()
                 _connectionState.value = BleConnectionState.Error(
                     "Connection timed out. The WIDI may be busy or pairing was cancelled."
                 )

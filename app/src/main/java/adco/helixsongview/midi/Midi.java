@@ -55,6 +55,7 @@ public class Midi {
     private BleMidiManager sharedBleMidiManager;
     private boolean sharedConnectionListenerRegistered;
     private BleMidiConnectionListener sharedBleConnectionListener;
+    private String lastSharedConnectionSignature = null;
     private final ShortHandMidi shortHandMidi;
     @SuppressWarnings({"FieldCanBeLocal","unused"})
     private final String TAG = "Midi";
@@ -79,7 +80,8 @@ public class Midi {
         this.c = c;
         mainActivityInterface = (MainActivityInterface) c;
         sharedBleConnectionListener = state -> {
-            if (state instanceof BleConnectionState.Connected) {
+            boolean connectedNow = state instanceof BleConnectionState.Connected;
+            if (connectedNow) {
                 BleConnectionState.Connected connected = (BleConnectionState.Connected) state;
                 midiDeviceName = connected.getDeviceName();
                 midiDeviceAddress = connected.getAddress();
@@ -94,7 +96,17 @@ public class Midi {
                     readyListener.onReady(null);
                 }
             }
-            mainActivityInterface.getMainHandler().post(() -> mainActivityInterface.refreshToolbarMenu());
+            // refreshToolbarMenu() rebuilds the menu and the drawer tabs, so only do it
+            // when the indicator value really changes. Re-running it for every
+            // Connecting/Connected/Disconnected state blocked the main thread during
+            // connection attempts (and could trigger an ANR).
+            String signature = connectedNow
+                    ? "1:" + ((BleConnectionState.Connected) state).getAddress()
+                    : "0";
+            if (!signature.equals(lastSharedConnectionSignature)) {
+                lastSharedConnectionSignature = signature;
+                mainActivityInterface.getMainHandler().post(() -> mainActivityInterface.refreshToolbarMenu());
+            }
         };
         getUpdatedPreferences();
         shortHandMidi = new ShortHandMidi(c);
@@ -268,6 +280,25 @@ public class Midi {
             e.printStackTrace();
         }
 
+        // Bluetooth MIDI has a single owner: the process-wide shared manager.
+        // Opening a second MidiDevice here made Song View and the Matrix Mixer hold
+        // different sessions (and different "connected" states). Android's MIDI
+        // service also keeps a device around after the WIDI is switched off, which
+        // produced a false "Connected" in the toolbar. USB devices keep using the
+        // local path (setMidiDevice).
+        BleMidiManager sharedManager = getSharedBleMidiManager();
+        if (sharedManager != null) {
+            if (sharedManager.isConnected()
+                    && device.getAddress().equalsIgnoreCase(sharedManager.connectedDeviceAddress())) {
+                Log.d(TAG, "Already connected to " + device.getAddress() + " through the shared manager");
+                return;
+            }
+            Log.d(TAG, "Connecting to " + device.getAddress() + " through the shared manager");
+            sharedManager.connect(device);
+            return;
+        }
+
+        // Legacy fallback, only reachable when the shared manager is unavailable.
         int bondState = device.getBondState();
 
         if (bondState == BluetoothDevice.BOND_BONDED) {
@@ -423,9 +454,51 @@ public class Midi {
 
     public boolean hasActiveConnection() {
         BleMidiManager sharedManager = getSharedBleMidiManager();
-        return (midiDevice != null && midiInputPort != null)
-                || (useDirectGatt && activeBluetoothGatt != null && activeGattCharacteristic != null)
-                || (sharedManager != null && sharedManager.isConnected());
+        if (sharedManager != null && sharedManager.isConnected()) {
+            // Single source of truth for Bluetooth MIDI (shared with the Matrix Mixer).
+            return true;
+        }
+        if (useDirectGatt && activeBluetoothGatt != null && activeGattCharacteristic != null) {
+            return true;
+        }
+        // Local session (USB or legacy fallback). Only report it while Android still
+        // exposes the device: a closed/released Bluetooth device used to keep the
+        // toolbar showing "Connected" after the WIDI was switched off.
+        return midiDevice != null && midiInputPort != null && isLocalMidiDeviceStillAvailable();
+    }
+
+    /** True only when the shared BLE MIDI session (the one the Matrix Mixer uses) is up. */
+    public boolean isSharedConnectionActive() {
+        BleMidiManager sharedManager = getSharedBleMidiManager();
+        return sharedManager != null && sharedManager.isConnected();
+    }
+
+    private boolean isLocalMidiDeviceStillAvailable() {
+        if (midiDevice == null) {
+            return false;
+        }
+        try {
+            MidiManager manager = midiManager;
+            if (manager == null) {
+                manager = (MidiManager) c.getSystemService(Context.MIDI_SERVICE);
+            }
+            if (manager == null) {
+                return true;
+            }
+            int id = midiDevice.getInfo().getId();
+            MidiDeviceInfo[] devices = manager.getDevices();
+            if (devices != null) {
+                for (MidiDeviceInfo info : devices) {
+                    if (info.getId() == id) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        } catch (Exception e) {
+            // If the device can no longer be queried, treat it as gone.
+            return false;
+        }
     }
 
     public MidiManager getMidiManager() {
@@ -1495,14 +1568,12 @@ public class Midi {
                     for (BluetoothDevice device : connectedDevices) {
                         if (isBleMidiDevice(device)) {
                             Log.d(TAG, "checkAndConnectActiveGattMidi: Found active connected GATT device: " + device.getName() + " (" + device.getAddress() + ")");
-                            if (bluetoothDevice == null || !bluetoothDevice.getAddress().equals(device.getAddress())) {
-                                setMidiDeviceName(device.getName());
-                                setMidiDeviceAddress(device.getAddress());
-                                setBluetoothDevice(device);
-                            }
-                            // This is only a candidate connection. The MIDI session is not
-                            // active until Android opens the device and its output port.
-                            return false;
+                            setMidiDeviceName(device.getName());
+                            setMidiDeviceAddress(device.getAddress());
+                            setBluetoothDevice(device);
+                            // setBluetoothDevice now opens the shared manager session,
+                            // so this counts as the connection attempt for this pass.
+                            return true;
                         }
                     }
                 }
@@ -1596,7 +1667,6 @@ public class Midi {
                         if (autoConnectLast && !lastAddress.isEmpty() && device.getAddress().equalsIgnoreCase(lastAddress)) {
                             if (midiDevice == null && device.getBondState() == BluetoothDevice.BOND_BONDED) {
                                 setBluetoothDevice(device);
-                                executeOpenDeviceWorkflow();
                                 break;
                             }
                         } else {
@@ -1606,7 +1676,6 @@ public class Midi {
                                     if (uuid.toString().equalsIgnoreCase(uuidBle) && !isAirTurn(device)) {
                                         if (midiDevice == null && device.getBondState() == BluetoothDevice.BOND_BONDED) {
                                             setBluetoothDevice(device);
-                                            executeOpenDeviceWorkflow();
                                             break;
                                         }
                                     }
@@ -1903,9 +1972,6 @@ public class Midi {
                     if (device.getAddress().equalsIgnoreCase(lastAddress)) {
                         found = true;
                         setBluetoothDevice(device);
-                        if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
-                            executeOpenDeviceWorkflow();
-                        }
                         break;
                     }
                 }
@@ -1916,7 +1982,6 @@ public class Midi {
                     BluetoothDevice device = adapter.getRemoteDevice(lastAddress);
                     if (device != null) {
                         setBluetoothDevice(device);
-                        executeOpenDeviceWorkflow();
                         found = true;
                     }
                 } catch (Exception e) {
