@@ -5140,6 +5140,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         if (autoscroll != null) {
             autoscroll.stopTimers();
         }
+        if (batteryStatus != null) {
+            batteryStatus.tearDownBatteryMonitor();
+        }
 
         // Clear out any temporarily copied intent files
         File tempLoc = getStorageAccess().getAppSpecificFile("Import", "", "");
@@ -5192,6 +5195,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             } catch (Throwable t) {
                 Log.e(TAG, "MainActivity error", t);
             }
+        }
+
+        // Tear down battery status monitor
+        if (batteryStatus != null) {
+            batteryStatus.tearDownBatteryMonitor();
+            batteryStatus = null;
         }
 
         super.onDestroy();
