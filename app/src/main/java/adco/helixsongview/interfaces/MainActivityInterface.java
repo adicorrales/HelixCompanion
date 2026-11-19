@@ -36,7 +36,6 @@ import adco.helixsongview.controls.Swipes;
 import adco.helixsongview.customviews.MyToolbar;
 import adco.helixsongview.export.ExportActions;
 import adco.helixsongview.export.OpenSongSetBundle;
-import adco.helixsongview.export.PrepareFormats;
 import adco.helixsongview.filemanagement.LoadSong;
 import adco.helixsongview.filemanagement.SaveSong;
 import adco.helixsongview.filemanagement.StorageAccess;
@@ -46,7 +45,6 @@ import adco.helixsongview.midi.Midi;
 import adco.helixsongview.midi.MidiFragment;
 import adco.helixsongview.openchords.OpenChordsAPI;
 import adco.helixsongview.backingtracks.backingTrack;
-import adco.helixsongview.pdf.MakePDF;
 
 import adco.helixsongview.performance.DisplayPrevNext;
 import adco.helixsongview.performance.PerformanceFragment;
@@ -76,8 +74,6 @@ import adco.helixsongview.sqlite.CommonSQL;
 import adco.helixsongview.sqlite.NonOpenSongSQLiteHelper;
 import adco.helixsongview.sqlite.SQLiteHelper;
 import adco.helixsongview.variations.Variations;
-import adco.helixsongview.webserver.LocalWiFiHost;
-import adco.helixsongview.webserver.WebServer;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -106,9 +102,6 @@ public interface MainActivityInterface {
     void setFirstRun(boolean firstRun);
     boolean getFirstRun();
     int getOrientation();
-    WebServer getWebServer();
-    void openWebServerMessages();
-    LocalWiFiHost getLocalWiFiHost();
     void recreateActivity();
 
     // Preferences and settings
@@ -259,7 +252,6 @@ public interface MainActivityInterface {
     void setImportFilename(String importFilename);
     void setImportUri(Uri importUri);
     String getImportFilename();
-    PrepareFormats getPrepareFormats();
     void openFragmentBasedOnFileImport();
 
 
@@ -325,10 +317,6 @@ public interface MainActivityInterface {
 
     File getScreenshotFile();
       void setScreenshotFile(Bitmap bitmap);
-
-
-    MakePDF getMakePDF();
-
 
 
     // Song sections and view for display

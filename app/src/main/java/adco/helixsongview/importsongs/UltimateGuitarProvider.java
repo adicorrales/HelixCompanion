@@ -3,7 +3,6 @@ package adco.helixsongview.importsongs;
 import android.content.Context;
 import android.util.Log;
 
-import adco.helixsongview.customslides.ImageSlideItemInfo;
 import adco.helixsongview.interfaces.SongParserInterface;
 
 import org.json.JSONArray;

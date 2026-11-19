@@ -2728,18 +2728,6 @@ public class ProcessSong {
         // IV - Initialise transpose capo key  - might be needed
         mainActivityInterface.getTranspose().capoKeyTranspose(song);
 
-        if (asPDF && mainActivityInterface.getMakePDF().getIsSetListPrinting()) {
-            // This is the set list PDF print.  Items are split by empty section headers []
-            // We need to now remove those and trim the section content otherwise the PDF has gaps between lines
-            for (int i=0; i<song.getSongSections().size(); i++) {
-                song.getSongSections().set(i,song.getSongSections().get(i).replace("[]","").replace(".,",",").trim());
-                song.getGroupedSections().set(i,song.getGroupedSections().get(i).replace("[]","").replace(".,",",").trim());
-            }
-            for (int i=0; i<song.getPresoOrderSongSections().size(); i++) {
-                song.getPresoOrderSongSections().set(i,song.getPresoOrderSongSections().get(i).replace("[]","").replace(".,",",").trim());
-            }
-        }
-
         // Now we deal with creating the views from the available sections
         int backgroundColor;
         int overallBackgroundColor;
@@ -2993,7 +2981,6 @@ public class ProcessSong {
                     if (!presentation &&
                             addSectionSpace &&
                             (mainActivityInterface.getMode().equals(c.getString(R.string.mode_stage)) || mainActivityInterface.getMode().equals(c.getString(R.string.hybrid))) &&
-                            !mainActivityInterface.getMakePDF().getIsSetListPrinting() &&
                             sect != (song.getPresoOrderSongSections().size() - 1)) {
                         linearLayout.addView(lineText(song, "lyric", "", getTypeface(false, "lyric"),
                                 getFontSize("lyric") / 2, Color.TRANSPARENT, Color.TRANSPARENT, Color.TRANSPARENT,
@@ -3355,7 +3342,7 @@ public class ProcessSong {
         boolean performance = isPerformanceOrHybridMode();
         boolean stageOrPresenter = (isStageMode() || isPresenterMode()) && !presentation;
 
-        if ((performance || stageOrPresenter) && addSectionSpace && (!mainActivityInterface.getMakePDF().getIsSetListPrinting() || pdfPrinting)) {
+        if ((performance || stageOrPresenter) && addSectionSpace) {
             sectionSpace = (int) (0.75 * TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, defFontSize, c.getResources().getDisplayMetrics()));
             if (sectionHeights.size() > 1) {
                 totalSectionSpace = sectionSpace * (sectionHeights.size() - 1);
