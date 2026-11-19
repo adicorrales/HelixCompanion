@@ -147,7 +147,7 @@
 
 ## 16. Enlaces
 
-- [?] Fragmento de enlaces — `links/LinksFragment`
+- [✅] Fragmento de enlaces — `links/LinksFragment`
 - [?] Bottom sheet de enlaces — `links/LinksBottomSheet`
 
 ## 17. Compartir / Conectividad
@@ -188,14 +188,14 @@
 
 ## 23. Utilidades transversales
 
-- [?] Comprobación de internet — `appdata/CheckInternet`
+- [✅] Comprobación de internet — `appdata/CheckInternet`
 - [❌ ] Herramientas de tiempo — `appdata/TimeTools`
 - [?] Locale/fecha fija — `appdata/FixLocale`
 - [?] Comprobaciones de alertas — `appdata/AlertChecks`
 - [❌ ] Diálogos personalizados — `appdata/CustomAlertDialog`
 - [❌ ] Compartir logs — `appdata/ShareLogsFragment`
 - [❌ ] Comparador de versiones — `appdata/VersionNumber`
-- [?] Número de versión / build — `app/build.gradle` (versionCode 508, versionName 7.0.3)
+- [✅] Número de versión / build — `app/build.gradle` (versionCode 508, versionName 7.0.3)
 
 ---
 

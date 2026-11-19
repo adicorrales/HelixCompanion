@@ -8,6 +8,8 @@
 
 > Esta sección **prevalece** sobre las tablas de paquetes de las secciones 3. Ajusta el alcance según lo marcado en `CHECKLIST_FUNCIONALIDAD.md`.
 
+> **Estado (Nov 2026):** eliminación aplicada y compilando ✅. Se retiraron `pdf`, `webserver` (incluido `KtorServer.kt`), `customslides`, `filemanagement/ExportSongListBottomSheet`, y los archivos puros de export (`ExportFragment`, `PrepareFormats`, `MultipagePrinterAdapter`). Se **conservaron** `export/ExportActions.java` (backup + share) y `export/OpenSongSetBundle.java` (import de set bundle), y el paquete completo `variations`, según tus decisiones ✅. `variations` se mantiene intacto.
+
 ### 0.1 Paquetes completos a ELIMINAR (no migrar)
 
 | Paquete | Archivos | Líneas | WP afectado |

@@ -26,7 +26,6 @@ public class SettingsCategories extends Fragment {
     private SettingsCategoriesBinding myView;
     private MainActivityInterface mainActivityInterface;
     ActivityResultLauncher<String[]> nearbyConnectionsPermission;
-    ActivityResultLauncher<String[]> webserverPermission;
     private String settings_string="", mode_presenter_string="", presenter_mode_string="",
             mode_stage_string="", stage_mode_string="", performance_mode_string="", hybrid_mode_string="",
             mode_hybrid_string="",
@@ -152,11 +151,6 @@ public class SettingsCategories extends Fragment {
                 informationBottomSheet.show(mainActivityInterface.getMyFragmentManager(), "InformationBottomSheet");
             }
         });
-        webserverPermission = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), isGranted -> {
-            if (mainActivityInterface.getAppPermissions().hasWebServerPermission()) {
-                mainActivityInterface.navigateToFragment(null, R.id.webServerFragment);
-            }
-        });
     }
 
     private void setListeners() {
@@ -184,10 +178,6 @@ public class SettingsCategories extends Fragment {
             nearbyConnectionsPermission.launch(mainActivityInterface.getAppPermissions().getNearbyPermissions());
             mainActivityInterface.getStorageAccess().updateFileActivityLog(mainActivityInterface.getAppPermissions().getPermissionsLog());
             mainActivityInterface.getAppPermissions().resetPermissionsLog();
-        });
-        myView.webServerButton.setOnClickListener(v -> {
-            // Check for permissions once we get to the page
-            mainActivityInterface.navigateToFragment(null, R.id.webServerFragment);
         });
         myView.modeButton.setOnClickListener(v -> mainActivityInterface.navigateToFragment(null, R.id.modeFragment));
         myView.midiButton.setOnClickListener(v -> {

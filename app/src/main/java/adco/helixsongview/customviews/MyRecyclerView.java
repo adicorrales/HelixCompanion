@@ -20,7 +20,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import adco.helixsongview.R;
 import adco.helixsongview.interfaces.MainActivityInterface;
-import adco.helixsongview.pdf.PDFPageAdapter;
 
 import java.util.ArrayList;
 
@@ -516,9 +515,6 @@ public class MyRecyclerView extends RecyclerView  implements RecyclerView.Smooth
 
     public int getScrollPos() {
         float scale = 1f;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && getAdapter()!=null && getAdapter() instanceof PDFPageAdapter) {
-            scale = ((PDFPageAdapter) getAdapter()).getPdfHorizontalScale();
-        }
         int pos;
         if (getLayoutManager()!=null && getLayoutManager() instanceof RecyclerLayoutManager) {
             try {

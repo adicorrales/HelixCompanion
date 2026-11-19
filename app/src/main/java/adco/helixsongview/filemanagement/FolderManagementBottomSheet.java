@@ -124,14 +124,6 @@ public class FolderManagementBottomSheet extends BottomSheetCommon {
             myView.openChords.setOnClickListener(new ActionClickListener("openChords"));
         }
 
-        myView.exportSongListLayout.setVisibility(View.VISIBLE);
-        myView.exportSongList.setOnClickListener(v -> {
-            if (getActivity()!=null) {
-                ExportSongListBottomSheet exportSongListBottomSheet = new ExportSongListBottomSheet();
-                exportSongListBottomSheet.show(getActivity().getSupportFragmentManager(), "ExportSongListBottomSheet");
-                dismiss();
-            }
-        });
     }
 
     private class ActionClickListener implements View.OnClickListener {

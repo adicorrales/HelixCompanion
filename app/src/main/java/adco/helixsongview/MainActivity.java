@@ -107,7 +107,6 @@ import adco.helixsongview.customviews.MyToolbar;
 import adco.helixsongview.databinding.ActivityBinding;
 import adco.helixsongview.export.ExportActions;
 import adco.helixsongview.export.OpenSongSetBundle;
-import adco.helixsongview.export.PrepareFormats;
 import adco.helixsongview.filemanagement.LoadSong;
 import adco.helixsongview.filemanagement.SaveSong;
 import adco.helixsongview.filemanagement.StorageAccess;
@@ -130,7 +129,6 @@ import adco.helixsongview.midi.MidiFragment;
 import adco.helixsongview.openchords.OpenChordsAPI;
 import adco.helixsongview.openchords.OpenChordsFragment;
 import adco.helixsongview.backingtracks.backingTrack;
-import adco.helixsongview.pdf.MakePDF;
 import adco.helixsongview.performance.DisplayPrevNext;
 import adco.helixsongview.performance.PerformanceFragment;
 import adco.helixsongview.performance.PerformanceGestures;
@@ -170,9 +168,6 @@ import adco.helixsongview.sqlite.CommonSQL;
 import adco.helixsongview.sqlite.NonOpenSongSQLiteHelper;
 import adco.helixsongview.sqlite.SQLiteHelper;
 import adco.helixsongview.variations.Variations;
-import adco.helixsongview.webserver.LocalWiFiHost;
-import adco.helixsongview.webserver.WebServer;
-import adco.helixsongview.webserver.WebServerMessagesBottomSheet;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -236,8 +231,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private Gestures gestures;
     private HotZones hotZones;
     private LoadSong loadSong;
-    private LocalWiFiHost localWiFiHost;
-    private MakePDF makePDF;
 
     private Midi midi;
 
@@ -252,7 +245,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private PedalActions pedalActions;
     private PerformanceGestures performanceGestures;
     private Preferences preferences;
-    private PrepareFormats prepareFormats;
     private ProcessSong processSong;
     private ProfileActions profileActions;
     private SaveSong saveSong;
@@ -273,7 +265,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private VersionNumber versionNumber;
 
     private WebDownload webDownload;
-    private WebServer webServer;
 
     private ActivityResultLauncher<Intent> selectFileLauncher;
     private ActivityResultLauncher<Intent> selectFolderLauncher;
@@ -865,7 +856,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         convertOnSong = getConvertOnSong();
         convertTextSong = getConvertTextSong();
         processSong = getProcessSong();
-        prepareFormats = getPrepareFormats();
         songSheetHeaders = getSongSheetHeaders();
         openChordsAPI = getOpenChordsAPI();
         transpose = getTranspose();
@@ -897,10 +887,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
         // Other file actions
         exportActions = getExportActions();
-
-        // Webserver (for displaying song over html server)
-        webServer = getWebServer();
-        localWiFiHost = getLocalWiFiHost();
     }
 
     @Override
@@ -3349,14 +3335,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     }
 
     @Override
-    public PrepareFormats getPrepareFormats() {
-        if (prepareFormats == null) {
-            prepareFormats = new PrepareFormats(this);
-        }
-        return prepareFormats;
-    }
-
-    @Override
     public TimeTools getTimeTools() {
         if (timeTools == null) {
             timeTools = new TimeTools(this);
@@ -4586,16 +4564,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
 
     @Override
-    public MakePDF getMakePDF() {
-        if (makePDF == null) {
-            makePDF = new MakePDF(this);
-        }
-        return makePDF;
-    }
-
-
-
-    @Override
     public VersionNumber getVersionNumber() {
         if (versionNumber == null) {
             versionNumber = new VersionNumber(this);
@@ -4706,28 +4674,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 Log.e(TAG, "MainActivity error", e);
             }
         }
-    }
-
-    @Override
-    public WebServer getWebServer() {
-        if (webServer == null) {
-            webServer = new WebServer(this);
-        }
-        return webServer;
-    }
-
-    @Override
-    public void openWebServerMessages() {
-        WebServerMessagesBottomSheet webServerMessagesBottomSheet = new WebServerMessagesBottomSheet();
-        webServerMessagesBottomSheet.show(getSupportFragmentManager(), "webServerMessages");
-    }
-
-    @Override
-    public LocalWiFiHost getLocalWiFiHost() {
-        if (localWiFiHost == null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            localWiFiHost = new LocalWiFiHost(this);
-        }
-        return localWiFiHost;
     }
 
     @SuppressWarnings("deprecation")

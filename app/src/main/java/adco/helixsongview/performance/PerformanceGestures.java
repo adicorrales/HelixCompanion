@@ -349,10 +349,6 @@ public class PerformanceGestures {
             case "audioplayerpopup":
                 audioPlayerPopup();
                 break;
-            case "webservermessages":
-                webServerMessages();
-                break;
-
             // Projection
             case "showlogo":
             case "showLogo":
@@ -801,11 +797,6 @@ public class PerformanceGestures {
         intent.addFlags(mainActivityInterface.getStorageAccess().getAddReadUriFlags());
         mainActivityInterface.setWhattodo("audioplayerpopup");
         mainActivityInterface.selectFile(intent);
-    }
-
-     // Show the webServerMessages
-    public void webServerMessages() {
-        mainActivityInterface.openWebServerMessages();
     }
 
     // Curly brackets
