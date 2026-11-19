@@ -1,11 +1,14 @@
 package adco.helixsongview.ui
 
 import android.app.Dialog
+import android.content.BroadcastReceiver
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.view.ViewGroup
 import androidx.activity.ComponentActivity
@@ -201,7 +204,7 @@ fun MidiConnectionDialog(
                             )
                         )
                         Text(
-                            text = "Disconnects MIDI & opens App info; tap Force stop to release WIDI",
+                            text = "Disconnects both Helix apps; open Mixer App info and tap Force stop if still busy",
                             style = MaterialTheme.typography.labelSmall.copy(
                                 color = Color.White.copy(alpha = 0.8f)
                             )
@@ -616,6 +619,9 @@ private fun DeviceItemRow(
 object MidiConnectionDialogController {
 
     private const val HELIX_SONG_VIEW_PACKAGE = "adco.helixsongview"
+    private const val HELIX_MIDI_MIXER_PACKAGE = "adco.helixmidimixer"
+    private const val ACTION_DISCONNECT_MIDI =
+        "adco.helixmidimixer.action.DISCONNECT_MIDI"
 
     private var currentDialog: Dialog? = null
 
@@ -649,7 +655,7 @@ object MidiConnectionDialogController {
                         onSafetyStop = {
                             bridge.stopScan()
                             bridge.disconnect()
-                            openAppInfo(activity)
+                            requestMixerDisconnect(activity)
                         },
                         onDismiss = { dismiss() },
                         permissionsGranted = permissionsGranted,
@@ -695,15 +701,40 @@ object MidiConnectionDialogController {
         currentDialog = null
     }
 
-    private fun openAppInfo(context: Context) {
+    private fun requestMixerDisconnect(context: Context) {
+        try {
+            context.sendOrderedBroadcast(
+                Intent(ACTION_DISCONNECT_MIDI).setPackage(HELIX_MIDI_MIXER_PACKAGE),
+                null,
+                object : BroadcastReceiver() {
+                    override fun onReceive(context: Context, intent: Intent) {
+                        if (!openAppInfo(context, HELIX_MIDI_MIXER_PACKAGE)) {
+                            openAppInfo(context, HELIX_SONG_VIEW_PACKAGE)
+                        }
+                    }
+                },
+                Handler(Looper.getMainLooper()),
+                android.app.Activity.RESULT_OK,
+                null,
+                null
+            )
+        } catch (_: SecurityException) {
+            if (!openAppInfo(context, HELIX_MIDI_MIXER_PACKAGE)) {
+                openAppInfo(context, HELIX_SONG_VIEW_PACKAGE)
+            }
+        }
+    }
+
+    private fun openAppInfo(context: Context, packageName: String): Boolean {
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-            data = Uri.fromParts("package", HELIX_SONG_VIEW_PACKAGE, null)
+            data = Uri.fromParts("package", packageName, null)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
         try {
             context.startActivity(intent)
+            return true
         } catch (_: ActivityNotFoundException) {
-            // ignore
+            return false
         }
     }
 }

@@ -72,6 +72,7 @@
     <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_SCAN" />
     <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_ADVERTISE" />
+    <uses-permission android:name="adco.helixmidimixer.permission.CONTROL_MIDI_CONNECTION" />
 
     <!-- Specifying never for location stops many devices being discovered -->
     <uses-permission android:name="android.permission.NEARBY_WIFI_DEVICES" tools:targetApi="s" />
