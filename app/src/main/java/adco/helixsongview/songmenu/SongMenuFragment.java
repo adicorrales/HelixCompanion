@@ -335,18 +335,17 @@ public class SongMenuFragment extends Fragment implements SongListAdapter.Adapte
         fixColor(myView.filterButtons.tagButton, songListSearchByTag);
         fixColor(myView.filterButtons.filterButton, songListSearchByFilter);
         fixColor(myView.filterButtons.titleButton, songListSearchByTitle);
-        if (myView!=null) {
+        if (myView!=null && mainActivityInterface!=null) {
+            final int primaryColor = mainActivityInterface.getPalette().primary;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                myView.filterButtons.searchButtonGroup.post(() -> {
-                    //myView.filterButtons.searchButtonGroup.setBackgroundTintList(ColorStateList.valueOf(mainActivityInterface.getPalette().primary)));
-                    myView.filterButtons.searchButtonGroup.setBackgroundTintList(new ColorStateList(
-                            new int[][]{new int[0]},
-                            new int[]{mainActivityInterface.getPalette().primary}
-                    ));
-                });
+                myView.filterButtons.searchButtonGroup.post(() ->
+                        myView.filterButtons.searchButtonGroup.setBackgroundTintList(new ColorStateList(
+                                new int[][]{new int[0]},
+                                new int[]{primaryColor}
+                        )));
             } else {
                 myView.filterButtons.searchButtonGroup.post(() ->
-                        myView.filterButtons.searchButtonGroup.setBackgroundColor(mainActivityInterface.getPalette().primary));
+                        myView.filterButtons.searchButtonGroup.setBackgroundColor(primaryColor));
             }
         }
         prepareSearch();
@@ -354,8 +353,9 @@ public class SongMenuFragment extends Fragment implements SongListAdapter.Adapte
 
     private void fixColor(MyMaterialButton button, boolean active) {
         try {
-            if (getContext()!=null) {
+            if (getContext()!=null && mainActivityInterface!=null) {
                 int activecolor = mainActivityInterface.getPalette().secondary;
+                int onPrimaryColor = mainActivityInterface.getPalette().onPrimary;
                 int inactivecolor = getResources().getColor(R.color.transparent);
                 if (button != null) {
                     button.post(() -> {
@@ -364,15 +364,13 @@ public class SongMenuFragment extends Fragment implements SongListAdapter.Adapte
                         } else {
                             button.setBackgroundColor(inactivecolor);
                         }
-                        //button.setIconTint(ColorStateList.valueOf(mainActivityInterface.getPalette().onPrimary));
                         button.setIconTint(new ColorStateList(
                                 new int[][]{new int[0]},
-                                new int[]{mainActivityInterface.getPalette().onPrimary}
+                                new int[]{onPrimaryColor}
                         ));
-                        //button.setStrokeColor(ColorStateList.valueOf(mainActivityInterface.getPalette().secondary));
                         button.setStrokeColor(new ColorStateList(
                                 new int[][]{new int[0]},
-                                new int[]{mainActivityInterface.getPalette().secondary}
+                                new int[]{activecolor}
                         ));
                     });
                 }

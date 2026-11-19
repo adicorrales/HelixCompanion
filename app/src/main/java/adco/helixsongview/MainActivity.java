@@ -268,6 +268,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
     private ActivityResultLauncher<Intent> selectFileLauncher;
     private ActivityResultLauncher<Intent> selectFolderLauncher;
+    private ActivityResultLauncher<String[]> midiConnectionPermissionLauncher;
 
 
     private Consumer<MediaProjection> onMediaProjectionReady;
@@ -432,6 +433,16 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
 
+                });
+
+        // The MIDI connection dialog permission launcher. Re-shows the dialog when
+        // Bluetooth permissions are granted so the scan can start automatically.
+        midiConnectionPermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestMultiplePermissions(),
+                result -> {
+                    if (getAppPermissions().hasMidiScanPermissions()) {
+                        showMidiConnectionDialog();
+                    }
                 });
 
         // The MediaProjection launcher
@@ -2296,7 +2307,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             if (midiConnectionIndicatorView != null) {
                 midiConnectionIndicatorView.setOnClickListener(view -> {
                     showActionBar();
-                    navigateToFragment(getString(R.string.deeplink_midi), 0);
+                    showMidiConnectionDialog();
                 });
                 updateMidiConnectionIndicator();
             }
@@ -2995,6 +3006,25 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     @Override
     public boolean hasValidMidiConnection() {
         return getMidi() != null && getMidi().hasActiveConnection();
+    }
+
+    /**
+     * Opens the Matrix Mixer style MIDI connection dialog (scan / connect /
+     * disconnect / safety stop) instead of navigating to the full settings fragment.
+     */
+    private void showMidiConnectionDialog() {
+        adco.helixsongview.ui.MidiConnectionDialogController.show(
+                this,
+                getMidi(),
+                getAppPermissions().hasMidiScanPermissions(),
+                getPreferences().getMyPreferenceBoolean("midiAutoConnectLast", true),
+                () -> {
+                    if (midiConnectionPermissionLauncher != null) {
+                        midiConnectionPermissionLauncher.launch(getAppPermissions().getMidiScanPermissions());
+                    }
+                },
+                enabled -> getPreferences().setMyPreferenceBoolean("midiAutoConnectLast", enabled)
+        );
     }
 
     @Override
