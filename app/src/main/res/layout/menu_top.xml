@@ -3,18 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/menuTop"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:background="@color/transparent">
+    android:layout_height="46sp"
+    android:background="@color/transparent"
+    android:orientation="horizontal">
 
     <ImageView
         android:id="@+id/backButton"
         android:layout_width="wrap_content"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="match_parent"
         android:layout_gravity="top"
         android:contentDescription="@string/close"
         android:padding="16dp"
-        app:srcCompat="@drawable/arrow_left"/>
+        app:srcCompat="@drawable/arrow_left" />
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabs"
@@ -24,16 +24,16 @@
         android:layout_gravity="top"
         android:layout_weight="1"
         android:background="@color/transparent"
-        android:contentDescription="@string/menu_settings"/>
+        android:contentDescription="@string/menu_settings" />
 
     <ImageView
         android:id="@+id/menuHelp"
         android:layout_width="wrap_content"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="match_parent"
         android:layout_gravity="top"
         android:contentDescription="@string/help"
         android:foregroundGravity="right"
         android:padding="16dp"
-        app:srcCompat="@drawable/help_outline"/>
+        app:srcCompat="@drawable/help_outline" />
 </LinearLayout>
 

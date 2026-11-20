@@ -77,7 +77,7 @@ public class MyToolbar extends Toolbar {
         songSourceAll = findViewById(R.id.songSourceAll);
         songSourceHelix = findViewById(R.id.songSourceHelix);
         songSourceLocal = findViewById(R.id.songSourceLocal);
-        screenTitle = findViewById(R.id.screenTitle);
+        //screenTitle = findViewById(R.id.screenTitle);
         if (songSourceAll != null) songSourceAll.setOnClickListener(view -> mainActivityInterface.openSongMenuPage(0));
         if (songSourceHelix != null) songSourceHelix.setOnClickListener(view -> mainActivityInterface.openSongMenuPage(1));
         if (songSourceLocal != null) songSourceLocal.setOnClickListener(view -> mainActivityInterface.openSongMenuPage(2));
@@ -513,10 +513,10 @@ public class MyToolbar extends Toolbar {
         if (songSourceButtons != null) {
             songSourceButtons.setVisibility(newtitle == null ? View.VISIBLE : View.GONE);
         }
-        if (screenTitle != null) {
-            screenTitle.setText(newtitle == null ? "" : newtitle);
-            screenTitle.setVisibility(newtitle == null ? View.GONE : View.VISIBLE);
-        }
+//        if (screenTitle != null) {
+//            screenTitle.setText(newtitle == null ? "" : newtitle);
+//            screenTitle.setVisibility(newtitle == null ? View.GONE : View.VISIBLE);
+//        }
         styleSongSourceButtons();
     }
 
