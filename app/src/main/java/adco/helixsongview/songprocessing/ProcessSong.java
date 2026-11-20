@@ -3832,10 +3832,14 @@ public class ProcessSong {
         ArrayList<Integer> widths = mainActivityInterface.getSectionWidths();
         ArrayList<Integer> heights = mainActivityInterface.getSectionHeights();
         if (widths != null) {
-            widths.clear();
+            synchronized (widths) {
+                widths.clear();
+            }
         }
         if (heights != null) {
-            heights.clear();
+            synchronized (heights) {
+                heights.clear();
+            }
         }
 
         final int widthSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);

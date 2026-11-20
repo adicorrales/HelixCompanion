@@ -66,8 +66,6 @@ public class SettingsCategories extends Fragment {
         // Hide the features not available to this device
         hideUnavailable();
 
-        // Set the mode in the button
-        setModeText();
 
         // Set up the permission launcher for Nearby
         setPermissions();
@@ -98,27 +96,16 @@ public class SettingsCategories extends Fragment {
     private void hideUnavailable() {
         // If the user doesn't have Google API availability, they can't use the connect feature
         if (getContext()!=null) {
-            setPlayEnabled(mainActivityInterface.getAlertChecks().getHasPlayServices());
-
             // If they don't have midi functionality, remove this
             setMidiEnabled(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M);
         } else {
-            setPlayEnabled(false);
             setMidiEnabled(false);
         }
     }
 
-    private void setModeText() {
-        myView.modeButton.setHint(performance_mode_string);
-    }
 
-    private void setPlayEnabled(boolean enabled) {
-        myView.connectButton.setEnabled(enabled);
-        myView.connectLine.setEnabled(enabled);
-        if (!enabled) {
-            myView.connectButton.setHint(play_services_error_string);
-        }
-    }
+
+
 
     private void setMidiEnabled(boolean enabled) {
         String message;
@@ -172,15 +159,8 @@ public class SettingsCategories extends Fragment {
         });
         myView.setActionsButton.setOnClickListener(v -> mainActivityInterface.navigateToFragment(null, R.id.set_graph));
         myView.gesturesButton.setOnClickListener(v -> mainActivityInterface.navigateToFragment(null, R.id.control_graph));
-        myView.connectButton.setOnClickListener(v -> {
-            // Check we have the required permissions and if so the launcher navigates to the connect fragment
-            mainActivityInterface.setWhattodo("nearby");
-            nearbyConnectionsPermission.launch(mainActivityInterface.getAppPermissions().getNearbyPermissions());
-            mainActivityInterface.getStorageAccess().updateFileActivityLog(mainActivityInterface.getAppPermissions().getPermissionsLog());
-            mainActivityInterface.getAppPermissions().resetPermissionsLog();
-        });
-        myView.modeButton.setOnClickListener(v -> mainActivityInterface.navigateToFragment(null, R.id.modeFragment));
-        myView.midiButton.setOnClickListener(v -> {
+
+      myView.midiButton.setOnClickListener(v -> {
             // This button is only available if we are running Marshmallow or later
             mainActivityInterface.navigateToFragment(null, R.id.midi_graph);
         });

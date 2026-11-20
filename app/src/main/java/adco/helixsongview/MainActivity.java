@@ -4856,16 +4856,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
 
     @Override
-    public void setSectionViews(ArrayList<View> views) {
+    public synchronized void setSectionViews(ArrayList<View> views) {
         if (views == null) {
             // Reset the views and their sizes
-            sectionViews = null;
             sectionViews = new ArrayList<>();
-            sectionWidths = null;
             sectionWidths = new ArrayList<>();
-            sectionHeights = null;
             sectionHeights = new ArrayList<>();
-            sectionColors = null;
             sectionColors = new ArrayList<>();
         } else {
             sectionViews = views;
@@ -4873,35 +4869,52 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     }
 
     @Override
-    public ArrayList<View> getSectionViews() {
+    public synchronized ArrayList<View> getSectionViews() {
         return sectionViews;
     }
 
     @Override
-    public ArrayList<Integer> getSectionWidths() {
+    public synchronized ArrayList<Integer> getSectionWidths() {
         return sectionWidths;
     }
 
     @Override
-    public ArrayList<Integer> getSectionHeights() {
+    public synchronized ArrayList<Integer> getSectionHeights() {
         return sectionHeights;
     }
 
     @Override
-    public ArrayList<Integer> getSectionColors() {
+    public synchronized ArrayList<Integer> getSectionColors() {
         return sectionColors;
     }
 
     @Override
-    public void addSectionSize(int position, int width, int height) {
+    public synchronized void addSectionSize(int position, int width, int height) {
+        if (position < 0) {
+            return;
+        }
         if (sectionWidths == null) {
             sectionWidths = new ArrayList<>();
         }
         if (sectionHeights == null) {
             sectionHeights = new ArrayList<>();
         }
-        sectionWidths.add(position, width);
-        sectionHeights.add(position, height);
+        while (sectionWidths.size() < position) {
+            sectionWidths.add(0);
+        }
+        while (sectionHeights.size() < position) {
+            sectionHeights.add(0);
+        }
+        if (position < sectionWidths.size()) {
+            sectionWidths.set(position, width);
+        } else {
+            sectionWidths.add(width);
+        }
+        if (position < sectionHeights.size()) {
+            sectionHeights.set(position, height);
+        } else {
+            sectionHeights.add(height);
+        }
     }
 
     @Override
