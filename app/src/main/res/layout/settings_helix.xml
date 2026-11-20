@@ -27,23 +27,6 @@
             <adco.helixsongview.customviews.MyMaterialSimpleTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Helix Global MIDI Channel"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:layout_marginTop="8dp"/>
-
-            <adco.helixsongview.customviews.ExposedDropDown
-                android:id="@+id/helixGlobalMidiChannel"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"/>
-
-            <adco.helixsongview.customviews.MyDivider
-                style="@style/MyDividerLine"/>
-
-            <adco.helixsongview.customviews.MyMaterialSimpleTextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:text="Song Selection Mode (Skip / Cue)"
                 android:textSize="14sp"
                 android:textStyle="bold"
@@ -68,6 +51,23 @@
 
             <adco.helixsongview.customviews.ExposedDropDown
                 android:id="@+id/helixPlayMode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"/>
+
+            <adco.helixsongview.customviews.MyDivider
+                style="@style/MyDividerLine"/>
+
+            <adco.helixsongview.customviews.MyMaterialSimpleTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Helix Global MIDI Channel"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:layout_marginTop="8dp"/>
+
+            <adco.helixsongview.customviews.ExposedDropDown
+                android:id="@+id/helixGlobalMidiChannel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"/>

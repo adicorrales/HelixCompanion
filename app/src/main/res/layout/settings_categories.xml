@@ -16,13 +16,12 @@
             android:paddingBottom="@dimen/extra_scroll_space_large">
 
             <adco.helixsongview.customviews.MyMaterialTextView
-                android:id="@+id/modeButton"
+                android:id="@+id/helixButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/choose_app_mode"
-                android:hint="@string/performance_mode"
+                android:text="Helix"
+                android:hint="Helix MIDI integration settings (Play mode, Skip/Cue, Channel)"
                 app:size="large"/>
-
             <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
@@ -76,26 +75,6 @@
             <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
-            <adco.helixsongview.customviews.MyMaterialTextView
-                android:id="@+id/connectButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/connections_connect"
-                android:hint="@string/connections_description"
-                app:size="large"/>
-            <adco.helixsongview.customviews.MyDivider
-                android:id="@+id/connectLine"
-                style="@style/MyDividerLine" />
-
-            <adco.helixsongview.customviews.MyMaterialTextView
-                android:id="@+id/webServerButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/web_server"
-                android:hint="@string/web_server_hint"
-                app:size="large"/>
-            <adco.helixsongview.customviews.MyDivider
-                style="@style/MyDividerLine"/>
 
             <adco.helixsongview.customviews.MyMaterialTextView
                 android:id="@+id/midiButton"
@@ -107,15 +86,7 @@
             <adco.helixsongview.customviews.MyDivider
                 style="@style/MyDividerLine"/>
 
-            <adco.helixsongview.customviews.MyMaterialTextView
-                android:id="@+id/helixButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Helix"
-                android:hint="Helix MIDI integration settings (Play mode, Skip/Cue, Channel)"
-                app:size="large"/>
-            <adco.helixsongview.customviews.MyDivider
-                style="@style/MyDividerLine"/>
+
 
             <adco.helixsongview.customviews.MyMaterialTextView
                 android:id="@+id/profilesButton"
