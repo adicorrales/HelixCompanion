@@ -1703,7 +1703,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                     // User has the set menu open and wants to do something
                     if (setMenuFragment != null) {
                         if (fragName.equals("set_updateView")) {
-                            getCurrentSet().updateSetTitleView();
+                            if (getCurrentSet() != null) {
+                                getCurrentSet().updateSetTitleView();
+                            }
                         } else if (fragName.equals("set_updateKeys")) {
                             setMenuFragment.updateKeys();
                         } else if (arguments != null && !arguments.isEmpty()) {

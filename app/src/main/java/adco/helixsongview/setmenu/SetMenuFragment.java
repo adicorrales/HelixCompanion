@@ -68,14 +68,23 @@ public class SetMenuFragment extends Fragment {
                              Bundle savedInstanceState) {
         myView = MenuSetsBinding.inflate(inflater, container, false);
 
-        myView.getRoot().setBackgroundColor(mainActivityInterface.getPalette().background);
-
-        // Tint the progressBar as the secondary color
-        mainActivityInterface.getMyThemeColors().tintProgressBar(myView.progressBar);
-
-        if (getContext()!=null) {
+        if (mainActivityInterface == null && getContext() instanceof MainActivityInterface) {
             mainActivityInterface = (MainActivityInterface) getContext();
+        }
+
+        if (mainActivityInterface != null) {
+            if (mainActivityInterface.getPalette() != null) {
+                myView.getRoot().setBackgroundColor(mainActivityInterface.getPalette().background);
+            }
+            if (mainActivityInterface.getMyThemeColors() != null) {
+                mainActivityInterface.getMyThemeColors().tintProgressBar(myView.progressBar);
+            }
             mainActivityInterface.registerFragment(this, getFragmentName());
+        } else if (getContext() != null) {
+            mainActivityInterface = (MainActivityInterface) getContext();
+            if (mainActivityInterface != null) {
+                mainActivityInterface.registerFragment(this, getFragmentName());
+            }
         }
 
         // Set column header label according to mode
@@ -150,7 +159,9 @@ public class SetMenuFragment extends Fragment {
                 myView.myRecyclerView.setItemAnimator(null);
             });
 
-            mainActivityInterface.getCurrentSet().updateSetTitleView();
+            if (mainActivityInterface != null && mainActivityInterface.getCurrentSet() != null) {
+                mainActivityInterface.getCurrentSet().updateSetTitleView();
+            }
         }
     }
 
@@ -209,18 +220,20 @@ public class SetMenuFragment extends Fragment {
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
 
                 final int position = viewHolder.getAbsoluteAdapterPosition();
-                final SetItemInfo item = mainActivityInterface.getCurrentSet().getSetItemInfo(position);
+                final SetItemInfo item = (mainActivityInterface != null && mainActivityInterface.getCurrentSet() != null) ? mainActivityInterface.getCurrentSet().getSetItemInfo(position) : null;
 
                 setAdapter.removeItem(position, true);
 
                 Snackbar snackbar = Snackbar.make(myView.coordinatorLayout, set_item_removed_string, Snackbar.LENGTH_LONG);
 
                 snackbar.setAction(undo_string, view -> {
-                    setAdapter.restoreItem(item, position);
-                    myView.myRecyclerView.scrollToPosition(position);
+                    if (item != null) {
+                        setAdapter.restoreItem(item, position);
+                        myView.myRecyclerView.scrollToPosition(position);
+                    }
                 });
 
-                if (getContext()!=null) {
+                if (getContext()!=null && mainActivityInterface != null && mainActivityInterface.getPalette() != null) {
                     try {
                         snackbar.setBackgroundTintList(new ColorStateList(
                                 new int[][]{new int[0]},
@@ -244,6 +257,7 @@ public class SetMenuFragment extends Fragment {
 
     private void setListeners() {
         myView.saveSetButton.post(() -> myView.saveSetButton.setOnClickListener(v -> {
+            if (mainActivityInterface == null || mainActivityInterface.getCurrentSet() == null) return;
             String currentSetName = mainActivityInterface.getCurrentSet().getSetCurrentLastName();
             if (currentSetName==null || currentSetName.isEmpty()) {
                 mainActivityInterface.setWhattodo("saveset");
@@ -276,7 +290,7 @@ public class SetMenuFragment extends Fragment {
     }
 
     public void runSetShowcase() {
-        if (getActivity()!=null) {
+        if (getActivity()!=null && mainActivityInterface != null && mainActivityInterface.getShowCase() != null) {
             try {
                 String info = set_manage_click_string + "\n" + set_help_string +
                         "\n" + set_manage_swipe_string;
@@ -296,9 +310,10 @@ public class SetMenuFragment extends Fragment {
     }
 
     public void scrollToItem() {
-        if (mainActivityInterface!=null && mainActivityInterface.getCurrentSet().getIndexSongInSet()>-1 &&
+        if (mainActivityInterface!=null && mainActivityInterface.getCurrentSet()!=null && mainActivityInterface.getCurrentSet().getIndexSongInSet()>-1 &&
                 mainActivityInterface.getCurrentSet().getIndexSongInSet() < mainActivityInterface.getCurrentSet().getCurrentSetSize()) {
             myView.myRecyclerView.postDelayed(() -> {
+                if (mainActivityInterface == null || mainActivityInterface.getCurrentSet() == null) return;
                 int position = mainActivityInterface.getCurrentSet().getIndexSongInSet();
                 if (position<0 && mainActivityInterface.getCurrentSet().getCurrentSetSize()>0) {
                     position = 0;
@@ -331,7 +346,7 @@ public class SetMenuFragment extends Fragment {
     public void updateKeys() {
         // The drawer page may exist without being attached yet (ViewPager2 creates the
         // fragment on demand), so there is no activity interface to update against.
-        if (mainActivityInterface == null) {
+        if (mainActivityInterface == null || mainActivityInterface.getSetActions() == null || mainActivityInterface.getCurrentSet() == null) {
             return;
         }
         if (mainActivityInterface.getSetActions().getMissingKeyPositions()!=null &&
@@ -343,19 +358,19 @@ public class SetMenuFragment extends Fragment {
     }
 
     public void notifyItemRangeRemoved(int from, int count) {
-        if (setAdapter!=null && mainActivityInterface!=null) {
+        if (setAdapter!=null && mainActivityInterface!=null && mainActivityInterface.getMainHandler()!=null) {
             mainActivityInterface.getMainHandler().post(() -> setAdapter.notifyItemRangeRemoved(from, count));
         }
     }
 
     public void notifyItemRangeChanged(int from, int count) {
-        if (setAdapter!=null && mainActivityInterface!=null) {
+        if (setAdapter!=null && mainActivityInterface!=null && mainActivityInterface.getMainHandler()!=null) {
             mainActivityInterface.getMainHandler().post(() -> setAdapter.notifyItemRangeChanged(from, count));
         }
     }
 
     public void notifyItemChanged(int position) {
-        if (setAdapter!=null && mainActivityInterface!=null) {
+        if (setAdapter!=null && mainActivityInterface!=null && mainActivityInterface.getMainHandler()!=null) {
             mainActivityInterface.getMainHandler().post(() -> {
                 setAdapter.notifyItemChanged(position);
                 mainActivityInterface.notifyInlineSetChanged(position);
@@ -364,19 +379,19 @@ public class SetMenuFragment extends Fragment {
     }
 
     public void notifyItemInserted() {
-        if (setAdapter!=null && mainActivityInterface.getCurrentSet().getCurrentSetSize()>0) {
+        if (setAdapter!=null && mainActivityInterface!=null && mainActivityInterface.getCurrentSet()!=null && mainActivityInterface.getCurrentSet().getCurrentSetSize()>0 && mainActivityInterface.getMainHandler()!=null) {
             mainActivityInterface.getMainHandler().post(() -> setAdapter.insertItem());
         }
     }
 
     public void notifyItemCueNext() {
-        if (setAdapter!=null && mainActivityInterface.getCurrentSet().getCurrentSetSize()>0) {
+        if (setAdapter!=null && mainActivityInterface!=null && mainActivityInterface.getCurrentSet()!=null && mainActivityInterface.getCurrentSet().getCurrentSetSize()>0 && mainActivityInterface.getMainHandler()!=null) {
             mainActivityInterface.getMainHandler().post(() -> setAdapter.notifyInlineSetCueItem());
         }
     }
 
     public void notifyItemRemoved(int position) {
-        if (setAdapter!=null && mainActivityInterface.getCurrentSet().getCurrentSetSize()>position) {
+        if (setAdapter!=null && mainActivityInterface!=null && mainActivityInterface.getCurrentSet()!=null && mainActivityInterface.getCurrentSet().getCurrentSetSize()>position && mainActivityInterface.getMainHandler()!=null) {
             mainActivityInterface.getMainHandler().post(() -> setAdapter.removeItem(position,false));
         }
     }
@@ -384,7 +399,9 @@ public class SetMenuFragment extends Fragment {
     public void updateItem(int position) {
         if (setAdapter!=null) {
             setAdapter.updateItem(position);
-            mainActivityInterface.getCurrentSet().setSetCurrent(mainActivityInterface.getSetActions().getSetAsPreferenceString());
+            if (mainActivityInterface!=null && mainActivityInterface.getCurrentSet()!=null && mainActivityInterface.getSetActions()!=null) {
+                mainActivityInterface.getCurrentSet().setSetCurrent(mainActivityInterface.getSetActions().getSetAsPreferenceString());
+            }
         }
     }
 
@@ -395,7 +412,7 @@ public class SetMenuFragment extends Fragment {
     }
 
     public void updateHighlight() {
-        if (setAdapter!=null && mainActivityInterface.getSong()!=null &&
+        if (setAdapter!=null && mainActivityInterface!=null && mainActivityInterface.getSong()!=null && mainActivityInterface.getCurrentSet()!=null &&
                 !setAdapter.getUpdatingHighlight() && setAdapter.getHighlightChangeAllowed()) {
             int selectedPosition = mainActivityInterface.getCurrentSet().getIndexSongInSet();
             int previousPosition = mainActivityInterface.getCurrentSet().getPrevIndexSongInSet();
@@ -403,14 +420,14 @@ public class SetMenuFragment extends Fragment {
             if (previousPosition>-1) {
                 setAdapter.removeHighlight(previousPosition);
             }
-            if (selectedPosition>-1) {
+            if (selectedPosition>-1 && mainActivityInterface.getMainHandler()!=null) {
                 mainActivityInterface.getMainHandler().postDelayed(() -> setAdapter.updateHighlight(selectedPosition),500);
             }
         }
     }
 
     public void removeHighlight() {
-        if (setAdapter!=null && mainActivityInterface.getCurrentSet().getPrevIndexSongInSet()>-1 &&
+        if (setAdapter!=null && mainActivityInterface!=null && mainActivityInterface.getCurrentSet()!=null && mainActivityInterface.getCurrentSet().getPrevIndexSongInSet()>-1 &&
                 !setAdapter.getRemovingHighlight() && setAdapter.getHighlightChangeAllowed()) {
             setAdapter.removeHighlight(mainActivityInterface.getCurrentSet().getPrevIndexSongInSet());
         }

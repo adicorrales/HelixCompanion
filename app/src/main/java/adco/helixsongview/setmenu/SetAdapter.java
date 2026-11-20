@@ -320,7 +320,12 @@ public class SetAdapter extends RecyclerView.Adapter<SetListItemViewHolder> impl
 
     // Update the keys of set items (in case the database wasn't ready)
     public void updateKeys() {
-        mainActivityInterface.getMainHandler().post(() -> notifyItemRangeChanged(0,mainActivityInterface.getCurrentSet().getCurrentSetSize()));
+        if (mainActivityInterface == null || mainActivityInterface.getCurrentSet() == null || mainActivityInterface.getSetActions() == null) {
+            return;
+        }
+        if (mainActivityInterface.getMainHandler() != null) {
+            mainActivityInterface.getMainHandler().post(() -> notifyItemRangeChanged(0,mainActivityInterface.getCurrentSet().getCurrentSetSize()));
+        }
         mainActivityInterface.getSetActions().nullMissingKeyPositions();
 
         // Now send the instruction to the inline set
