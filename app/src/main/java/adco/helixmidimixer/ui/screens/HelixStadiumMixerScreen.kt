@@ -43,6 +43,13 @@ fun HelixStadiumMixerScreen(
     val midiCcMapping by viewModel.midiCcMapping.collectAsStateWithLifecycle()
     val matrixMidiChannels by viewModel.matrixMidiChannels.collectAsStateWithLifecycle()
     val isPlaying by viewModel.isPlaying.collectAsStateWithLifecycle()
+    val playStatus by viewModel.playStatus.collectAsStateWithLifecycle()
+    val currentSongTitle by viewModel.currentSongTitle.collectAsStateWithLifecycle()
+    val currentSongKey by viewModel.currentSongKey.collectAsStateWithLifecycle()
+    val currentSongCapo by viewModel.currentSongCapo.collectAsStateWithLifecycle()
+    val currentSongTempo by viewModel.currentSongTempo.collectAsStateWithLifecycle()
+    val prevSongTitle by viewModel.prevSongTitle.collectAsStateWithLifecycle()
+    val nextSongTitle by viewModel.nextSongTitle.collectAsStateWithLifecycle()
     val routesExpanded by viewModel.routesExpanded.collectAsStateWithLifecycle()
     val songChannelsExpanded by viewModel.songChannelsExpanded.collectAsStateWithLifecycle()
     val channelVisibilities by viewModel.channelVisibilities.collectAsStateWithLifecycle()
@@ -80,6 +87,13 @@ fun HelixStadiumMixerScreen(
         bottomBar = {
             TransportBar(
                 isPlaying = isPlaying,
+                playStatus = playStatus,
+                currentSongTitle = currentSongTitle,
+                currentSongKey = currentSongKey,
+                currentSongCapo = currentSongCapo,
+                currentSongTempo = currentSongTempo,
+                prevSongTitle = prevSongTitle,
+                nextSongTitle = nextSongTitle,
                 onPrev = { viewModel.sendTransportPrev() },
                 onReturnToZero = { viewModel.sendTransportReturnToZero() },
                 onPlayToggle = { viewModel.toggleTransportPlay() },

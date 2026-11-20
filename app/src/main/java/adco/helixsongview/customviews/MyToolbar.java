@@ -59,7 +59,6 @@ public class MyToolbar extends Toolbar {
     private Runnable hideActionBarRunnable;
     private int actionBarHideTime = 1200, additionalTopPadding = 0;
     private float clockTextSize;
-    private int beats = 4;
     private boolean clock24hFormat, clockOn, hideActionBar, clockSeconds, performanceMode, actionBarTempo;
     @SuppressWarnings({"unused","FieldCanBeLocal"})
     private final String TAG = "MyToolbar";
@@ -116,6 +115,10 @@ public class MyToolbar extends Toolbar {
         super(context, attrs);
 
         View v = inflate(context,R.layout.view_toolbar_constraint,this);
+        v.setLayoutParams(new Toolbar.LayoutParams(
+            Toolbar.LayoutParams.MATCH_PARENT,
+            Toolbar.LayoutParams.MATCH_PARENT
+        ));
 
         this.setContentInsetsRelative(0,0);
         this.setContentInsetStartWithNavigation(0);
@@ -238,6 +241,7 @@ public class MyToolbar extends Toolbar {
         if (btnTransportPlayContainer != null) {
             btnTransportPlayContainer.setBackgroundResource(R.drawable.transport_btn_bg);
         }
+        syncTransportManager();
     }
 
     // Deal with the preferences used for the actionbar
@@ -494,6 +498,7 @@ public class MyToolbar extends Toolbar {
                 songandauthor.setOnLongClickListener(null);
             }
         }
+        syncTransportManager();
     }
 
     private void updateSurfaceMode(String newtitle) {
@@ -586,6 +591,7 @@ public class MyToolbar extends Toolbar {
             if (btnTransportNextContainer != null) {
                 btnTransportNextContainer.setVisibility(nextTitle.isEmpty() ? View.GONE : View.VISIBLE);
             }
+            syncTransportManager();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -847,6 +853,35 @@ public class MyToolbar extends Toolbar {
         if (playPauseIndicator != null) {
             playPauseIndicator.setColorFilter(color);
         }
+        syncTransportManager();
+    }
+
+    private void syncTransportManager() {
+        if (mainActivityInterface instanceof MainActivity) {
+            ((MainActivity) mainActivityInterface).updateTransportManagerSync();
+        }
+    }
+
+    public TextView getPlayPauseStatusText() {
+        return playPauseStatusText;
+    }
+    public String getSongTitleText() {
+        return title != null && title.getText() != null ? title.getText().toString() : "";
+    }
+    public String getKeyText() {
+        return key != null && key.getText() != null ? key.getText().toString() : "";
+    }
+    public String getCapoText() {
+        return capo != null && capo.getText() != null ? capo.getText().toString() : "";
+    }
+    public String getTempoText() {
+        return tempo != null && tempo.getText() != null ? tempo.getText().toString() : "";
+    }
+    public String getPrevTitleText() {
+        return btnTransportPrevTitle != null && btnTransportPrevTitle.getText() != null ? btnTransportPrevTitle.getText().toString() : "";
+    }
+    public String getNextTitleText() {
+        return btnTransportNextTitle != null && btnTransportNextTitle.getText() != null ? btnTransportNextTitle.getText().toString() : "";
     }
 
 }

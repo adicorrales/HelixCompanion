@@ -559,6 +559,28 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 // Set up the helpers
                 setupHelpers();
 
+                adco.helixmidimixer.data.repository.SongTransportManager.INSTANCE.setTransportActionListener(action -> {
+                    runOnUiThread(() -> {
+                        if (action != null) {
+                            switch (action) {
+                                case "PREV":
+                                    onTransportPrev();
+                                    break;
+                                case "RT0":
+                                    onTransportRt0();
+                                    break;
+                                case "PLAY":
+                                    onTransportPlay();
+                                    break;
+                                case "NEXT":
+                                    onTransportNext();
+                                    break;
+                            }
+                        }
+                    });
+                    return kotlin.Unit.INSTANCE;
+                });
+
                 // Set up the action bar
                 setupActionbar();
 
@@ -1386,7 +1408,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         }
 
         if (mixerAppIcon == null) {
-            mixerAppIcon = AppCompatResources.getDrawable(this, R.drawable.helix_mixer);
+            Drawable mixerIcon = AppCompatResources.getDrawable(this, R.drawable.multitrack);
+            if (mixerIcon != null) {
+                mixerAppIcon = DrawableCompat.wrap(mixerIcon);
+                DrawableCompat.setTint(mixerAppIcon, getPalette().secondary);
+            }
         }
 
         if (searchIcon == null) {
@@ -3905,6 +3931,30 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
     private boolean isPlaying = false;
     private int transportClickCount = 0; // 0 = Cued (needs 1st pulse to load), 1 = Loaded (needs 2nd pulse to play), 2 = Playing
+
+    public void updateTransportManagerSync() {
+        boolean playing = isPlaying;
+        String status = "";
+        if (myView != null && myView.myToolbar != null && myView.myToolbar.getPlayPauseStatusText() != null) {
+            status = myView.myToolbar.getPlayPauseStatusText().getText().toString();
+        }
+        String curTitle = "";
+        String curKey = "";
+        String curCapo = "";
+        String curTempo = "";
+        String prevTitle = "";
+        String nextTitle = "";
+        if (myView != null && myView.myToolbar != null) {
+            curTitle = myView.myToolbar.getSongTitleText();
+            curKey = myView.myToolbar.getKeyText();
+            curCapo = myView.myToolbar.getCapoText();
+            curTempo = myView.myToolbar.getTempoText();
+            prevTitle = myView.myToolbar.getPrevTitleText();
+            nextTitle = myView.myToolbar.getNextTitleText();
+        }
+        adco.helixmidimixer.data.repository.SongTransportManager.INSTANCE.updatePlayState(playing, status);
+        adco.helixmidimixer.data.repository.SongTransportManager.INSTANCE.updateSongInfo(curTitle, curKey, curCapo, curTempo, prevTitle, nextTitle);
+    }
 
     @Override
     public void onTransportPrev() {

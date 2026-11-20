@@ -9,6 +9,7 @@ import adco.helixmidimixer.data.model.MidiCcMapping
 import adco.helixmidimixer.data.model.OutputGroup
 import adco.helixmidimixer.data.model.SongPlayMode
 import adco.helixmidimixer.data.repository.DataStoreRepository
+import adco.helixmidimixer.data.repository.SongTransportManager
 import adco.helixmidimixer.midi.BleConnectionState
 import adco.helixmidimixer.midi.BleDeviceInfo
 import adco.helixmidimixer.midi.BleMidiManager
@@ -57,8 +58,14 @@ class MainViewModel(
     val songPlayMode: StateFlow<SongPlayMode> = repository.getSongPlayMode()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), SongPlayMode.PLAY)
 
-    private val _isPlaying = MutableStateFlow(false)
-    val isPlaying: StateFlow<Boolean> = _isPlaying.asStateFlow()
+    val isPlaying: StateFlow<Boolean> = SongTransportManager.isPlaying
+    val playStatus: StateFlow<String> = SongTransportManager.playStatus
+    val currentSongTitle: StateFlow<String> = SongTransportManager.currentTitle
+    val currentSongKey: StateFlow<String> = SongTransportManager.currentKey
+    val currentSongCapo: StateFlow<String> = SongTransportManager.currentCapo
+    val currentSongTempo: StateFlow<String> = SongTransportManager.currentTempo
+    val prevSongTitle: StateFlow<String> = SongTransportManager.prevTitle
+    val nextSongTitle: StateFlow<String> = SongTransportManager.nextTitle
 
     private var isSongLoaded = false
     // Echo suppression is keyed by channel + CC + value: the Helix answers our
@@ -392,59 +399,58 @@ class MainViewModel(
         val ch = getTransportMidiChannel0Based()
         markCcSent(ch, 49, 0)
         bleMidiManager.sendControlChange(channel = ch, ccNumber = 49, value = 0)
-        _isPlaying.value = false
+        SongTransportManager.updatePlayState(false, "On Cue")
         isSongLoaded = false
+        SongTransportManager.requestAction("PREV")
     }
 
     fun sendTransportReturnToZero() {
         val ch = getTransportMidiChannel0Based()
         markCcSent(ch, 47, 127)
         bleMidiManager.sendControlChange(channel = ch, ccNumber = 47, value = 127)
+        SongTransportManager.requestAction("RT0")
     }
 
     fun toggleTransportPlay() {
         val ch = getTransportMidiChannel0Based()
-        val currentPlaying = _isPlaying.value
+        val currentPlaying = isPlaying.value
 
         markCcSent(ch, 51, 127)
 
         if (currentPlaying) {
-            // Currently playing -> pause/stop playback
-            _isPlaying.value = false
+            SongTransportManager.updatePlayState(false, "Paused")
             isSongLoaded = false
             bleMidiManager.sendControlChange(channel = ch, ccNumber = 51, value = 127)
         } else {
-            // Currently stopped
             when (songPlayMode.value) {
                 SongPlayMode.PLAY -> {
-                    _isPlaying.value = true
+                    SongTransportManager.updatePlayState(true, "Playing")
                     isSongLoaded = false
                     bleMidiManager.sendControlChange(channel = ch, ccNumber = 51, value = 127)
                 }
                 SongPlayMode.LOAD -> {
                     if (!isSongLoaded) {
-                        // 1st click: Send CC 51 to load song/preset on Helix.
-                        // Audio does NOT start yet, so stay in stopped state (isPlaying = false)
                         isSongLoaded = true
-                        _isPlaying.value = false
+                        SongTransportManager.updatePlayState(false, "Loaded")
                         bleMidiManager.sendControlChange(channel = ch, ccNumber = 51, value = 127)
                     } else {
-                        // 2nd click: Send CC 51 to start audio playback!
-                        _isPlaying.value = true
+                        SongTransportManager.updatePlayState(true, "Playing")
                         isSongLoaded = false
                         bleMidiManager.sendControlChange(channel = ch, ccNumber = 51, value = 127)
                     }
                 }
             }
         }
+        SongTransportManager.requestAction("PLAY")
     }
 
     fun sendTransportNext() {
         val ch = getTransportMidiChannel0Based()
         markCcSent(ch, 49, 127)
         bleMidiManager.sendControlChange(channel = ch, ccNumber = 49, value = 127)
-        _isPlaying.value = false
+        SongTransportManager.updatePlayState(false, "On Cue")
         isSongLoaded = false
+        SongTransportManager.requestAction("NEXT")
     }
 
     fun toggleRoutesExpanded(group: OutputGroup, expanded: Boolean) {
@@ -521,7 +527,8 @@ class MainViewModel(
             if (isPlayingVal && !startFromZero && isLoadMode && isSongLoaded) {
                 return
             }
-            _isPlaying.value = isPlayingVal
+            val statusText = if (isPlayingVal) "Playing" else "Paused"
+            SongTransportManager.updatePlayState(isPlayingVal, statusText)
             if (isPlayingVal) {
                 isSongLoaded = false
             }
