@@ -15,7 +15,10 @@
         android:id="@+id/btnTransportPrevContainer"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_margin="8dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="8dp"
         android:layout_weight="1.25"
         android:background="@drawable/transport_btn_bg"
         android:clickable="true"
@@ -48,14 +51,17 @@
 
     <ImageView
         android:id="@+id/btnTransportRt0"
-        android:layout_width="60dp"
+        android:layout_width="62dp"
         android:layout_height="match_parent"
-        android:layout_margin="8dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="8dp"
         android:background="@drawable/transport_btn_bg"
         android:clickable="true"
         android:contentDescription="Return to start"
         android:focusable="true"
-        android:padding="11dp"
+        android:padding="4dp"
         app:srcCompat="@drawable/refresh"
         app:tint="#E2E8F0" />
 
@@ -63,7 +69,10 @@
         android:id="@+id/songandauthor"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_margin="8dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="8dp"
         android:layout_weight="2"
         android:background="@drawable/transport_btn_bg"
         android:clickable="true"
@@ -127,23 +136,16 @@
                 tools:text=" 120 bpm" />
         </LinearLayout>
 
-        <adco.helixsongview.customviews.MyMaterialSimpleTextView
-            android:id="@+id/songauthor_ab"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textAlignment="center"
-            android:textColor="#E2E8F0"
-            android:textSize="10sp"
-            tools:text="Artist" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/btnTransportPlayContainer"
         android:layout_width="120dp"
         android:layout_height="match_parent"
-        android:layout_margin="8dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="8dp"
         android:background="@drawable/transport_btn_bg"
         android:clickable="true"
         android:focusable="true"
@@ -173,7 +175,10 @@
         android:id="@+id/btnTransportNextContainer"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_margin="8dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="8dp"
         android:layout_weight="1.25"
         android:background="@drawable/transport_btn_bg"
         android:clickable="true"

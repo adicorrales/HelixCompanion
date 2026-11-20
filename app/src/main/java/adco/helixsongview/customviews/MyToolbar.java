@@ -130,7 +130,7 @@ public class MyToolbar extends Toolbar {
         title = v.findViewById(R.id.songtitle_ab);
         key = v.findViewById(R.id.songkey_ab);
         capo = v.findViewById(R.id.songcapo_ab);
-        author = v.findViewById(R.id.songauthor_ab);
+        //author = v.findViewById(R.id.songauthor_ab);
         tempo = v.findViewById(R.id.songtempo_ab);
         batteryholder = v.findViewById(R.id.batteryholder);
         batteryimage = v.findViewById(R.id.batteryimage);
@@ -178,7 +178,7 @@ public class MyToolbar extends Toolbar {
         title = root.findViewById(R.id.songtitle_ab);
         key = root.findViewById(R.id.songkey_ab);
         capo = root.findViewById(R.id.songcapo_ab);
-        author = root.findViewById(R.id.songauthor_ab);
+        //author = root.findViewById(R.id.songauthor_ab);
         tempo = root.findViewById(R.id.songtempo_ab);
         songandauthor = root.findViewById(R.id.songandauthor);
         btnTransportPrevContainer = root.findViewById(R.id.btnTransportPrevContainer);
@@ -799,7 +799,7 @@ public class MyToolbar extends Toolbar {
             this.setElevation(0);
         }
         title.setTextColor(mainActivityInterface.getPalette().textColor);
-        author.setTextColor(mainActivityInterface.getPalette().textColor);
+        //author.setTextColor(mainActivityInterface.getPalette().textColor);
         key.setTextColor(mainActivityInterface.getPalette().textColor);
         capo.setTextColor(mainActivityInterface.getPalette().textColor);
         tempo.setTextColor(mainActivityInterface.getPalette().textColor);
