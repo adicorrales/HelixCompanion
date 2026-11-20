@@ -22,7 +22,6 @@
         app:showAsAction="always"
         android:icon="@drawable/multitrack"
         android:orderInCategory="3" />
-    <!--        android:icon="@drawable/helix_mixer"-->
 
     <item android:id="@+id/midi_connection_menu_item"
         android:title="@string/midi"
