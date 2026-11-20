@@ -27,7 +27,7 @@
 
         <TextView
             android:id="@+id/songSourceAll"
-            android:layout_width="68dp"
+            android:layout_width="72dp"
             android:layout_height="36dp"
             android:background="@drawable/transport_btn_bg"
             android:gravity="center"
@@ -41,7 +41,7 @@
 
         <TextView
             android:id="@+id/songSourceHelix"
-            android:layout_width="68dp"
+            android:layout_width="72dp"
             android:layout_height="36dp"
             android:layout_marginStart="4dp"
             android:background="@drawable/transport_btn_bg"
@@ -56,7 +56,7 @@
 
         <TextView
             android:id="@+id/songSourceLocal"
-            android:layout_width="68dp"
+            android:layout_width="72dp"
             android:layout_height="36dp"
             android:layout_marginStart="4dp"
             android:background="@drawable/transport_btn_bg"

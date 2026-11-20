@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
         object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                val repo = DataStoreRepository(applicationContext.helixDataStore)
+                val repo = DataStoreRepository(applicationContext.helixDataStore, applicationContext)
                 val bleManager = (application as HelixCompanionApplication).bleMidiManager
                 return MainViewModel(repo, bleManager) as T
             }

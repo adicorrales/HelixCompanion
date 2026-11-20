@@ -29,7 +29,6 @@ import adco.helixmidimixer.ui.dialogs.EditChannelNameDialog
 import adco.helixmidimixer.ui.dialogs.MidiCcCustomizationDialog
 import adco.helixmidimixer.ui.dialogs.PanAdjustmentDialog
 import adco.helixmidimixer.ui.dialogs.VolumeAdjustmentDialog
-import adco.helixmidimixer.ui.dialogs.TransportSettingsDialog
 import adco.helixmidimixer.ui.theme.HelixBackground
 import adco.helixmidimixer.ui.viewmodel.MainViewModel
 
@@ -43,8 +42,6 @@ fun HelixStadiumMixerScreen(
     val channelStates by viewModel.channelStates.collectAsStateWithLifecycle()
     val midiCcMapping by viewModel.midiCcMapping.collectAsStateWithLifecycle()
     val matrixMidiChannels by viewModel.matrixMidiChannels.collectAsStateWithLifecycle()
-    val transportMidiChannel by viewModel.transportMidiChannel.collectAsStateWithLifecycle()
-    val songPlayMode by viewModel.songPlayMode.collectAsStateWithLifecycle()
     val isPlaying by viewModel.isPlaying.collectAsStateWithLifecycle()
     val routesExpanded by viewModel.routesExpanded.collectAsStateWithLifecycle()
     val songChannelsExpanded by viewModel.songChannelsExpanded.collectAsStateWithLifecycle()
@@ -56,7 +53,6 @@ fun HelixStadiumMixerScreen(
     // Dialog state management
     var showBleDialog by remember { mutableStateOf(false) }
     var showCcDialog by remember { mutableStateOf(false) }
-    var showTransportSettingsDialog by remember { mutableStateOf(false) }
     var panChannelTarget by remember { mutableStateOf<Int?>(null) } // channelIndex
     var volumeChannelTarget by remember { mutableStateOf<Int?>(null) } // channelIndex
     var renameSongTarget by remember { mutableStateOf<Int?>(null) } // songIndex (1..8)
@@ -87,8 +83,7 @@ fun HelixStadiumMixerScreen(
                 onPrev = { viewModel.sendTransportPrev() },
                 onReturnToZero = { viewModel.sendTransportReturnToZero() },
                 onPlayToggle = { viewModel.toggleTransportPlay() },
-                onNext = { viewModel.sendTransportNext() },
-                onOpenSettings = { showTransportSettingsDialog = true }
+                onNext = { viewModel.sendTransportNext() }
             )
         }
     ) { innerPadding ->
@@ -148,17 +143,6 @@ fun HelixStadiumMixerScreen(
             onSaveMatrixMidiChannel = { group, ch -> viewModel.saveMatrixMidiChannel(group, ch) },
             onToggleChannelVisibility = { chIdx, visible -> viewModel.toggleChannelVisibility(chIdx, visible) },
             onDismiss = { showCcDialog = false }
-        )
-    }
-
-    // 3. Transport & Song Settings Dialog
-    if (showTransportSettingsDialog) {
-        TransportSettingsDialog(
-            initialTransportChannel = transportMidiChannel,
-            initialSongPlayMode = songPlayMode,
-            onSaveTransportChannel = { ch -> viewModel.saveTransportMidiChannel(ch) },
-            onSaveSongPlayMode = { mode -> viewModel.saveSongPlayMode(mode) },
-            onDismiss = { showTransportSettingsDialog = false }
         )
     }
 

@@ -383,18 +383,6 @@ class MainViewModel(
         }
     }
 
-    fun saveTransportMidiChannel(channel: Int) {
-        viewModelScope.launch {
-            repository.saveTransportMidiChannel(channel)
-        }
-    }
-
-    fun saveSongPlayMode(mode: SongPlayMode) {
-        viewModelScope.launch {
-            repository.saveSongPlayMode(mode)
-        }
-    }
-
     private fun getTransportMidiChannel0Based(): Int {
         val channel1Based = transportMidiChannel.value
         return (channel1Based - 1).coerceIn(0, 15)
@@ -433,7 +421,7 @@ class MainViewModel(
                     isSongLoaded = false
                     bleMidiManager.sendControlChange(channel = ch, ccNumber = 51, value = 127)
                 }
-                SongPlayMode.LOAD, SongPlayMode.LOAD_PRESET -> {
+                SongPlayMode.LOAD -> {
                     if (!isSongLoaded) {
                         // 1st click: Send CC 51 to load song/preset on Helix.
                         // Audio does NOT start yet, so stay in stopped state (isPlaying = false)
@@ -528,7 +516,7 @@ class MainViewModel(
             val startFromZero = value == 1
             val isPlayingVal = startFromZero || value >= 64
             val isLoadMode = songPlayMode.value != SongPlayMode.PLAY
-            // In Load / Load+Preset modes, the echo of our own load pulse must not
+            // In Load mode, the echo of our own load pulse must not
             // flip the button to "playing"; a real hardware start always wins.
             if (isPlayingVal && !startFromZero && isLoadMode && isSongLoaded) {
                 return

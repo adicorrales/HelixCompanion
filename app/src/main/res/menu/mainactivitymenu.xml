@@ -20,8 +20,9 @@
     <item android:id="@+id/mirror_menu_item"
         android:title="@string/helix_midi_mixer"
         app:showAsAction="always"
-        android:icon="@drawable/helix_mixer"
+        android:icon="@drawable/tune"
         android:orderInCategory="3" />
+    <!--        android:icon="@drawable/helix_mixer"-->
 
     <item android:id="@+id/midi_connection_menu_item"
         android:title="@string/midi"
