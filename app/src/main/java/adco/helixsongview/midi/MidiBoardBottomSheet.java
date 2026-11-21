@@ -98,6 +98,8 @@ public class MidiBoardBottomSheet extends BottomSheetCommon {
         // Now get the sliders
         myView.boardSlider1.setLabelFormatter(value -> String.valueOf((int)value));
         myView.boardSlider2.setLabelFormatter(value -> String.valueOf((int)value));
+        myView.boardSlider3.setLabelFormatter(value -> String.valueOf((int)value));
+        myView.boardSlider4.setLabelFormatter(value -> String.valueOf((int)value));
         boardSliderName = new ArrayList<>();
         boardSliderChannel = new ArrayList<>();
         boardSliderCC = new ArrayList<>();
@@ -114,6 +116,8 @@ public class MidiBoardBottomSheet extends BottomSheetCommon {
         }
         myView.boardSlider1.initialiseSliderValues(boardSliderName.get(1),boardSliderChannel.get(1),boardSliderCC.get(1),boardSliderVal.get(1));
         myView.boardSlider2.initialiseSliderValues(boardSliderName.get(2),boardSliderChannel.get(2),boardSliderCC.get(2),boardSliderVal.get(2));
+        myView.boardSlider3.initialiseSliderValues(boardSliderName.get(3),boardSliderChannel.get(3),boardSliderCC.get(3),boardSliderVal.get(3));
+        myView.boardSlider3.initialiseSliderValues(boardSliderName.get(4),boardSliderChannel.get(4),boardSliderCC.get(4),boardSliderVal.get(4));
     }
 
     @SuppressWarnings("deprecation")
@@ -163,6 +167,18 @@ public class MidiBoardBottomSheet extends BottomSheetCommon {
             String midiCode = myView.boardSlider2.getMidiCode();
             mainActivityInterface.getMidi().sendMidiHexSequence(mainActivityInterface.getMidi().checkForShortHandMIDI(midiCode));
         });
+        myView.boardSlider2.getSliderValues().setOnClickListener(view -> {
+            String midiCode = myView.boardSlider2.getMidiCode();
+            mainActivityInterface.getMidi().sendMidiHexSequence(mainActivityInterface.getMidi().checkForShortHandMIDI(midiCode));
+        });
+        myView.boardSlider3.getSliderValues().setOnClickListener(view -> {
+            String midiCode = myView.boardSlider3.getMidiCode();
+            mainActivityInterface.getMidi().sendMidiHexSequence(mainActivityInterface.getMidi().checkForShortHandMIDI(midiCode));
+        });
+        myView.boardSlider4.getSliderValues().setOnClickListener(view -> {
+            String midiCode = myView.boardSlider4.getMidiCode();
+            mainActivityInterface.getMidi().sendMidiHexSequence(mainActivityInterface.getMidi().checkForShortHandMIDI(midiCode));
+        });
         myView.boardSlider1.setOnLongClickListener(view -> {
             Log.d(TAG,"edit board"+boardNum+"Slider1");
             whichSliderToEdit = 1;
@@ -177,6 +193,23 @@ public class MidiBoardBottomSheet extends BottomSheetCommon {
             midiControllerBottomSheet.show(mainActivityInterface.getMyFragmentManager(),"MidiControllerBottomSheet");
             return true;
         });
+        myView.boardSlider3.setOnLongClickListener(view -> {
+            Log.d(TAG,"edit board"+boardNum+"Slider3");
+            whichSliderToEdit = 3;
+            MidiControllerBottomSheet midiControllerBottomSheet = new MidiControllerBottomSheet(MidiBoardBottomSheet.
+                    this,boardSliderName.get(3),boardSliderChannel.get(3),boardSliderCC.get(3));
+            midiControllerBottomSheet.show(mainActivityInterface.getMyFragmentManager(),"MidiControllerBottomSheet");
+            return true;
+        });
+        myView.boardSlider4.setOnLongClickListener(view -> {
+            Log.d(TAG,"edit board"+boardNum+"Slider2");
+            whichSliderToEdit = 4;
+            MidiControllerBottomSheet midiControllerBottomSheet = new MidiControllerBottomSheet(MidiBoardBottomSheet.
+                    this,boardSliderName.get(4),boardSliderChannel.get(4),boardSliderCC.get(4));
+            midiControllerBottomSheet.show(mainActivityInterface.getMyFragmentManager(),"MidiControllerBottomSheet");
+            return true;
+        });
+
         myView.boardSlider1.addOnChangeListener((slider, value, fromUser) -> myView.boardSlider1.updateSliderVal((int)value));
         myView.boardSlider1.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
             @Override
@@ -202,6 +235,34 @@ public class MidiBoardBottomSheet extends BottomSheetCommon {
                 int value = myView.boardSlider2.getSliderVal();
                 boardSliderVal.set(2,value);
                 mainActivityInterface.getPreferences().setMyPreferenceInt("midiBoard"+boardNum+"Slider2Value",value);
+                mainActivityInterface.getMidi().sendMidiHexSequence(mainActivityInterface.getMidi().checkForShortHandMIDI(midiCode));
+            }
+        });
+        myView.boardSlider3.addOnChangeListener((slider, value, fromUser) -> myView.boardSlider3.updateSliderVal((int)value));
+        myView.boardSlider3.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
+            @Override
+            public void onStartTrackingTouch(@NonNull Slider slider) {}
+
+            @Override
+            public void onStopTrackingTouch(@NonNull Slider slider) {
+                String midiCode = myView.boardSlider3.getMidiCode();
+                int value = myView.boardSlider3.getSliderVal();
+                boardSliderVal.set(3,value);
+                mainActivityInterface.getPreferences().setMyPreferenceInt("midiBoard"+boardNum+"Slider3Value",value);
+                mainActivityInterface.getMidi().sendMidiHexSequence(mainActivityInterface.getMidi().checkForShortHandMIDI(midiCode));
+            }
+        });
+        myView.boardSlider4.addOnChangeListener((slider, value, fromUser) -> myView.boardSlider4.updateSliderVal((int)value));
+        myView.boardSlider4.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
+            @Override
+            public void onStartTrackingTouch(@NonNull Slider slider) {}
+
+            @Override
+            public void onStopTrackingTouch(@NonNull Slider slider) {
+                String midiCode = myView.boardSlider4.getMidiCode();
+                int value = myView.boardSlider4.getSliderVal();
+                boardSliderVal.set(4,value);
+                mainActivityInterface.getPreferences().setMyPreferenceInt("midiBoard"+boardNum+"Slider4Value",value);
                 mainActivityInterface.getMidi().sendMidiHexSequence(mainActivityInterface.getMidi().checkForShortHandMIDI(midiCode));
             }
         });
@@ -277,6 +338,10 @@ public class MidiBoardBottomSheet extends BottomSheetCommon {
                 myView.boardSlider1.initialiseSliderValues(sliderName,channel,controller,myView.boardSlider1.getSliderVal());
             } else if (whichSliderToEdit==2) {
                 myView.boardSlider2.initialiseSliderValues(sliderName,channel,controller,myView.boardSlider2.getSliderVal());
+            } else if (whichSliderToEdit==3) {
+                myView.boardSlider3.initialiseSliderValues(sliderName,channel,controller,myView.boardSlider3.getSliderVal());
+            } else if (whichSliderToEdit==4) {
+                myView.boardSlider4.initialiseSliderValues(sliderName,channel,controller,myView.boardSlider4.getSliderVal());
             }
             whichSliderToEdit = -1;
         }
