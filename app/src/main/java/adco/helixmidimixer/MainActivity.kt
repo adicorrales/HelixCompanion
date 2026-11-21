@@ -14,7 +14,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import adco.helixmidimixer.data.repository.DataStoreRepository
-import adco.helixmidimixer.data.repository.helixDataStore
+import adco.helixcompanion.helixDataStore
 import adco.helixcompanion.HelixCompanionApplication
 import adco.helixmidimixer.ui.screens.HelixStadiumMixerScreen
 import adco.helixmidimixer.ui.theme.HelixBackground

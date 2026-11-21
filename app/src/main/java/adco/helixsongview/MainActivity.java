@@ -73,6 +73,8 @@ import androidx.navigation.ui.NavigationUI;
 import androidx.viewpager2.widget.ViewPager2;
 
 
+import adco.helixcompanion.midi.TransportHost;
+import adco.helixcompanion.midi.TransportManager;
 import adco.helixsongview.animation.CustomAnimation;
 import adco.helixsongview.animation.ShowCase;
 import adco.helixsongview.appdata.AlertChecks;
@@ -192,7 +194,8 @@ import java.util.function.Consumer;
 public class MainActivity extends AppCompatActivity implements MainActivityInterface,
         ActionInterface, DialogReturnInterface,
         SwipeDrawingInterface, BatteryStatus.MyInterface,
-        DisplayInterface, EditSongFragmentInterface {
+        DisplayInterface, EditSongFragmentInterface,
+        TransportHost {
 
     private ActivityBinding myView;
     private boolean bootUpCompleted = false;
@@ -559,27 +562,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 // Set up the helpers
                 setupHelpers();
 
-                adco.helixmidimixer.data.repository.SongTransportManager.INSTANCE.setTransportActionListener(action -> {
-                    runOnUiThread(() -> {
-                        if (action != null) {
-                            switch (action) {
-                                case "PREV":
-                                    onTransportPrev();
-                                    break;
-                                case "RT0":
-                                    onTransportRt0();
-                                    break;
-                                case "PLAY":
-                                    onTransportPlay();
-                                    break;
-                                case "NEXT":
-                                    onTransportNext();
-                                    break;
-                            }
-                        }
-                    });
-                    return kotlin.Unit.INSTANCE;
-                });
+                // The transport machine lives in TransportManager (the single source of
+                // truth for both transport bars); this activity is its Song View host.
+                adco.helixcompanion.midi.TransportManager.attachHost(this);
 
                 // Set up the action bar
                 setupActionbar();
@@ -3464,111 +3449,15 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     private volatile int lastSentMidiSetIdx = -1;
     private volatile int lastSentMidiSongPos = -1;
 
-    private volatile boolean isMidiTransportLocked = false;
-    private volatile boolean waitingForSetChangeLoadConfirmation = false;
-    private boolean helixSongStartFlagReceived = false;
-    private final Handler midiLockHandler = new Handler(Looper.getMainLooper());
-    private final Runnable midiLockReleaseRunnable = () -> isMidiTransportLocked = false;
-
+    /**
+     * Transport feedback entry point. TransportManager owns the logic (and the
+     * deduplication of the two delivery paths); Song View keeps this method
+     * because MidiInputReceiver routes every incoming CC through the
+     * MainActivityInterface.
+     */
     @Override
     public void handleMidiFeedback(int channel, int ccNumber, int ccValue) {
-        if (ccNumber == 51 || ccNumber == 49 || ccNumber == 47 || ccNumber == 10 || ccNumber == 63) {
-            if (ccNumber == 10 || ccNumber == 49 || ccNumber == 63) {
-                // A new song selection starts a fresh transport state; CC51:1 is an optional start hint.
-                helixSongStartFlagReceived = false;
-            }
-            isMidiTransportLocked = false;
-            midiLockHandler.removeCallbacks(midiLockReleaseRunnable);
-
-            if (ccNumber == 10) {
-                String songMode = getPreferences().getMyPreferenceString("helixSongMode", "Cue");
-                String playMode = getPreferences().getMyPreferenceString("helixPlayMode", "Play");
-                getMainHandler().post(() -> {
-                    // Ignore a queued load-state update if the song has since reported its start.
-                    if (helixSongStartFlagReceived) return;
-                    if (songMode.equals("Skip")) {
-                        isPlaying = playMode.equals("Play");
-                        transportClickCount = isPlaying ? 2 : 1;
-                    } else {
-                        isPlaying = false;
-                        transportClickCount = 0;
-                    }
-
-                    if (getToolbar() != null) {
-                        if (songMode.equals("Skip") && isPlaying) {
-                            getToolbar().setPlayStatus("Playing", android.graphics.Color.parseColor("#4CAF50"));
-                            getToolbar().updatePlayButton(true);
-                        } else if (songMode.equals("Skip")) {
-                            getToolbar().setPlayStatus("Loaded", android.graphics.Color.parseColor("#FFEB3B"));
-                            getToolbar().updatePlayButton(false);
-                        } else {
-                            getToolbar().setPlayStatus("On Cue", android.graphics.Color.parseColor("#FFEB3B"));
-                            getToolbar().updatePlayButton(false);
-                        }
-                    }
-                });
-            } else if (ccNumber == 51) {
-                if (ccValue == 1) {
-                    // This is a start-from-zero indication, not a play/pause toggle.
-                    boolean wasWaitingForLoadConfirmation = waitingForSetChangeLoadConfirmation;
-                    waitingForSetChangeLoadConfirmation = false;
-                    helixSongStartFlagReceived = true;
-                    isPlaying = true;
-                    transportClickCount = 2;
-                    if (wasWaitingForLoadConfirmation) {
-                        getMainHandler().post(() -> loadSongFromSet(0, false));
-                    }
-                    if (getToolbar() != null) {
-                        getToolbar().updatePlayButton(true);
-                        getToolbar().setPlayStatus("Playing", android.graphics.Color.parseColor("#4CAF50"));
-                    }
-                } else if (waitingForSetChangeLoadConfirmation) {
-                    waitingForSetChangeLoadConfirmation = false;
-                    // Upon receiving confirmation / feedback of song loaded via CC51, select song 0 of set # in app UI ONLY (no CC10 sent)
-                    getMainHandler().post(() -> {
-                        loadSongFromSet(0, false);
-                        String playMode = getPreferences().getMyPreferenceString("helixPlayMode", "Load");
-                        if (playMode.equals("Play")) {
-                            isPlaying = true;
-                            transportClickCount = 2;
-                            if (getToolbar() != null) {
-                                getToolbar().setPlayStatus("Playing", android.graphics.Color.parseColor("#4CAF50"));
-                                getToolbar().updatePlayButton(true);
-                            }
-                        } else {
-                            isPlaying = false;
-                            transportClickCount = 1;
-                            if (getToolbar() != null) {
-                                getToolbar().setPlayStatus("Loaded", android.graphics.Color.parseColor("#FFEB3B"));
-                                getToolbar().updatePlayButton(false);
-                            }
-                        }
-                    });
-                } else {
-                    String playMode = getPreferences().getMyPreferenceString("helixPlayMode", "Play");
-                    if (playMode.equals("Play") || helixSongStartFlagReceived) {
-                        boolean helixPlaying = ccValue > 0;
-                        if (isPlaying != helixPlaying) {
-                            isPlaying = helixPlaying;
-                            if (helixSongStartFlagReceived) {
-                                transportClickCount = helixPlaying ? 2 : 1;
-                            }
-                            getMainHandler().post(() -> {
-                                if (getToolbar() != null) {
-                                    if (helixPlaying) {
-                                        getToolbar().updatePlayButton(true);
-                                        getToolbar().setPlayStatus("Playing", android.graphics.Color.parseColor("#4CAF50"));
-                                    } else {
-                                        getToolbar().updatePlayButton(false);
-                                        getToolbar().setPlayStatus(helixSongStartFlagReceived ? "Paused" : "", helixSongStartFlagReceived ? android.graphics.Color.parseColor("#FFEB3B") : 0);
-                                    }
-                                }
-                            });
-                        }
-                    }
-                }
-            }
-        }
+        adco.helixcompanion.midi.TransportManager.onFeedback(channel, ccNumber, ccValue);
     }
 
     @Override
@@ -3582,7 +3471,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         if (!isHelixSet()) {
             return;
         }
-        int ch = getPreferences().getMyPreferenceInt("helixGlobalMidiChannel", 1);
+        int ch = TransportManager.currentChannel();
         if (ch < 1) {
             ch = 1;
         }
@@ -3602,7 +3491,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         if (!isHelixSet()) {
             return;
         }
-        int ch = getPreferences().getMyPreferenceInt("helixGlobalMidiChannel", 1);
+        int ch = TransportManager.currentChannel();
         if (ch < 1) {
             ch = 1;
         }
@@ -3611,8 +3500,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         final int targetSet = Math.max(0, Math.min(setIdx, 127));
         final int targetSong = Math.max(0, Math.min(songPosition, 127));
 
-        String songMode = getPreferences().getMyPreferenceString("helixSongMode", "Cue");
-        String playMode = getPreferences().getMyPreferenceString("helixPlayMode", "Load");
+        String songMode = TransportManager.currentSongMode();
+        String playMode = TransportManager.currentPlayMode();
 
         helixMidiExecutor.execute(() -> {
             if (lastSentMidiSetIdx == targetSet && lastSentMidiSongPos == targetSong) {
@@ -3634,43 +3523,22 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 try { Thread.sleep(40); } catch (InterruptedException ignored) {}
 
                 if (songMode.equals("Cue")) {
-                    waitingForSetChangeLoadConfirmation = true;
+                    TransportManager.setWaitingForLoadConfirmation(true);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         getMidi().sendMidi(getMidi().returnBytesFromHexText(msgPlay));
                     }
-                    isPlaying = false;
-                    transportClickCount = 0;
-                    getMainHandler().post(() -> {
-                        if (getToolbar() != null) {
-                            getToolbar().updatePlayButton(false);
-                            getToolbar().setPlayStatus("On Cue", android.graphics.Color.parseColor("#FFEB3B"));
-                        }
-                    });
+                    TransportManager.setState(false, 0, TransportManager.STATUS_ON_CUE);
                 } else {
-                    waitingForSetChangeLoadConfirmation = false;
+                    TransportManager.setWaitingForLoadConfirmation(false);
                     if (playMode.equals("Play")) {
                         // Skip selects and loads song 0 via CC63; Play mode then
                         // starts it with CC51. Load mode must leave it loaded.
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             getMidi().sendMidi(getMidi().returnBytesFromHexText(msgPlay));
                         }
-                        isPlaying = true;
-                        transportClickCount = 2;
-                        getMainHandler().post(() -> {
-                            if (getToolbar() != null) {
-                                getToolbar().updatePlayButton(true);
-                                getToolbar().setPlayStatus("Playing", android.graphics.Color.parseColor("#4CAF50"));
-                            }
-                        });
+                        TransportManager.setState(true, 2, TransportManager.STATUS_PLAYING);
                     } else {
-                        isPlaying = false;
-                        transportClickCount = 1;
-                        getMainHandler().post(() -> {
-                            if (getToolbar() != null) {
-                                getToolbar().updatePlayButton(false);
-                                getToolbar().setPlayStatus("Loaded", android.graphics.Color.parseColor("#FFEB3B"));
-                            }
-                        });
+                        TransportManager.setState(false, 1, TransportManager.STATUS_LOADED);
                     }
                     // Only ask the app to show song 0 when this set change came from
                     // outside the app. If the app initiated the load, that request is
@@ -3694,36 +3562,15 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             getMidi().sendMidi(getMidi().returnBytesFromHexText(msgPlay));
                         }
-                        isPlaying = true;
-                        transportClickCount = 2;
-                        getMainHandler().post(() -> {
-                            if (getToolbar() != null) {
-                                getToolbar().updatePlayButton(true);
-                                getToolbar().setPlayStatus("Playing", android.graphics.Color.parseColor("#4CAF50"));
-                            }
-                        });
+                        TransportManager.setState(true, 2, TransportManager.STATUS_PLAYING);
                     } else {
                         // CC10 in Skip mode loads the selected song. Do not send
                         // CC51 here: in Load mode it is reserved for the user's
                         // first Play press.
-                        isPlaying = false;
-                        transportClickCount = 1;
-                        getMainHandler().post(() -> {
-                            if (getToolbar() != null) {
-                                getToolbar().updatePlayButton(false);
-                                getToolbar().setPlayStatus("Loaded", android.graphics.Color.parseColor("#FFEB3B"));
-                            }
-                        });
+                        TransportManager.setState(false, 1, TransportManager.STATUS_LOADED);
                     }
                 } else {
-                    isPlaying = false;
-                    transportClickCount = 0;
-                    getMainHandler().post(() -> {
-                        if (getToolbar() != null) {
-                            getToolbar().updatePlayButton(false);
-                            getToolbar().setPlayStatus("On Cue", android.graphics.Color.parseColor("#FFEB3B"));
-                        }
-                    });
+                    TransportManager.setState(false, 0, TransportManager.STATUS_ON_CUE);
                 }
             }
         });
@@ -3775,13 +3622,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                         // UI syncs (sendMidi == false) must preserve the state established
                         // by the MIDI mode transition that triggered them.
                         if (sendMidi) {
-                            transportClickCount = 0;
-                            isPlaying = false;
-                            getMainHandler().post(() -> {
-                                if (myView != null) {
-                                    myView.myToolbar.updatePlayButton(false);
-                                }
-                            });
+                            TransportManager.setState(false, 0, TransportManager.STATUS_ON_CUE);
                         }
 
                         // Update the index in the set
@@ -3929,15 +3770,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             });
     }
 
-    private boolean isPlaying = false;
-    private int transportClickCount = 0; // 0 = Cued (needs 1st pulse to load), 1 = Loaded (needs 2nd pulse to play), 2 = Playing
-
     public void updateTransportManagerSync() {
-        boolean playing = isPlaying;
-        String status = "";
-        if (myView != null && myView.myToolbar != null && myView.myToolbar.getPlayPauseStatusText() != null) {
-            status = myView.myToolbar.getPlayPauseStatusText().getText().toString();
-        }
+        // The transport state lives in TransportManager and is pushed by
+        // TransportHost.applyTransportState; only the song information shown
+        // by the toolbar is mirrored here.
         String curTitle = "";
         String curKey = "";
         String curCapo = "";
@@ -3952,139 +3788,85 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             prevTitle = myView.myToolbar.getPrevTitleText();
             nextTitle = myView.myToolbar.getNextTitleText();
         }
-        adco.helixmidimixer.data.repository.SongTransportManager.INSTANCE.updatePlayState(playing, status);
-        adco.helixmidimixer.data.repository.SongTransportManager.INSTANCE.updateSongInfo(curTitle, curKey, curCapo, curTempo, prevTitle, nextTitle);
+        TransportManager.updateSongInfo(curTitle, curKey, curCapo, curTempo, prevTitle, nextTitle);
     }
 
+    // ---------------------------------------------------------------------
+    // Transport. The machine lives in TransportManager (single source of
+    // truth for the Song View toolbar and the Matrix transport bar); these
+    // are one line delegations so both bars share one implementation.
+    // ---------------------------------------------------------------------
     @Override
     public void onTransportPrev() {
-        if (isMidiTransportLocked) return;
-        isMidiTransportLocked = true;
-        midiLockHandler.removeCallbacks(midiLockReleaseRunnable);
-        midiLockHandler.postDelayed(midiLockReleaseRunnable, 400);
-
-        int currentPos = currentSet.getIndexSongInSet();
-        if (currentPos > 0) {
-            loadSongFromSet(currentPos - 1);
-        }
-        if (isHelixSet()) {
-            int channel = getPreferences().getMyPreferenceInt("helixGlobalMidiChannel", 1);
-            if (channel < 1) channel = 1;
-            String msg = "MIDI" + channel + ":CC49:0"; // Previous Song (0-63)
-            getMidi().sendMidiHexSequence(msg);
-        }
+        TransportManager.prev();
     }
 
     @Override
     public void onTransportRt0() {
-        if (isMidiTransportLocked) return;
-        isMidiTransportLocked = true;
-        midiLockHandler.removeCallbacks(midiLockReleaseRunnable);
-        midiLockHandler.postDelayed(midiLockReleaseRunnable, 400);
-
-        if (isHelixSet()) {
-            int channel = getPreferences().getMyPreferenceInt("helixGlobalMidiChannel", 1);
-            if (channel < 1) channel = 1;
-            String msg = "MIDI" + channel + ":CC47:0"; // Return to Zero
-            getMidi().sendMidiHexSequence(msg);
-        }
+        TransportManager.rt0();
     }
 
     @Override
     public void onTransportPlay() {
-        if (isMidiTransportLocked) return;
-        isMidiTransportLocked = true;
-        midiLockHandler.removeCallbacks(midiLockReleaseRunnable);
-        midiLockHandler.postDelayed(midiLockReleaseRunnable, 400);
-
-        String playMode = getPreferences().getMyPreferenceString("helixPlayMode", "Play");
-        int channel = getPreferences().getMyPreferenceInt("helixGlobalMidiChannel", 1);
-        if (channel < 1) channel = 1;
-
-        if (playMode.equals("Play")) {
-            // Modo Play: Carga y TOCA en un solo pulso
-            isPlaying = !isPlaying;
-            if (myView != null) {
-                if (isPlaying) {
-                    myView.myToolbar.updatePlayButton(true);
-                    myView.myToolbar.setPlayStatus("Playing", android.graphics.Color.parseColor("#4CAF50"));
-                } else {
-                    myView.myToolbar.updatePlayButton(false);
-                    myView.myToolbar.setPlayStatus("", 0);
-                }
-            }
-            if (isHelixSet()) {
-                int val = isPlaying ? 127 : 0;
-                String msg = "MIDI" + channel + ":CC51:" + val;
-                getMidi().sendMidiHexSequence(msg);
-            }
-            transportClickCount = isPlaying ? 2 : 0;
-        } else {
-            // Modo Load / Load + Preset:
-            // 0 = On Cue -> 1st press sends CC51:127 -> status "Loaded", icon stays Play (false). Waits for 2nd press.
-            // 1 = Loaded -> 2nd press sends CC51:127 -> status "Playing", icon changes to Pause (true).
-            // 2+ = Playing/Paused toggles -> subsequent presses toggle between playing (Pause icon) and paused (Play icon).
-            if (transportClickCount == 0) {
-                transportClickCount = 1;
-                isPlaying = false;
-                if (myView != null) {
-                    myView.myToolbar.updatePlayButton(false); // keeps Play icon
-                    myView.myToolbar.setPlayStatus("Loaded", android.graphics.Color.parseColor("#FFEB3B"));
-                }
-                if (isHelixSet()) {
-                    String msg = "MIDI" + channel + ":CC51:127";
-                    getMidi().sendMidiHexSequence(msg);
-                }
-            } else if (transportClickCount == 1) {
-                transportClickCount = 2;
-                isPlaying = true;
-                if (myView != null) {
-                    myView.myToolbar.updatePlayButton(true); // shows Pause icon
-                    myView.myToolbar.setPlayStatus("Playing", android.graphics.Color.parseColor("#4CAF50"));
-                }
-                if (isHelixSet()) {
-                    String msg = "MIDI" + channel + ":CC51:127";
-                    getMidi().sendMidiHexSequence(msg);
-                }
-            } else {
-                // Subsequent presses after Loaded/Playing: toggle play/pause
-                isPlaying = !isPlaying;
-                if (myView != null) {
-                    if (isPlaying) {
-                        myView.myToolbar.updatePlayButton(true); // shows Pause icon
-                        myView.myToolbar.setPlayStatus("Playing", android.graphics.Color.parseColor("#4CAF50"));
-                    } else {
-                        myView.myToolbar.updatePlayButton(false); // shows Play icon
-                        myView.myToolbar.setPlayStatus("Paused", android.graphics.Color.parseColor("#FFEB3B"));
-                    }
-                }
-                if (isHelixSet()) {
-                    int val = isPlaying ? 127 : 0;
-                    String msg = "MIDI" + channel + ":CC51:" + val;
-                    getMidi().sendMidiHexSequence(msg);
-                }
-                transportClickCount = isPlaying ? 2 : 1;
-            }
-        }
+        TransportManager.play();
     }
 
     @Override
     public void onTransportNext() {
-        if (isMidiTransportLocked) return;
-        isMidiTransportLocked = true;
-        midiLockHandler.removeCallbacks(midiLockReleaseRunnable);
-        midiLockHandler.postDelayed(midiLockReleaseRunnable, 400);
+        TransportManager.next();
+    }
 
+    // ---------------------------------------------------------------------
+    // TransportHost: the Song View side effects used by TransportManager
+    // ---------------------------------------------------------------------
+
+    /** Mirror a transport state change into the toolbar. Called from any thread. */
+    @Override
+    public void applyTransportState(boolean playing, int clickCount, String status) {
+        getMainHandler().post(() -> {
+            if (myView == null || myView.myToolbar == null) {
+                return;
+            }
+            myView.myToolbar.updatePlayButton(playing);
+            myView.myToolbar.setPlayStatus(status, transportStatusColor(status));
+        });
+    }
+
+    /**
+     * Move the selection inside the current set; bounds are enforced here.
+     * The load is UI only (sendMidi == false): the Helix is moved by the CC49
+     * that TransportManager sends right after this call, so no CC10 / CC63 may
+     * follow (that combination made the Helix advance twice).
+     */
+    @Override
+    public void moveSongSelection(int delta) {
         int currentPos = currentSet.getIndexSongInSet();
-        if (currentPos < currentSet.getCurrentSetSize() - 1) {
-            loadSongFromSet(currentPos + 1);
+        int target = currentPos + delta;
+        boolean canMove = (delta < 0 && currentPos > 0)
+                || (delta > 0 && currentPos < currentSet.getCurrentSetSize() - 1);
+        if (!canMove) {
+            return;
         }
-        if (isHelixSet()) {
-            int channel = getPreferences().getMyPreferenceInt("helixGlobalMidiChannel", 1);
-            if (channel < 1) channel = 1;
-            String msg = "MIDI" + channel + ":CC49:127"; // Next Song (64-127)
-            getMidi().sendMidiHexSequence(msg);
+        loadSongFromSet(target, false);
+        // CC49 moves the Helix itself: remember where it now is, otherwise the
+        // next explicit selection of this song would be treated as already sent.
+        lastSentMidiSongPos = target;
+    }
+
+    /** Absolute selection used by MIDI feedback (sendMidi == false = UI only). */
+    @Override
+    public void selectSong(int position, boolean sendMidi) {
+        loadSongFromSet(position, sendMidi);
+    }
+
+    private static int transportStatusColor(String status) {
+        if (status == null || status.isEmpty()) {
+            return 0;
         }
+        if (TransportManager.STATUS_PLAYING.equals(status)) {
+            return android.graphics.Color.parseColor("#4CAF50");
+        }
+        return android.graphics.Color.parseColor("#FFEB3B");
     }
 
     @Override
@@ -5253,6 +5035,13 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
     @Override
     protected void onDestroy() {
+        // Stop calling back into this activity; the manager keeps running for
+        // the Matrix transport bar (it falls back to the shared BLE session).
+        adco.helixcompanion.midi.TransportManager.detachHost(this);
+        // Release the local MIDI transports (direct GATT / USB ports) owned by
+        // this activity's Midi instance.
+        adco.helixcompanion.midi.MidiSender.setFallback(null);
+
         if (getWindowFlags() != null) {
             getWindowFlags().cancelKeyboardTasks();
         }

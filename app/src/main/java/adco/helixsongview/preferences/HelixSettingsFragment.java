@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import adco.helixcompanion.midi.TransportManager;
 import adco.helixsongview.R;
 import adco.helixsongview.customviews.ExposedDropDownArrayAdapter;
 import adco.helixsongview.databinding.SettingsHelixBinding;
@@ -52,12 +53,12 @@ public class HelixSettingsFragment extends Fragment {
                 getContext(), myView.helixSongMode, R.layout.view_exposed_dropdown_item, new String[]{"Cue", "Skip"}
         );
         myView.helixSongMode.setAdapter(songModeAdapter);
-        myView.helixSongMode.setText(mainActivityInterface.getPreferences().getMyPreferenceString("helixSongMode", "Cue"), false);
+        myView.helixSongMode.setText(TransportManager.currentSongMode(), false);
         myView.helixSongMode.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
             @Override public void afterTextChanged(Editable s) {
-                mainActivityInterface.getPreferences().setMyPreferenceString("helixSongMode", s.toString());
+                TransportManager.setSongMode(s.toString());
             }
         });
 
@@ -66,19 +67,33 @@ public class HelixSettingsFragment extends Fragment {
                 getContext(), myView.helixPlayMode, R.layout.view_exposed_dropdown_item, new String[]{"Play", "Load"}
         );
         myView.helixPlayMode.setAdapter(playModeAdapter);
-        String currentPlayMode = mainActivityInterface.getPreferences().getMyPreferenceString("helixPlayMode", "Load");
-        if (currentPlayMode.contains("Load")) currentPlayMode = "Load";
-        myView.helixPlayMode.setText(currentPlayMode, false);
+        myView.helixPlayMode.setText(TransportManager.currentPlayMode(), false);
         myView.helixPlayMode.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
             @Override public void afterTextChanged(Editable s) {
-                mainActivityInterface.getPreferences().setMyPreferenceString("helixPlayMode", s.toString());
+                TransportManager.setPlayMode(s.toString());
             }
         });
 
-        // Global MIDI Channel (default 1)
-        setupChannelDropdown(myView.helixGlobalMidiChannel, "helixGlobalMidiChannel", "1", channels);
+        // Global MIDI Channel (default 1). Owned by TransportManager so the Song
+        // View and the Matrix mixer always read the same value.
+        ExposedDropDownArrayAdapter channelAdapter = new ExposedDropDownArrayAdapter(
+                getContext(), myView.helixGlobalMidiChannel, R.layout.view_exposed_dropdown_item, channels
+        );
+        myView.helixGlobalMidiChannel.setAdapter(channelAdapter);
+        myView.helixGlobalMidiChannel.setText(String.valueOf(TransportManager.currentChannel()), false);
+        myView.helixGlobalMidiChannel.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override public void afterTextChanged(Editable s) {
+                try {
+                    TransportManager.setChannel(Integer.parseInt(s.toString()));
+                } catch (NumberFormatException ignored) {
+                    // Not a channel selection; leave the stored value alone.
+                }
+            }
+        });
 
         // Bypass / Ctrl (default 2)
         setupChannelDropdown(myView.helixChannelBypassCtrl, "helixChannelBypassCtrl", "2", channels);

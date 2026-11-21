@@ -29,9 +29,11 @@ import android.util.Log;
 import androidx.annotation.RequiresApi;
 
 import adco.helixcompanion.HelixCompanionApplication;
-import adco.helixmidimixer.midi.BleConnectionState;
-import adco.helixmidimixer.midi.BleMidiConnectionListener;
-import adco.helixmidimixer.midi.BleMidiManager;
+import adco.helixcompanion.midi.BleConnectionHost;
+import adco.helixcompanion.midi.BleConnectionState;
+import adco.helixcompanion.midi.BleMidiConnectionListener;
+import adco.helixcompanion.midi.BleMidiManager;
+import adco.helixcompanion.midi.MidiSender;
 import adco.helixsongview.R;
 import adco.helixsongview.interfaces.MainActivityInterface;
 
@@ -46,7 +48,7 @@ import java.util.Locale;
 import java.util.Set;
 
 @TargetApi(Build.VERSION_CODES.M)
-public class Midi {
+public class Midi implements MidiSender.Fallback, BleConnectionHost {
 
     private final Context c;
     private final Activity activity;
@@ -110,6 +112,9 @@ public class Midi {
         };
         getUpdatedPreferences();
         shortHandMidi = new ShortHandMidi(c);
+        // Register this instance's local transports (direct GATT / USB ports)
+        // with the single send gateway used by the whole app.
+        MidiSender.setFallback(this);
     }
 
     private BleMidiManager getSharedBleMidiManager() {
@@ -614,6 +619,29 @@ public class Midi {
         this.midiDeviceAddress = midiDeviceAddress;
     }
 
+    // --- BleConnectionHost: side effects used by adco.helixcompanion.midi.BleMidiBridge ---
+
+    /** Remember the device that just connected (name/address shown by the UI). */
+    @Override
+    public void onBleDeviceConnected(String name, String address) {
+        setMidiDeviceName(name);
+        setMidiDeviceAddress(address);
+        // The toolbar connection indicator is refreshed by the shared
+        // connection listener registered with the process wide manager.
+    }
+
+    /** Start the actual connection through Song View's legacy path. */
+    @Override
+    public void connectBleDevice(BluetoothDevice device) {
+        setBluetoothDevice(device);
+    }
+
+    /** Drop the current device before a new attempt or on an explicit disconnect. */
+    @Override
+    public void disconnectBleDevice() {
+        disconnectDevice();
+    }
+
     public void setIncludeBluetoothMidi(boolean includeBluetoothMidi) {
         this.includeBluetoothMidi = includeBluetoothMidi;
         mainActivityInterface.getPreferences().setMyPreferenceBoolean("includeBluetoothMidi", includeBluetoothMidi);
@@ -764,22 +792,39 @@ public class Midi {
             mainActivityInterface.getMainHandler().post(getMidiPorts);
         }
     }
+    /**
+     * Byte level write. All routing lives in the single send gateway
+     * (adco.helixcompanion.midi.MidiSender): it asks this instance for its
+     * local transports first and falls back to the shared BLE session, so every
+     * sender in the app goes through one place.
+     */
     @RequiresApi(api = Build.VERSION_CODES.M)
     public boolean sendMidi(byte[] b) {
-        boolean success = false;
-        if (midiDevice!=null && midiOutputPort==null) {
-            tryToGetPorts();
-        }
-
         if (b==null || b.length==0) {
             return true;
         }
+        return MidiSender.send(b);
+    }
 
-        BleMidiManager sharedManager = getSharedBleMidiManager();
-        if (!useDirectGatt && midiInputPort == null && sharedManager != null && sharedManager.isConnected()) {
-            return sharedManager.sendMidiMessage(b);
+    /**
+     * {@link MidiSender.Fallback}: refresh the port state before every send
+     * (USB ports are opened lazily) and tell the gateway when this instance
+     * has to write the message itself.
+     */
+    @Override
+    public boolean prefersLocalTransport() {
+        if (midiDevice!=null && midiOutputPort==null) {
+            tryToGetPorts();
         }
+        return useDirectGatt || midiInputPort != null;
+    }
 
+    /** {@link MidiSender.Fallback}: direct GATT or local USB port, never BLE. */
+    @Override
+    public boolean sendLocal(byte[] b) {
+        if (b==null || b.length==0) {
+            return true;
+        }
         // Check if we are using the Direct GATT fallback (for budget/problematic devices)
         if (useDirectGatt && activeGattCharacteristic != null && activeBluetoothGatt != null) {
             try {
@@ -798,22 +843,22 @@ public class Midi {
                 // 3. Write the properly wrapped packet to the characteristic
                 activeGattCharacteristic.setValue(bleMidiPacket);
                 activeGattCharacteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
-                //activeGattCharacteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
-                success = activeBluetoothGatt.writeCharacteristic(activeGattCharacteristic);
+                return activeBluetoothGatt.writeCharacteristic(activeGattCharacteristic);
             } catch (Exception e) {
                 e.printStackTrace();
+                return false;
             }
 
             // Otherwise, use the standard modern MidiManager pipeline
         } else if (midiInputPort != null) {
             try {
                 midiInputPort.send(b, 0, b.length);
-                success = true;
+                return true;
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        return success;
+        return false;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)

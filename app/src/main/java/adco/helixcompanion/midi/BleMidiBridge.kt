@@ -1,10 +1,7 @@
-package adco.helixsongview.midi
+package adco.helixcompanion.midi
 
 import android.content.Context
 import adco.helixcompanion.HelixCompanionApplication
-import adco.helixmidimixer.midi.BleConnectionState
-import adco.helixmidimixer.midi.BleDeviceInfo
-import adco.helixmidimixer.midi.BleMidiManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -17,16 +14,19 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 /**
- * Song View adapter over the single process-wide BLE MIDI connection.
+ * Adapter over the single process-wide BLE MIDI connection.
  *
- * The connection state type lives in [adco.helixmidimixer.midi] and is shared with
- * the Matrix Mixer so both features always report the same connection. There used
- * to be a second copy of these models here, which is what allowed Song View and
- * the mixer to disagree about whether the WIDI was connected.
+ * The connection state type lives in this package and is shared with the
+ * Matrix Mixer so both features always report the same connection. There used
+ * to be a second copy of these models in Song View, which is what allowed Song
+ * View and the mixer to disagree about whether the WIDI was connected.
+ *
+ * Song View specific work (naming the device, the legacy connect path) goes
+ * through [BleConnectionHost], so this class no longer depends on Song View.
  */
 class BleMidiBridge(
     context: Context,
-    private val midi: Midi
+    private val host: BleConnectionHost
 ) {
     companion object {
         private const val CONNECT_TIMEOUT_MS = 15_000L
@@ -49,7 +49,7 @@ class BleMidiBridge(
             manager.connectionState.collect { state ->
                 when (state) {
                     BleConnectionState.Disconnected -> {
-                        if (!connectionPending) refreshFromMidi()
+                        if (!connectionPending) refreshFromManager()
                     }
                     BleConnectionState.Scanning -> {
                         _connectionState.value = BleConnectionState.Scanning
@@ -60,8 +60,7 @@ class BleMidiBridge(
                     is BleConnectionState.Connected -> {
                         connectionPending = false
                         connectJob?.cancel()
-                        midi.setMidiDeviceName(state.deviceName)
-                        midi.setMidiDeviceAddress(state.address)
+                        host.onBleDeviceConnected(state.deviceName, state.address)
                         _connectionState.value = BleConnectionState.Connected(state.deviceName, state.address)
                     }
                     is BleConnectionState.Error -> {
@@ -74,20 +73,13 @@ class BleMidiBridge(
         }
         scope.launch {
             manager.scannedDevices.collect { devices ->
-                _scannedDevices.value = devices.map { it.toSongViewDevice() }
+                _scannedDevices.value = devices
             }
         }
-        refreshFromMidi()
+        refreshFromManager()
     }
 
-    private fun BleDeviceInfo.toSongViewDevice() = BleDeviceInfo(
-        device = device,
-        name = name,
-        address = address,
-        rssi = rssi
-    )
-
-    private fun refreshFromMidi() {
+    private fun refreshFromManager() {
         // Do not ask the legacy Midi object here: it can still hold a device that
         // Android released, which is exactly what made the toolbar show a connection
         // with the WIDI switched off. The shared manager is the single source.
@@ -112,7 +104,7 @@ class BleMidiBridge(
     fun connect(info: BleDeviceInfo) {
         stopScan()
         connectJob?.cancel()
-        midi.disconnectDevice()
+        host.disconnectBleDevice()
 
         connectionPending = true
         _connectionState.value = BleConnectionState.Connecting(info.name)
@@ -130,7 +122,7 @@ class BleMidiBridge(
         }
 
         try {
-            midi.setBluetoothDevice(info.device)
+            host.connectBleDevice(info.device)
         } catch (e: Exception) {
             connectJob?.cancel()
             connectionPending = false
@@ -141,7 +133,7 @@ class BleMidiBridge(
     fun disconnect() {
         connectJob?.cancel()
         connectionPending = false
-        midi.disconnectDevice()
+        host.disconnectBleDevice()
         _connectionState.value = BleConnectionState.Disconnected
     }
 

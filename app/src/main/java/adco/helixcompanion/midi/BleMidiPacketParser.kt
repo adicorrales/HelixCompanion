@@ -1,4 +1,4 @@
-package adco.helixmidimixer.midi
+package adco.helixcompanion.midi
 
 object BleMidiPacketParser {
 

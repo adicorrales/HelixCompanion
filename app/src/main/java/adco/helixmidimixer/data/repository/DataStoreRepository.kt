@@ -1,26 +1,19 @@
 package adco.helixmidimixer.data.repository
 
 import android.content.Context
-import android.content.SharedPreferences
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
 import adco.helixmidimixer.data.model.HomeRoute
 import adco.helixmidimixer.data.model.MidiCcMapping
 import adco.helixmidimixer.data.model.OutputGroup
-import adco.helixmidimixer.data.model.SongPlayMode
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-
-val Context.helixDataStore: DataStore<Preferences> by preferencesDataStore(name = "helix_midi_mixer_settings")
 
 class DataStoreRepository(
     private val dataStore: DataStore<Preferences>,
@@ -28,12 +21,6 @@ class DataStoreRepository(
 ) {
 
     private val json = Json { ignoreUnknownKeys = true }
-
-    // Song View owns the Helix settings (SharedPreferences "CurrentPreferences").
-    // The Matrix mixer reads the global MIDI channel and Play/Load mode from here
-    // so the two screens can never store conflicting values.
-    private val helixPrefs: SharedPreferences =
-        context.getSharedPreferences(HELIX_PREFS_NAME, Context.MODE_PRIVATE)
 
     companion object {
         private val MIDI_CC_MAPPING_KEY = stringPreferencesKey("midi_cc_mapping")
@@ -71,10 +58,6 @@ class DataStoreRepository(
         fun songChannelsExpandedKey(group: OutputGroup): Preferences.Key<Boolean> =
             booleanPreferencesKey("song_channels_expanded_${group.name}")
 
-        private const val HELIX_PREFS_NAME = "CurrentPreferences"
-        private const val HELIX_GLOBAL_MIDI_CHANNEL_KEY = "helixGlobalMidiChannel"
-        private const val HELIX_PLAY_MODE_KEY = "helixPlayMode"
-
         private val SELECTED_GROUP_KEY: Preferences.Key<String> =
             stringPreferencesKey("selected_output_group")
 
@@ -84,43 +67,6 @@ class DataStoreRepository(
         private val LAST_BLE_DEVICE_ADDRESS_KEY: Preferences.Key<String> =
             stringPreferencesKey("last_ble_device_address")
     }
-
-    // --- Transport MIDI Channel ---
-    // Read from Song View's Helix settings (SharedPreferences "CurrentPreferences").
-    fun getTransportMidiChannel(): Flow<Int> =
-        helixIntPreferenceFlow(HELIX_GLOBAL_MIDI_CHANNEL_KEY, 1)
-
-    // --- Song Play Mode ---
-    // Read from Song View's Helix settings and map "Play"/"Load"
-    // onto the Matrix mixer's SongPlayMode enum.
-    fun getSongPlayMode(): Flow<SongPlayMode> =
-        helixStringPreferenceFlow(HELIX_PLAY_MODE_KEY, "Play")
-            .map { name -> name.toSongPlayMode() }
-
-    private fun helixIntPreferenceFlow(key: String, default: Int): Flow<Int> = callbackFlow {
-        val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, changedKey ->
-            if (changedKey == key) {
-                trySend(helixPrefs.getInt(key, default))
-            }
-        }
-        helixPrefs.registerOnSharedPreferenceChangeListener(listener)
-        trySend(helixPrefs.getInt(key, default))
-        awaitClose { helixPrefs.unregisterOnSharedPreferenceChangeListener(listener) }
-    }
-
-    private fun helixStringPreferenceFlow(key: String, default: String): Flow<String> = callbackFlow {
-        val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, changedKey ->
-            if (changedKey == key) {
-                trySend(helixPrefs.getString(key, default) ?: default)
-            }
-        }
-        helixPrefs.registerOnSharedPreferenceChangeListener(listener)
-        trySend(helixPrefs.getString(key, default) ?: default)
-        awaitClose { helixPrefs.unregisterOnSharedPreferenceChangeListener(listener) }
-    }
-
-    private fun String.toSongPlayMode(): SongPlayMode =
-        if (contains("Load", ignoreCase = true)) SongPlayMode.LOAD else SongPlayMode.PLAY
 
     // --- Selected Output Group ---
     fun getSelectedGroup(): Flow<OutputGroup> {

@@ -1,4 +1,4 @@
-package adco.helixmidimixer.midi
+package adco.helixcompanion.midi
 
 data class MidiCcMessage(
     val channel: Int, // 0..15

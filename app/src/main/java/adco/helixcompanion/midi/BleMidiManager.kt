@@ -1,4 +1,4 @@
-package adco.helixmidimixer.midi
+package adco.helixcompanion.midi
 
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter

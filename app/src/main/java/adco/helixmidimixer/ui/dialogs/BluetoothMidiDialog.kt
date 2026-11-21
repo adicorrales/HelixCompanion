@@ -51,8 +51,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import adco.helixmidimixer.midi.BleConnectionState
-import adco.helixmidimixer.midi.BleDeviceInfo
+import adco.helixcompanion.midi.BleConnectionState
+import adco.helixcompanion.midi.BleDeviceInfo
 import adco.helixmidimixer.ui.theme.HelixBackground
 import adco.helixmidimixer.ui.theme.HelixBadgeBg
 import adco.helixmidimixer.ui.theme.HelixCardBorder

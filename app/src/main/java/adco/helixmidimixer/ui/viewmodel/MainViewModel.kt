@@ -9,16 +9,18 @@ import adco.helixmidimixer.data.model.MidiCcMapping
 import adco.helixmidimixer.data.model.OutputGroup
 import adco.helixmidimixer.data.model.SongPlayMode
 import adco.helixmidimixer.data.repository.DataStoreRepository
-import adco.helixmidimixer.data.repository.SongTransportManager
-import adco.helixmidimixer.midi.BleConnectionState
-import adco.helixmidimixer.midi.BleDeviceInfo
-import adco.helixmidimixer.midi.BleMidiManager
+import adco.helixcompanion.midi.BleConnectionState
+import adco.helixcompanion.midi.BleDeviceInfo
+import adco.helixcompanion.midi.BleMidiManager
+import adco.helixcompanion.midi.MidiSender
+import adco.helixcompanion.midi.TransportManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -49,25 +51,26 @@ class MainViewModel(
             )
         )
 
-    val transportMidiChannel: StateFlow<Int> = repository.getTransportMidiChannel()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 1)
+    // Transport configuration: one source (TransportManager) shared with Song View.
+    val transportMidiChannel: StateFlow<Int> = TransportManager.transportChannel
 
     val autoReconnectEnabled: StateFlow<Boolean> = repository.getAutoReconnectEnabled()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
-    val songPlayMode: StateFlow<SongPlayMode> = repository.getSongPlayMode()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), SongPlayMode.PLAY)
+    val songPlayMode: StateFlow<SongPlayMode> = TransportManager.playMode
+        .map { name -> if (name.contains("Load", ignoreCase = true)) SongPlayMode.LOAD else SongPlayMode.PLAY }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, SongPlayMode.LOAD)
 
-    val isPlaying: StateFlow<Boolean> = SongTransportManager.isPlaying
-    val playStatus: StateFlow<String> = SongTransportManager.playStatus
-    val currentSongTitle: StateFlow<String> = SongTransportManager.currentTitle
-    val currentSongKey: StateFlow<String> = SongTransportManager.currentKey
-    val currentSongCapo: StateFlow<String> = SongTransportManager.currentCapo
-    val currentSongTempo: StateFlow<String> = SongTransportManager.currentTempo
-    val prevSongTitle: StateFlow<String> = SongTransportManager.prevTitle
-    val nextSongTitle: StateFlow<String> = SongTransportManager.nextTitle
+    // Transport state: owned by TransportManager, observed here.
+    val isPlaying: StateFlow<Boolean> = TransportManager.isPlaying
+    val playStatus: StateFlow<String> = TransportManager.playStatus
+    val currentSongTitle: StateFlow<String> = TransportManager.currentTitle
+    val currentSongKey: StateFlow<String> = TransportManager.currentKey
+    val currentSongCapo: StateFlow<String> = TransportManager.currentCapo
+    val currentSongTempo: StateFlow<String> = TransportManager.currentTempo
+    val prevSongTitle: StateFlow<String> = TransportManager.prevTitle
+    val nextSongTitle: StateFlow<String> = TransportManager.nextTitle
 
-    private var isSongLoaded = false
     // Echo suppression is keyed by channel + CC + value: the Helix answers our
     // CC51:127 with CC51:1 (start-from-zero) and that notification must not be
     // mistaken for an echo of the value we sent.
@@ -268,7 +271,7 @@ class MainViewModel(
             // Send BLE MIDI CC
             val channelCcMapping = midiCcMapping.value.getChannelCc(group, channelIndex)
             val midiCh = getActiveMatrixMidiChannel(group)
-            bleMidiManager.sendControlChange(
+            MidiSender.sendCc(
                 channel = midiCh,
                 ccNumber = channelCcMapping.volumeCc,
                 value = clampedVol
@@ -297,7 +300,7 @@ class MainViewModel(
             // Send BLE MIDI CC
             val channelCcMapping = midiCcMapping.value.getChannelCc(group, channelIndex)
             val midiCh = getActiveMatrixMidiChannel(group)
-            bleMidiManager.sendControlChange(
+            MidiSender.sendCc(
                 channel = midiCh,
                 ccNumber = channelCcMapping.panCc,
                 value = clampedPan
@@ -318,7 +321,7 @@ class MainViewModel(
         val channelCcMapping = midiCcMapping.value.getChannelCc(group, channelIndex)
         val midiCh = getActiveMatrixMidiChannel(group)
         markCcSent(midiCh, channelCcMapping.muteCc, 127)
-        bleMidiManager.sendControlChange(
+        MidiSender.sendCc(
             channel = midiCh,
             ccNumber = channelCcMapping.muteCc,
             value = 127
@@ -338,7 +341,7 @@ class MainViewModel(
         val channelCcMapping = midiCcMapping.value.getChannelCc(group, channelIndex)
         val midiCh = getActiveMatrixMidiChannel(group)
         markCcSent(midiCh, channelCcMapping.soloCc, 127)
-        bleMidiManager.sendControlChange(
+        MidiSender.sendCc(
             channel = midiCh,
             ccNumber = channelCcMapping.soloCc,
             value = 127
@@ -362,7 +365,7 @@ class MainViewModel(
         // Send Clear Solo CC (CC 94, value 127 >= 64)
         val midiCh = getActiveMatrixMidiChannel(group)
         markCcSent(midiCh, 94, 127)
-        bleMidiManager.sendControlChange(channel = midiCh, ccNumber = 94, value = 127)
+        MidiSender.sendCc(channel = midiCh, ccNumber = 94, value = 127)
     }
 
     fun updateHomeRoute(route: HomeRoute) {
@@ -390,52 +393,13 @@ class MainViewModel(
         }
     }
 
-    private fun getTransportMidiChannel0Based(): Int {
-        val channel1Based = transportMidiChannel.value
-        return (channel1Based - 1).coerceIn(0, 15)
-    }
+    fun sendTransportPrev() = TransportManager.prev()
 
-    fun sendTransportPrev() {
-        SongTransportManager.updatePlayState(false, "On Cue")
-        isSongLoaded = false
-        SongTransportManager.requestAction("PREV")
-    }
+    fun sendTransportReturnToZero() = TransportManager.rt0()
 
-    fun sendTransportReturnToZero() {
-        SongTransportManager.requestAction("RT0")
-    }
+    fun toggleTransportPlay() = TransportManager.play()
 
-    fun toggleTransportPlay() {
-        val currentPlaying = isPlaying.value
-
-        if (currentPlaying) {
-            SongTransportManager.updatePlayState(false, "Paused")
-            isSongLoaded = false
-        } else {
-            when (songPlayMode.value) {
-                SongPlayMode.PLAY -> {
-                    SongTransportManager.updatePlayState(true, "Playing")
-                    isSongLoaded = false
-                }
-                SongPlayMode.LOAD -> {
-                    if (!isSongLoaded) {
-                        isSongLoaded = true
-                        SongTransportManager.updatePlayState(false, "Loaded")
-                    } else {
-                        SongTransportManager.updatePlayState(true, "Playing")
-                        isSongLoaded = false
-                    }
-                }
-            }
-        }
-        SongTransportManager.requestAction("PLAY")
-    }
-
-    fun sendTransportNext() {
-        SongTransportManager.updatePlayState(false, "On Cue")
-        isSongLoaded = false
-        SongTransportManager.requestAction("NEXT")
-    }
+    fun sendTransportNext() = TransportManager.next()
 
     fun toggleRoutesExpanded(group: OutputGroup, expanded: Boolean) {
         viewModelScope.launch {
@@ -489,33 +453,10 @@ class MainViewModel(
             return
         }
 
-        // Handle Transport Play / Start-from-zero CC (CC 51). The start-from-zero
-        // notification (value 1) is a global hardware event, so accept it even if
-        // it arrives on a different channel; the rest of the transport states must
-        // come from the configured transport channel.
-        val isTransportChannel = channel == getTransportMidiChannel0Based()
-        val isStartFromZero = ccNumber == 51 && value == 1
-        if (ccNumber == 51 && (isTransportChannel || isStartFromZero)) {
-            android.util.Log.d(
-                "MainViewModel",
-                "Transport feedback: channel=$channel cc=$ccNumber value=$value"
-            )
-            // CC51 value 1 is the Helix notification that the song started from
-            // zero on the hardware. It means "playing", even though the value is
-            // below the usual 64 threshold.
-            val startFromZero = value == 1
-            val isPlayingVal = startFromZero || value >= 64
-            val isLoadMode = songPlayMode.value != SongPlayMode.PLAY
-            // In Load mode, the echo of our own load pulse must not
-            // flip the button to "playing"; a real hardware start always wins.
-            if (isPlayingVal && !startFromZero && isLoadMode && isSongLoaded) {
-                return
-            }
-            val statusText = if (isPlayingVal) "Playing" else "Paused"
-            SongTransportManager.updatePlayState(isPlayingVal, statusText)
-            if (isPlayingVal) {
-                isSongLoaded = false
-            }
+        // Transport feedback (CC51 / 49 / 47 / 10 / 63) is owned by
+        // TransportManager, the single handler for both delivery paths (this
+        // parsed CC flow and the forwarded MidiReceiver used by Song View).
+        if (TransportManager.onFeedback(channel, ccNumber, value)) {
             return
         }
 

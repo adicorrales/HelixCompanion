@@ -64,8 +64,8 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import adco.helixmidimixer.midi.BleConnectionState
-import adco.helixmidimixer.midi.BleDeviceInfo
+import adco.helixcompanion.midi.BleConnectionState
+import adco.helixcompanion.midi.BleDeviceInfo
 import adco.helixmidimixer.ui.theme.HelixBackground
 import adco.helixmidimixer.ui.theme.HelixBadgeBg
 import adco.helixmidimixer.ui.theme.HelixCardBorder
@@ -75,7 +75,7 @@ import adco.helixmidimixer.ui.theme.HelixMidiMixerTheme
 import adco.helixmidimixer.ui.theme.HelixSurface
 import adco.helixmidimixer.ui.theme.HelixTextPrimary
 import adco.helixmidimixer.ui.theme.HelixTextSecondary
-import adco.helixsongview.midi.BleMidiBridge
+import adco.helixcompanion.midi.BleMidiBridge
 import adco.helixsongview.midi.Midi
 import java.util.function.Consumer
 

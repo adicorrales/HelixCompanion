@@ -57,7 +57,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import adco.helixmidimixer.data.model.OutputGroup
-import adco.helixmidimixer.midi.BleConnectionState
+import adco.helixcompanion.midi.BleConnectionState
 import adco.helixmidimixer.ui.theme.HelixBackground
 import adco.helixmidimixer.ui.theme.HelixBadgeBg
 import adco.helixmidimixer.ui.theme.HelixCardBorder
