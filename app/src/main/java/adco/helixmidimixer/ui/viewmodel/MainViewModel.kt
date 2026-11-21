@@ -396,47 +396,34 @@ class MainViewModel(
     }
 
     fun sendTransportPrev() {
-        val ch = getTransportMidiChannel0Based()
-        markCcSent(ch, 49, 0)
-        bleMidiManager.sendControlChange(channel = ch, ccNumber = 49, value = 0)
         SongTransportManager.updatePlayState(false, "On Cue")
         isSongLoaded = false
         SongTransportManager.requestAction("PREV")
     }
 
     fun sendTransportReturnToZero() {
-        val ch = getTransportMidiChannel0Based()
-        markCcSent(ch, 47, 127)
-        bleMidiManager.sendControlChange(channel = ch, ccNumber = 47, value = 127)
         SongTransportManager.requestAction("RT0")
     }
 
     fun toggleTransportPlay() {
-        val ch = getTransportMidiChannel0Based()
         val currentPlaying = isPlaying.value
-
-        markCcSent(ch, 51, 127)
 
         if (currentPlaying) {
             SongTransportManager.updatePlayState(false, "Paused")
             isSongLoaded = false
-            bleMidiManager.sendControlChange(channel = ch, ccNumber = 51, value = 127)
         } else {
             when (songPlayMode.value) {
                 SongPlayMode.PLAY -> {
                     SongTransportManager.updatePlayState(true, "Playing")
                     isSongLoaded = false
-                    bleMidiManager.sendControlChange(channel = ch, ccNumber = 51, value = 127)
                 }
                 SongPlayMode.LOAD -> {
                     if (!isSongLoaded) {
                         isSongLoaded = true
                         SongTransportManager.updatePlayState(false, "Loaded")
-                        bleMidiManager.sendControlChange(channel = ch, ccNumber = 51, value = 127)
                     } else {
                         SongTransportManager.updatePlayState(true, "Playing")
                         isSongLoaded = false
-                        bleMidiManager.sendControlChange(channel = ch, ccNumber = 51, value = 127)
                     }
                 }
             }
@@ -445,9 +432,6 @@ class MainViewModel(
     }
 
     fun sendTransportNext() {
-        val ch = getTransportMidiChannel0Based()
-        markCcSent(ch, 49, 127)
-        bleMidiManager.sendControlChange(channel = ch, ccNumber = 49, value = 127)
         SongTransportManager.updatePlayState(false, "On Cue")
         isSongLoaded = false
         SongTransportManager.requestAction("NEXT")
