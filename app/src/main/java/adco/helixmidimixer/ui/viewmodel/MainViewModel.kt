@@ -14,6 +14,8 @@ import adco.helixcompanion.midi.BleDeviceInfo
 import adco.helixcompanion.midi.BleMidiManager
 import adco.helixcompanion.midi.MidiSender
 import adco.helixcompanion.midi.TransportManager
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -36,6 +38,10 @@ class MainViewModel(
     private val _volumes = MutableStateFlow<Map<String, Int>>(emptyMap())
     // Local in-memory state for pan (0..127) per group and channel (key: "GROUP_chIndex")
     private val _pans = MutableStateFlow<Map<String, Int>>(emptyMap())
+
+    private val ccJobs = mutableMapOf<String, Job>()
+    private val dbSaveJobs = mutableMapOf<String, Job>()
+    private val lastCcSendTimes = mutableMapOf<String, Long>()
 
     val midiCcMapping: StateFlow<MidiCcMapping> = repository.getMidiCcMapping()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), MidiCcMapping())
@@ -264,18 +270,37 @@ class MainViewModel(
             mutableVols[key] = clampedVol
             _volumes.value = mutableVols
 
-            viewModelScope.launch {
+            // Debounced DataStore save (save 300ms after dragging stops)
+            val dbKey = "vol_$key"
+            dbSaveJobs[dbKey]?.cancel()
+            dbSaveJobs[dbKey] = viewModelScope.launch {
+                delay(300L)
                 repository.saveVolumeState(group, channelIndex, clampedVol)
             }
 
-            // Send BLE MIDI CC
+            // Throttled BLE MIDI CC Send (send max 1 CC per 35ms + guaranteed final send when dragging stops)
             val channelCcMapping = midiCcMapping.value.getChannelCc(group, channelIndex)
             val midiCh = getActiveMatrixMidiChannel(group)
-            MidiSender.sendCc(
-                channel = midiCh,
-                ccNumber = channelCcMapping.volumeCc,
-                value = clampedVol
-            )
+            val ccNumber = channelCcMapping.volumeCc
+            val ccKey = "vol_cc_$key"
+
+            val now = System.currentTimeMillis()
+            val lastSend = lastCcSendTimes[ccKey] ?: 0L
+
+            ccJobs[ccKey]?.cancel()
+
+            if (now - lastSend >= 35L) {
+                lastCcSendTimes[ccKey] = now
+                markCcSent(midiCh, ccNumber, clampedVol)
+                MidiSender.sendCc(channel = midiCh, ccNumber = ccNumber, value = clampedVol)
+            } else {
+                ccJobs[ccKey] = viewModelScope.launch {
+                    delay(40L)
+                    lastCcSendTimes[ccKey] = System.currentTimeMillis()
+                    markCcSent(midiCh, ccNumber, clampedVol)
+                    MidiSender.sendCc(channel = midiCh, ccNumber = ccNumber, value = clampedVol)
+                }
+            }
         }
     }
 
@@ -293,18 +318,37 @@ class MainViewModel(
             mutablePans[key] = clampedPan
             _pans.value = mutablePans
 
-            viewModelScope.launch {
+            // Debounced DataStore save
+            val dbKey = "pan_$key"
+            dbSaveJobs[dbKey]?.cancel()
+            dbSaveJobs[dbKey] = viewModelScope.launch {
+                delay(300L)
                 repository.savePanState(group, channelIndex, clampedPan)
             }
 
-            // Send BLE MIDI CC
+            // Throttled BLE MIDI CC Send
             val channelCcMapping = midiCcMapping.value.getChannelCc(group, channelIndex)
             val midiCh = getActiveMatrixMidiChannel(group)
-            MidiSender.sendCc(
-                channel = midiCh,
-                ccNumber = channelCcMapping.panCc,
-                value = clampedPan
-            )
+            val ccNumber = channelCcMapping.panCc
+            val ccKey = "pan_cc_$key"
+
+            val now = System.currentTimeMillis()
+            val lastSend = lastCcSendTimes[ccKey] ?: 0L
+
+            ccJobs[ccKey]?.cancel()
+
+            if (now - lastSend >= 35L) {
+                lastCcSendTimes[ccKey] = now
+                markCcSent(midiCh, ccNumber, clampedPan)
+                MidiSender.sendCc(channel = midiCh, ccNumber = ccNumber, value = clampedPan)
+            } else {
+                ccJobs[ccKey] = viewModelScope.launch {
+                    delay(40L)
+                    lastCcSendTimes[ccKey] = System.currentTimeMillis()
+                    markCcSent(midiCh, ccNumber, clampedPan)
+                    MidiSender.sendCc(channel = midiCh, ccNumber = ccNumber, value = clampedPan)
+                }
+            }
         }
     }
 
