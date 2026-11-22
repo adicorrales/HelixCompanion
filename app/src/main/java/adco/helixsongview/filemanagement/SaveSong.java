@@ -110,6 +110,12 @@ public class SaveSong {
             // Now save the new song
             boolean saveSuccessful = updateSong(newSong,true);
 
+            // If the song was renamed/moved, also invalidate the old cache entry
+            // so it doesn't point to a now-deleted file.
+            if (folderChange || filenameChange) {
+                LoadSong.removeFromSongCache(oldFolder, oldFilename);
+            }
+
             // Now, if the save was successful and the folder/filename changes, delete the old stuff
             if ((folderChange || filenameChange) && saveSuccessful) {
                 // If there wasn't an old song, don't try to delete it otherwise we delete the Songs folder!
@@ -186,6 +192,10 @@ public class SaveSong {
             mainActivityInterface.getSong().setFolder(thisSong.getFolder());
             mainActivityInterface.getPreferences().setMyPreferenceString("songFolder",thisSong.getFolder());
             mainActivityInterface.getPreferences().setMyPreferenceString("songFilename",thisSong.getFilename());
+
+            // Invalidate the in-memory song cache so the next reload reads the
+            // freshly written content instead of returning a stale cached copy.
+            LoadSong.removeFromSongCache(thisSong.getFolder(), thisSong.getFilename());
 
             // Now save the song file and return the success!
             if (thisSong.getFiletype().equals("XML") &&

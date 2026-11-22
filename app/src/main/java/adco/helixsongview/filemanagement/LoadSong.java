@@ -30,6 +30,12 @@ public class LoadSong {
         songCache.evictAll();
     }
 
+    public static void removeFromSongCache(String folder, String filename) {
+        if (folder != null && filename != null) {
+            songCache.remove(folder + "/" + filename);
+        }
+    }
+
     public LoadSong(Context c) {
         this.c = c;
         mainActivityInterface = (MainActivityInterface) c;
