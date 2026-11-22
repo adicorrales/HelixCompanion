@@ -47,9 +47,11 @@ public abstract class BottomSheetCommon extends BottomSheetDialogFragment {
 
         dialog.setOnShowListener(dialog1 -> {
             BottomSheetDialog d = (BottomSheetDialog) dialog1;
+            if (d.getWindow() != null) {
+                d.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            }
             FrameLayout bottomSheet = d.findViewById(com.google.android.material.R.id.design_bottom_sheet);
 
-            //FrameLayout bottomSheet = ((BottomSheetDialog) dialog1).findViewById(com.google.android.material.R.id.design_bottom_sheet);
             if (bottomSheet != null && getContext()!=null) {
 
                 // Create a rounded MaterialShapeDrawable
@@ -76,15 +78,18 @@ public abstract class BottomSheetCommon extends BottomSheetDialogFragment {
                 bottomSheet.setBackground(shapeDrawable);
 
                 BottomSheetBehavior<FrameLayout> behavior = BottomSheetBehavior.from(bottomSheet);
+                int screenWidth = getResources().getDisplayMetrics().widthPixels;
+                behavior.setMaxWidth(screenWidth);
                 behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                 behavior.setDraggable(false);
                 behavior.setFitToContents(true);
-                behavior.setMaxWidth(ViewGroup.LayoutParams.MATCH_PARENT);
                 ViewGroup.LayoutParams params = bottomSheet.getLayoutParams();
                 if (params != null) {
                     params.width = ViewGroup.LayoutParams.MATCH_PARENT;
                     bottomSheet.setLayoutParams(params);
                 }
+                bottomSheet.requestLayout();
+                bottomSheet.invalidate();
             }
         });
         return dialog;

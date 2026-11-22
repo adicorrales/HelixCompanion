@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import adco.helixsongview.R;
 import adco.helixsongview.customviews.BottomSheetCommon;
@@ -52,6 +53,18 @@ public class MidiBoardBottomSheet extends BottomSheetCommon {
         setupListeners();
 
         return myView.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        view.post(() -> {
+            setupViews(mainActivityInterface.getPreferences().getMyPreferenceInt("midiBoard", 1));
+            if (myView != null) {
+                myView.getRoot().requestLayout();
+                myView.getRoot().invalidate();
+            }
+        });
     }
 
     private void getValues(Context c) {
