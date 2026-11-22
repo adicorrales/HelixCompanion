@@ -14,12 +14,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import adco.helixmidimixer.ui.components.ChannelStripsRow
 import adco.helixmidimixer.ui.components.MatrixTopBar
@@ -56,6 +61,33 @@ fun HelixStadiumMixerScreen(
     val bleConnectionState by viewModel.bleConnectionState.collectAsStateWithLifecycle()
     val scannedDevices by viewModel.scannedDevices.collectAsStateWithLifecycle()
     val autoReconnectEnabled by viewModel.autoReconnectEnabled.collectAsStateWithLifecycle()
+    val windowSettings by viewModel.mixerWindowSettings.collectAsStateWithLifecycle()
+
+    val view = LocalView.current
+    DisposableEffect(windowSettings.isImmersive) {
+        val window = (context as? android.app.Activity)?.window
+        if (window != null) {
+            val controller = WindowInsetsControllerCompat(window, view)
+            controller.isAppearanceLightStatusBars = false
+            controller.isAppearanceLightNavigationBars = false
+            if (windowSettings.isImmersive) {
+                controller.hide(WindowInsetsCompat.Type.systemBars())
+                controller.systemBarsBehavior =
+                    WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            } else {
+                controller.show(WindowInsetsCompat.Type.systemBars())
+            }
+        }
+        onDispose { }
+    }
+
+    val density = LocalDensity.current
+    val marginToolbarLeftDp = with(density) { windowSettings.marginToolbarLeftPx.toDp() }
+    val marginToolbarRightDp = with(density) { windowSettings.marginToolbarRightPx.toDp() }
+    val marginLeftDp = with(density) { windowSettings.marginLeftPx.toDp() }
+    val marginRightDp = with(density) { windowSettings.marginRightPx.toDp() }
+    val marginTopDp = with(density) { windowSettings.marginTopPx.toDp() }
+    val marginBottomDp = with(density) { windowSettings.marginBottomPx.toDp() }
 
     // Dialog state management
     var showBleDialog by remember { mutableStateOf(false) }
@@ -67,7 +99,7 @@ fun HelixStadiumMixerScreen(
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = HelixBackground,
-        contentWindowInsets = WindowInsets.systemBars,
+        contentWindowInsets = if (windowSettings.isImmersive) WindowInsets(0, 0, 0, 0) else WindowInsets.systemBars,
         topBar = {
             MatrixTopBar(
                 selectedGroup = selectedGroup,
@@ -81,7 +113,8 @@ fun HelixStadiumMixerScreen(
                     launchHelixSongView(context)
                 },
                 onOpenBleDialog = { showBleDialog = true },
-                onOpenCcDialog = { showCcDialog = true }
+                onOpenCcDialog = { showCcDialog = true },
+                modifier = Modifier.padding(start = marginToolbarLeftDp, end = marginToolbarRightDp)
             )
         },
         bottomBar = {
@@ -105,6 +138,7 @@ fun HelixStadiumMixerScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                .padding(start = marginLeftDp, end = marginRightDp, top = marginTopDp, bottom = marginBottomDp)
                 .background(HelixBackground)
         ) {
             ChannelStripsRow(

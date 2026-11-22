@@ -9,6 +9,7 @@ import adco.helixmidimixer.data.model.MidiCcMapping
 import adco.helixmidimixer.data.model.OutputGroup
 import adco.helixmidimixer.data.model.SongPlayMode
 import adco.helixmidimixer.data.repository.DataStoreRepository
+import adco.helixmidimixer.data.repository.MixerWindowSettings
 import adco.helixcompanion.midi.BleConnectionState
 import adco.helixcompanion.midi.BleDeviceInfo
 import adco.helixcompanion.midi.BleMidiManager
@@ -42,6 +43,9 @@ class MainViewModel(
     private val ccJobs = mutableMapOf<String, Job>()
     private val dbSaveJobs = mutableMapOf<String, Job>()
     private val lastCcSendTimes = mutableMapOf<String, Long>()
+
+    val mixerWindowSettings: StateFlow<MixerWindowSettings> = repository.getMixerWindowSettings()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), MixerWindowSettings())
 
     val midiCcMapping: StateFlow<MidiCcMapping> = repository.getMidiCcMapping()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), MidiCcMapping())

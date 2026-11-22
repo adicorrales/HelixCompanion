@@ -1,6 +1,7 @@
 package adco.helixmidimixer.data.repository
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
@@ -10,14 +11,26 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import adco.helixmidimixer.data.model.HomeRoute
 import adco.helixmidimixer.data.model.MidiCcMapping
 import adco.helixmidimixer.data.model.OutputGroup
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
+data class MixerWindowSettings(
+    val isImmersive: Boolean = true,
+    val marginToolbarLeftPx: Int = 0,
+    val marginToolbarRightPx: Int = 0,
+    val marginLeftPx: Int = 0,
+    val marginRightPx: Int = 0,
+    val marginTopPx: Int = 0,
+    val marginBottomPx: Int = 0
+)
+
 class DataStoreRepository(
     private val dataStore: DataStore<Preferences>,
-    context: Context
+    private val context: Context
 ) {
 
     private val json = Json { ignoreUnknownKeys = true }
@@ -335,6 +348,32 @@ class DataStoreRepository(
     suspend fun saveLastBleDeviceAddress(address: String) {
         dataStore.edit { prefs ->
             prefs[LAST_BLE_DEVICE_ADDRESS_KEY] = address
+        }
+    }
+
+    // --- Window & Margins Settings ---
+    fun getMixerWindowSettings(): Flow<MixerWindowSettings> = callbackFlow {
+        val prefs = context.getSharedPreferences("CurrentPreferences", Context.MODE_PRIVATE)
+
+        fun readSettings() = MixerWindowSettings(
+            isImmersive = prefs.getBoolean("immersiveMode", true),
+            marginToolbarLeftPx = prefs.getInt("marginToolbarLeft", 0),
+            marginToolbarRightPx = prefs.getInt("marginToolbarRight", 0),
+            marginLeftPx = prefs.getInt("marginLeft", 0),
+            marginRightPx = prefs.getInt("marginRight", 0),
+            marginTopPx = prefs.getInt("marginTop", 0),
+            marginBottomPx = prefs.getInt("marginBottom", 0)
+        )
+
+        trySend(readSettings())
+
+        val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, _ ->
+            trySend(readSettings())
+        }
+        prefs.registerOnSharedPreferenceChangeListener(listener)
+
+        awaitClose {
+            prefs.unregisterOnSharedPreferenceChangeListener(listener)
         }
     }
 }
