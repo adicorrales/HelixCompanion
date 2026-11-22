@@ -2,12 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="460dp"
-    android:minWidth="64dp"
+    android:minWidth="80dp"
     android:orientation="vertical"
     android:padding="0dp">
 
     <FrameLayout
-        android:layout_width="64dp"
+        android:layout_width="80dp"
         android:layout_height="380dp">
 
         <com.google.android.material.slider.Slider
@@ -26,9 +26,9 @@
         android:id="@+id/sliderValues"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:minWidth="64dp"
+        android:minWidth="80dp"
         android:orientation="vertical"
-        android:padding="8dp">
+        android:padding="4dp">
 
         <adco.helixsongview.customviews.MyMaterialSimpleTextView
             android:id="@+id/sliderValue"
@@ -50,6 +50,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:textSize="11sp"
             android:text="@string/midi" />
     </LinearLayout>
 

@@ -126,10 +126,10 @@ public class MidiBoardBottomSheet extends BottomSheetCommon {
         String midi = boardButtonMIDI.get(whichButton);
         String text = "";
         if (name!=null && !name.trim().isEmpty()) {
-            text += "<h2>" + name.trim() + "</h2>";
+            text += "<h3>" + name.trim() + "</h3>";
         }
         if (midi!=null && !midi.trim().isEmpty()) {
-            text += "<p>" + midi.trim() + "<p>";
+            text += "<p>" + midi.trim() + "</p>";
         }
         boardButtonView.get(whichButton).setText(Html.fromHtml(text));
         boardButtonView.get(whichButton).setOnClickListener(view -> {
@@ -158,10 +158,6 @@ public class MidiBoardBottomSheet extends BottomSheetCommon {
         myView.boardPage3.setOnClickListener(view -> {
             mainActivityInterface.getPreferences().setMyPreferenceInt("midiBoard",3);
             setupViews(3);
-        });
-        myView.boardPage3.setOnClickListener(view -> {
-            mainActivityInterface.getPreferences().setMyPreferenceInt("midiBoard",4);
-            setupViews(4);
         });
         myView.boardSlider1.getSliderValues().setOnClickListener(view -> {
             String midiCode = myView.boardSlider1.getMidiCode();
@@ -300,7 +296,7 @@ public class MidiBoardBottomSheet extends BottomSheetCommon {
             mainActivityInterface.getPreferences().setMyPreferenceString("midiBoard"+boardNum+"Button"+whichButtonToEdit+"Name",buttonName);
             String text = "";
             if (buttonName!=null && !buttonName.trim().isEmpty()) {
-                text += "<h2>" + buttonName.trim() + "</h2>";
+                text += "<h3>" + buttonName.trim() + "</h3>";
             }
             if (newCommand!=null && !newCommand.trim().isEmpty()) {
                 text += "<p>" + newCommand.trim() + "</p>";

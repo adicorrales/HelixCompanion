@@ -79,7 +79,12 @@ public abstract class BottomSheetCommon extends BottomSheetDialogFragment {
                 behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                 behavior.setDraggable(false);
                 behavior.setFitToContents(true);
-
+                behavior.setMaxWidth(ViewGroup.LayoutParams.MATCH_PARENT);
+                ViewGroup.LayoutParams params = bottomSheet.getLayoutParams();
+                if (params != null) {
+                    params.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                    bottomSheet.setLayoutParams(params);
+                }
             }
         });
         return dialog;

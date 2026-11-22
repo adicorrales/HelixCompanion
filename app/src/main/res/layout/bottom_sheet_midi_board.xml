@@ -14,7 +14,7 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:padding="16dp">
 
         <LinearLayout
@@ -33,9 +33,9 @@
                     style="@style/LeftButton"
                     android:layout_width="0dp"
                     android:layout_height="48dp"
-                    android:padding="0dp"
                     android:layout_weight="1"
                     android:contentDescription="page 1"
+                    android:padding="0dp"
                     android:text="@string/number_1"
                     tools:ignore="HardcodedText" />
 
@@ -44,9 +44,9 @@
                     style="@style/MiddleButton"
                     android:layout_width="0dp"
                     android:layout_height="48dp"
-                    android:padding="0dp"
-                    android:contentDescription="page 2"
                     android:layout_weight="1"
+                    android:contentDescription="page 2"
+                    android:padding="0dp"
                     android:text="@string/number_2"
                     tools:ignore="HardcodedText" />
 
@@ -55,183 +55,189 @@
                     style="@style/RightButton"
                     android:layout_width="0dp"
                     android:layout_height="48dp"
-                    android:padding="0dp"
-                    android:contentDescription="page 3"
                     android:layout_weight="1"
+                    android:contentDescription="page 3"
+                    android:padding="0dp"
                     android:text="@string/number_3"
                     tools:ignore="HardcodedText" />
             </LinearLayout>
-            <adco.helixsongview.customviews.MyDivider
-                style="@style/MyDividerLine"/>
+
+            <adco.helixsongview.customviews.MyDivider style="@style/MyDividerLine" />
 
             <adco.helixsongview.customviews.MyMaterialSimpleTextView
                 android:id="@+id/boardTitle"
+                style="@style/largeText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/largeText"
                 android:gravity="center"
-                android:text="@string/title"/>
+                android:text="@string/title" />
 
             <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:baselineAligned="false">
-
-                <GridLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="460dp"
-                    android:rowCount="4"
-                    android:columnCount="2"
-                    android:layout_marginBottom="4dp"
-                    android:layout_marginStart="16dp">
-                    <adco.helixsongview.customviews.MyMaterialButton
-                        android:id="@+id/boardButton1"
-                        app:layout_columnWeight="1"
-                        android:layout_width="92dp"
-                        android:layout_height="102dp"
-                        android:layout_margin="8dp"
-                        android:padding="0dp"
-                        android:ellipsize="end"
-                        android:maxLines="4"
-                        android:layout_gravity="center"
-                        android:textSize="@dimen/text_xsmall"
-                        android:contentDescription="1"
-                        tools:ignore="HardcodedText" />
-                    <adco.helixsongview.customviews.MyMaterialButton
-                        android:id="@+id/boardButton2"
-                        app:layout_columnWeight="1"
-                        android:layout_width="92dp"
-                        android:layout_height="102dp"
-                        android:layout_margin="8dp"
-                        android:padding="0dp"
-                        android:ellipsize="end"
-                        android:maxLines="4"
-                        android:layout_gravity="center"
-                        android:textSize="@dimen/text_xsmall"
-                        android:contentDescription="2"
-                        tools:ignore="HardcodedText" />
-                    <adco.helixsongview.customviews.MyMaterialButton
-                        android:id="@+id/boardButton3"
-                        app:layout_columnWeight="1"
-                        android:layout_width="92dp"
-                        android:layout_height="102dp"
-                        android:layout_margin="8dp"
-                        android:padding="0dp"
-                        android:ellipsize="end"
-                        android:maxLines="4"
-                        android:layout_gravity="center"
-                        android:textSize="@dimen/text_xsmall"
-                        android:contentDescription="3"
-                        tools:ignore="HardcodedText" />
-                    <adco.helixsongview.customviews.MyMaterialButton
-                        android:id="@+id/boardButton4"
-                        app:layout_columnWeight="1"
-                        android:layout_width="92dp"
-                        android:layout_height="102dp"
-                        android:layout_margin="0dp"
-                        android:padding="0dp"
-                        android:ellipsize="end"
-                        android:maxLines="4"
-                        android:layout_gravity="center"
-                        android:textSize="@dimen/text_xsmall"
-                        android:contentDescription="4"
-                        tools:ignore="HardcodedText" />
-                    <adco.helixsongview.customviews.MyMaterialButton
-                        android:id="@+id/boardButton5"
-                        app:layout_columnWeight="1"
-                        android:layout_width="92dp"
-                        android:layout_height="102dp"
-                        android:layout_margin="8dp"
-                        android:padding="0dp"
-                        android:ellipsize="end"
-                        android:maxLines="4"
-                        android:layout_gravity="center"
-                        android:textSize="@dimen/text_xsmall"
-                        android:contentDescription="5"
-                        tools:ignore="HardcodedText" />
-                    <adco.helixsongview.customviews.MyMaterialButton
-                        android:id="@+id/boardButton6"
-                        app:layout_columnWeight="1"
-                        android:layout_width="92dp"
-                        android:layout_height="102dp"
-                        android:layout_margin="8dp"
-                        android:padding="0dp"
-                        android:ellipsize="end"
-                        android:maxLines="4"
-                        android:layout_gravity="center"
-                        android:textSize="@dimen/text_xsmall"
-                        android:contentDescription="6"
-                        tools:ignore="HardcodedText" />
-                    <adco.helixsongview.customviews.MyMaterialButton
-                        android:id="@+id/boardButton7"
-                        app:layout_columnWeight="1"
-                        android:layout_width="92dp"
-                        android:layout_height="102dp"
-                        android:layout_margin="8dp"
-                        android:padding="0dp"
-                        android:ellipsize="end"
-                        android:maxLines="4"
-                        android:layout_gravity="center"
-                        android:textSize="@dimen/text_xsmall"
-                        android:contentDescription="7"
-                        tools:ignore="HardcodedText" />
-                    <adco.helixsongview.customviews.MyMaterialButton
-                        android:id="@+id/boardButton8"
-                        app:layout_columnWeight="1"
-                        android:layout_width="92dp"
-                        android:layout_height="102dp"
-                        android:layout_margin="8dp"
-                        android:padding="0dp"
-                        android:ellipsize="end"
-                        android:maxLines="4"
-                        android:layout_gravity="center"
-                        android:textSize="@dimen/text_xsmall"
-                        android:contentDescription="8"
-                        tools:ignore="HardcodedText" />
-                </GridLayout>
 
                 <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    android:gravity="end">
-
-
-                    <adco.helixsongview.customviews.MidiSlider
-                    android:id="@+id/boardSlider1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="8dp"
-                    android:gravity="center_horizontal"/>
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
 
-                    <adco.helixsongview.customviews.MidiSlider
-                    android:id="@+id/boardSlider2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="8dp"
-                    android:gravity="center_horizontal"/>
+                    <GridLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="460dp"
+                        android:layout_marginBottom="4dp"
+                        android:columnCount="2"
+                        android:rowCount="4">
 
-                    <adco.helixsongview.customviews.MidiSlider
-                        android:id="@+id/boardSlider3"
+                        <adco.helixsongview.customviews.MyMaterialButton
+                            android:id="@+id/boardButton1"
+                            android:layout_width="104dp"
+                            android:layout_height="102dp"
+                            android:layout_gravity="center"
+                            android:layout_margin="4dp"
+                            android:contentDescription="1"
+                            android:ellipsize="end"
+                            android:maxLines="4"
+                            android:padding="2dp"
+                            android:textSize="@dimen/text_xsmall"
+                            app:layout_columnWeight="1"
+                            tools:ignore="HardcodedText" />
+
+                        <adco.helixsongview.customviews.MyMaterialButton
+                            android:id="@+id/boardButton2"
+                            android:layout_width="104dp"
+                            android:layout_height="102dp"
+                            android:layout_gravity="center"
+                            android:layout_margin="4dp"
+                            android:contentDescription="2"
+                            android:ellipsize="end"
+                            android:maxLines="4"
+                            android:padding="2dp"
+                            android:textSize="@dimen/text_xsmall"
+                            app:layout_columnWeight="1"
+                            tools:ignore="HardcodedText" />
+
+                        <adco.helixsongview.customviews.MyMaterialButton
+                            android:id="@+id/boardButton3"
+                            android:layout_width="104dp"
+                            android:layout_height="102dp"
+                            android:layout_gravity="center"
+                            android:layout_margin="4dp"
+                            android:contentDescription="3"
+                            android:ellipsize="end"
+                            android:maxLines="4"
+                            android:padding="2dp"
+                            android:textSize="@dimen/text_xsmall"
+                            app:layout_columnWeight="1"
+                            tools:ignore="HardcodedText" />
+
+                        <adco.helixsongview.customviews.MyMaterialButton
+                            android:id="@+id/boardButton4"
+                            android:layout_width="104dp"
+                            android:layout_height="102dp"
+                            android:layout_gravity="center"
+                            android:layout_margin="4dp"
+                            android:contentDescription="4"
+                            android:ellipsize="end"
+                            android:maxLines="4"
+                            android:padding="2dp"
+                            android:textSize="@dimen/text_xsmall"
+                            app:layout_columnWeight="1"
+                            tools:ignore="HardcodedText" />
+
+                        <adco.helixsongview.customviews.MyMaterialButton
+                            android:id="@+id/boardButton5"
+                            android:layout_width="104dp"
+                            android:layout_height="102dp"
+                            android:layout_gravity="center"
+                            android:layout_margin="4dp"
+                            android:contentDescription="5"
+                            android:ellipsize="end"
+                            android:maxLines="4"
+                            android:padding="2dp"
+                            android:textSize="@dimen/text_xsmall"
+                            app:layout_columnWeight="1"
+                            tools:ignore="HardcodedText" />
+
+                        <adco.helixsongview.customviews.MyMaterialButton
+                            android:id="@+id/boardButton6"
+                            android:layout_width="104dp"
+                            android:layout_height="102dp"
+                            android:layout_gravity="center"
+                            android:layout_margin="4dp"
+                            android:contentDescription="6"
+                            android:ellipsize="end"
+                            android:maxLines="4"
+                            android:padding="2dp"
+                            android:textSize="@dimen/text_xsmall"
+                            app:layout_columnWeight="1"
+                            tools:ignore="HardcodedText" />
+
+                        <adco.helixsongview.customviews.MyMaterialButton
+                            android:id="@+id/boardButton7"
+                            android:layout_width="104dp"
+                            android:layout_height="102dp"
+                            android:layout_gravity="center"
+                            android:layout_margin="4dp"
+                            android:contentDescription="7"
+                            android:ellipsize="end"
+                            android:maxLines="4"
+                            android:padding="2dp"
+                            android:textSize="@dimen/text_xsmall"
+                            app:layout_columnWeight="1"
+                            tools:ignore="HardcodedText" />
+
+                        <adco.helixsongview.customviews.MyMaterialButton
+                            android:id="@+id/boardButton8"
+                            android:layout_width="104dp"
+                            android:layout_height="102dp"
+                            android:layout_gravity="center"
+                            android:layout_margin="4dp"
+                            android:contentDescription="8"
+                            android:ellipsize="end"
+                            android:maxLines="4"
+                            android:padding="2dp"
+                            android:textSize="@dimen/text_xsmall"
+                            app:layout_columnWeight="1"
+                            tools:ignore="HardcodedText" />
+                    </GridLayout>
+
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="center_horizontal"
-                        android:padding="8dp" />
+                        android:gravity="end"
+                        android:orientation="horizontal">
 
-                    <adco.helixsongview.customviews.MidiSlider
-                        android:id="@+id/boardSlider4"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_horizontal"
-                        android:padding="8dp" />
+                        <adco.helixsongview.customviews.MidiSlider
+                            android:id="@+id/boardSlider1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_horizontal"
+                            android:padding="4dp" />
 
+                        <adco.helixsongview.customviews.MidiSlider
+                            android:id="@+id/boardSlider2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_horizontal"
+                            android:padding="4dp" />
+
+                        <adco.helixsongview.customviews.MidiSlider
+                            android:id="@+id/boardSlider3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_horizontal"
+                            android:padding="4dp" />
+
+                        <adco.helixsongview.customviews.MidiSlider
+                            android:id="@+id/boardSlider4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_horizontal"
+                            android:padding="4dp" />
+
+                    </LinearLayout>
                 </LinearLayout>
-            </LinearLayout>
             </HorizontalScrollView>
 
             <adco.helixsongview.customviews.MyMaterialSimpleTextView
@@ -239,7 +245,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
-                android:text="@string/midi_board_click_or_long_click"/>
+                android:text="@string/midi_board_click_or_long_click" />
 
         </LinearLayout>
     </ScrollView>
