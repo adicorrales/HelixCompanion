@@ -279,7 +279,14 @@ public class Midi implements MidiSender.Fallback, BleConnectionHost {
         try {
             if (mainActivityInterface != null && mainActivityInterface.getPreferences() != null) {
                 mainActivityInterface.getPreferences().setMyPreferenceString("lastUsedMidiDeviceAddress", device.getAddress());
-                mainActivityInterface.getPreferences().setMyPreferenceString("lastUsedMidiDeviceName", device.getName());
+                String devName = "";
+                try {
+                    devName = device.getName();
+                } catch (SecurityException ignored) {
+                }
+                if (devName != null && !devName.isEmpty()) {
+                    mainActivityInterface.getPreferences().setMyPreferenceString("lastUsedMidiDeviceName", devName);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -626,8 +633,16 @@ public class Midi implements MidiSender.Fallback, BleConnectionHost {
     public void onBleDeviceConnected(String name, String address) {
         setMidiDeviceName(name);
         setMidiDeviceAddress(address);
-        // The toolbar connection indicator is refreshed by the shared
-        // connection listener registered with the process wide manager.
+        try {
+            if (mainActivityInterface != null && mainActivityInterface.getPreferences() != null && address != null && !address.isEmpty()) {
+                mainActivityInterface.getPreferences().setMyPreferenceString("lastUsedMidiDeviceAddress", address);
+                if (name != null && !name.isEmpty()) {
+                    mainActivityInterface.getPreferences().setMyPreferenceString("lastUsedMidiDeviceName", name);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /** Start the actual connection through Song View's legacy path. */
@@ -1657,6 +1672,11 @@ public class Midi implements MidiSender.Fallback, BleConnectionHost {
         if (checkAndConnectActiveGattMidi()) {
             return;
         }
+        BleMidiManager sharedManager = getSharedBleMidiManager();
+        if (sharedManager != null && sharedManager.isConnected()) {
+            return;
+        }
+
         Log.d(TAG,"disconnecting MIDI devices");
         if (activity != null) {
             Object obj = activity.getSystemService(Context.BLUETOOTH_SERVICE);
@@ -1672,11 +1692,23 @@ public class Midi implements MidiSender.Fallback, BleConnectionHost {
         String lastAddress = (autoConnectLast && mainActivityInterface != null && mainActivityInterface.getPreferences() != null) ?
                 mainActivityInterface.getPreferences().getMyPreferenceString("lastUsedMidiDeviceAddress", "") : "";
 
-        List<BluetoothDevice> candidateDevices = new ArrayList<>();
-        if (bluetoothDevice == null && bluetoothManager != null) {
+        if (bluetoothManager != null) {
             BluetoothAdapter adapter = bluetoothManager.getAdapter();
-
             if (adapter != null && adapter.isEnabled()) {
+                if (autoConnectLast && lastAddress != null && !lastAddress.isEmpty() && BluetoothAdapter.checkBluetoothAddress(lastAddress)) {
+                    try {
+                        BluetoothDevice device = adapter.getRemoteDevice(lastAddress);
+                        if (device != null) {
+                            Log.d(TAG, "Auto-reconnecting to last used BLE MIDI device: " + lastAddress);
+                            setBluetoothDevice(device);
+                            return;
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "Failed to auto-reconnect to last device: " + lastAddress, e);
+                    }
+                }
+
+                List<BluetoothDevice> candidateDevices = new ArrayList<>();
                 try {
                     List<BluetoothDevice> connected = bluetoothManager.getConnectedDevices(BluetoothProfile.GATT);
                     if (connected != null) candidateDevices.addAll(connected);
@@ -1710,7 +1742,7 @@ public class Midi implements MidiSender.Fallback, BleConnectionHost {
                 if (!candidateDevices.isEmpty() && midiManager != null) {
                     for (BluetoothDevice device : candidateDevices) {
                         if (autoConnectLast && !lastAddress.isEmpty() && device.getAddress().equalsIgnoreCase(lastAddress)) {
-                            if (midiDevice == null && device.getBondState() == BluetoothDevice.BOND_BONDED) {
+                            if (midiDevice == null) {
                                 setBluetoothDevice(device);
                                 break;
                             }
@@ -1719,7 +1751,7 @@ public class Midi implements MidiSender.Fallback, BleConnectionHost {
                             if (uuids != null) {
                                 for (ParcelUuid uuid : uuids) {
                                     if (uuid.toString().equalsIgnoreCase(uuidBle) && !isAirTurn(device)) {
-                                        if (midiDevice == null && device.getBondState() == BluetoothDevice.BOND_BONDED) {
+                                        if (midiDevice == null) {
                                             setBluetoothDevice(device);
                                             break;
                                         }
