@@ -468,7 +468,7 @@ private fun PermissionRequiredCard(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "Helix Song View requires Bluetooth permissions to discover and connect to WIDI Master & BLE MIDI adapters.",
+                text = "Helix Companion requires Bluetooth permissions to discover and connect to WIDI Master & BLE MIDI adapters.",
                 style = MaterialTheme.typography.bodySmall.copy(
                     color = HelixTextSecondary,
                     fontSize = 12.sp

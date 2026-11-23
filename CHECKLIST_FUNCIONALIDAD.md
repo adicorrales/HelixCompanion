@@ -1,4 +1,4 @@
-# Checklist de Funcionalidad — Helix Song View
+# Checklist de Funcionalidad — Helix Companion
 
 > **Propósito**: inventario completo de funcionalidad para decidir qué **desaparece** (defeaturing) antes de migrar su paquete a Kotlin.
 >

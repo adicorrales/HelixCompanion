@@ -130,7 +130,7 @@ fun TransportBar(
                     horizontalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
                     Text(
-                        text = if (currentSongTitle.isNotBlank()) currentSongTitle else "Helix Song View",
+                        text = if (currentSongTitle.isNotBlank()) currentSongTitle else "Helix Companion",
                         maxLines = 1,
                         style = MaterialTheme.typography.labelMedium.copy(
                             fontWeight = FontWeight.Bold,

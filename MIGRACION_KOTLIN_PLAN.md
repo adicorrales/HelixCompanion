@@ -1,4 +1,4 @@
-# Plan de Migración a Kotlin — Helix Song View (v2, revisado)
+# Plan de Migración a Kotlin — Helix Companion (v2, revisado)
 
 > **Estado**: reemplaza al artefacto de plan original. Incorpora las observaciones del inventario real y reorganiza el trabajo en paquetes de 1–2 horas diarias, de menor a mayor riesgo.
 

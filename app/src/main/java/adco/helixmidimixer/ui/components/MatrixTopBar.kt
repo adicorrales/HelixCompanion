@@ -200,7 +200,7 @@ private fun SongViewButton(onClick: () -> Unit) {
             .background(HelixBadgeBg)
             .border(1.dp, HelixCardBorder, RoundedCornerShape(8.dp))
             .size(36.dp)
-            .semantics { contentDescription = "Abrir Helix Song View" }
+            .semantics { contentDescription = "Abrir Helix Companion" }
     ) {
         Canvas(modifier = Modifier.size(22.dp)) {
             val noteColor = HelixGreenPrimary
