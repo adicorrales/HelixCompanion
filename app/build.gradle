@@ -79,7 +79,7 @@ android {
         multiDexEnabled = true
         vectorDrawables.useSupportLibrary = true
         versionCode = 2     // Also change in wear if we need to update that as well
-        versionName = '0.2' // Also change in wear if we need to update that as well
+        versionName = '0.0.2' // Also change in wear if we need to update that as well
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
 
