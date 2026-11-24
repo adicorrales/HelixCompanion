@@ -5177,16 +5177,5 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     @Override
     public void updateDisplay(String what) {}
 
-    @Override
-    public void presenterShowSection(int position) {}
-
-    @Override
-    public void performanceShowSection(int position) {
-        // This gets a section from the user selecting either a PDF page or a Stage Mode section
-        // Send it back to Performance Mode to deal with the outcome (scroll to, update display, etc)
-        if (performanceValid()) {
-            performanceFragment.performanceShowSection(position);
-        }
-    }
 
 }

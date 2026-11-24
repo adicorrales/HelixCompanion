@@ -6,11 +6,6 @@ public interface DisplayInterface {
     void checkDisplays();
     void updateDisplay(String what);
 
-    // Presenter Mode tasks
-    void presenterShowSection(int position);
-
-    // Performance and Stage Mode tasks
-    void performanceShowSection(int position);
     boolean getIsSecondaryDisplaying();
 
 }
