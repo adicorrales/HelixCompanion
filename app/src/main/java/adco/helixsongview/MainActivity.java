@@ -22,7 +22,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -102,7 +101,6 @@ import adco.helixsongview.controls.SwipeFragment;
 import adco.helixsongview.controls.Swipes;
 import adco.helixsongview.customviews.ExposedDropDown;
 import adco.helixsongview.customviews.MyExtendedFloatingActionButton;
-import adco.helixsongview.customviews.MyMaterialButton;
 import adco.helixsongview.customviews.MyMaterialSimpleTextView;
 import adco.helixsongview.customviews.MyToolbar;
 

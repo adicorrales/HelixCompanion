@@ -36,8 +36,8 @@ android {
         targetSdk = 36
         multiDexEnabled = true
         vectorDrawables.useSupportLibrary = true
-        versionCode = 508     // Also change in wear if we need to update that as well
-        versionName = '7.0.3' // Also change in wear if we need to update that as well
+        versionCode = 1     // Also change in wear if we need to update that as well
+        versionName = '0.1' // Also change in wear if we need to update that as well
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
 
