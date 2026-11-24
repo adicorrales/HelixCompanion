@@ -64,11 +64,21 @@ android {
     // --- Signing configuration ---
     signingConfigs {
         release {
-            def storeFilePath = localProps.getProperty("MYAPP_STORE_FILE", "..\\key\\ACM Key.jks")
-            storeFile file(storeFilePath)
-            storePassword localProps.getProperty("MYAPP_STORE_PASSWORD", "13017723")
-            keyAlias localProps.getProperty("MYAPP_KEY_ALIAS", "ACMKey")
-            keyPassword localProps.getProperty("MYAPP_KEY_PASSWORD", "13017723")
+            def defaultStoreFile = "key/ACM Key.jks"
+            def storeFilePath = localProps.getProperty("MYAPP_STORE_FILE", defaultStoreFile)
+            def keystoreFile = file(storeFilePath)
+            if (keystoreFile.exists()) {
+                storeFile keystoreFile
+                storePassword localProps.getProperty("MYAPP_STORE_PASSWORD", "13017723")
+                keyAlias localProps.getProperty("MYAPP_KEY_ALIAS", "ACMKey")
+                keyPassword localProps.getProperty("MYAPP_KEY_PASSWORD", "13017723")
+            } else {
+                println("⚠️ Keystore file not found at '${storeFilePath}'. Release builds will fall back to debug signing.")
+                storeFile signingConfigs.debug.storeFile
+                storePassword signingConfigs.debug.storePassword
+                keyAlias signingConfigs.debug.keyAlias
+                keyPassword signingConfigs.debug.keyPassword
+            }
         }
     }
 
@@ -78,8 +88,8 @@ android {
         targetSdk = 36
         multiDexEnabled = true
         vectorDrawables.useSupportLibrary = true
-        versionCode = 2     // Also change in wear if we need to update that as well
-        versionName = '0.0.2' // Also change in wear if we need to update that as well
+        versionCode = 3
+        versionName = '0.0.3'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
 
