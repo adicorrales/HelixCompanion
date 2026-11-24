@@ -141,6 +141,15 @@ public class MyToolbar extends Toolbar {
         songandauthor = v.findViewById(R.id.songandauthor);
         clock = v.findViewById(R.id.digitalclock);
 
+        View devBadge = v.findViewById(R.id.devBadgeToolbar);
+        if (devBadge != null) {
+            if (adco.helixsongview.BuildConfig.DEBUG) {
+                devBadge.setVisibility(View.VISIBLE);
+            } else {
+                devBadge.setVisibility(View.GONE);
+            }
+        }
+
 
         btnTransportPrevContainer = v.findViewById(R.id.btnTransportPrevContainer);
         btnTransportNextContainer = v.findViewById(R.id.btnTransportNextContainer);

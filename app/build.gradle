@@ -15,17 +15,31 @@ if (localPropsFile.exists()) {
 // --- Detect Git Branch ---
 def getCurrentGitBranch = { ->
     try {
+        def headFile = rootProject.file(".git/HEAD")
+        if (headFile.exists()) {
+            def content = headFile.text.trim()
+            if (content.startsWith("ref: ")) {
+                def refPath = content.substring(5).trim()
+                return refPath.substring(refPath.lastIndexOf("/") + 1)
+            } else if (content.length() > 0) {
+                return content.substring(0, Math.min(content.length(), 7))
+            }
+        }
+    } catch (Exception ignored) {}
+
+    try {
         def stdout = new ByteArrayOutputStream()
         exec {
-            commandLine 'git', 'rev-parse', '--abbrev-ref', 'HEAD'
+            commandLine 'cmd', '/c', 'git', 'rev-parse', '--abbrev-ref', 'HEAD'
             workingDir rootProject.rootDir
             standardOutput = stdout
             ignoreExitValue = true
         }
-        return stdout.toString().trim()
-    } catch (Exception ignored) {
-        return "unknown"
-    }
+        def branch = stdout.toString().trim()
+        if (branch && branch != "unknown") return branch
+    } catch (Exception ignored) {}
+
+    return "unknown"
 }
 
 def currentBranch = getCurrentGitBranch()
@@ -33,11 +47,11 @@ println("🌿 Git Branch detected: ${currentBranch}")
 
 androidComponents {
     beforeVariants(selector().all()) { variant ->
-        def branch = getCurrentGitBranch()
+        def branch = getCurrentGitBranch().toLowerCase()
         def variantName = variant.name.toLowerCase()
         if (branch == "main" && variantName.contains("debug")) {
             variant.enabled = false
-        } else if (branch == "development" && variantName.contains("release")) {
+        } else if ((branch.contains("dev") || branch.contains("develop")) && variantName.contains("release")) {
             variant.enabled = false
         }
     }

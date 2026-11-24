@@ -104,6 +104,15 @@ fun MatrixTopBar(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                if (adco.helixsongview.BuildConfig.DEBUG) {
+                    Text(
+                        text = "DEV",
+                        color = Color.Red,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 13.sp,
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                }
                 Box(
                     modifier = Modifier
                         .size(10.dp)
