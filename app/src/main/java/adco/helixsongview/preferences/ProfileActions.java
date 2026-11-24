@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.util.Log;
 
+import adco.helixcompanion.MatrixSettingsProfile;
 import adco.helixsongview.interfaces.MainActivityInterface;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -14,6 +15,9 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ProfileActions {
 
@@ -30,6 +34,9 @@ public class ProfileActions {
         // This is uses to copy the external file on top of the application preferences
         Log.d(TAG,"loadProfile()");
         InputStream inputStream = mainActivityInterface.getStorageAccess().getInputStream(uri);
+        // Matrix settings are stored in DataStore, not in CurrentPreferences.xml. They are
+        // written into the profile with a prefix so they can be restored after a reinstall.
+        Map<String, Object> matrixEntries = new HashMap<>();
 
         try {
             XmlPullParserFactory factory;
@@ -105,7 +112,9 @@ public class ProfileActions {
                     }
 
                     Log.d(TAG,"key:"+key);
-                    if (key!=null && !key.isEmpty()) {
+                    if (key!=null && key.startsWith(MatrixSettingsProfile.PROFILE_KEY_PREFIX)) {
+                        addMatrixEntry(matrixEntries, type, key, value);
+                    } else if (key!=null && !key.isEmpty()) {
                         switch (type) {
                             case "boolean":
                                 try {
@@ -161,6 +170,8 @@ public class ProfileActions {
                 }
             }
             inputStream.close();
+            // Now push the Matrix settings from the profile into their DataStore file.
+            MatrixSettingsProfile.importEntries(c, matrixEntries);
         } catch (Exception e) {
             e.printStackTrace();
             mainActivityInterface.getStorageAccess().updateFileActivityLog(e.toString());
@@ -220,17 +231,102 @@ public class ProfileActions {
             // Different versions of Android save the preferences in different locations.
             Uri prefsFile = getPrefsFile();
 
+            // Read the preferences file so the Matrix settings (stored in a separate
+            // DataStore file) can be appended to the profile XML before writing it.
             InputStream inputStream = mainActivityInterface.getStorageAccess().getInputStream(prefsFile);
-            OutputStream outputStream = mainActivityInterface.getStorageAccess().getOutputStream(uri);
+            String preferencesXml = mainActivityInterface.getStorageAccess().readTextFileToString(inputStream);
+            if (preferencesXml.isEmpty()) {
+                throw new IllegalStateException("Unable to read the current preferences");
+            }
+            String profileXml = addMatrixSettings(preferencesXml);
 
-            mainActivityInterface.getStorageAccess().updateFileActivityLog(TAG+" saveProfile copyFile from "+prefsFile+" to "+uri);
-            mainActivityInterface.getStorageAccess().copyFile(inputStream, outputStream);
+            OutputStream outputStream = mainActivityInterface.getStorageAccess().getOutputStream(uri);
+            if (outputStream == null) {
+                throw new IllegalStateException("Unable to open the profile file for writing");
+            }
+
+            mainActivityInterface.getStorageAccess().updateFileActivityLog(TAG+" saveProfile write from "+prefsFile+" to "+uri);
+            outputStream.write(profileXml.getBytes(StandardCharsets.UTF_8));
+            outputStream.flush();
+            outputStream.close();
         } catch (Exception e) {
             Log.d(TAG,"Error saving");
             e.printStackTrace();
             result = false;
         }
         return result;
+    }
+
+    // Adds the Matrix DataStore values to the SharedPreferences XML so a single profile
+    // file holds both the Song View and the Matrix settings.
+    private String addMatrixSettings(String preferencesXml) {
+        Map<String, Object> matrixEntries = MatrixSettingsProfile.exportEntries(c);
+        if (matrixEntries.isEmpty()) {
+            return preferencesXml;
+        }
+        StringBuilder matrixXml = new StringBuilder();
+        for (Map.Entry<String, Object> entry : matrixEntries.entrySet()) {
+            String name = escapeXml(entry.getKey());
+            Object value = entry.getValue();
+            if (value instanceof Boolean) {
+                matrixXml.append("    <boolean name=\"").append(name)
+                        .append("\" value=\"").append(value).append("\" />\n");
+            } else if (value instanceof Integer) {
+                matrixXml.append("    <int name=\"").append(name)
+                        .append("\" value=\"").append(value).append("\" />\n");
+            } else if (value instanceof Long) {
+                matrixXml.append("    <long name=\"").append(name)
+                        .append("\" value=\"").append(value).append("\" />\n");
+            } else if (value instanceof Float) {
+                matrixXml.append("    <float name=\"").append(name)
+                        .append("\" value=\"").append(value).append("\" />\n");
+            } else if (value instanceof String) {
+                matrixXml.append("    <string name=\"").append(name).append("\">")
+                        .append(escapeXml((String) value)).append("</string>\n");
+            } else {
+                // Doubles and sets have no equivalent in the SharedPreferences XML.
+                Log.d(TAG, "Skipping matrix setting " + entry.getKey());
+            }
+        }
+        int mapEnd = preferencesXml.lastIndexOf("</map>");
+        if (mapEnd < 0) {
+            return preferencesXml;
+        }
+        return preferencesXml.substring(0, mapEnd) + matrixXml + preferencesXml.substring(mapEnd);
+    }
+
+    private void addMatrixEntry(Map<String, Object> matrixEntries, String type, String key, String value) {
+        try {
+            switch (type) {
+                case "boolean":
+                    matrixEntries.put(key, value.equals("true"));
+                    break;
+                case "string":
+                    matrixEntries.put(key, value);
+                    break;
+                case "int":
+                    matrixEntries.put(key, Integer.parseInt(value));
+                    break;
+                case "float":
+                    matrixEntries.put(key, Float.parseFloat(value));
+                    break;
+                case "long":
+                    matrixEntries.put(key, Long.parseLong(value));
+                    break;
+                default:
+                    Log.d(TAG, "Unknown matrix setting type for " + key);
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "Skipping matrix setting " + key + ": " + e.getMessage());
+        }
+    }
+
+    private String escapeXml(String value) {
+        return value.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;")
+                .replace("'", "&apos;");
     }
 
     @SuppressLint("SdCardPath")
