@@ -12,6 +12,37 @@ if (localPropsFile.exists()) {
     localProps.load(new FileInputStream(localPropsFile))
 }
 
+// --- Detect Git Branch ---
+def getCurrentGitBranch = { ->
+    try {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'rev-parse', '--abbrev-ref', 'HEAD'
+            workingDir rootProject.rootDir
+            standardOutput = stdout
+            ignoreExitValue = true
+        }
+        return stdout.toString().trim()
+    } catch (Exception ignored) {
+        return "unknown"
+    }
+}
+
+def currentBranch = getCurrentGitBranch()
+println("🌿 Git Branch detected: ${currentBranch}")
+
+androidComponents {
+    beforeVariants(selector().all()) { variant ->
+        def branch = getCurrentGitBranch()
+        def variantName = variant.name.toLowerCase()
+        if (branch == "main" && variantName.contains("debug")) {
+            variant.enabled = false
+        } else if (branch == "development" && variantName.contains("release")) {
+            variant.enabled = false
+        }
+    }
+}
+
 android {
     namespace = "adco.helixsongview"
     compileSdk = 37
@@ -19,14 +50,11 @@ android {
     // --- Signing configuration ---
     signingConfigs {
         release {
-            if (localProps.containsKey("MYAPP_STORE_FILE")) {
-                storeFile file(localProps["MYAPP_STORE_FILE"])
-                storePassword localProps["MYAPP_STORE_PASSWORD"]
-                keyAlias localProps["MYAPP_KEY_ALIAS"]
-                keyPassword localProps["MYAPP_KEY_PASSWORD"]
-            } else {
-                println("⚠️ No signing info found in local.properties — release build will not be signed.")
-            }
+            def storeFilePath = localProps.getProperty("MYAPP_STORE_FILE", "..\\key\\ACM Key.jks")
+            storeFile file(storeFilePath)
+            storePassword localProps.getProperty("MYAPP_STORE_PASSWORD", "13017723")
+            keyAlias localProps.getProperty("MYAPP_KEY_ALIAS", "ACMKey")
+            keyPassword localProps.getProperty("MYAPP_KEY_PASSWORD", "13017723")
         }
     }
 
@@ -61,16 +89,31 @@ android {
             //noinspection NotShrinkingResources
             shrinkResources = false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig = signingConfigs.release
+            if (localProps.containsKey("MYAPP_STORE_FILE")) {
+                signingConfig = signingConfigs.release
+            } else {
+                signingConfig = signingConfigs.debug
+                println("⚠️ Warning: MYAPP_STORE_FILE not found in local.properties. Using debug signing for release build.")
+            }
+            resValue "string", "app_name", "Helix Companion"
         }
         beta {
             initWith release
+            if (localProps.containsKey("MYAPP_STORE_FILE")) {
+                signingConfig = signingConfigs.release
+            } else {
+                signingConfig = signingConfigs.debug
+            }
+            resValue "string", "app_name", "Helix Companion (Test)"
         }
         debug {
             minifyEnabled = false
             //noinspection NotShrinkingResources
             shrinkResources = false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
+            resValue "string", "app_name", "Helix Companion (Dev)"
         }
         // Same as release (not debuggable, so ART compiles/JITs normally) but signed
         // with the debug key so it can be installed without release signing keys.
